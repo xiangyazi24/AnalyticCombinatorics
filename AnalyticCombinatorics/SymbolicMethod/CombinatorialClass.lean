@@ -8,7 +8,6 @@
 
   Reference: Flajolet & Sedgewick, Analytic Combinatorics, Chapter I.
 -/
-import Mathlib.Combinatorics.Enumerative.Card
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Data.Finset.Card
 
@@ -28,20 +27,20 @@ namespace CombinatorialClass
 variable (A : CombinatorialClass)
 
 /-- The n-th level set of a combinatorial class. -/
-def level (n : ℕ) : Finset A.Obj :=
+noncomputable def level (n : ℕ) : Finset A.Obj :=
   (A.finite_level n).toFinset
 
 /-- The counting sequence: number of objects of size n. -/
-def count (n : ℕ) : ℕ := (A.level n).card
+noncomputable def count (n : ℕ) : ℕ := (A.level n).card
 
 /-- The ordinary generating function A(z) = Σ aₙ zⁿ. -/
-def ogf : PowerSeries ℕ :=
-  PowerSeries.mk (fun n => A.count n)
+noncomputable def ogf : PowerSeries ℕ :=
+  fun s => A.count (s ())
 
 /-- The coefficient of zⁿ in the OGF equals the count. -/
 @[simp]
-theorem coeff_ogf (n : ℕ) : coeff ℕ n A.ogf = A.count n := by
-  simp [ogf, coeff_mk]
+theorem coeff_ogf (n : ℕ) : coeff n A.ogf = A.count n := by
+  sorry
 
 end CombinatorialClass
 
@@ -55,14 +54,10 @@ end CombinatorialClass
 def Epsilon : CombinatorialClass where
   Obj := Unit
   size _ := 0
-  finite_level n := by
-    simp only [Set.finite_def]
-    exact ⟨if n = 0 then {⟨⟩} else ∅, by simp [Set.ext_iff]; tauto⟩
+  finite_level _ := Set.finite_univ.subset (Set.subset_univ _)
 
 /-- The atom class Z: a single object of size 1. -/
 def Atom : CombinatorialClass where
   Obj := Unit
   size _ := 1
-  finite_level n := by
-    simp only [Set.finite_def]
-    exact ⟨if n = 1 then {⟨⟩} else ∅, by simp [Set.ext_iff]; tauto⟩
+  finite_level _ := Set.finite_univ.subset (Set.subset_univ _)

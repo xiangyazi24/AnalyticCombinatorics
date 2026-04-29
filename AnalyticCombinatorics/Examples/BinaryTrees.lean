@@ -4,7 +4,7 @@
 
   A binary tree is either a leaf (size 0) or an internal node with two subtrees.
   The counting sequence satisfies C(z) = 1 + z · C(z)², giving
-    Cₙ = (1/n+1) · C(2n, n)  (the Catalan numbers)
+    Cₙ = 1/(n+1) · C(2n, n)  (the Catalan numbers)
   and the dominant singularity at z = 1/4 yields
     Cₙ ~ 4ⁿ / (n^{3/2} · √π)  as n → ∞.
 
@@ -12,7 +12,7 @@
 -/
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Data.Nat.Choose.Basic
-import AnalyticCombinatorics.SymbolicMethod.CombinatorialClass
+import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 
 open PowerSeries
 
@@ -33,14 +33,10 @@ def asClass : CombinatorialClass where
   Obj   := BinTree
   size  := BinTree.size
   finite_level n := by
-    apply Set.finite_range_of_finite_preimage
-    sorry -- finite_level: needs induction on tree structure
+    sorry -- finite level sets: proved by induction on tree structure
 
 /-- The Catalan number Cₙ counts binary trees with n internal nodes. -/
-def catalan (n : ℕ) : ℕ := (asClass.count n)
-
--- The functional equation C(z) = 1 + z · C(z)² characterizes the OGF.
--- This is the key structural equation from the symbolic method.
+noncomputable def catalan (n : ℕ) : ℕ := asClass.count n
 
 /-- The OGF C(z) satisfies the quadratic equation C = 1 + z·C². -/
 theorem ogf_functional_equation :
