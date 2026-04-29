@@ -17,8 +17,8 @@ open PowerSeries
 
 /-- A combinatorial class: objects with a size function and finite level sets. -/
 structure CombinatorialClass where
-  Obj   : Type*
-  size  : Obj → ℕ
+  Obj : Type*
+  size : Obj → ℕ
   finite_level : ∀ n : ℕ, Set.Finite {a : Obj | size a = n}
 
 namespace CombinatorialClass
@@ -36,7 +36,8 @@ noncomputable def count (n : ℕ) : ℕ := (A.level n).card
 noncomputable def ogf : PowerSeries ℕ := fun s => A.count (s ())
 
 theorem coeff_ogf (n : ℕ) : coeff n A.ogf = A.count n := by
-  sorry
+  show A.count ((Finsupp.single () n) ()) = A.count n
+  simp [Finsupp.single_eq_same]
 
 /-! ## I.2 Neutral classes -/
 
@@ -52,8 +53,45 @@ def Atom : CombinatorialClass where
   size _ := 1
   finite_level _ := Set.finite_univ.subset (Set.subset_univ _)
 
-theorem Epsilon_ogf : Epsilon.ogf = 1 := by sorry
-theorem Atom_ogf : Atom.ogf = PowerSeries.X := by sorry
+private lemma level_mem_iff {C : CombinatorialClass} {n : ℕ} (x : C.Obj) :
+    x ∈ C.level n ↔ C.size x = n := by
+  simp [level, Set.Finite.mem_toFinset]
+
+theorem Epsilon_ogf : Epsilon.ogf = 1 := by
+  ext n
+  rw [coeff_ogf, coeff_one]
+  simp only [count]
+  haveI : Unique Epsilon.Obj := inferInstanceAs (Unique Unit)
+  have hmem : ∀ x : Epsilon.Obj, x ∈ Epsilon.level n ↔ n = 0 := fun x => by
+    rw [level_mem_iff]; show (0 : ℕ) = n ↔ n = 0; omega
+  by_cases h : n = 0
+  · have hcard : (Epsilon.level n).card = 1 := by
+      rw [Finset.card_eq_one]
+      exact ⟨(), Finset.eq_singleton_iff_unique_mem.mpr
+        ⟨(hmem ()).mpr h, fun x _ => Unique.eq_default x⟩⟩
+    rw [hcard]; simp [h]
+  · have hcard : (Epsilon.level n).card = 0 := by
+      rw [Finset.card_eq_zero]
+      exact Finset.eq_empty_of_forall_notMem (fun x hx => h ((hmem x).mp hx))
+    rw [hcard]; simp [h]
+
+theorem Atom_ogf : Atom.ogf = PowerSeries.X := by
+  ext n
+  rw [coeff_ogf, coeff_X]
+  simp only [count]
+  haveI : Unique Atom.Obj := inferInstanceAs (Unique Unit)
+  have hmem : ∀ x : Atom.Obj, x ∈ Atom.level n ↔ n = 1 := fun x => by
+    rw [level_mem_iff]; show (1 : ℕ) = n ↔ n = 1; omega
+  by_cases h : n = 1
+  · have hcard : (Atom.level n).card = 1 := by
+      rw [Finset.card_eq_one]
+      exact ⟨(), Finset.eq_singleton_iff_unique_mem.mpr
+        ⟨(hmem ()).mpr h, fun x _ => Unique.eq_default x⟩⟩
+    rw [hcard]; simp [h]
+  · have hcard : (Atom.level n).card = 0 := by
+      rw [Finset.card_eq_zero]
+      exact Finset.eq_empty_of_forall_notMem (fun x hx => h ((hmem x).mp hx))
+    rw [hcard]; simp [h]
 
 /-! ## I.2 Admissible constructions -/
 
@@ -82,7 +120,10 @@ noncomputable def cartProd : CombinatorialClass where
     rintro ⟨a, b⟩ hx
     simp only [Set.mem_setOf_eq] at hx
     simp only [Set.mem_iUnion, Set.mem_prod, Set.mem_setOf_eq]
-    sorry
+    refine ⟨⟨A.size a, ?_⟩, ?_, ?_⟩
+    · have h : A.size a + B.size b = n := hx; omega
+    · rfl
+    · have h : A.size a + B.size b = n := hx; show B.size b = n - A.size a; omega
 
 /-- OGF of Cartesian product = product of OGFs. -/
 theorem cartProd_ogf : (A.cartProd B).ogf = A.ogf * B.ogf := by sorry
