@@ -10,6 +10,7 @@
 -/
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Sum
 
 open PowerSeries
 
@@ -107,7 +108,22 @@ noncomputable def disjSum : CombinatorialClass where
     · exact Set.mem_union_right _ (Set.mem_image_of_mem _ hx)
 
 /-- OGF of disjoint union = sum of OGFs. -/
-theorem disjSum_ogf : (A.disjSum B).ogf = A.ogf + B.ogf := by sorry
+theorem disjSum_ogf : (A.disjSum B).ogf = A.ogf + B.ogf := by
+  ext n
+  simp only [map_add, coeff_ogf]
+  show (A.disjSum B).count n = A.count n + B.count n
+  simp only [count]
+  have hL : ((A.disjSum B).level n).toLeft = A.level n := by
+    ext x
+    simp only [Finset.mem_toLeft, level, Set.Finite.mem_toFinset, Set.mem_setOf_eq, disjSum,
+               Sum.elim_inl]
+  have hR : ((A.disjSum B).level n).toRight = B.level n := by
+    ext x
+    simp only [Finset.mem_toRight, level, Set.Finite.mem_toFinset, Set.mem_setOf_eq, disjSum,
+               Sum.elim_inr]
+  have heq := Finset.card_toLeft_add_card_toRight (u := (A.disjSum B).level n)
+  rw [hL, hR] at heq
+  exact heq.symm
 
 /-- Cartesian product A × B. Size |(a,b)| = |a| + |b|. OGF = A(z)·B(z). -/
 noncomputable def cartProd : CombinatorialClass where
