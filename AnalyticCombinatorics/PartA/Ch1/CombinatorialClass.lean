@@ -142,6 +142,38 @@ noncomputable def cartProd : CombinatorialClass where
     · have h : A.size a + B.size b = n := hx; show B.size b = n - A.size a; omega
 
 /-- OGF of Cartesian product = product of OGFs. -/
-theorem cartProd_ogf : (A.cartProd B).ogf = A.ogf * B.ogf := by sorry
+theorem cartProd_ogf : (A.cartProd B).ogf = A.ogf * B.ogf := by
+  ext n
+  simp only [coeff_ogf, coeff_mul]
+  simp only [count]
+  have hbij : ((A.cartProd B).level n).card =
+      ((Finset.antidiagonal n).sigma (fun p => A.level p.1 ×ˢ B.level p.2)).card := by
+    apply Finset.card_bij'
+        (fun (x : A.Obj × B.Obj) _ =>
+          (⟨(A.size x.1, B.size x.2), x⟩ : Σ _ : ℕ × ℕ, A.Obj × B.Obj))
+        (fun y _ => y.2)
+    · rintro ⟨a, b⟩ h
+      have hab : A.size a + B.size b = n := by
+        exact (level_mem_iff (C := A.cartProd B) (a, b)).mp h
+      simp only [Finset.mem_sigma, Finset.mem_antidiagonal, Finset.mem_product]
+      exact ⟨hab, (level_mem_iff (C := A) a).mpr rfl, (level_mem_iff (C := B) b).mpr rfl⟩
+    · rintro ⟨⟨k, m⟩, a, b⟩ h
+      simp only [Finset.mem_sigma, Finset.mem_antidiagonal, Finset.mem_product] at h
+      obtain ⟨hkm, hak, hbm⟩ := h
+      have ha : A.size a = k := (level_mem_iff (C := A) a).mp hak
+      have hb : B.size b = m := (level_mem_iff (C := B) b).mp hbm
+      show (a, b) ∈ (A.cartProd B).level n
+      apply (level_mem_iff (C := A.cartProd B) (a, b)).mpr
+      show A.size a + B.size b = n
+      omega
+    · rintro ⟨a, b⟩ _; rfl
+    · rintro ⟨⟨k, m⟩, a, b⟩ h
+      simp only [Finset.mem_sigma, Finset.mem_antidiagonal, Finset.mem_product] at h
+      obtain ⟨-, hak, hbm⟩ := h
+      have ha : A.size a = k := (level_mem_iff (C := A) a).mp hak
+      have hb : B.size b = m := (level_mem_iff (C := B) b).mp hbm
+      simp [ha, hb]
+  rw [hbij, Finset.card_sigma]
+  simp only [Finset.card_product]
 
 end CombinatorialClass
