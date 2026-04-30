@@ -21,16 +21,19 @@
 -/
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.PowerSeries.Exp
+import Mathlib.RingTheory.PowerSeries.PiTopology
 import Mathlib.RingTheory.PowerSeries.WellKnown
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Data.Fintype.Perm
 import Mathlib.Data.Finset.Powerset
+import Mathlib.Topology.Instances.Rat
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 
 open PowerSeries
+open scoped PowerSeries.WithPiTopology
 
 namespace CombinatorialClass
 
@@ -375,6 +378,122 @@ theorem labelPow_count_div_factorial_eq_coeff_pow
     (A : CombinatorialClass) (k n : ℕ) :
     ((labelPow A k).count n : ℚ) / n.factorial = coeff n (A.egf ^ k) := by
   rw [← coeff_egf (A := labelPow A k), labelPow_egf]
+
+private lemma size_pos_of_count_zero {B : CombinatorialClass} (hB : B.count 0 = 0)
+    (b : B.Obj) : 1 ≤ B.size b := by
+  rcases Nat.eq_zero_or_pos (B.size b) with h0 | hp
+  · exfalso
+    have hmem : b ∈ B.level 0 := (level_mem_iff (C := B) b).mpr h0
+    have hcard : 0 < B.count 0 := by
+      rw [count]
+      exact Finset.card_pos.mpr ⟨b, hmem⟩
+    omega
+  · omega
+
+private lemma labelPow_size_ge (B : CombinatorialClass) (hB : B.count 0 = 0) :
+    ∀ (k : ℕ) (x : (labelPow B k).Obj), k ≤ (labelPow B k).size x
+  | 0, _ => by simp [labelPow]
+  | k + 1, x => by
+      rcases x with ⟨p, ⟨⟨b, y⟩, S⟩⟩
+      have hb_size : B.size b.1 = p.1 := (level_mem_iff (C := B) b.1).mp b.2
+      have hy_size : (labelPow B k).size y.1 = p.2 :=
+        (level_mem_iff (C := labelPow B k) y.1).mp y.2
+      have hb_pos : 1 ≤ p.1 := by
+        rw [← hb_size]
+        exact size_pos_of_count_zero hB b.1
+      have hy_ge : k ≤ p.2 := by
+        rw [← hy_size]
+        exact labelPow_size_ge B hB k y.1
+      change k + 1 ≤ p.1 + p.2
+      omega
+
+private noncomputable def labelSeqLevelFinset
+    (B : CombinatorialClass) (_hB : B.count 0 = 0) (n : ℕ) :
+    Finset (Σ k : ℕ, (labelPow B k).Obj) :=
+  (Finset.range (n + 1)).sigma fun k => (labelPow B k).level n
+
+private lemma mem_labelSeqLevelFinset_iff
+    (B : CombinatorialClass) (hB : B.count 0 = 0) (n : ℕ)
+    (x : Σ k : ℕ, (labelPow B k).Obj) :
+    x ∈ labelSeqLevelFinset B hB n ↔ (labelPow B x.1).size x.2 = n := by
+  cases x with
+  | mk k y =>
+      constructor
+      · intro hx
+        exact (level_mem_iff (C := labelPow B k) y).mp (Finset.mem_sigma.mp hx).2
+      · intro hy
+        apply Finset.mem_sigma.mpr
+        refine ⟨?_, ?_⟩
+        · apply Finset.mem_range.mpr
+          have hk := labelPow_size_ge B hB k y
+          rw [hy] at hk
+          exact Nat.lt_succ_of_le hk
+        · exact (level_mem_iff (C := labelPow B k) y).mpr hy
+
+/-- Labelled sequence construction as the disjoint union of all labelled powers. -/
+noncomputable def labelSeq (B : CombinatorialClass) (hB : B.count 0 = 0) :
+    CombinatorialClass where
+  Obj := Σ k : ℕ, (labelPow B k).Obj
+  size := fun x => (labelPow B x.1).size x.2
+  finite_level n := by
+    exact (labelSeqLevelFinset B hB n).finite_toSet.subset fun x hx =>
+      (mem_labelSeqLevelFinset_iff B hB n x).mpr hx
+
+namespace labelSeq
+
+/-- Count of `labelSeq` is the finite sum of labelled-power counts. -/
+theorem count_eq (B : CombinatorialClass) (hB : B.count 0 = 0) (n : ℕ) :
+    (labelSeq B hB).count n =
+      ∑ k ∈ Finset.range (n + 1), (labelPow B k).count n := by
+  rw [count]
+  have hlevel : (labelSeq B hB).level n = labelSeqLevelFinset B hB n := by
+    ext x
+    rw [level_mem_iff]
+    exact (mem_labelSeqLevelFinset_iff B hB n x).symm
+  rw [hlevel, labelSeqLevelFinset]
+  exact Finset.card_sigma (s := Finset.range (n + 1)) (t := fun k => (labelPow B k).level n)
+
+end labelSeq
+
+private lemma coeff_pow_eq_zero_of_constantCoeff_eq_zero {f : PowerSeries ℚ}
+    (h0 : f.constantCoeff = 0) {n k : ℕ} (hnk : n < k) : coeff n (f ^ k) = 0 := by
+  exact PowerSeries.coeff_of_lt_order n
+    (lt_of_lt_of_le (by exact_mod_cast hnk)
+      (PowerSeries.le_order_pow_of_constantCoeff_eq_zero k h0))
+
+private lemma egf_constantCoeff_eq_zero (B : CombinatorialClass) (hB : B.count 0 = 0) :
+    B.egf.constantCoeff = 0 := by
+  rw [← PowerSeries.coeff_zero_eq_constantCoeff_apply, coeff_egf, hB]
+  simp
+
+private lemma labelSeq_coeff_egf (B : CombinatorialClass) (hB : B.count 0 = 0) (n : ℕ) :
+    coeff n (labelSeq B hB).egf =
+      ∑ k ∈ Finset.range (n + 1), coeff n (B.egf ^ k) := by
+  rw [coeff_egf, labelSeq.count_eq]
+  rw [Nat.cast_sum, div_eq_mul_inv, Finset.sum_mul]
+  apply Finset.sum_congr rfl
+  intro k _
+  rw [← div_eq_mul_inv]
+  exact labelPow_count_div_factorial_eq_coeff_pow B k n
+
+private lemma labelSeq_hasSum_egf (B : CombinatorialClass) (hB : B.count 0 = 0) :
+    HasSum (fun k : ℕ => B.egf ^ k) (labelSeq B hB).egf := by
+  rw [PowerSeries.WithPiTopology.hasSum_iff_hasSum_coeff]
+  intro n
+  rw [labelSeq_coeff_egf B hB n]
+  apply hasSum_sum_of_ne_finset_zero (s := Finset.range (n + 1))
+  intro k hk
+  have hnk : n < k := by
+    have hk' : ¬ k < n + 1 := by simpa using hk
+    omega
+  exact coeff_pow_eq_zero_of_constantCoeff_eq_zero (egf_constantCoeff_eq_zero B hB) hnk
+
+/-- The EGF of labelled sequences satisfies the geometric-series identity. -/
+theorem labelSeq_egf_mul_one_sub_egf (B : CombinatorialClass) (hB : B.count 0 = 0) :
+    (1 - B.egf) * (labelSeq B hB).egf = 1 := by
+  rw [← (labelSeq_hasSum_egf B hB).tsum_eq]
+  exact PowerSeries.WithPiTopology.one_sub_mul_tsum_pow_of_constantCoeff_eq_zero
+    (egf_constantCoeff_eq_zero B hB)
 
 end CombinatorialClass
 
