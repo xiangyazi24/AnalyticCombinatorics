@@ -21,6 +21,7 @@
 -/
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.PowerSeries.Exp
+import Mathlib.RingTheory.PowerSeries.WellKnown
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Data.Fintype.Perm
@@ -281,3 +282,15 @@ theorem permClass_count_eq_factorial (n : ℕ) : permClass.count n = n.factorial
 theorem permClass_egf_coeff (n : ℕ) : coeff n permClass.egf = 1 := by
   rw [CombinatorialClass.coeff_egf, permClass_count_eq_factorial]
   exact div_self (Nat.cast_ne_zero.mpr n.factorial_pos.ne')
+
+/-- The EGF of permutations is the geometric series `1 + z + z² + ⋯`. -/
+theorem permClass_egf_eq_mk_one :
+    permClass.egf = (PowerSeries.mk fun _ : ℕ => (1 : ℚ)) := by
+  ext n
+  rw [permClass_egf_coeff, PowerSeries.coeff_mk]
+
+/-- The permutation EGF satisfies the geometric-series identity. -/
+theorem permClass_egf_mul_one_sub_X :
+    permClass.egf * (1 - PowerSeries.X) = 1 := by
+  rw [permClass_egf_eq_mk_one]
+  exact PowerSeries.mk_one_mul_one_sub_eq_one ℚ
