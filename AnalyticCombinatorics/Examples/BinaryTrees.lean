@@ -14,7 +14,7 @@ import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Data.Nat.Choose.Basic
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 
-open PowerSeries
+open PowerSeries CombinatorialClass
 
 /-- Binary trees: leaf or node with two subtrees. -/
 inductive BinTree : Type
@@ -72,9 +72,107 @@ def asClass : CombinatorialClass where
 /-- The Catalan number Cₙ counts binary trees with n internal nodes. -/
 noncomputable def catalan (n : ℕ) : ℕ := asClass.count n
 
+private lemma mem_level_iff'' (m : ℕ) (t : BinTree) :
+    t ∈ asClass.level m ↔ asClass.size t = m := by
+  change t ∈ (asClass.finite_level m).toFinset ↔ asClass.size t = m
+  exact (asClass.finite_level m).mem_toFinset.trans (by simp)
+
+/-- Only `leaf` has size 0. -/
+lemma count_zero : asClass.count 0 = 1 := by
+  simp only [count]
+  rw [Finset.card_eq_one]
+  refine ⟨BinTree.leaf, Finset.eq_singleton_iff_unique_mem.mpr ⟨?_, ?_⟩⟩
+  · exact (mem_level_iff'' 0 BinTree.leaf).mpr rfl
+  · intro t ht
+    have hsz : t.size = 0 := (mem_level_iff'' 0 t).mp ht
+    cases t with
+    | leaf => rfl
+    | node l r => simp only [BinTree.size_node_eq] at hsz; omega
+
+/-- Recursion on counts: a tree of size n+1 = node l r decomposes uniquely as (l, r)
+    with l.size + r.size = n. -/
+lemma count_succ (n : ℕ) :
+    asClass.count (n + 1) =
+      ∑ p ∈ Finset.antidiagonal n, asClass.count p.1 * asClass.count p.2 := by
+  let rhsFs : Finset (Σ _ : ℕ × ℕ, BinTree × BinTree) :=
+    (Finset.antidiagonal n).sigma (fun p => asClass.level p.1 ×ˢ asClass.level p.2)
+  let fwd : (y : Σ _ : ℕ × ℕ, BinTree × BinTree) → y ∈ rhsFs → BinTree :=
+    fun y _ => BinTree.node y.2.1 y.2.2
+  have extract : ∀ y : Σ _ : ℕ × ℕ, BinTree × BinTree, y ∈ rhsFs →
+      y.1 ∈ Finset.antidiagonal n ∧
+      y.2.1 ∈ asClass.level y.1.1 ∧
+      y.2.2 ∈ asClass.level y.1.2 := by
+    intro y hy
+    refine ⟨(Finset.mem_sigma.mp hy).1,
+            (Finset.mem_product.mp (Finset.mem_sigma.mp hy).2).1,
+            (Finset.mem_product.mp (Finset.mem_sigma.mp hy).2).2⟩
+  have hcard : rhsFs.card = (asClass.level (n + 1)).card := by
+    apply Finset.card_bij fwd
+    · -- maps to asClass.level (n+1)
+      intro y hy
+      obtain ⟨h1, h2, h3⟩ := extract y hy
+      have hkm : y.1.1 + y.1.2 = n := Finset.mem_antidiagonal.mp h1
+      have hl : y.2.1.size = y.1.1 := (mem_level_iff'' _ _).mp h2
+      have hr : y.2.2.size = y.1.2 := (mem_level_iff'' _ _).mp h3
+      apply (mem_level_iff'' (n + 1) (BinTree.node y.2.1 y.2.2)).mpr
+      change 1 + y.2.1.size + y.2.2.size = n + 1
+      omega
+    · -- injective
+      intro y1 hy1 y2 hy2 heq
+      obtain ⟨h11, h12, h13⟩ := extract y1 hy1
+      obtain ⟨h21, h22, h23⟩ := extract y2 hy2
+      have hl1 : y1.2.1.size = y1.1.1 := (mem_level_iff'' _ _).mp h12
+      have hl2 : y2.2.1.size = y2.1.1 := (mem_level_iff'' _ _).mp h22
+      have hr1 : y1.2.2.size = y1.1.2 := (mem_level_iff'' _ _).mp h13
+      have hr2 : y2.2.2.size = y2.1.2 := (mem_level_iff'' _ _).mp h23
+      change BinTree.node y1.2.1 y1.2.2 = BinTree.node y2.2.1 y2.2.2 at heq
+      have hl : y1.2.1 = y2.2.1 := (BinTree.node.injEq _ _ _ _).mp heq |>.1
+      have hr : y1.2.2 = y2.2.2 := (BinTree.node.injEq _ _ _ _).mp heq |>.2
+      have hk : y1.1.1 = y2.1.1 := by rw [← hl1, hl, hl2]
+      have hm : y1.1.2 = y2.1.2 := by rw [← hr1, hr, hr2]
+      obtain ⟨⟨k1, m1⟩, l1, r1⟩ := y1
+      obtain ⟨⟨k2, m2⟩, l2, r2⟩ := y2
+      simp_all
+    · -- surjective
+      intro t ht
+      have hsz : t.size = n + 1 := (mem_level_iff'' _ _).mp ht
+      cases t with
+      | leaf =>
+        exfalso
+        simp only [BinTree.size] at hsz
+        omega
+      | node l r =>
+        simp only [BinTree.size_node_eq] at hsz
+        refine ⟨⟨(l.size, r.size), (l, r)⟩, ?_, rfl⟩
+        apply Finset.mem_sigma.mpr
+        refine ⟨?_, ?_⟩
+        · apply Finset.mem_antidiagonal.mpr
+          show l.size + r.size = n
+          omega
+        · apply Finset.mem_product.mpr
+          exact ⟨(mem_level_iff'' _ _).mpr rfl, (mem_level_iff'' _ _).mpr rfl⟩
+  rw [show asClass.count (n + 1) = (asClass.level (n + 1)).card from rfl, ← hcard,
+      Finset.card_sigma]
+  apply Finset.sum_congr rfl
+  intro p _
+  exact Finset.card_product _ _
+
 /-- The OGF C(z) satisfies the quadratic equation C = 1 + z·C². -/
 theorem ogf_functional_equation :
     asClass.ogf = 1 + PowerSeries.X * asClass.ogf ^ 2 := by
-  sorry
+  ext n
+  rw [map_add, coeff_one, coeff_ogf]
+  rcases n with _ | m
+  · -- n = 0
+    rw [count_zero]
+    rw [PowerSeries.coeff_zero_eq_constantCoeff, map_mul,
+        PowerSeries.constantCoeff_X, zero_mul, add_zero]
+    rfl
+  · -- n = m + 1
+    rw [PowerSeries.coeff_succ_X_mul, sq, coeff_mul, count_succ m]
+    simp only [Nat.succ_ne_zero, ↓reduceIte, zero_add]
+    apply Finset.sum_congr rfl
+    intro p _
+    rw [coeff_ogf, coeff_ogf]
 
 end BinTree
