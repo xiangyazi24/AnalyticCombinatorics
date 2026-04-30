@@ -176,4 +176,42 @@ theorem cartProd_ogf : (A.cartProd B).ogf = A.ogf * B.ogf := by
   rw [hbij, Finset.card_sigma]
   simp only [Finset.card_product]
 
+/-! ## Structural identities at the OGF level
+
+The symbolic method's monoidal structure: under `cartProd`, the OGF
+operation is multiplicative; under `disjSum`, additive. `Epsilon` plays
+the role of multiplicative unit. -/
+
+/-- `Epsilon × A` has the same OGF as `A` (left unit). -/
+theorem Epsilon_cartProd_ogf : (Epsilon.cartProd A).ogf = A.ogf := by
+  rw [cartProd_ogf, Epsilon_ogf, one_mul]
+
+/-- `A × Epsilon` has the same OGF as `A` (right unit). -/
+theorem cartProd_Epsilon_ogf : (A.cartProd Epsilon).ogf = A.ogf := by
+  rw [cartProd_ogf, Epsilon_ogf, mul_one]
+
+/-- `cartProd` is OGF-commutative. -/
+theorem cartProd_comm_ogf : (A.cartProd B).ogf = (B.cartProd A).ogf := by
+  rw [cartProd_ogf, cartProd_ogf, mul_comm]
+
+/-- `cartProd` is OGF-associative. -/
+theorem cartProd_assoc_ogf (C : CombinatorialClass) :
+    ((A.cartProd B).cartProd C).ogf = (A.cartProd (B.cartProd C)).ogf := by
+  rw [cartProd_ogf, cartProd_ogf, cartProd_ogf, cartProd_ogf, mul_assoc]
+
+/-- `disjSum` is OGF-commutative. -/
+theorem disjSum_comm_ogf : (A.disjSum B).ogf = (B.disjSum A).ogf := by
+  rw [disjSum_ogf, disjSum_ogf, add_comm]
+
+/-- `disjSum` is OGF-associative. -/
+theorem disjSum_assoc_ogf (C : CombinatorialClass) :
+    ((A.disjSum B).disjSum C).ogf = (A.disjSum (B.disjSum C)).ogf := by
+  rw [disjSum_ogf, disjSum_ogf, disjSum_ogf, disjSum_ogf, add_assoc]
+
+/-- Distributivity: A × (B + C) has the same OGF as (A × B) + (A × C). -/
+theorem cartProd_disjSum_distrib_ogf (C : CombinatorialClass) :
+    (A.cartProd (B.disjSum C)).ogf =
+    ((A.cartProd B).disjSum (A.cartProd C)).ogf := by
+  rw [cartProd_ogf, disjSum_ogf, disjSum_ogf, cartProd_ogf, cartProd_ogf, mul_add]
+
 end CombinatorialClass
