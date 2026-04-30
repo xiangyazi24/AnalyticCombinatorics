@@ -105,3 +105,8 @@ theorem stringClass_count_eq_pow (n : ℕ) : stringClass.count n = 2 ^ n := by
       apply h
       rw [Finset.mem_antidiagonal]
       omega
+
+/-! Sanity checks: 2⁰=1, 2¹=2, 2²=4, 2³=8 binary strings. -/
+example : stringClass.count 0 = 1 := stringClass_count_eq_pow 0
+example : stringClass.count 1 = 2 := stringClass_count_eq_pow 1
+example : stringClass.count 3 = 8 := stringClass_count_eq_pow 3

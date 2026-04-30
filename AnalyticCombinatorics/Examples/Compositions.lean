@@ -126,3 +126,9 @@ theorem compositionClass_count_succ (n : ℕ) :
     rw [count_succ_eq_sum, Finset.sum_range_one, compositionClass_count_zero, pow_zero]
   | succ m ih =>
     rw [count_succ_succ_eq, ih, pow_succ]; ring
+
+/-! Sanity checks: 1 composition of 0, 1 of 1, 2 of 2, 4 of 3, 8 of 4. -/
+example : compositionClass.count 0 = 1 := compositionClass_count_zero
+example : compositionClass.count 1 = 1 := compositionClass_count_succ 0
+example : compositionClass.count 2 = 2 := compositionClass_count_succ 1
+example : compositionClass.count 4 = 8 := compositionClass_count_succ 3
