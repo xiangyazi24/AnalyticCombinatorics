@@ -78,11 +78,152 @@ def seqClass (B : CombinatorialClass) (hB : B.count 0 = 0) : CombinatorialClass 
 noncomputable def ogfZ (A : CombinatorialClass) : PowerSeries ℤ :=
   A.ogf.map (algebraMap ℕ ℤ)
 
-/-- The OGF of SEQ(B) satisfies (1 - B(z)) · SEQ(z) = 1, provided B(0) = 0.
-    Stated multiplicatively to avoid needing a field inverse. -/
+namespace seqClass
+
+private lemma mem_level_iff' (C : CombinatorialClass) (m : ℕ) (x : C.Obj) :
+    x ∈ C.level m ↔ C.size x = m := by
+  change x ∈ (C.finite_level m).toFinset ↔ C.size x = m
+  exact (C.finite_level m).mem_toFinset.trans (by simp)
+
+private lemma size_pos {B : CombinatorialClass} (h : B.count 0 = 0) (b : B.Obj) :
+    1 ≤ B.size b := by
+  rcases Nat.eq_zero_or_pos (B.size b) with h0 | hp
+  · exfalso
+    have := Finset.card_pos.mpr ⟨b, (mem_level_iff' B 0 b).mpr h0⟩
+    simp only [count] at h; omega
+  · omega
+
+/-- The empty list is the unique sequence of size 0. -/
+lemma count_zero (B : CombinatorialClass) (h : B.count 0 = 0) :
+    (seqClass B h).count 0 = 1 := by
+  simp only [count]
+  rw [Finset.card_eq_one]
+  refine ⟨[], ?_⟩
+  ext xs
+  simp only [Finset.mem_singleton]
+  rw [mem_level_iff' (seqClass B h) 0 xs]
+  show xs.foldr (fun b acc => B.size b + acc) 0 = 0 ↔ xs = []
+  constructor
+  · intro hsz
+    rcases xs with _ | ⟨a, t⟩
+    · rfl
+    · exfalso
+      simp only [List.foldr_cons] at hsz
+      have := size_pos h a
+      omega
+  · rintro rfl; rfl
+
+/-- For nonempty xs : List B.Obj decomposed b :: ys with size = n+1,
+    the pair (B.size b, size ys) is on the antidiagonal of n+1. -/
+private lemma cons_on_antidiagonal {B : CombinatorialClass} (h : B.count 0 = 0)
+    (n : ℕ) (b : B.Obj) (ys : List B.Obj)
+    (hbys : (b :: ys).foldr (fun b acc => B.size b + acc) 0 = n + 1) :
+    (B.size b, ys.foldr (fun b acc => B.size b + acc) 0) ∈ Finset.antidiagonal (n + 1) := by
+  simp only [Finset.mem_antidiagonal]
+  simp only [List.foldr_cons] at hbys
+  exact hbys
+
+/-- Recursion on counts: count(n+1) = ∑ B.count(k) · count(n+1-k) over antidiagonal. -/
+lemma count_succ (B : CombinatorialClass) (h : B.count 0 = 0) (n : ℕ) :
+    (seqClass B h).count (n + 1) =
+      ∑ p ∈ Finset.antidiagonal (n + 1), B.count p.1 * (seqClass B h).count p.2 := by
+  set S := seqClass B h with hS_def
+  -- Direct approach: rewrite count as card, build a Finset bijection between
+  -- S.level (n+1) and the sigma over antidiagonal of B.level k ×ˢ S.level m,
+  -- using (b, ys) ↦ b :: ys.
+  let rhsFs : Finset (Σ _ : ℕ × ℕ, B.Obj × List B.Obj) :=
+    (Finset.antidiagonal (n + 1)).sigma (fun p => B.level p.1 ×ˢ S.level p.2)
+  -- Forward map: rhsFs → S.level (n+1)
+  let fwd : (y : Σ _ : ℕ × ℕ, B.Obj × List B.Obj) → y ∈ rhsFs → List B.Obj :=
+    fun y _ => y.2.1 :: y.2.2
+  -- Helpers to extract pieces of rhsFs membership
+  have extract : ∀ y : Σ _ : ℕ × ℕ, B.Obj × List B.Obj, y ∈ rhsFs →
+      y.1 ∈ Finset.antidiagonal (n + 1) ∧
+      y.2.1 ∈ B.level y.1.1 ∧
+      y.2.2 ∈ S.level y.1.2 := by
+    intro y hy
+    refine ⟨?_, ?_, ?_⟩
+    · exact (Finset.mem_sigma.mp hy).1
+    · exact (Finset.mem_product.mp (Finset.mem_sigma.mp hy).2).1
+    · exact (Finset.mem_product.mp (Finset.mem_sigma.mp hy).2).2
+  have hcard : rhsFs.card = (S.level (n + 1)).card := by
+    apply Finset.card_bij fwd
+    · -- maps to S.level (n+1)
+      intro y hy
+      obtain ⟨h1, h2, h3⟩ := extract y hy
+      have hkm : y.1.1 + y.1.2 = n + 1 := Finset.mem_antidiagonal.mp h1
+      have hbsz : B.size y.2.1 = y.1.1 := (mem_level_iff' B y.1.1 y.2.1).mp h2
+      have hysz : y.2.2.foldr (fun b acc => B.size b + acc) 0 = y.1.2 :=
+        (mem_level_iff' S y.1.2 y.2.2).mp h3
+      apply (mem_level_iff' S (n + 1) (y.2.1 :: y.2.2)).mpr
+      change B.size y.2.1 + y.2.2.foldr (fun b acc => B.size b + acc) 0 = n + 1
+      omega
+    · -- injective
+      intro y1 hy1 y2 hy2 heq
+      obtain ⟨h11, h12, h13⟩ := extract y1 hy1
+      obtain ⟨h21, h22, h23⟩ := extract y2 hy2
+      have hbsz1 : B.size y1.2.1 = y1.1.1 := (mem_level_iff' B _ _).mp h12
+      have hbsz2 : B.size y2.2.1 = y2.1.1 := (mem_level_iff' B _ _).mp h22
+      have hysz1 : y1.2.2.foldr (fun b acc => B.size b + acc) 0 = y1.1.2 :=
+        (mem_level_iff' S _ _).mp h13
+      have hysz2 : y2.2.2.foldr (fun b acc => B.size b + acc) 0 = y2.1.2 :=
+        (mem_level_iff' S _ _).mp h23
+      change y1.2.1 :: y1.2.2 = y2.2.1 :: y2.2.2 at heq
+      have hb : y1.2.1 = y2.2.1 := (List.cons.injEq _ _ _ _).mp heq |>.1
+      have hys : y1.2.2 = y2.2.2 := (List.cons.injEq _ _ _ _).mp heq |>.2
+      have hk : y1.1.1 = y2.1.1 := by rw [← hbsz1, hb, hbsz2]
+      have hm : y1.1.2 = y2.1.2 := by rw [← hysz1, hys, hysz2]
+      obtain ⟨⟨k1, m1⟩, b1, ys1⟩ := y1
+      obtain ⟨⟨k2, m2⟩, b2, ys2⟩ := y2
+      simp_all
+    · -- surjective
+      intro xs hxs
+      have hsz : xs.foldr (fun b acc => B.size b + acc) 0 = n + 1 :=
+        (mem_level_iff' S (n + 1) xs).mp hxs
+      match xs, hsz with
+      | [], hsz => exact absurd hsz (by show (0 : ℕ) ≠ n + 1; omega)
+      | b :: ys, hsz =>
+        let y : Σ _ : ℕ × ℕ, B.Obj × List B.Obj :=
+          ⟨(B.size b, ys.foldr (fun b acc => B.size b + acc) 0), (b, ys)⟩
+        refine ⟨y, ?_, rfl⟩
+        apply Finset.mem_sigma.mpr
+        refine ⟨?_, ?_⟩
+        · exact cons_on_antidiagonal h n b ys hsz
+        · apply Finset.mem_product.mpr
+          exact ⟨(mem_level_iff' B _ _).mpr rfl, (mem_level_iff' S _ _).mpr rfl⟩
+  rw [show (seqClass B h).count (n + 1) = (S.level (n + 1)).card from rfl, ← hcard,
+      Finset.card_sigma]
+  apply Finset.sum_congr rfl
+  intro p _
+  exact Finset.card_product _ _
+
+end seqClass
+
+/-- Recursion at the OGF level: SEQ(z) = 1 + B(z) · SEQ(z) over ℕ[[z]]. -/
+lemma seqClass_ogf_recursion (B : CombinatorialClass) (h : B.count 0 = 0) :
+    (seqClass B h).ogf = 1 + B.ogf * (seqClass B h).ogf := by
+  ext n
+  simp only [coeff_ogf, map_add, coeff_one, coeff_mul]
+  rcases n with _ | m
+  · -- n = 0
+    rw [seqClass.count_zero B h]
+    simp [h, Finset.antidiagonal_zero]
+  · -- n = m + 1
+    rw [seqClass.count_succ B h m]
+    simp
+
+/-- The OGF of SEQ(B) satisfies (1 - B(z)) · SEQ(z) = 1, provided B(0) = 0. -/
 theorem seqClass_ogf_eq (B : CombinatorialClass) (h : B.count 0 = 0) :
     (1 - ogfZ B) * ogfZ (seqClass B h) = 1 := by
-  sorry
+  have hN := seqClass_ogf_recursion B h
+  have hZ : ogfZ (seqClass B h) = 1 + ogfZ B * ogfZ (seqClass B h) := by
+    unfold ogfZ
+    have := congrArg (PowerSeries.map (algebraMap ℕ ℤ)) hN
+    simpa using this
+  calc (1 - ogfZ B) * ogfZ (seqClass B h)
+      = ogfZ (seqClass B h) - ogfZ B * ogfZ (seqClass B h) := by ring
+    _ = (1 + ogfZ B * ogfZ (seqClass B h)) - ogfZ B * ogfZ (seqClass B h) := by rw [← hZ]
+    _ = 1 := by ring
 
 /-!
 ### Placeholder constructions (F&S Proposition I.2)
