@@ -276,3 +276,8 @@ end permClass
 /-- Count of permutations of size `n` equals `n!`. -/
 theorem permClass_count_eq_factorial (n : ℕ) : permClass.count n = n.factorial :=
   permClass.count_eq_factorial n
+
+/-- Every coefficient of `permClass.egf` equals 1. -/
+theorem permClass_egf_coeff (n : ℕ) : coeff n permClass.egf = 1 := by
+  rw [CombinatorialClass.coeff_egf, permClass_count_eq_factorial]
+  exact div_self (Nat.cast_ne_zero.mpr n.factorial_pos.ne')
