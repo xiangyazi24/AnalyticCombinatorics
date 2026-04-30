@@ -25,6 +25,7 @@ import Mathlib.RingTheory.PowerSeries.WellKnown
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Data.Fintype.Perm
+import Mathlib.Data.Finset.Powerset
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
@@ -294,3 +295,64 @@ theorem permClass_egf_mul_one_sub_X :
     permClass.egf * (1 - PowerSeries.X) = 1 := by
   rw [permClass_egf_eq_mk_one]
   exact PowerSeries.mk_one_mul_one_sub_eq_one ℚ
+
+namespace CombinatorialClass
+
+private abbrev LabelProdFiber (A B : CombinatorialClass) (p : ℕ × ℕ) : Type :=
+  ((A.level p.1) × (B.level p.2)) ×
+    ((Finset.univ : Finset (Fin (p.1 + p.2))).powersetCard p.1)
+
+private noncomputable def labelProdFiberFinset (A B : CombinatorialClass) (p : ℕ × ℕ) :
+    Finset (LabelProdFiber A B p) :=
+  ((A.level p.1).attach ×ˢ (B.level p.2).attach) ×ˢ
+    (((Finset.univ : Finset (Fin (p.1 + p.2))).powersetCard p.1).attach)
+
+private noncomputable def labelProdLevelFinset (A B : CombinatorialClass) (n : ℕ) :
+    Finset (Σ p : ℕ × ℕ, LabelProdFiber A B p) :=
+  (Finset.antidiagonal n).sigma (labelProdFiberFinset A B)
+
+private lemma mem_labelProdLevelFinset_iff
+    (A B : CombinatorialClass) (n : ℕ) (x : Σ p : ℕ × ℕ, LabelProdFiber A B p) :
+    x ∈ labelProdLevelFinset A B n ↔ x.1.1 + x.1.2 = n := by
+  cases x with
+  | mk p y =>
+      rcases y with ⟨⟨a, b⟩, S⟩
+      simp [labelProdLevelFinset, labelProdFiberFinset, LabelProdFiber]
+
+/-- The labelled product class. An object records sizes `k,m`, one object from each
+level, and a `k`-element subset of the `k+m` labels assigned to the left factor. -/
+noncomputable def labelProd (A B : CombinatorialClass) : CombinatorialClass where
+  Obj := Σ p : ℕ × ℕ, LabelProdFiber A B p
+  size := fun x => x.1.1 + x.1.2
+  finite_level n := by
+    exact (labelProdLevelFinset A B n).finite_toSet.subset fun x hx =>
+      (mem_labelProdLevelFinset_iff A B n x).mpr hx
+
+/-- The object-level labelled product has the abstract labelled-product count. -/
+theorem labelProd_count_eq_labelProdCount (A B : CombinatorialClass) (n : ℕ) :
+    (A.labelProd B).count n = labelProdCount A B n := by
+  rw [count]
+  have hlevel : (A.labelProd B).level n = labelProdLevelFinset A B n := by
+    ext x
+    rw [level_mem_iff]
+    exact (mem_labelProdLevelFinset_iff A B n x).symm
+  rw [hlevel, labelProdCount, labelProdLevelFinset]
+  calc
+    ((Finset.antidiagonal n).sigma (labelProdFiberFinset A B)).card =
+        ∑ p ∈ Finset.antidiagonal n, (labelProdFiberFinset A B p).card := by
+      exact Finset.card_sigma (s := Finset.antidiagonal n) (t := labelProdFiberFinset A B)
+    _ = ∑ p ∈ Finset.antidiagonal n, n.choose p.1 * (A.count p.1 * B.count p.2) := by
+      apply Finset.sum_congr rfl
+      intro p hp
+      have hpn : p.1 + p.2 = n := Finset.mem_antidiagonal.mp hp
+      simp [labelProdFiberFinset, count, hpn, Finset.card_product, Finset.card_powersetCard,
+        Nat.mul_assoc, Nat.mul_comm]
+
+/-- EGF form of the object-level labelled product. -/
+theorem labelProd_egf (A B : CombinatorialClass) :
+    (A.labelProd B).egf = A.egf * B.egf := by
+  ext n
+  rw [coeff_egf, labelProd_count_eq_labelProdCount,
+      labelProdCount_div_factorial_eq_coeff_mul_egf]
+
+end CombinatorialClass
