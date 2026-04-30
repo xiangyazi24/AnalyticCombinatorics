@@ -107,11 +107,8 @@ noncomputable def disjSum : CombinatorialClass where
     · exact Set.mem_union_left _ (Set.mem_image_of_mem _ hx)
     · exact Set.mem_union_right _ (Set.mem_image_of_mem _ hx)
 
-/-- OGF of disjoint union = sum of OGFs. -/
-theorem disjSum_ogf : (A.disjSum B).ogf = A.ogf + B.ogf := by
-  ext n
-  simp only [map_add, coeff_ogf]
-  show (A.disjSum B).count n = A.count n + B.count n
+/-- Count of a disjoint union splits additively. -/
+theorem disjSum_count (n : ℕ) : (A.disjSum B).count n = A.count n + B.count n := by
   simp only [count]
   have hL : ((A.disjSum B).level n).toLeft = A.level n := by
     ext x
@@ -124,6 +121,11 @@ theorem disjSum_ogf : (A.disjSum B).ogf = A.ogf + B.ogf := by
   have heq := Finset.card_toLeft_add_card_toRight (u := (A.disjSum B).level n)
   rw [hL, hR] at heq
   exact heq.symm
+
+/-- OGF of disjoint union = sum of OGFs. -/
+theorem disjSum_ogf : (A.disjSum B).ogf = A.ogf + B.ogf := by
+  ext n
+  simp only [map_add, coeff_ogf, disjSum_count]
 
 /-- Cartesian product A × B. Size |(a,b)| = |a| + |b|. OGF = A(z)·B(z). -/
 noncomputable def cartProd : CombinatorialClass where
@@ -219,6 +221,13 @@ theorem Epsilon_egf : Epsilon.egf = 1 := by
       change (0 : ℕ) = n at hsz
       exact h hsz.symm
     simp [this, h]
+
+/-- EGF of disjoint union = sum of EGFs (parallel to disjSum_ogf, valued in ℚ). -/
+theorem disjSum_egf : (A.disjSum B).egf = A.egf + B.egf := by
+  ext n
+  rw [map_add, coeff_egf, coeff_egf, coeff_egf, disjSum_count]
+  push_cast
+  ring
 
 /-- The EGF of `Atom` is the power series `X` (only the n=1 coefficient is 1). -/
 theorem Atom_egf : Atom.egf = PowerSeries.X := by
