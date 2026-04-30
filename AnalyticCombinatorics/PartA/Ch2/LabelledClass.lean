@@ -23,6 +23,7 @@ import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.PowerSeries.Exp
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.Factorial.BigOperators
+import Mathlib.Data.Fintype.Perm
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
@@ -74,6 +75,75 @@ theorem labelProdCount_div_factorial_eq_coeff_mul_egf (n : ℕ) :
       rw [div_eq_mul_inv]]
   rw [div_eq_div_iff h_n_ne (mul_ne_zero h_p1_ne h_p2_ne)]
   linear_combination ((A.count p.1 : ℚ) * (B.count p.2 : ℚ)) * hkey
+
+/-! ## Unit and zero identities for the labelled product. -/
+
+/-- `Epsilon.count 0 = 1` (only the unique size-0 object). -/
+theorem Epsilon_count_zero : Epsilon.count 0 = 1 := by
+  show (Epsilon.level 0).card = 1
+  rw [Finset.card_eq_one]
+  refine ⟨(), ?_⟩
+  ext x
+  refine ⟨fun _ => Finset.mem_singleton_self _, fun _ => ?_⟩
+  apply (level_mem_iff (C := Epsilon) x).mpr
+  show (0 : ℕ) = 0
+  rfl
+
+/-- For `k ≥ 1`, `Epsilon.count k = 0` (no size-k object since Epsilon size = 0). -/
+theorem Epsilon_count_pos {k : ℕ} (hk : 0 < k) : Epsilon.count k = 0 := by
+  show (Epsilon.level k).card = 0
+  rw [Finset.card_eq_zero]
+  ext x
+  refine ⟨fun hx => ?_, fun hx => absurd hx (Finset.notMem_empty _)⟩
+  have hsz : Epsilon.size x = k := (level_mem_iff (C := Epsilon) x).mp hx
+  change (0 : ℕ) = k at hsz
+  omega
+
+/-- Left unit for the labelled product: `Epsilon ⋆ A` has the same count as `A`. -/
+theorem Epsilon_labelProdCount (A : CombinatorialClass) (n : ℕ) :
+    labelProdCount Epsilon A n = A.count n := by
+  rw [labelProdCount]
+  rw [Finset.sum_eq_single (0, n)]
+  · -- main term: n.choose 0 * Epsilon.count 0 * A.count n = 1 * 1 * count = count
+    rw [Nat.choose_zero_right, Epsilon_count_zero, one_mul, one_mul]
+  · -- other terms vanish
+    rintro ⟨k, j⟩ hkj hne
+    rw [Finset.mem_antidiagonal] at hkj
+    have hk : k ≠ 0 := by
+      intro h
+      subst h
+      have : j = n := by omega
+      exact hne (by simp [this])
+    rw [Epsilon_count_pos (Nat.pos_of_ne_zero hk), zero_mul, mul_zero]
+  · -- (0, n) is in antidiagonal n
+    intro h
+    exfalso
+    apply h
+    rw [Finset.mem_antidiagonal]
+    omega
+
+/-- Right unit for the labelled product: `A ⋆ Epsilon` has the same count as `A`. -/
+theorem labelProdCount_Epsilon (A : CombinatorialClass) (n : ℕ) :
+    labelProdCount A Epsilon n = A.count n := by
+  rw [labelProdCount]
+  rw [Finset.sum_eq_single (n, 0)]
+  · -- main term: n.choose n * (A.count n * Epsilon.count 0) = 1 · (count · 1) = count
+    simp [Nat.choose_self, Epsilon_count_zero]
+  · -- other terms vanish
+    rintro ⟨k, j⟩ hkj hne
+    rw [Finset.mem_antidiagonal] at hkj
+    have hj : j ≠ 0 := by
+      intro h
+      subst h
+      have : k = n := by omega
+      exact hne (by simp [this])
+    rw [Epsilon_count_pos (Nat.pos_of_ne_zero hj)]
+    simp
+  · intro h
+    exfalso
+    apply h
+    rw [Finset.mem_antidiagonal]
+    omega
 
 end CombinatorialClass
 
@@ -151,3 +221,58 @@ theorem coeff_exp_sq_eq_pow_div_factorial (n : ℕ) :
   rw [← singletonClass_labelProdCount_eq, singletonClass_labelProdCount_pow]
   push_cast
   rfl
+
+/-! ## Permutations -/
+
+/-- The class of permutations: at size `n`, the objects are bijections of `Fin n`. -/
+def permClass : CombinatorialClass where
+  Obj := Σ n : ℕ, Equiv.Perm (Fin n)
+  size := Sigma.fst
+  finite_level n := by
+    have hfin : Set.Finite (Set.univ : Set (Equiv.Perm (Fin n))) := Set.toFinite _
+    apply Set.Finite.subset (hfin.image (Sigma.mk n))
+    rintro ⟨k, σ⟩ hkσ
+    simp only [Set.mem_setOf_eq] at hkσ
+    change k = n at hkσ
+    subst k
+    exact ⟨σ, Set.mem_univ _, rfl⟩
+
+namespace permClass
+
+/-- Count of permutations of size `n` equals `n!`. -/
+theorem count_eq_factorial (n : ℕ) : permClass.count n = n.factorial := by
+  rw [CombinatorialClass.count]
+  have hcard : (permClass.level n).card =
+      (Finset.univ : Finset (Equiv.Perm (Fin n))).card := by
+    refine Finset.card_bij'
+      (s := permClass.level n)
+      (t := (Finset.univ : Finset (Equiv.Perm (Fin n))))
+      (fun x hx => by
+        obtain ⟨k, σ⟩ := x
+        have hsize : permClass.size ⟨k, σ⟩ = n :=
+          (CombinatorialClass.level_mem_iff (C := permClass) ⟨k, σ⟩).mp hx
+        change k = n at hsize
+        subst k
+        exact σ)
+      (fun σ _ => (⟨n, σ⟩ : permClass.Obj))
+      ?_ ?_ ?_ ?_
+    · intro _ _
+      exact Finset.mem_univ _
+    · intro σ _
+      exact (CombinatorialClass.level_mem_iff (C := permClass) ⟨n, σ⟩).mpr rfl
+    · intro x hx
+      obtain ⟨k, σ⟩ := x
+      have hsize : permClass.size ⟨k, σ⟩ = n :=
+        (CombinatorialClass.level_mem_iff (C := permClass) ⟨k, σ⟩).mp hx
+      change k = n at hsize
+      subst k
+      rfl
+    · intro σ _
+      rfl
+  rw [hcard, Finset.card_univ, Fintype.card_perm, Fintype.card_fin]
+
+end permClass
+
+/-- Count of permutations of size `n` equals `n!`. -/
+theorem permClass_count_eq_factorial (n : ℕ) : permClass.count n = n.factorial :=
+  permClass.count_eq_factorial n
