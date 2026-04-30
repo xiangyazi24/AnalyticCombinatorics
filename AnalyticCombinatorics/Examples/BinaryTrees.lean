@@ -204,4 +204,10 @@ theorem succ_mul_catalan_eq_centralBinom (n : ℕ) :
     (n + 1) * BinTree.catalan n = n.centralBinom := by
   rw [catalan_eq_nat_catalan, _root_.succ_mul_catalan_eq_centralBinom]
 
+/-- The number of binary trees of size n equals C(2n, n) / (n + 1).
+    Standard closed form for Catalan numbers, lifted from `_root_.catalan_eq_centralBinom_div`. -/
+theorem catalan_eq_centralBinom_div (n : ℕ) :
+    BinTree.catalan n = n.centralBinom / (n + 1) := by
+  rw [catalan_eq_nat_catalan, _root_.catalan_eq_centralBinom_div]
+
 end BinTree
