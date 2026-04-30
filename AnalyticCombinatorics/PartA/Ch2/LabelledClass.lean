@@ -495,6 +495,22 @@ theorem labelSeq_egf_mul_one_sub_egf (B : CombinatorialClass) (hB : B.count 0 = 
   exact PowerSeries.WithPiTopology.one_sub_mul_tsum_pow_of_constantCoeff_eq_zero
     (egf_constantCoeff_eq_zero B hB)
 
+/-- Labelled SET coefficient, as a rational unordered-block count. -/
+noncomputable def labelSetCount (B : CombinatorialClass) (n : ℕ) : ℚ :=
+  ∑ k ∈ Finset.range (n + 1), ((labelPow B k).count n : ℚ) / k.factorial
+
+/-- Coefficient form of the labelled SET partial exponential identity. -/
+theorem labelSetCount_div_factorial_eq_partial_exp_coeff
+    (B : CombinatorialClass) (n : ℕ) :
+    labelSetCount B n / n.factorial =
+      ∑ k ∈ Finset.range (n + 1), coeff n ((B.egf : PowerSeries ℚ) ^ k) / k.factorial := by
+  rw [labelSetCount, div_eq_mul_inv, Finset.sum_mul]
+  apply Finset.sum_congr rfl
+  intro k _
+  rw [← labelPow_count_div_factorial_eq_coeff_pow B k n]
+  field_simp [Nat.cast_ne_zero.mpr k.factorial_pos.ne',
+    Nat.cast_ne_zero.mpr n.factorial_pos.ne']
+
 end CombinatorialClass
 
 /-! Sanity checks: 0!=1, 1!=1, 2!=2, 3!=6, 4!=24. -/
