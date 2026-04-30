@@ -176,6 +176,21 @@ theorem cartProd_ogf : (A.cartProd B).ogf = A.ogf * B.ogf := by
   rw [hbij, Finset.card_sigma]
   simp only [Finset.card_product]
 
+/-! ## Congruence at the OGF level
+
+Two combinatorial classes with the same counting sequence have the same OGF.
+This is the bridge between combinatorial bijections and OGF identities. -/
+
+/-- If two classes have equal counts at every level, they have equal OGFs. -/
+theorem ogf_eq_of_count_eq (h : ∀ n, A.count n = B.count n) : A.ogf = B.ogf := by
+  ext n
+  rw [coeff_ogf, coeff_ogf, h]
+
+/-- If level sets are equinumerous at every n, the OGFs are equal. -/
+theorem ogf_eq_of_level_card_eq (h : ∀ n, (A.level n).card = (B.level n).card) :
+    A.ogf = B.ogf :=
+  ogf_eq_of_count_eq A B h
+
 /-! ## Structural identities at the OGF level
 
 The symbolic method's monoidal structure: under `cartProd`, the OGF
