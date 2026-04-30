@@ -143,10 +143,10 @@ noncomputable def cartProd : CombinatorialClass where
     · rfl
     · have h : A.size a + B.size b = n := hx; show B.size b = n - A.size a; omega
 
-/-- OGF of Cartesian product = product of OGFs. -/
-theorem cartProd_ogf : (A.cartProd B).ogf = A.ogf * B.ogf := by
-  ext n
-  simp only [coeff_ogf, coeff_mul]
+/-- Count of Cartesian product is the Cauchy convolution. -/
+theorem cartProd_count (n : ℕ) :
+    (A.cartProd B).count n =
+      ∑ p ∈ Finset.antidiagonal n, A.count p.1 * B.count p.2 := by
   simp only [count]
   have hbij : ((A.cartProd B).level n).card =
       ((Finset.antidiagonal n).sigma (fun p => A.level p.1 ×ˢ B.level p.2)).card := by
@@ -177,6 +177,11 @@ theorem cartProd_ogf : (A.cartProd B).ogf = A.ogf * B.ogf := by
       simp [ha, hb]
   rw [hbij, Finset.card_sigma]
   simp only [Finset.card_product]
+
+/-- OGF of Cartesian product = product of OGFs (Cauchy convolution). -/
+theorem cartProd_ogf : (A.cartProd B).ogf = A.ogf * B.ogf := by
+  ext n
+  simp only [coeff_ogf, coeff_mul, cartProd_count]
 
 /-! ## Exponential generating function (EGF)
 
