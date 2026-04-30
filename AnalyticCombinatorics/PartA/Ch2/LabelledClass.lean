@@ -20,6 +20,7 @@
   Reference: F&S Chapter II § II.1–II.2, Theorem II.1.
 -/
 import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.RingTheory.PowerSeries.Exp
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Tactic.FieldSimp
@@ -75,3 +76,47 @@ theorem labelProdCount_div_factorial_eq_coeff_mul_egf (n : ℕ) :
   linear_combination ((A.count p.1 : ℚ) * (B.count p.2 : ℚ)) * hkey
 
 end CombinatorialClass
+
+/-! ## Worked example: the "set" / "exponential" class
+
+A combinatorial class with exactly one object of each size; its EGF is
+`exp(z) = ∑ zⁿ/n!`. Combinatorially, this is the labelled "atomic set" —
+each size class has a single labelled representative. -/
+
+/-- The class with a single labelled representative at every size:
+    one object of each size n ≥ 0. -/
+def singletonClass : CombinatorialClass where
+  Obj := ℕ
+  size := id
+  finite_level n := by
+    apply Set.Finite.subset (Set.finite_singleton n)
+    intro m hm
+    simp only [Set.mem_setOf_eq] at hm
+    exact hm
+
+namespace singletonClass
+
+/-- Each level set is the singleton `{n}`. -/
+private lemma level_eq_singleton (n : ℕ) :
+    singletonClass.level n = ({n} : Finset ℕ) := by
+  ext m
+  refine ⟨fun hm => ?_, fun hm => ?_⟩
+  · have hsz := (CombinatorialClass.level_mem_iff (C := singletonClass) m).mp hm
+    exact Finset.mem_singleton.mpr hsz
+  · apply (CombinatorialClass.level_mem_iff (C := singletonClass) m).mpr
+    exact Finset.mem_singleton.mp hm
+
+/-- Each level has count 1. -/
+theorem count_eq_one (n : ℕ) : singletonClass.count n = 1 := by
+  show (singletonClass.level n).card = 1
+  rw [level_eq_singleton]
+  rfl
+
+end singletonClass
+
+/-- The EGF of the singleton class is the exponential power series. -/
+theorem singletonClass_egf_eq_exp :
+    singletonClass.egf = PowerSeries.exp ℚ := by
+  ext n
+  rw [CombinatorialClass.coeff_egf, singletonClass.count_eq_one, PowerSeries.coeff_exp]
+  simp

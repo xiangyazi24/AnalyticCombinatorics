@@ -54,7 +54,7 @@ def Atom : CombinatorialClass where
   size _ := 1
   finite_level _ := Set.finite_univ.subset (Set.subset_univ _)
 
-private lemma level_mem_iff {C : CombinatorialClass} {n : ℕ} (x : C.Obj) :
+theorem level_mem_iff {C : CombinatorialClass} {n : ℕ} (x : C.Obj) :
     x ∈ C.level n ↔ C.size x = n := by
   simp [level, Set.Finite.mem_toFinset]
 
