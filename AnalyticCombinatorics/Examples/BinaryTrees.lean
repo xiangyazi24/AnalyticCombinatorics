@@ -28,12 +28,46 @@ def size : BinTree → ℕ
   | leaf       => 0
   | node l r   => 1 + size l + size r
 
+private lemma size_leaf_eq : BinTree.leaf.size = 0 := rfl
+private lemma size_node_eq (l r : BinTree) : (BinTree.node l r).size = 1 + l.size + r.size := rfl
+
 /-- The combinatorial class of binary trees. -/
 def asClass : CombinatorialClass where
   Obj   := BinTree
   size  := BinTree.size
   finite_level n := by
-    sorry -- finite level sets: proved by induction on tree structure
+    induction n using Nat.strong_induction_on
+    rename_i m ih
+    cases m with
+    | zero =>
+      -- Only leaf has size 0
+      apply Set.Finite.subset (Set.finite_singleton BinTree.leaf)
+      intro t ht
+      simp only [Set.mem_setOf_eq] at ht
+      simp only [Set.mem_singleton_iff]
+      cases t with
+      | leaf => rfl
+      | node l r =>
+        simp only [size_node_eq] at ht
+        omega
+    | succ m =>
+      -- t = node l r with l.size + r.size = m
+      apply Set.Finite.subset
+        (Set.finite_iUnion (fun k : Fin (m + 1) =>
+          ((ih k.val k.isLt).prod
+            (ih (m - k.val) (Nat.lt_succ_of_le (Nat.sub_le m k.val)))).image
+          (fun p => BinTree.node p.1 p.2)))
+      intro t ht
+      simp only [Set.mem_setOf_eq] at ht
+      cases t with
+      | leaf =>
+        simp only [size_leaf_eq] at ht
+        omega
+      | node l r =>
+        simp only [size_node_eq] at ht
+        have hr : BinTree.size r = m - BinTree.size l := by omega
+        simp only [Set.mem_iUnion, Set.mem_image, Set.mem_prod, Set.mem_setOf_eq]
+        exact ⟨⟨l.size, by omega⟩, (l, r), ⟨rfl, hr⟩, rfl⟩
 
 /-- The Catalan number Cₙ counts binary trees with n internal nodes. -/
 noncomputable def catalan (n : ℕ) : ℕ := asClass.count n
