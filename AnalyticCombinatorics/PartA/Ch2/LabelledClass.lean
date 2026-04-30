@@ -355,4 +355,37 @@ theorem labelProd_egf (A B : CombinatorialClass) :
   rw [coeff_egf, labelProd_count_eq_labelProdCount,
       labelProdCount_div_factorial_eq_coeff_mul_egf]
 
+/-- `k`-fold labelled product of `A` with itself. By convention `labelPow A 0`
+is the labelled-product unit `Epsilon`. -/
+noncomputable def labelPow : CombinatorialClass → ℕ → CombinatorialClass
+  | _, 0 => Epsilon
+  | A, k + 1 => A.labelProd (labelPow A k)
+
+/-- The EGF of `labelPow A k` is `A.egf ^ k`. -/
+theorem labelPow_egf (A : CombinatorialClass) (k : ℕ) :
+    (labelPow A k).egf = A.egf ^ k := by
+  induction k with
+  | zero =>
+      simp [labelPow, Epsilon_egf]
+  | succ k ih =>
+      simp [labelPow, labelProd_egf, ih, pow_succ']
+
+/-- Coefficient form of the EGF identity for `labelPow`. -/
+theorem labelPow_count_div_factorial_eq_coeff_pow
+    (A : CombinatorialClass) (k n : ℕ) :
+    ((labelPow A k).count n : ℚ) / n.factorial = coeff n (A.egf ^ k) := by
+  rw [← coeff_egf (A := labelPow A k), labelPow_egf]
+
 end CombinatorialClass
+
+/-! Sanity checks: 0!=1, 1!=1, 2!=2, 3!=6, 4!=24. -/
+example : permClass.count 0 = 1 := by rw [permClass_count_eq_factorial]; rfl
+example : permClass.count 1 = 1 := by rw [permClass_count_eq_factorial]; rfl
+example : permClass.count 2 = 2 := by rw [permClass_count_eq_factorial]; rfl
+example : permClass.count 3 = 6 := by rw [permClass_count_eq_factorial]; rfl
+example : permClass.count 4 = 24 := by rw [permClass_count_eq_factorial]; rfl
+
+example : CombinatorialClass.labelProdCount singletonClass singletonClass 3 = 8 :=
+  singletonClass_labelProdCount_pow 3
+example : CombinatorialClass.labelProdCount singletonClass singletonClass 5 = 32 :=
+  singletonClass_labelProdCount_pow 5
