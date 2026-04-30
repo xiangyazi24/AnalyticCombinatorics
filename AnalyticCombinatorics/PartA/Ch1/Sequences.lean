@@ -115,7 +115,7 @@ lemma count_zero (B : CombinatorialClass) (h : B.count 0 = 0) :
 
 /-- For nonempty xs : List B.Obj decomposed b :: ys with size = n+1,
     the pair (B.size b, size ys) is on the antidiagonal of n+1. -/
-private lemma cons_on_antidiagonal {B : CombinatorialClass} (h : B.count 0 = 0)
+private lemma cons_on_antidiagonal {B : CombinatorialClass}
     (n : ℕ) (b : B.Obj) (ys : List B.Obj)
     (hbys : (b :: ys).foldr (fun b acc => B.size b + acc) 0 = n + 1) :
     (B.size b, ys.foldr (fun b acc => B.size b + acc) 0) ∈ Finset.antidiagonal (n + 1) := by
@@ -188,7 +188,7 @@ lemma count_succ (B : CombinatorialClass) (h : B.count 0 = 0) (n : ℕ) :
         refine ⟨y, ?_, rfl⟩
         apply Finset.mem_sigma.mpr
         refine ⟨?_, ?_⟩
-        · exact cons_on_antidiagonal h n b ys hsz
+        · exact cons_on_antidiagonal n b ys hsz
         · apply Finset.mem_product.mpr
           exact ⟨(mem_level_iff' B _ _).mpr rfl, (mem_level_iff' S _ _).mpr rfl⟩
   rw [show (seqClass B h).count (n + 1) = (S.level (n + 1)).card from rfl, ← hcard,
