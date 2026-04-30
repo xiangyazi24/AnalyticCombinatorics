@@ -134,3 +134,20 @@ theorem singletonClass_labelProdCount_eq (n : ℕ) :
       = coeff n (PowerSeries.exp ℚ * PowerSeries.exp ℚ) := by
   rw [CombinatorialClass.labelProdCount_div_factorial_eq_coeff_mul_egf]
   rw [singletonClass_egf_eq_exp]
+
+/-- The labelled product of singleton with itself counts to 2ⁿ at level n.
+    Combinatorial reading: a "2-coloured labelled set" of size n is one of 2ⁿ subsets. -/
+theorem singletonClass_labelProdCount_pow (n : ℕ) :
+    CombinatorialClass.labelProdCount singletonClass singletonClass n = 2 ^ n := by
+  rw [CombinatorialClass.labelProdCount]
+  simp only [singletonClass.count_eq_one, mul_one]
+  rw [Finset.Nat.sum_antidiagonal_eq_sum_range_succ (fun k _ => n.choose k) n,
+      Nat.sum_range_choose]
+
+/-- Closed form: `[zⁿ] (exp(z))² = 2ⁿ / n!`.
+    Derived combinatorially via the labelled-product / singleton identification. -/
+theorem coeff_exp_sq_eq_pow_div_factorial (n : ℕ) :
+    coeff n (PowerSeries.exp ℚ * PowerSeries.exp ℚ) = (2 ^ n : ℚ) / n.factorial := by
+  rw [← singletonClass_labelProdCount_eq, singletonClass_labelProdCount_pow]
+  push_cast
+  rfl
