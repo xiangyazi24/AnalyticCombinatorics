@@ -12,6 +12,7 @@
 -/
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Combinatorics.Enumerative.Catalan
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 
 open PowerSeries CombinatorialClass
@@ -174,5 +175,33 @@ theorem ogf_functional_equation :
     apply Finset.sum_congr rfl
     intro p _
     rw [coeff_ogf, coeff_ogf]
+
+/-- The number of binary trees with n internal nodes equals the n-th Catalan number
+    (Mathlib's `_root_.catalan`). Hence by `Nat.succ_mul_catalan_eq_centralBinom`,
+    (n+1) · catalan n = C(2n, n), the standard closed form. -/
+theorem catalan_eq_nat_catalan : ∀ n : ℕ, BinTree.catalan n = _root_.catalan n := by
+  intro n
+  induction n using Nat.strong_induction_on with
+  | _ n ih =>
+    rcases n with _ | m
+    · show asClass.count 0 = _root_.catalan 0
+      rw [count_zero, _root_.catalan_zero]
+    · show asClass.count (m + 1) = _root_.catalan (m + 1)
+      rw [count_succ m, _root_.catalan_succ']
+      apply Finset.sum_congr rfl
+      intro p hp
+      have hp_sum : p.1 + p.2 = m := Finset.mem_antidiagonal.mp hp
+      have hp1 : p.1 < m + 1 := by omega
+      have hp2 : p.2 < m + 1 := by omega
+      change asClass.count p.1 * asClass.count p.2 = _root_.catalan p.1 * _root_.catalan p.2
+      rw [show asClass.count p.1 = BinTree.catalan p.1 from rfl,
+          show asClass.count p.2 = BinTree.catalan p.2 from rfl,
+          ih p.1 hp1, ih p.2 hp2]
+
+/-- (n + 1) · (number of binary trees of size n) = C(2n, n).
+    Closed-form Catalan identity, derived via `Nat.succ_mul_catalan_eq_centralBinom`. -/
+theorem succ_mul_catalan_eq_centralBinom (n : ℕ) :
+    (n + 1) * BinTree.catalan n = n.centralBinom := by
+  rw [catalan_eq_nat_catalan, _root_.succ_mul_catalan_eq_centralBinom]
 
 end BinTree
