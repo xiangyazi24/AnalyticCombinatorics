@@ -176,6 +176,77 @@ theorem cartProd_ogf : (A.cartProd B).ogf = A.ogf * B.ogf := by
   rw [hbij, Finset.card_sigma]
   simp only [Finset.card_product]
 
+/-! ## Exponential generating function (EGF)
+
+The EGF of a combinatorial class is `A_hat(z) = Σ a_n z^n / n! ∈ ℚ[[z]]`.
+EGFs are the natural objects for Chapter II's labelled symbolic method,
+where the labelled product corresponds to ordinary multiplication of EGFs.
+-/
+
+/-- The exponential generating function of `A`, valued in ℚ[[z]]. -/
+noncomputable def egf : PowerSeries ℚ :=
+  fun s => (A.count (s ()) : ℚ) / (s () : ℕ).factorial
+
+/-- Coefficient extraction for the EGF. -/
+@[simp]
+theorem coeff_egf (n : ℕ) : coeff n A.egf = (A.count n : ℚ) / n.factorial := by
+  show (A.count ((Finsupp.single () n) ()) : ℚ) / _ = _
+  simp [Finsupp.single_eq_same]
+
+/-- The EGF of `Epsilon` is the constant power series 1. -/
+theorem Epsilon_egf : Epsilon.egf = 1 := by
+  ext n
+  rw [coeff_egf, coeff_one]
+  by_cases h : n = 0
+  · subst h
+    have : Epsilon.count 0 = 1 := by
+      show (Epsilon.level 0).card = 1
+      rw [Finset.card_eq_one]
+      refine ⟨(), ?_⟩
+      ext x
+      refine ⟨fun _ => Finset.mem_singleton_self _, fun _ => ?_⟩
+      change x ∈ (Epsilon.finite_level 0).toFinset
+      rw [(Epsilon.finite_level 0).mem_toFinset]; rfl
+    simp [this]
+  · have : Epsilon.count n = 0 := by
+      show (Epsilon.level n).card = 0
+      rw [Finset.card_eq_zero]
+      ext x
+      simp only [Finset.notMem_empty, iff_false]
+      intro hx
+      have hsz : Epsilon.size x = n :=
+        (Epsilon.finite_level n).mem_toFinset.mp hx
+      change (0 : ℕ) = n at hsz
+      exact h hsz.symm
+    simp [this, h]
+
+/-- The EGF of `Atom` is the power series `X` (only the n=1 coefficient is 1). -/
+theorem Atom_egf : Atom.egf = PowerSeries.X := by
+  ext n
+  rw [coeff_egf, coeff_X]
+  by_cases h : n = 1
+  · subst h
+    have : Atom.count 1 = 1 := by
+      show (Atom.level 1).card = 1
+      rw [Finset.card_eq_one]
+      refine ⟨(), ?_⟩
+      ext x
+      refine ⟨fun _ => Finset.mem_singleton_self _, fun _ => ?_⟩
+      change x ∈ (Atom.finite_level 1).toFinset
+      rw [(Atom.finite_level 1).mem_toFinset]; rfl
+    simp [this]
+  · have : Atom.count n = 0 := by
+      show (Atom.level n).card = 0
+      rw [Finset.card_eq_zero]
+      ext x
+      simp only [Finset.notMem_empty, iff_false]
+      intro hx
+      have hsz : Atom.size x = n :=
+        (Atom.finite_level n).mem_toFinset.mp hx
+      change (1 : ℕ) = n at hsz
+      exact h hsz.symm
+    simp [this, h]
+
 /-! ## Congruence at the OGF level
 
 Two combinatorial classes with the same counting sequence have the same OGF.
