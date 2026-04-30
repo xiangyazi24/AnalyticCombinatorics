@@ -120,3 +120,17 @@ theorem singletonClass_egf_eq_exp :
   ext n
   rw [CombinatorialClass.coeff_egf, singletonClass.count_eq_one, PowerSeries.coeff_exp]
   simp
+
+/-! ## Corollaries: connecting our examples through Mathlib's `exp`. -/
+
+/-- The disjoint union of two singleton classes has EGF `2 · exp(z)`. -/
+theorem singletonClass_disjSum_egf :
+    (singletonClass.disjSum singletonClass).egf = 2 * PowerSeries.exp ℚ := by
+  rw [CombinatorialClass.disjSum_egf, singletonClass_egf_eq_exp, two_mul]
+
+/-- The labelled product of singleton with itself, divided by n!, is exp · exp coefficient. -/
+theorem singletonClass_labelProdCount_eq (n : ℕ) :
+    (CombinatorialClass.labelProdCount singletonClass singletonClass n : ℚ) / n.factorial
+      = coeff n (PowerSeries.exp ℚ * PowerSeries.exp ℚ) := by
+  rw [CombinatorialClass.labelProdCount_div_factorial_eq_coeff_mul_egf]
+  rw [singletonClass_egf_eq_exp]
