@@ -11,6 +11,7 @@
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Sum
+import Mathlib.Data.Nat.Choose.Basic
 
 open PowerSeries
 
@@ -212,6 +213,12 @@ theorem cartProd_ogf : (A.cartProd B).ogf = A.ogf * B.ogf := by
   ext n
   simp only [coeff_ogf, coeff_mul, cartProd_count]
 
+/-! ## Labelled product counts -/
+
+/-- The count of the labelled product: ∑_{k+l=n} (n choose k) · A_k · B_l. -/
+noncomputable def labelProdCount (n : ℕ) : ℕ :=
+  ∑ p ∈ Finset.antidiagonal n, n.choose p.1 * (A.count p.1 * B.count p.2)
+
 /-! ## Exponential generating function (EGF)
 
 The EGF of a combinatorial class is `A_hat(z) = Σ a_n z^n / n! ∈ ℚ[[z]]`.
@@ -391,5 +398,18 @@ theorem atomOfSize_triple_cartProd_ogf (a b : ℕ) :
     (((atomOfSize a).cartProd (atomOfSize b)).cartProd Atom).ogf = PowerSeries.X ^ (a + b + 1) := by
   rw [cartProd_ogf, cartProd_ogf, atomOfSize_ogf, atomOfSize_ogf, Atom_ogf]
   ring
+
+/-- Note: `cartProd` is OGF-natural (cartProd_ogf gives mul) but its EGF is
+    NOT the product of EGFs in general -- that role belongs to `labelProd`.
+    Concretely: `cartProd_count A B n = ∑ p A.count p.1 · B.count p.2`
+    while `labelProdCount A B n = ∑ p (n choose p.1) · A.count p.1 · B.count p.2`.
+    They differ by the binomial coefficient. -/
+example (A B : CombinatorialClass) (n : ℕ) :
+    (A.cartProd B).count n = ∑ p ∈ Finset.antidiagonal n, A.count p.1 * B.count p.2 :=
+  cartProd_count A B n
+
+example (A B : CombinatorialClass) (n : ℕ) :
+    labelProdCount A B n = ∑ p ∈ Finset.antidiagonal n,
+      n.choose p.1 * (A.count p.1 * B.count p.2) := rfl
 
 end CombinatorialClass

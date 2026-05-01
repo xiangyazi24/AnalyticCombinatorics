@@ -39,10 +39,6 @@ namespace CombinatorialClass
 
 variable (A B : CombinatorialClass)
 
-/-- The count of the labelled product: ∑_{k+l=n} (n choose k) · A_k · B_l. -/
-noncomputable def labelProdCount (n : ℕ) : ℕ :=
-  ∑ p ∈ Finset.antidiagonal n, n.choose p.1 * (A.count p.1 * B.count p.2)
-
 /-- The EGF of the labelled product equals the product of the EGFs.
     Stated coefficient-wise: (labelProdCount n : ℚ) / n! = [zⁿ] (A.egf · B.egf). -/
 theorem labelProdCount_div_factorial_eq_coeff_mul_egf (n : ℕ) :

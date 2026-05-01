@@ -476,3 +476,38 @@ theorem labelSeq_posIntClass_egf_mul_two_sub_exp :
       2 - PowerSeries.exp ℚ by ring] at h
   rw [mul_comm]
   exact h
+
+/-! Sanity: labelled product of permutations and nonempty sets.
+    Its EGF is `permClass.egf * posIntClass.egf = (1 / (1 - X)) * (exp X - 1)`. -/
+
+theorem labelProdCount_permClass_posIntClass_eq_sum (n : ℕ) :
+    CombinatorialClass.labelProdCount permClass posIntClass n =
+      ∑ k ∈ Finset.range n, n.choose k * k.factorial := by
+  rw [CombinatorialClass.labelProdCount]
+  rw [Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk]
+  rw [Finset.sum_range_succ]
+  simp only [permClass_count_eq_factorial, Nat.sub_self, posIntClass.count_zero,
+    mul_zero, Nat.choose_self, add_zero]
+  apply Finset.sum_congr rfl
+  intro k hk
+  have hklt : k < n := Finset.mem_range.mp hk
+  rw [posIntClass.count_pos (by omega)]
+  simp
+
+theorem labelProdCount_permClass_posIntClass_div_factorial_eq_coeff_exp_sub_one (n : ℕ) :
+    (CombinatorialClass.labelProdCount permClass posIntClass n : ℚ) / n.factorial =
+      coeff n (permClass.egf * (PowerSeries.exp ℚ - 1)) := by
+  rw [CombinatorialClass.labelProdCount_div_factorial_eq_coeff_mul_egf,
+    posIntClass_egf_eq_exp_sub_one]
+
+example : CombinatorialClass.labelProdCount permClass posIntClass 0 = 0 := by
+  rw [labelProdCount_permClass_posIntClass_eq_sum]
+  simp
+
+example : CombinatorialClass.labelProdCount permClass posIntClass 1 = 1 := by
+  rw [labelProdCount_permClass_posIntClass_eq_sum]
+  norm_num [Nat.factorial]
+
+example : CombinatorialClass.labelProdCount permClass posIntClass 2 = 3 := by
+  rw [labelProdCount_permClass_posIntClass_eq_sum]
+  decide
