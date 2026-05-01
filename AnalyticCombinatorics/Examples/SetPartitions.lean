@@ -684,3 +684,14 @@ theorem stirlingSecond_sum_eq_bell (n : ℕ) :
 example (n : ℕ) :
     ∑ k ∈ Finset.range (n + 1), Nat.stirlingSecond n k = Nat.bell n := by
   exact stirlingSecond_sum_eq_bell n
+
+private lemma bell_eleven_sanity : Nat.bell 11 = 678570 := by
+  rw [show 11 = 10 + 1 by rfl, Nat.bell_succ']
+  norm_num [Finset.antidiagonal, Nat.choose, bell_three_sanity, bell_four_sanity,
+    bell_five_sanity, bell_six_sanity, bell_seven_sanity, bell_eight_sanity,
+    bell_nine_sanity, bell_ten_sanity]
+
+/-! Bell sequence sanity dump: 1,1,2,5,15,52,203,877,4140,21147,115975,678570. -/
+example : labelSetCount posIntClass 11 = (678570 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  norm_num [bell_eleven_sanity]
