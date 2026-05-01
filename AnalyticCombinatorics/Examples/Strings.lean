@@ -403,3 +403,13 @@ example : stringClass.count 7 = 128 := stringClass_count_eq_pow 7
 example : stringClass.count 8 = 256 := stringClass_count_eq_pow 8
 example : stringClass.count 9 = 512 := stringClass_count_eq_pow 9
 example : stringClass.count 10 = 1024 := stringClass_count_eq_pow 10
+
+/-- The stringClass.egf coefficient at 0 is 1. -/
+example : stringClass.egf.coeff 0 = 1 := by
+  rw [CombinatorialClass.coeff_egf, stringClass_count_eq_pow]
+  simp
+
+/-- The stringClass.ogf at coeff 0 is 1. -/
+example : stringClass.ogf.coeff 0 = 1 := by
+  rw [coeff_ogf, stringClass_count_eq_pow]
+  simp
