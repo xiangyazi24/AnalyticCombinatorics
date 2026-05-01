@@ -657,3 +657,30 @@ theorem stirlingFirst_sum_eq_factorial (n : ℕ) :
 example (n : ℕ) :
     ∑ k ∈ Finset.range (n + 1), Nat.stirlingFirst n k = n.factorial := by
   exact stirlingFirst_sum_eq_factorial n
+
+/-- Summing Stirling numbers of the second kind over the number of blocks gives
+the Bell number. -/
+theorem stirlingSecond_sum_eq_bell (n : ℕ) :
+    ∑ k ∈ Finset.range (n + 1), Nat.stirlingSecond n k = Nat.bell n := by
+  have h := labelSetCount_posIntClass_eq_bell n
+  rw [CombinatorialClass.labelSetCount] at h
+  have hsum :
+      (∑ k ∈ Finset.range (n + 1),
+          ((CombinatorialClass.labelPow posIntClass k).count n : ℚ) / k.factorial) =
+        ∑ k ∈ Finset.range (n + 1), (Nat.stirlingSecond n k : ℚ) := by
+    apply Finset.sum_congr rfl
+    intro k _
+    rw [labelPow_posIntClass_count_eq_factorial_mul_stirlingSecond]
+    rw [Nat.cast_mul]
+    field_simp [Nat.cast_ne_zero.mpr k.factorial_pos.ne']
+  rw [hsum] at h
+  have hcast :
+      ((∑ k ∈ Finset.range (n + 1), Nat.stirlingSecond n k : ℕ) : ℚ) =
+        (Nat.bell n : ℚ) := by
+    rw [Nat.cast_sum]
+    exact h
+  exact_mod_cast hcast
+
+example (n : ℕ) :
+    ∑ k ∈ Finset.range (n + 1), Nat.stirlingSecond n k = Nat.bell n := by
+  exact stirlingSecond_sum_eq_bell n
