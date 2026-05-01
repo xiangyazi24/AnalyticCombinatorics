@@ -229,6 +229,31 @@ private lemma compositionClass_jointCount_numParts_eq_one_of_unique
     subst hx
     exact ⟨hx₀, hnum₀⟩
 
+private lemma compositionClass_jointCount_numParts_eq_two_of_unique_pair
+    {n k : ℕ} (x₁ x₂ : compositionClass.Obj)
+    (hx₁ : x₁ ∈ compositionClass.level n)
+    (hx₂ : x₂ ∈ compositionClass.level n)
+    (hnum₁ : numParts x₁ = k)
+    (hnum₂ : numParts x₂ = k)
+    (hne : x₁ ≠ x₂)
+    (huniq : ∀ x : compositionClass.Obj,
+      x ∈ compositionClass.level n → numParts x = k → x = x₁ ∨ x = x₂) :
+    compositionClass.jointCount numParts n k = 2 := by
+  classical
+  unfold CombinatorialClass.jointCount
+  rw [Finset.card_eq_two]
+  refine ⟨x₁, x₂, hne, ?_⟩
+  ext x
+  rw [Finset.mem_filter]
+  simp only [Finset.mem_insert, Finset.mem_singleton]
+  constructor
+  · intro hx
+    exact huniq x hx.1 hx.2
+  · intro hx
+    rcases hx with rfl | rfl
+    · exact ⟨hx₁, hnum₁⟩
+    · exact ⟨hx₂, hnum₂⟩
+
 /-- Sanity at small n: count compositions of n with exactly k parts. -/
 example : compositionClass.jointCount numParts 0 0 = 1 := by
   apply compositionClass_jointCount_numParts_eq_one_of_unique ([] : compositionClass.Obj)
@@ -323,6 +348,110 @@ example : compositionClass.jointCount numParts 2 2 = 1 := by
                 simp
             | cons c xs =>
                 simp at hnum
+
+example : compositionClass.jointCount numParts 3 1 = 1 := by
+  apply compositionClass_jointCount_numParts_eq_one_of_unique
+    ([⟨3, by norm_num⟩] : compositionClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rfl
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => posIntClass.size b + acc) 0 = 3 := by
+      exact (CombinatorialClass.level_mem_iff (C := compositionClass) x).mp hx
+    change x.length = 1 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil =>
+            simp only [List.foldr_cons, List.foldr_nil] at hsize
+            obtain ⟨v, hv⟩ := a
+            change v + 0 = 3 at hsize
+            have hv3 : v = 3 := by omega
+            subst v
+            simp
+        | cons b xs =>
+            simp at hnum
+
+example : compositionClass.jointCount numParts 3 2 = 2 := by
+  apply compositionClass_jointCount_numParts_eq_two_of_unique_pair
+    ([⟨1, by norm_num⟩, ⟨2, by norm_num⟩] : compositionClass.Obj)
+    ([⟨2, by norm_num⟩, ⟨1, by norm_num⟩] : compositionClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rfl
+  · rfl
+  · intro h
+    injection h with hhead _
+    norm_num at hhead
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => posIntClass.size b + acc) 0 = 3 := by
+      exact (CombinatorialClass.level_mem_iff (C := compositionClass) x).mp hx
+    change x.length = 2 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil =>
+                simp only [List.foldr_cons, List.foldr_nil] at hsize
+                obtain ⟨av, hav⟩ := a
+                obtain ⟨bv, hbv⟩ := b
+                change av + (bv + 0) = 3 at hsize
+                have hav_cases : av = 1 ∨ av = 2 := by omega
+                rcases hav_cases with hav1 | hav2
+                · have hbv2 : bv = 2 := by omega
+                  subst av
+                  subst bv
+                  left
+                  simp
+                · have hbv1 : bv = 1 := by omega
+                  subst av
+                  subst bv
+                  right
+                  simp
+            | cons c xs =>
+                simp at hnum
+
+example : compositionClass.jointCount numParts 3 3 = 1 := by
+  apply compositionClass_jointCount_numParts_eq_one_of_unique
+    ([⟨1, by norm_num⟩, ⟨1, by norm_num⟩, ⟨1, by norm_num⟩] : compositionClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rfl
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => posIntClass.size b + acc) 0 = 3 := by
+      exact (CombinatorialClass.level_mem_iff (C := compositionClass) x).mp hx
+    change x.length = 3 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil => simp at hnum
+            | cons c xs =>
+                cases xs with
+                | nil =>
+                    simp only [List.foldr_cons, List.foldr_nil] at hsize
+                    obtain ⟨av, hav⟩ := a
+                    obtain ⟨bv, hbv⟩ := b
+                    obtain ⟨cv, hcv⟩ := c
+                    change av + (bv + (cv + 0)) = 3 at hsize
+                    have hav1 : av = 1 := by omega
+                    have hbv1 : bv = 1 := by omega
+                    have hcv1 : cv = 1 := by omega
+                    subst av
+                    subst bv
+                    subst cv
+                    simp
+                | cons d xs =>
+                    simp at hnum
 
 example : compositionClass.count 8 = 128 := compositionClass_count_succ 7
 example : compositionClass.count 10 = 512 := compositionClass_count_succ 9
