@@ -804,3 +804,9 @@ theorem bell_recurrence (n : ℕ) :
   simp only [Nat.add_sub_cancel]
   rw [Nat.sub_sub_self hk_le]
   rw [Nat.choose_symm hk_le]
+
+/-- Project-facing name for the classical recurrence of Stirling numbers of the second kind. -/
+theorem stirlingSecond_succ (n k : ℕ) :
+    Nat.stirlingSecond (n + 1) (k + 1) =
+      (k + 1) * Nat.stirlingSecond n (k + 1) + Nat.stirlingSecond n k := by
+  exact Nat.stirlingSecond_succ_succ n k
