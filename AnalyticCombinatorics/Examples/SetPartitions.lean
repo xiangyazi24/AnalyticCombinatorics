@@ -542,3 +542,8 @@ theorem bellSeries_derivative_eq_one_add_posIntClass_egf_mul :
     d⁄dX ℚ bellSeries = (1 + posIntClass.egf) * bellSeries := by
   rw [bellSeries_derivative, ← posIntClass_egf_add_one_eq_exp]
   ring
+
+example (n : ℕ) :
+    labelSetCount posIntClass n / (n.factorial : ℚ) =
+      (Nat.bell n : ℚ) / n.factorial := by
+  rw [labelSetCount_posIntClass_eq_bell]
