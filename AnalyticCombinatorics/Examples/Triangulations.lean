@@ -28,3 +28,11 @@ theorem succ_mul_triangulationClass_count_eq_centralBinom (n : ℕ) :
 theorem triangulationClass_count_eq_centralBinom_div (n : ℕ) :
     triangulationClass.count n = n.centralBinom / (n + 1) := by
   exact BinTree.catalan_eq_centralBinom_div n
+
+/-- The triangulation class OGF satisfies the same quadratic as BinTree. -/
+example :
+    PowerSeries.X * (ogfZ triangulationClass) ^ 2
+      - ogfZ triangulationClass + 1 = 0 := by
+  change PowerSeries.X * (ogfZ BinTree.asClass) ^ 2
+        - ogfZ BinTree.asClass + 1 = 0
+  exact BinTree.ogfZ_quadratic
