@@ -719,3 +719,35 @@ example : CombinatorialClass.labelCycCount posIntClass 6 = (1082 : ℚ) := by
 example : CombinatorialClass.labelCycCount posIntClass 7 = (9366 : ℚ) := by
   rw [labelCycCount_posIntClass_eq_cyclic_fubini]
   norm_num [Finset.sum_range_succ, Nat.factorial, Nat.factorial_succ, Nat.stirlingSecond]
+
+/-! Unsigned Stirling numbers of the first kind sanity dump. -/
+
+example : Nat.stirlingFirst 0 0 = 1 := by
+  rw [Nat.stirlingFirst_zero]
+
+example (n : ℕ) : Nat.stirlingFirst (n + 1) 0 = 0 := by
+  rw [Nat.stirlingFirst_succ_zero]
+
+example (n : ℕ) : Nat.stirlingFirst n n = 1 := by
+  rw [Nat.stirlingFirst_self]
+
+example : Nat.stirlingFirst 3 1 = 2 := by
+  decide
+
+example : Nat.stirlingFirst 4 2 = 11 := by
+  decide
+
+example : Nat.stirlingFirst 5 3 = 35 := by
+  decide
+
+example : ∑ k ∈ Finset.range 4, Nat.stirlingFirst 3 k = 6 := by
+  rw [stirlingFirst_sum_eq_factorial]
+  decide
+
+example : ∑ k ∈ Finset.range 5, Nat.stirlingFirst 4 k = 24 := by
+  rw [stirlingFirst_sum_eq_factorial]
+  decide
+
+example : ∑ k ∈ Finset.range 6, Nat.stirlingFirst 5 k = 120 := by
+  rw [stirlingFirst_sum_eq_factorial]
+  decide
