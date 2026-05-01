@@ -144,6 +144,11 @@ example : fibClass.count 4 = 5 := by rw [fibClass_count_eq_fib]; decide
 example : fibClass.count 5 = 8 := by rw [fibClass_count_eq_fib]; decide
 example : fibClass.count 6 = 13 := by rw [fibClass_count_eq_fib]; decide
 example : fibClass.count 7 = 21 := by rw [fibClass_count_eq_fib]; decide
+example : fibClass.count 8 = 34 := by rw [fibClass_count_eq_fib]; decide
+example : fibClass.count 9 = 55 := by rw [fibClass_count_eq_fib]; decide
+example : fibClass.count 10 = 89 := by rw [fibClass_count_eq_fib]; decide
+example : fibClass.count 11 = 144 := by rw [fibClass_count_eq_fib]; decide
+example : fibClass.count 12 = 233 := by rw [fibClass_count_eq_fib]; decide
 
 /-- Closed form for the OGF of compositions into parts of size 1 or 2:
     `1 / (1 - z - z^2)`. -/
