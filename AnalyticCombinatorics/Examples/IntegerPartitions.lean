@@ -77,8 +77,8 @@ theorem intPartitionClass_count_eq_card (n : ℕ) :
     · simp
 
 /-!
-Sanity checks: partition numbers p(n) for n = 0, ..., 10 are
-1, 1, 2, 3, 5, 7, 11, 15, 22, 30, 42.
+Sanity checks: partition numbers p(n) for n = 0, ..., 15 are
+1, 1, 2, 3, 5, 7, 11, 15, 22, 30, 42, 56, 77, 101, 135, 176.
 -/
 
 example : intPartitionClass.count 0 = 1 := by
@@ -122,6 +122,26 @@ example : intPartitionClass.count 9 = 30 := by
   native_decide
 
 example : intPartitionClass.count 10 = 42 := by
+  rw [intPartitionClass_count_eq_card]
+  native_decide
+
+example : intPartitionClass.count 11 = 56 := by
+  rw [intPartitionClass_count_eq_card]
+  native_decide
+
+example : intPartitionClass.count 12 = 77 := by
+  rw [intPartitionClass_count_eq_card]
+  native_decide
+
+example : intPartitionClass.count 13 = 101 := by
+  rw [intPartitionClass_count_eq_card]
+  native_decide
+
+example : intPartitionClass.count 14 = 135 := by
+  rw [intPartitionClass_count_eq_card]
+  native_decide
+
+example : intPartitionClass.count 15 = 176 := by
   rw [intPartitionClass_count_eq_card]
   native_decide
 

@@ -189,6 +189,21 @@ example : planeTreeClass.count 12 = 208012 := by
   rw [planeTreeClass_count]
   norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
 
+section
+set_option linter.style.nativeDecide false
+
+example : planeTreeClass.count 13 = 742900 := by
+  rw [planeTreeClass_count]
+  native_decide
+example : planeTreeClass.count 14 = 2674440 := by
+  rw [planeTreeClass_count]
+  native_decide
+example : planeTreeClass.count 15 = 9694845 := by
+  rw [planeTreeClass_count]
+  native_decide
+
+end
+
 example (n : ℕ) :
     PowerSeries.coeff n planeTreeClass.ogf = _root_.catalan n := by
   rw [coeff_ogf]
