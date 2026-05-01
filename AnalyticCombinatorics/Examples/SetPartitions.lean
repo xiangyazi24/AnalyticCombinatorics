@@ -391,3 +391,71 @@ example : (labelSeq posIntClass posIntClass.count_zero).count 5 = 541 := by
 example : (labelSeq posIntClass posIntClass.count_zero).count 6 = 4683 := by
   rw [labelSeq_posIntClass_count_eq_fubini]
   decide
+
+/-! Sanity: labelled cycles of nonempty sets are cyclically ordered set partitions.
+    The values are `0, 1, 2, 6, 26, 150, 1082, ...`; for positive `n` this is
+    OEIS A000629 with index shifted by one. -/
+
+theorem labelCycCount_posIntClass_eq_cyclic_fubini (n : ℕ) :
+    labelCycCount posIntClass n =
+      ∑ k ∈ Finset.range (n + 1), if k = 0 then 0 else
+        (((k - 1).factorial * Nat.stirlingSecond n k : ℕ) : ℚ) := by
+  rw [CombinatorialClass.labelCycCount]
+  apply Finset.sum_congr rfl
+  intro k _
+  by_cases hk : k = 0
+  · simp [hk]
+  · simp only [if_neg hk]
+    rw [labelPow_posIntClass_count_eq_factorial_mul_stirlingSecond]
+    cases k with
+    | zero => contradiction
+    | succ k =>
+        rw [Nat.factorial_succ, Nat.cast_mul, Nat.cast_mul]
+        simp only [add_tsub_cancel_right]
+        field_simp [show (k : ℚ) + 1 ≠ 0 by positivity]
+        rw [Nat.cast_mul]
+
+example : labelCycCount posIntClass 0 = 0 := by
+  rw [labelCycCount_posIntClass_eq_cyclic_fubini]
+  norm_num [Finset.sum_range_succ, Nat.factorial, Nat.stirlingSecond]
+
+example : labelCycCount posIntClass 1 = 1 := by
+  rw [labelCycCount_posIntClass_eq_cyclic_fubini]
+  norm_num [Finset.sum_range_succ, Nat.factorial, Nat.stirlingSecond]
+
+example : labelCycCount posIntClass 2 = 2 := by
+  rw [labelCycCount_posIntClass_eq_cyclic_fubini]
+  norm_num [Finset.sum_range_succ, Nat.factorial, Nat.stirlingSecond]
+
+example : labelCycCount posIntClass 3 = 6 := by
+  rw [labelCycCount_posIntClass_eq_cyclic_fubini]
+  norm_num [Finset.sum_range_succ, Nat.factorial, Nat.stirlingSecond]
+
+example : labelCycCount posIntClass 4 = 26 := by
+  rw [labelCycCount_posIntClass_eq_cyclic_fubini]
+  norm_num [Finset.sum_range_succ, Nat.factorial, Nat.factorial_succ, Nat.stirlingSecond]
+
+example : labelCycCount posIntClass 5 = 150 := by
+  rw [labelCycCount_posIntClass_eq_cyclic_fubini]
+  norm_num [Finset.sum_range_succ, Nat.factorial, Nat.factorial_succ, Nat.stirlingSecond]
+
+example : labelCycCount posIntClass 6 = 1082 := by
+  rw [labelCycCount_posIntClass_eq_cyclic_fubini]
+  norm_num [Finset.sum_range_succ, Nat.factorial, Nat.factorial_succ, Nat.stirlingSecond]
+
+/-! Sanity: ordered set partitions count = k! · S(n,k).
+    S(2,1) = 1, S(2,2) = 1.
+    S(3,1) = 1, S(3,2) = 3, S(3,3) = 1.
+    S(4,2) = 7, S(4,3) = 6. -/
+
+example : (CombinatorialClass.labelPow posIntClass 1).count 2 = 1 := by
+  rw [labelPow_posIntClass_count_eq_factorial_mul_stirlingSecond]
+  decide
+
+example : (CombinatorialClass.labelPow posIntClass 2).count 3 = 6 := by
+  rw [labelPow_posIntClass_count_eq_factorial_mul_stirlingSecond]
+  decide
+
+example : (CombinatorialClass.labelPow posIntClass 3).count 4 = 36 := by
+  rw [labelPow_posIntClass_count_eq_factorial_mul_stirlingSecond]
+  decide
