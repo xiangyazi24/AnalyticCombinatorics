@@ -359,12 +359,48 @@ private lemma count_eight : MotzTree.asClass.count 8 = 323 := by
   norm_num [Finset.antidiagonal, count_zero, count_one, count_two, count_three, count_four,
     count_five, count_six, count_seven]
 
+private lemma count_nine : MotzTree.asClass.count 9 = 835 := by
+  rw [show 9 = 7 + 2 by norm_num, count_succ_succ 7]
+  norm_num [Finset.antidiagonal, count_zero, count_one, count_two, count_three, count_four,
+    count_five, count_six, count_seven, count_eight]
+
+private lemma count_ten : MotzTree.asClass.count 10 = 2188 := by
+  rw [show 10 = 8 + 2 by norm_num, count_succ_succ 8]
+  norm_num [Finset.antidiagonal, count_zero, count_one, count_two, count_three, count_four,
+    count_five, count_six, count_seven, count_eight, count_nine]
+
+private lemma count_eleven : MotzTree.asClass.count 11 = 5798 := by
+  rw [show 11 = 9 + 2 by norm_num, count_succ_succ 9]
+  norm_num [Finset.antidiagonal, count_zero, count_one, count_two, count_three, count_four,
+    count_five, count_six, count_seven, count_eight, count_nine, count_ten]
+
+private lemma count_twelve : MotzTree.asClass.count 12 = 15511 := by
+  rw [show 12 = 10 + 2 by norm_num, count_succ_succ 10]
+  norm_num [Finset.antidiagonal, count_zero, count_one, count_two, count_three, count_four,
+    count_five, count_six, count_seven, count_eight, count_nine, count_ten, count_eleven]
+
 example : decide (MotzTree.asClass.count 7 = 127) = true := by
   rw [count_seven]
   decide
 
 example : decide (MotzTree.asClass.count 8 = 323) = true := by
   rw [count_eight]
+  decide
+
+example : decide (MotzTree.asClass.count 9 = 835) = true := by
+  rw [count_nine]
+  decide
+
+example : decide (MotzTree.asClass.count 10 = 2188) = true := by
+  rw [count_ten]
+  decide
+
+example : decide (MotzTree.asClass.count 11 = 5798) = true := by
+  rw [count_eleven]
+  decide
+
+example : decide (MotzTree.asClass.count 12 = 15511) = true := by
+  rw [count_twelve]
   decide
 
 example : decide (MotzTree.asClass.count 7 + MotzTree.asClass.count 6 = 178) = true := by
