@@ -392,6 +392,23 @@ example : (labelSeq posIntClass posIntClass.count_zero).count 6 = 4683 := by
   rw [labelSeq_posIntClass_count_eq_fubini]
   decide
 
+/-! Sanity: ordered set partitions count = k! · S(n,k).
+    S(2,1) = 1, S(2,2) = 1.
+    S(3,1) = 1, S(3,2) = 3, S(3,3) = 1.
+    S(4,2) = 7, S(4,3) = 6. -/
+
+example : (CombinatorialClass.labelPow posIntClass 1).count 2 = 1 := by
+  rw [labelPow_posIntClass_count_eq_factorial_mul_stirlingSecond]
+  decide
+
+example : (CombinatorialClass.labelPow posIntClass 2).count 3 = 6 := by
+  rw [labelPow_posIntClass_count_eq_factorial_mul_stirlingSecond]
+  decide
+
+example : (CombinatorialClass.labelPow posIntClass 3).count 4 = 36 := by
+  rw [labelPow_posIntClass_count_eq_factorial_mul_stirlingSecond]
+  decide
+
 /-! Sanity: labelled cycles of nonempty sets are cyclically ordered set partitions.
     The values are `0, 1, 2, 6, 26, 150, 1082, ...`; for positive `n` this is
     OEIS A000629 with index shifted by one. -/
@@ -443,19 +460,19 @@ example : labelCycCount posIntClass 6 = 1082 := by
   rw [labelCycCount_posIntClass_eq_cyclic_fubini]
   norm_num [Finset.sum_range_succ, Nat.factorial, Nat.factorial_succ, Nat.stirlingSecond]
 
-/-! Sanity: ordered set partitions count = k! · S(n,k).
-    S(2,1) = 1, S(2,2) = 1.
-    S(3,1) = 1, S(3,2) = 3, S(3,3) = 1.
-    S(4,2) = 7, S(4,3) = 6. -/
+/-- `posIntClass.egf = exp(z) - 1`. -/
+theorem posIntClass_egf_eq_exp_sub_one :
+    posIntClass.egf = PowerSeries.exp ℚ - 1 := by
+  rw [← posIntClass_egf_add_one_eq_exp]
+  ring
 
-example : (CombinatorialClass.labelPow posIntClass 1).count 2 = 1 := by
-  rw [labelPow_posIntClass_count_eq_factorial_mul_stirlingSecond]
-  decide
-
-example : (CombinatorialClass.labelPow posIntClass 2).count 3 = 6 := by
-  rw [labelPow_posIntClass_count_eq_factorial_mul_stirlingSecond]
-  decide
-
-example : (CombinatorialClass.labelPow posIntClass 3).count 4 = 36 := by
-  rw [labelPow_posIntClass_count_eq_factorial_mul_stirlingSecond]
-  decide
+/-- The Fubini EGF satisfies `(2 - exp(z)) · F = 1`. -/
+theorem labelSeq_posIntClass_egf_mul_two_sub_exp :
+    (CombinatorialClass.labelSeq posIntClass posIntClass.count_zero).egf
+      * (2 - PowerSeries.exp ℚ) = 1 := by
+  have h := CombinatorialClass.labelSeq_egf_mul_one_sub_egf posIntClass posIntClass.count_zero
+  rw [posIntClass_egf_eq_exp_sub_one] at h
+  rw [show (1 - (PowerSeries.exp ℚ - 1) : PowerSeries ℚ) =
+      2 - PowerSeries.exp ℚ by ring] at h
+  rw [mul_comm]
+  exact h

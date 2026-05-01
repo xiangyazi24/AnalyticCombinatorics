@@ -681,3 +681,26 @@ example : PowerSeries.constantCoeff permClass.egf = 1 := by
   rw [← PowerSeries.coeff_zero_eq_constantCoeff_apply, permClass_egf_coeff]
 
 end CombinatorialClass
+
+namespace CombinatorialClass
+
+/-- The labelled SEQ of unit atoms has the same count as permutations: count n = n!. -/
+theorem labelSeq_Atom_count (n : ℕ) :
+    (CombinatorialClass.labelSeq Atom Atom_count_zero).count n = n.factorial := by
+  rw [CombinatorialClass.labelSeq.count_eq]
+  rw [Finset.sum_eq_single n]
+  · simp [labelPow_Atom_count]
+  · intro k _ hk
+    rw [labelPow_Atom_count]
+    rw [if_neg (Ne.symm hk)]
+  · intro h
+    exfalso
+    apply h
+    simp
+
+/-- Therefore labelSeq Atom and permClass have the same count function. -/
+example (n : ℕ) :
+    (CombinatorialClass.labelSeq Atom Atom_count_zero).count n = permClass.count n := by
+  rw [labelSeq_Atom_count, permClass_count_eq_factorial]
+
+end CombinatorialClass
