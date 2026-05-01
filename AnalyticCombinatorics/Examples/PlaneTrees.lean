@@ -201,6 +201,15 @@ example : planeTreeClass.count 14 = 2674440 := by
 example : planeTreeClass.count 15 = 9694845 := by
   rw [planeTreeClass_count]
   native_decide
+example : planeTreeClass.count 16 = 35357670 := by
+  rw [planeTreeClass_count]
+  native_decide
+example : planeTreeClass.count 17 = 129644790 := by
+  rw [planeTreeClass_count]
+  native_decide
+example : planeTreeClass.count 18 = 477638700 := by
+  rw [planeTreeClass_count]
+  native_decide
 
 end
 

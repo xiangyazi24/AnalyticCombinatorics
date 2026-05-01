@@ -177,6 +177,8 @@ example : largeSchroderNumber 10 = 1037718 := by decide
 example : largeSchroderNumber 11 = 5293446 := by decide
 example : largeSchroderNumber 12 = 27297738 := by decide
 example : largeSchroderNumber 13 = 142078746 := by decide
+example : largeSchroderNumber 14 = 745387038 := by decide
+example : largeSchroderNumber 15 = 3937603038 := by decide
 
 example (n : ℕ) :
     SchroderTree.asClass.ogf.coeff n = SchroderTree.asClass.count n := by

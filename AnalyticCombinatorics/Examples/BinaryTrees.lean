@@ -406,3 +406,23 @@ example : BinTree.asClass.count 14 = 2674440 := by
   rw [show BinTree.asClass.count 14 = BinTree.catalan 14 from rfl,
       BinTree.catalan_eq_nat_catalan]
   norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
+
+example : BinTree.asClass.count 15 = 9694845 := by
+  rw [show BinTree.asClass.count 15 = BinTree.catalan 15 from rfl,
+      BinTree.catalan_eq_nat_catalan]
+  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
+
+example : BinTree.asClass.count 16 = 35357670 := by
+  rw [show BinTree.asClass.count 16 = BinTree.catalan 16 from rfl,
+      BinTree.catalan_eq_nat_catalan]
+  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
+
+example : BinTree.asClass.count 17 = 129644790 := by
+  rw [show BinTree.asClass.count 17 = BinTree.catalan 17 from rfl,
+      BinTree.catalan_eq_nat_catalan]
+  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
+
+example : BinTree.asClass.count 18 = 477638700 := by
+  rw [show BinTree.asClass.count 18 = BinTree.catalan 18 from rfl,
+      BinTree.catalan_eq_nat_catalan]
+  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
