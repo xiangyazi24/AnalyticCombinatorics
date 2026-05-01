@@ -1,5 +1,5 @@
 import Mathlib.RingTheory.PowerSeries.Basic
-import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
+import AnalyticCombinatorics.PartA.Ch1.Sequences
 
 open PowerSeries CombinatorialClass
 
@@ -400,5 +400,15 @@ theorem motzClass_count_recurrence (n : ℕ) :
   rw [count_succ_succ,
     Finset.Nat.sum_antidiagonal_eq_sum_range_succ
       (fun k l => asClass.count k * asClass.count l) n]
+
+/-- The Motzkin-tree OGF over `ℤ[[z]]` satisfies `M = 1 + z M + z² M²`. -/
+theorem motzClass_ogfZ_eq :
+    ogfZ motzClass = 1 + PowerSeries.X * ogfZ motzClass
+                       + PowerSeries.X ^ 2 * (ogfZ motzClass) ^ 2 := by
+  change ogfZ asClass = 1 + PowerSeries.X * ogfZ asClass
+      + PowerSeries.X ^ 2 * (ogfZ asClass) ^ 2
+  unfold ogfZ
+  have h := congrArg (PowerSeries.map (algebraMap ℕ ℤ)) ogf_functional_equation
+  simpa [PowerSeries.map_X, pow_two, mul_assoc] using h
 
 end MotzTree
