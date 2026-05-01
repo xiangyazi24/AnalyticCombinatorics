@@ -493,3 +493,29 @@ example : compositionGe2Class.count 4 = 2 := compositionGe2Class_count_succ_succ
 example : compositionGe2Class.count 5 = 3 := compositionGe2Class_count_succ_succ 3
 example : compositionGe2Class.count 6 = 5 := compositionGe2Class_count_succ_succ 4
 example : compositionGe2Class.count 7 = 8 := compositionGe2Class_count_succ_succ 5
+
+/-! Basic identities for the sequence construction. -/
+
+/-- count 0 = 1 (only empty composition has total 0). -/
+example : compositionGe2Class.count 0 = 1 := by
+  change (seqClass posIntGe2Class posIntGe2Class.count_zero).count 0 = 1
+  rw [seqClass.count_zero]
+
+/-- count 1 = 0 (no part of size 1, so no composition of total 1). -/
+example : compositionGe2Class.count 1 = 0 := by
+  change (seqClass posIntGe2Class posIntGe2Class.count_zero).count (0 + 1) = 0
+  rw [seqClass.count_succ]
+  rw [Finset.sum_eq_zero]
+  intro p hp
+  have hp_sum : p.1 + p.2 = 1 := Finset.mem_antidiagonal.mp hp
+  rcases p with ⟨k, m⟩
+  simp only at hp_sum
+  cases k with
+  | zero =>
+      rw [posIntGe2Class.count_zero, zero_mul]
+  | succ k =>
+      cases k with
+      | zero =>
+          rw [posIntGe2Class.count_one, zero_mul]
+      | succ k =>
+          omega
