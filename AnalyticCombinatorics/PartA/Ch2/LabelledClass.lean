@@ -668,4 +668,16 @@ theorem labelProdCount_comm (A B : CombinatorialClass.{0}) (n : ℕ) :
   field_simp [Nat.cast_ne_zero.mpr n.factorial_pos.ne'] at h'
   exact h'
 
+/-- Labelled product of `permClass` and `Atom`: EGF `X / (1 - X)`. -/
+theorem permClass_labelProd_Atom_egf :
+    (permClass.labelProd Atom).egf * (1 - PowerSeries.X) = PowerSeries.X := by
+  rw [labelProd_egf, Atom_egf]
+  rw [show permClass.egf * PowerSeries.X * (1 - PowerSeries.X)
+      = PowerSeries.X * (permClass.egf * (1 - PowerSeries.X)) by ring,
+    permClass_egf_mul_one_sub_X, mul_one]
+
+/-- The EGF of `permClass` has constant term `1`. -/
+example : PowerSeries.constantCoeff permClass.egf = 1 := by
+  rw [← PowerSeries.coeff_zero_eq_constantCoeff_apply, permClass_egf_coeff]
+
 end CombinatorialClass
