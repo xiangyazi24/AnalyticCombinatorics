@@ -6,9 +6,12 @@
   are counted by F_{n+2}.
 -/
 import Mathlib.Data.Fintype.Vector
+import Mathlib.Data.Nat.Fib.Basic
+import Mathlib.Data.Vector.Basic
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 
 open CombinatorialClass
+open List.Vector
 
 /-- No two adjacent entries of a Boolean list are both `true`. -/
 def noTwoOnes : List Bool → Prop
@@ -81,7 +84,105 @@ theorem count_eq_card (n : ℕ) :
 
 end noConsecOnesClass
 
--- TODO: prove `noConsecOnesClass.count n = Nat.fib (n + 2)`.
+private lemma noTwoOnes_tail_list {l : List Bool} (h : noTwoOnes l) :
+    noTwoOnes l.tail := by
+  cases l with
+  | nil => trivial
+  | cons a t =>
+      cases t with
+      | nil => trivial
+      | cons b rest => exact h.2
+
+private lemma noTwoOnes_vector_tail {n : ℕ} (v : List.Vector Bool (n + 1))
+    (h : noTwoOnes v.val) : noTwoOnes v.tail.val := by
+  simpa [List.Vector.tail_val] using noTwoOnes_tail_list h
+
+private lemma noTwoOnes_false_cons {l : List Bool} (h : noTwoOnes l) :
+    noTwoOnes (false :: l) := by
+  cases l with
+  | nil => trivial
+  | cons b rest =>
+      simp [noTwoOnes, h]
+
+private lemma noTwoOnes_true_false_cons {l : List Bool} (h : noTwoOnes l) :
+    noTwoOnes (true :: false :: l) := by
+  exact ⟨by simp, noTwoOnes_false_cons h⟩
+
+/-- Split a valid word of length `n + 2` by its first bit. -/
+private def noConsecOnesWord_splitEquiv (n : ℕ) :
+    NoConsecOnesWord (n + 2) ≃ NoConsecOnesWord (n + 1) ⊕ NoConsecOnesWord n where
+  toFun w :=
+    if h : w.1.head = false then
+      Sum.inl ⟨w.1.tail, noTwoOnes_vector_tail w.1 w.2⟩
+    else
+      Sum.inr ⟨w.1.tail.tail,
+        noTwoOnes_vector_tail w.1.tail (noTwoOnes_vector_tail w.1 w.2)⟩
+  invFun
+    | Sum.inl w =>
+        ⟨false ::ᵥ w.1, by
+          simpa [List.Vector.cons_val] using noTwoOnes_false_cons w.2⟩
+    | Sum.inr w =>
+        ⟨true ::ᵥ false ::ᵥ w.1, by
+          simpa [List.Vector.cons_val] using noTwoOnes_true_false_cons w.2⟩
+  left_inv := by
+    intro w
+    cases w with
+    | mk v hv =>
+        obtain ⟨a, t, rfl⟩ := List.Vector.exists_eq_cons v
+        obtain ⟨b, r, rfl⟩ := List.Vector.exists_eq_cons t
+        cases a <;> cases b <;> simp [noTwoOnes] at hv ⊢
+  right_inv := by
+    intro w
+    cases w with
+    | inl w =>
+        cases w with
+        | mk val h =>
+            simp
+    | inr w =>
+        cases w with
+        | mk val h =>
+            simp
+
+private lemma noConsecOnesClass_count_zero :
+    noConsecOnesClass.count 0 = 1 := by
+  rw [noConsecOnesClass.count_eq_card]
+  decide
+
+private lemma noConsecOnesClass_count_one :
+    noConsecOnesClass.count 1 = 2 := by
+  rw [noConsecOnesClass.count_eq_card]
+  decide
+
+private lemma noConsecOnesClass_count_succ_succ (n : ℕ) :
+    noConsecOnesClass.count (n + 2) =
+      noConsecOnesClass.count (n + 1) + noConsecOnesClass.count n := by
+  rw [noConsecOnesClass.count_eq_card, noConsecOnesClass.count_eq_card,
+    noConsecOnesClass.count_eq_card]
+  calc
+    Fintype.card (NoConsecOnesWord (n + 2))
+        = Fintype.card (NoConsecOnesWord (n + 1) ⊕ NoConsecOnesWord n) := by
+          exact Fintype.card_congr (noConsecOnesWord_splitEquiv n)
+    _ = Fintype.card (NoConsecOnesWord (n + 1)) +
+        Fintype.card (NoConsecOnesWord n) := by
+          rw [Fintype.card_sum]
+
+/-- Binary strings of length `n` with no two consecutive ones are counted by `fib (n + 2)`. -/
+theorem noConsecOnesClass_count_eq_fib (n : ℕ) :
+    noConsecOnesClass.count n = Nat.fib (n + 2) := by
+  induction n using Nat.twoStepInduction with
+  | zero =>
+      rw [noConsecOnesClass_count_zero, Nat.fib_two]
+  | one =>
+      rw [noConsecOnesClass_count_one]
+      decide
+  | more n ih0 ih1 =>
+      rw [noConsecOnesClass_count_succ_succ, ih0, ih1]
+      rw [show n + 1 + 2 = (n + 1) + 2 by omega]
+      rw [show n + 2 + 2 = (n + 2) + 2 by omega]
+      rw [show (n + 1) + 2 = (n + 2) + 1 by omega]
+      rw [show Nat.fib ((n + 2) + 1) + Nat.fib (n + 2) =
+        Nat.fib (n + 2) + Nat.fib ((n + 2) + 1) by ac_rfl]
+      exact (Nat.fib_add_two (n := n + 2)).symm
 
 /-! Sanity checks: 1, 2, 3, 5, 8, 13, 21 for n = 0..6. -/
 example : noConsecOnesClass.count 0 = 1 := by
