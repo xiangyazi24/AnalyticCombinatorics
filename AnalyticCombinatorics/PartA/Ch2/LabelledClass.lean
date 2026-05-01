@@ -839,4 +839,12 @@ example : (CombinatorialClass.labelPow permClass 2).count 2 = 6 := by
   rw [labelPow_permClass_count]
   decide
 
+example (k n : ℕ) :
+    coeff n (permClass.egf ^ k) = (Nat.multichoose k n : ℚ) := by
+  rw [← labelPow_egf]
+  rw [coeff_egf]
+  rw [labelPow_permClass_count_multichoose]
+  push_cast
+  field_simp
+
 end CombinatorialClass
