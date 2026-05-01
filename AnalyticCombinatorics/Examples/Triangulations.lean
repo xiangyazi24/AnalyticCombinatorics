@@ -1,3 +1,4 @@
+import Mathlib.Data.Nat.Choose.Central
 import AnalyticCombinatorics.Examples.BinaryTrees
 
 /-- A triangulation of a convex (n+2)-gon is the same data as a binary tree
@@ -17,3 +18,13 @@ example : triangulationClass.count 3 = 5 := by rw [triangulationClass_count, cat
 example : triangulationClass.count 4 = 14 := by
   rw [triangulationClass_count]
   norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
+
+/-- (n+1) · #triangulations of (n+2)-gon = C(2n, n) (central binomial). -/
+theorem succ_mul_triangulationClass_count_eq_centralBinom (n : ℕ) :
+    (n + 1) * triangulationClass.count n = n.centralBinom := by
+  exact BinTree.succ_mul_catalan_eq_centralBinom n
+
+/-- Closed form: #triangulations of (n+2)-gon = C(2n,n) / (n+1). -/
+theorem triangulationClass_count_eq_centralBinom_div (n : ℕ) :
+    triangulationClass.count n = n.centralBinom / (n + 1) := by
+  exact BinTree.catalan_eq_centralBinom_div n
