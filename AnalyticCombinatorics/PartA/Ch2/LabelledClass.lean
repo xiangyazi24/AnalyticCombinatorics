@@ -568,3 +568,29 @@ theorem labelSetCount_Atom (n : ℕ) :
     exact hn (Finset.mem_range.mpr (Nat.lt_succ_self n))
 
 end CombinatorialClass
+
+namespace CombinatorialClass
+
+/-- Labelled CYC coefficient (rational): the number of labelled cycles
+    of B-objects of total size n, where each k-cycle is counted with
+    weight 1/k (since cyclic rotations of a k-tuple represent the same cycle). -/
+noncomputable def labelCycCount (B : CombinatorialClass) (n : ℕ) : ℚ :=
+  ∑ k ∈ Finset.range (n + 1), if k = 0 then 0 else
+    ((labelPow B k).count n : ℚ) / (k : ℚ)
+
+/-- The labelled CYC count divided by n! equals the partial-log coefficient. -/
+theorem labelCycCount_div_factorial_eq_partial_log_coeff
+    (B : CombinatorialClass) (n : ℕ) :
+    labelCycCount B n / n.factorial =
+      ∑ k ∈ Finset.range (n + 1), if k = 0 then 0 else
+        coeff n ((B.egf : PowerSeries ℚ) ^ k) / (k : ℚ) := by
+  rw [labelCycCount, div_eq_mul_inv, Finset.sum_mul]
+  apply Finset.sum_congr rfl
+  intro k _
+  by_cases hk : k = 0
+  · simp [hk]
+  · simp only [if_neg hk]
+    rw [← labelPow_count_div_factorial_eq_coeff_pow B k n]
+    field_simp [Nat.cast_ne_zero.mpr n.factorial_pos.ne', Nat.cast_ne_zero.mpr hk]
+
+end CombinatorialClass
