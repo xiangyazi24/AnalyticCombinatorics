@@ -103,3 +103,40 @@ example (n : ℕ) (hn : 1 ≤ n) :
   rw [Nat.factorial_succ]
   push_cast
   field_simp
+
+/-- The EGF coefficient of labelled Atom-cycles at size zero is zero. -/
+theorem labelCycCount_Atom_egf_coeff_zero :
+    PowerSeries.coeff 0
+        (PowerSeries.mk fun n => (labelCycCount Atom n : ℚ) / n.factorial) = 0 := by
+  simp [CombinatorialClass.labelCycCount]
+
+/-- The EGF coefficient of labelled Atom-cycles at every positive size is `1 / n`. -/
+theorem labelCycCount_Atom_egf_coeff_pos (n : ℕ) (hn : 1 ≤ n) :
+    PowerSeries.coeff n
+        (PowerSeries.mk fun n => (labelCycCount Atom n : ℚ) / n.factorial) =
+      1 / (n : ℚ) := by
+  rw [PowerSeries.coeff_mk]
+  obtain ⟨m, rfl⟩ : ∃ m, n = m + 1 := ⟨n - 1, by omega⟩
+  rw [labelCycCount_Atom_succ]
+  rw [Nat.factorial_succ]
+  push_cast
+  field_simp
+
+/-- Coefficient form of the EGF for labelled Atom-cycles.  This is the formal
+    series whose analytic notation is `∑_{n ≥ 1} X^n / n`. -/
+theorem labelCycCount_Atom_egf_coeff (n : ℕ) :
+    PowerSeries.coeff n
+        (PowerSeries.mk fun n => (labelCycCount Atom n : ℚ) / n.factorial) =
+      if n = 0 then 0 else 1 / (n : ℚ) := by
+  by_cases hn : n = 0
+  · simpa [hn] using labelCycCount_Atom_egf_coeff_zero
+  · simp [hn, labelCycCount_Atom_egf_coeff_pos n (Nat.pos_iff_ne_zero.mpr hn)]
+
+/-- The labelled Atom-cycle EGF as an explicit formal power series.  Mathlib in
+    this checkout does not provide `PowerSeries.log`, so the logarithmic
+    identification `-log (1 - X)` is left as an API-level TODO. -/
+theorem labelCycCount_Atom_egf_coeffs :
+    (PowerSeries.mk fun n => (labelCycCount Atom n : ℚ) / n.factorial) =
+      PowerSeries.mk fun n => if n = 0 then 0 else 1 / (n : ℚ) := by
+  ext n
+  rw [labelCycCount_Atom_egf_coeff, PowerSeries.coeff_mk]
