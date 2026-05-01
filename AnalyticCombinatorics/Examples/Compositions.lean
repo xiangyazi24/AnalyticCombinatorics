@@ -453,6 +453,158 @@ example : compositionClass.jointCount numParts 3 3 = 1 := by
                 | cons d xs =>
                     simp at hnum
 
+/-! ## Parameter: maximum part -/
+
+/-- Maximum part of a composition, with value `0` for the empty composition. -/
+def compMaxPart : Parameter compositionClass := fun xs =>
+  (xs.map fun x => x.1).foldr max 0
+
+private instance : DecidableEq posIntClass.Obj := by
+  unfold posIntClass
+  infer_instance
+
+private instance : DecidableEq compositionClass.Obj := by
+  unfold compositionClass seqClass
+  infer_instance
+
+private abbrev compPart1 : posIntClass.Obj := ⟨1, by decide⟩
+private abbrev compPart2 : posIntClass.Obj := ⟨2, by decide⟩
+private abbrev compPart3 : posIntClass.Obj := ⟨3, by decide⟩
+private abbrev compPart4 : posIntClass.Obj := ⟨4, by decide⟩
+
+private def compLevel0 : Finset compositionClass.Obj :=
+  ([[]] : List compositionClass.Obj).toFinset
+
+private def compLevel1 : Finset compositionClass.Obj :=
+  ([[compPart1]] : List compositionClass.Obj).toFinset
+
+private def compLevel2 : Finset compositionClass.Obj :=
+  ([[compPart2], [compPart1, compPart1]] : List compositionClass.Obj).toFinset
+
+private def compLevel3 : Finset compositionClass.Obj :=
+  ([[compPart3], [compPart1, compPart2], [compPart2, compPart1],
+    [compPart1, compPart1, compPart1]] : List compositionClass.Obj).toFinset
+
+private def compLevel4 : Finset compositionClass.Obj :=
+  ([[compPart4], [compPart1, compPart3], [compPart3, compPart1],
+    [compPart2, compPart2], [compPart1, compPart1, compPart2],
+    [compPart1, compPart2, compPart1], [compPart2, compPart1, compPart1],
+    [compPart1, compPart1, compPart1, compPart1]] : List compositionClass.Obj).toFinset
+
+private lemma compositionClass_level_eq_of_subset_card {n : ℕ} {s : Finset compositionClass.Obj}
+    (hsubset : s ⊆ compositionClass.level n)
+    (hcard : (compositionClass.level n).card ≤ s.card) :
+    compositionClass.level n = s := by
+  symm
+  exact Finset.eq_of_subset_of_card_le hsubset hcard
+
+private lemma compLevel0_subset_level : compLevel0 ⊆ compositionClass.level 0 := by
+  intro x hx
+  rw [CombinatorialClass.level_mem_iff]
+  simp only [compLevel0, List.mem_toFinset, List.mem_cons, List.not_mem_nil, or_false] at hx
+  rcases hx with rfl
+  rfl
+
+private lemma compLevel1_subset_level : compLevel1 ⊆ compositionClass.level 1 := by
+  intro x hx
+  rw [CombinatorialClass.level_mem_iff]
+  simp only [compLevel1, List.mem_toFinset, List.mem_cons, List.not_mem_nil, or_false] at hx
+  rcases hx with rfl
+  rfl
+
+private lemma compLevel2_subset_level : compLevel2 ⊆ compositionClass.level 2 := by
+  intro x hx
+  rw [CombinatorialClass.level_mem_iff]
+  simp only [compLevel2, List.mem_toFinset, List.mem_cons, List.not_mem_nil, or_false] at hx
+  rcases hx with rfl | rfl <;> rfl
+
+private lemma compLevel3_subset_level : compLevel3 ⊆ compositionClass.level 3 := by
+  intro x hx
+  rw [CombinatorialClass.level_mem_iff]
+  simp only [compLevel3, List.mem_toFinset, List.mem_cons, List.not_mem_nil, or_false] at hx
+  rcases hx with rfl | rfl | rfl | rfl <;> rfl
+
+private lemma compLevel4_subset_level : compLevel4 ⊆ compositionClass.level 4 := by
+  intro x hx
+  rw [CombinatorialClass.level_mem_iff]
+  simp only [compLevel4, List.mem_toFinset, List.mem_cons, List.not_mem_nil, or_false] at hx
+  rcases hx with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> rfl
+
+private lemma compositionClass_level_zero : compositionClass.level 0 = compLevel0 := by
+  apply compositionClass_level_eq_of_subset_card compLevel0_subset_level
+  rw [show (compositionClass.level 0).card = compositionClass.count 0 by rfl,
+    compositionClass_count_zero]
+  decide
+
+private lemma compositionClass_level_one : compositionClass.level 1 = compLevel1 := by
+  apply compositionClass_level_eq_of_subset_card compLevel1_subset_level
+  rw [show (compositionClass.level 1).card = compositionClass.count 1 by rfl,
+    compositionClass_count_succ]
+  decide
+
+private lemma compositionClass_level_two : compositionClass.level 2 = compLevel2 := by
+  apply compositionClass_level_eq_of_subset_card compLevel2_subset_level
+  rw [show (compositionClass.level 2).card = compositionClass.count 2 by rfl,
+    compositionClass_count_succ]
+  decide
+
+private lemma compositionClass_level_three : compositionClass.level 3 = compLevel3 := by
+  apply compositionClass_level_eq_of_subset_card compLevel3_subset_level
+  rw [show (compositionClass.level 3).card = compositionClass.count 3 by rfl,
+    compositionClass_count_succ]
+  decide
+
+private lemma compositionClass_level_four : compositionClass.level 4 = compLevel4 := by
+  apply compositionClass_level_eq_of_subset_card compLevel4_subset_level
+  rw [show (compositionClass.level 4).card = compositionClass.count 4 by rfl,
+    compositionClass_count_succ]
+  decide
+
+/-- Sanity at small n: count compositions of n by maximum part. -/
+example : compositionClass.jointCount compMaxPart 0 0 = 1 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_zero]
+  decide
+
+example : compositionClass.jointCount compMaxPart 1 1 = 1 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_one]
+  decide
+
+example : compositionClass.jointCount compMaxPart 2 1 = 1 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_two]
+  decide
+
+example : compositionClass.jointCount compMaxPart 2 2 = 1 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_two]
+  decide
+
+example : compositionClass.jointCount compMaxPart 3 1 = 1 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_three]
+  decide
+
+example : compositionClass.jointCount compMaxPart 3 2 = 2 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_three]
+  decide
+
+example : compositionClass.jointCount compMaxPart 3 3 = 1 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_three]
+  decide
+
+example : compositionClass.jointCount compMaxPart 4 1 = 1 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_four]
+  decide
+
+example : compositionClass.jointCount compMaxPart 4 2 = 4 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_four]
+  decide
+
+example : compositionClass.jointCount compMaxPart 4 3 = 2 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_four]
+  decide
+
+example : compositionClass.jointCount compMaxPart 4 4 = 1 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_four]
+  decide
+
 example : compositionClass.count 8 = 128 := compositionClass_count_succ 7
 example : compositionClass.count 10 = 512 := compositionClass_count_succ 9
 example : compositionClass.count 12 = 2048 := compositionClass_count_succ 11
