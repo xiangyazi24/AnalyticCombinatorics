@@ -296,6 +296,14 @@ theorem BinTree_asClass_cartProd_count (n : ℕ) :
   rw [show BinTree.asClass.count p.2 = _root_.catalan p.2 from
         BinTree.catalan_eq_nat_catalan p.2]
 
+example : (BinTree.asClass.cartProd BinTree.asClass).count 0 = 1 := by
+  rw [BinTree_asClass_cartProd_count]
+  native_decide
+
+example : (BinTree.asClass.cartProd BinTree.asClass).count 2 = 5 := by
+  rw [BinTree_asClass_cartProd_count]
+  native_decide
+
 /-- The OGF of `BinTree × BinTree` is the square of `BinTree.asClass.ogf`. -/
 example : (BinTree.asClass.cartProd BinTree.asClass).ogf = BinTree.asClass.ogf ^ 2 := by
   rw [CombinatorialClass.cartProd_ogf, sq]
