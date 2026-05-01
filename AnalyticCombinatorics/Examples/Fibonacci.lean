@@ -333,3 +333,8 @@ example : fibClass.ogf.coeff 0 = 1 := by
   rw [coeff_ogf, fibClass_count_eq_fib]; decide
 example : fibClass.ogf.coeff 5 = 8 := by
   rw [coeff_ogf, fibClass_count_eq_fib]; decide
+
+/-- Fibonacci recurrence for compositions into parts 1 and 2. -/
+theorem fibClass_count_recurrence (n : ℕ) :
+    fibClass.count (n + 2) = fibClass.count (n + 1) + fibClass.count n := by
+  exact fibClass_count_succ_succ n
