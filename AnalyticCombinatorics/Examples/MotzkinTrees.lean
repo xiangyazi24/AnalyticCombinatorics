@@ -1,0 +1,259 @@
+import Mathlib.RingTheory.PowerSeries.Basic
+import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
+
+open PowerSeries CombinatorialClass
+
+/-- Unary-binary trees: leaf, unary node, or binary node. -/
+inductive MotzTree : Type
+  | leaf : MotzTree
+  | unary : MotzTree → MotzTree
+  | binary : MotzTree → MotzTree → MotzTree
+
+namespace MotzTree
+
+/-- Size = number of internal (non-leaf) nodes. -/
+def size : MotzTree → ℕ
+  | leaf => 0
+  | unary t => 1 + t.size
+  | binary l r => 1 + l.size + r.size
+
+private lemma size_leaf_eq : MotzTree.leaf.size = 0 := rfl
+private lemma size_unary_eq (t : MotzTree) : (MotzTree.unary t).size = 1 + t.size := rfl
+private lemma size_binary_eq (l r : MotzTree) :
+    (MotzTree.binary l r).size = 1 + l.size + r.size := rfl
+
+/-- The combinatorial class of Motzkin trees. -/
+noncomputable def asClass : CombinatorialClass where
+  Obj := MotzTree
+  size := MotzTree.size
+  finite_level n := by
+    induction n using Nat.strong_induction_on
+    rename_i m ih
+    cases m with
+    | zero =>
+      apply Set.Finite.subset (Set.finite_singleton MotzTree.leaf)
+      intro t ht
+      simp only [Set.mem_setOf_eq] at ht
+      simp only [Set.mem_singleton_iff]
+      cases t with
+      | leaf => rfl
+      | unary u =>
+        simp only [size_unary_eq] at ht
+        omega
+      | binary l r =>
+        simp only [size_binary_eq] at ht
+        omega
+    | succ k =>
+      apply Set.Finite.subset
+        (((ih k (Nat.lt_succ_self k)).image MotzTree.unary).union
+          (Set.finite_iUnion (fun i : Fin (k + 1) =>
+            ((ih i.val i.isLt).prod
+              (ih (k - i.val) (Nat.lt_succ_of_le (Nat.sub_le k i.val)))).image
+                (fun p => MotzTree.binary p.1 p.2))))
+      intro t ht
+      simp only [Set.mem_setOf_eq] at ht
+      cases t with
+      | leaf =>
+        simp only [size_leaf_eq] at ht
+        omega
+      | unary u =>
+        simp only [size_unary_eq] at ht
+        simp only [Set.mem_union, Set.mem_image, Set.mem_setOf_eq]
+        left
+        exact ⟨u, by omega, rfl⟩
+      | binary l r =>
+        simp only [size_binary_eq] at ht
+        have hr : MotzTree.size r = k - MotzTree.size l := by omega
+        simp only [Set.mem_union, Set.mem_iUnion, Set.mem_image, Set.mem_prod, Set.mem_setOf_eq]
+        right
+        exact ⟨⟨l.size, by omega⟩, (l, r), ⟨rfl, hr⟩, rfl⟩
+
+/-- The number of Motzkin trees with `n` internal nodes. -/
+noncomputable def count (n : ℕ) : ℕ := asClass.count n
+
+private lemma mem_level_iff (m : ℕ) (t : MotzTree) :
+    t ∈ asClass.level m ↔ asClass.size t = m := by
+  change t ∈ (asClass.finite_level m).toFinset ↔ asClass.size t = m
+  exact (asClass.finite_level m).mem_toFinset.trans (by simp)
+
+/-- Only `leaf` has size zero. -/
+lemma count_zero : asClass.count 0 = 1 := by
+  simp only [CombinatorialClass.count]
+  rw [Finset.card_eq_one]
+  refine ⟨MotzTree.leaf, Finset.eq_singleton_iff_unique_mem.mpr ⟨?_, ?_⟩⟩
+  · exact (mem_level_iff 0 MotzTree.leaf).mpr rfl
+  · intro t ht
+    have hsz : t.size = 0 := (mem_level_iff 0 t).mp ht
+    cases t with
+    | leaf => rfl
+    | unary u =>
+      simp only [MotzTree.size_unary_eq] at hsz
+      omega
+    | binary l r =>
+      simp only [MotzTree.size_binary_eq] at hsz
+      omega
+
+/-- Recursion on counts:
+    a tree of size `n + 1` is either a unary root over a tree of size `n`,
+    or a binary root over two subtrees whose sizes sum to `n`. -/
+lemma count_succ (n : ℕ) :
+    asClass.count (n + 1) =
+      asClass.count n +
+        ∑ p ∈ Finset.antidiagonal n, asClass.count p.1 * asClass.count p.2 := by
+  let binaryFs : Finset (Σ _ : ℕ × ℕ, MotzTree × MotzTree) :=
+    (Finset.antidiagonal n).sigma (fun p => asClass.level p.1 ×ˢ asClass.level p.2)
+  let rhsFs : Finset (MotzTree ⊕ (Σ _ : ℕ × ℕ, MotzTree × MotzTree)) :=
+    (asClass.level n).disjSum binaryFs
+  let fwd : (x : MotzTree ⊕ (Σ _ : ℕ × ℕ, MotzTree × MotzTree)) → x ∈ rhsFs →
+      MotzTree :=
+    fun x _ =>
+      match x with
+      | Sum.inl t => MotzTree.unary t
+      | Sum.inr y => MotzTree.binary y.2.1 y.2.2
+  have extractBinary :
+      ∀ y : Σ _ : ℕ × ℕ, MotzTree × MotzTree, y ∈ binaryFs →
+        y.1 ∈ Finset.antidiagonal n ∧
+        y.2.1 ∈ asClass.level y.1.1 ∧
+        y.2.2 ∈ asClass.level y.1.2 := by
+    intro y hy
+    refine ⟨(Finset.mem_sigma.mp hy).1,
+            (Finset.mem_product.mp (Finset.mem_sigma.mp hy).2).1,
+            (Finset.mem_product.mp (Finset.mem_sigma.mp hy).2).2⟩
+  have hcard : rhsFs.card = (asClass.level (n + 1)).card := by
+    apply Finset.card_bij fwd
+    · intro x hx
+      cases x with
+      | inl t =>
+        have ht : t ∈ asClass.level n := by
+          rcases Finset.mem_disjSum.mp hx with ⟨a, ha, heq⟩ | ⟨b, hb, heq⟩
+          · cases heq
+            exact ha
+          · cases heq
+        apply (mem_level_iff (n + 1) (MotzTree.unary t)).mpr
+        have hsize : t.size = n := (mem_level_iff n t).mp ht
+        change 1 + t.size = n + 1
+        omega
+      | inr y =>
+        have hy : y ∈ binaryFs := by
+          rcases Finset.mem_disjSum.mp hx with ⟨a, ha, heq⟩ | ⟨b, hb, heq⟩
+          · cases heq
+          · cases heq
+            exact hb
+        obtain ⟨hp, hl, hr⟩ := extractBinary y hy
+        have hp_sum : y.1.1 + y.1.2 = n := Finset.mem_antidiagonal.mp hp
+        have hlsize : y.2.1.size = y.1.1 := (mem_level_iff _ _).mp hl
+        have hrsize : y.2.2.size = y.1.2 := (mem_level_iff _ _).mp hr
+        apply (mem_level_iff (n + 1) (MotzTree.binary y.2.1 y.2.2)).mpr
+        change 1 + y.2.1.size + y.2.2.size = n + 1
+        omega
+    · intro x₁ hx₁ x₂ hx₂ heq
+      cases x₁ with
+      | inl t₁ =>
+        cases x₂ with
+        | inl t₂ =>
+          change MotzTree.unary t₁ = MotzTree.unary t₂ at heq
+          injection heq with ht
+          simp [ht]
+        | inr y₂ =>
+          change MotzTree.unary t₁ = MotzTree.binary y₂.2.1 y₂.2.2 at heq
+          cases heq
+      | inr y₁ =>
+        cases x₂ with
+        | inl t₂ =>
+          change MotzTree.binary y₁.2.1 y₁.2.2 = MotzTree.unary t₂ at heq
+          cases heq
+        | inr y₂ =>
+          have hy₁ : y₁ ∈ binaryFs := by
+            rcases Finset.mem_disjSum.mp hx₁ with ⟨a, ha, heq⟩ | ⟨b, hb, heq⟩
+            · cases heq
+            · cases heq
+              exact hb
+          have hy₂ : y₂ ∈ binaryFs := by
+            rcases Finset.mem_disjSum.mp hx₂ with ⟨a, ha, heq⟩ | ⟨b, hb, heq⟩
+            · cases heq
+            · cases heq
+              exact hb
+          obtain ⟨-, hl₁, hr₁⟩ := extractBinary y₁ hy₁
+          obtain ⟨-, hl₂, hr₂⟩ := extractBinary y₂ hy₂
+          have hlsize₁ : y₁.2.1.size = y₁.1.1 := (mem_level_iff _ _).mp hl₁
+          have hlsize₂ : y₂.2.1.size = y₂.1.1 := (mem_level_iff _ _).mp hl₂
+          have hrsize₁ : y₁.2.2.size = y₁.1.2 := (mem_level_iff _ _).mp hr₁
+          have hrsize₂ : y₂.2.2.size = y₂.1.2 := (mem_level_iff _ _).mp hr₂
+          change MotzTree.binary y₁.2.1 y₁.2.2 =
+            MotzTree.binary y₂.2.1 y₂.2.2 at heq
+          injection heq with hl hr
+          have hk : y₁.1.1 = y₂.1.1 := by rw [← hlsize₁, hl, hlsize₂]
+          have hm : y₁.1.2 = y₂.1.2 := by rw [← hrsize₁, hr, hrsize₂]
+          obtain ⟨⟨k₁, m₁⟩, l₁, r₁⟩ := y₁
+          obtain ⟨⟨k₂, m₂⟩, l₂, r₂⟩ := y₂
+          simp_all
+    · intro t ht
+      have hsz : t.size = n + 1 := (mem_level_iff _ _).mp ht
+      cases t with
+      | leaf =>
+        exfalso
+        simp only [MotzTree.size_leaf_eq] at hsz
+        omega
+      | unary u =>
+        simp only [MotzTree.size_unary_eq] at hsz
+        refine ⟨Sum.inl u, ?_, rfl⟩
+        apply Finset.mem_disjSum.mpr
+        apply Or.inl
+        refine ⟨u, ?_, rfl⟩
+        apply (mem_level_iff n u).mpr
+        change u.size = n
+        omega
+      | binary l r =>
+        simp only [MotzTree.size_binary_eq] at hsz
+        refine ⟨Sum.inr ⟨(l.size, r.size), (l, r)⟩, ?_, rfl⟩
+        apply Finset.mem_disjSum.mpr
+        apply Or.inr
+        refine ⟨⟨(l.size, r.size), (l, r)⟩, ?_, rfl⟩
+        apply Finset.mem_sigma.mpr
+        refine ⟨?_, ?_⟩
+        · apply Finset.mem_antidiagonal.mpr
+          change l.size + r.size = n
+          omega
+        · apply Finset.mem_product.mpr
+          exact ⟨(mem_level_iff _ _).mpr rfl, (mem_level_iff _ _).mpr rfl⟩
+  rw [show asClass.count (n + 1) = (asClass.level (n + 1)).card from rfl, ← hcard,
+      show asClass.count n = (asClass.level n).card from rfl]
+  change ((asClass.level n).disjSum binaryFs).card =
+    (asClass.level n).card +
+      ∑ p ∈ Finset.antidiagonal n, asClass.count p.1 * asClass.count p.2
+  rw [Finset.card_disjSum, Finset.card_sigma]
+  apply congrArg (fun x => asClass.count n + x)
+  apply Finset.sum_congr rfl
+  intro p _
+  exact Finset.card_product _ _
+
+/-- The OGF `M(z)` satisfies `M = 1 + z M + z M²`. -/
+theorem ogf_functional_equation :
+    asClass.ogf = 1 + PowerSeries.X * asClass.ogf + PowerSeries.X * asClass.ogf ^ 2 := by
+  ext n
+  rw [map_add, map_add, coeff_one, coeff_ogf]
+  rcases n with _ | m
+  · rw [count_zero]
+    simp [PowerSeries.coeff_zero_eq_constantCoeff, map_mul, PowerSeries.constantCoeff_X]
+  · rw [PowerSeries.coeff_succ_X_mul, PowerSeries.coeff_succ_X_mul, sq, coeff_mul,
+      count_succ m, coeff_ogf]
+    simp only [Nat.succ_ne_zero, ↓reduceIte, zero_add]
+    apply congrArg (fun x => asClass.count m + x)
+    apply Finset.sum_congr rfl
+    intro p _
+    rw [coeff_ogf, coeff_ogf]
+
+example : MotzTree.count 0 = 1 := count_zero
+
+example : MotzTree.count 1 = 2 := by
+  rw [count, count_succ 0, count_zero]
+  simp [count_zero]
+
+example : MotzTree.count 2 = 6 := by
+  have h1 : asClass.count 1 = 2 := by
+    rw [count_succ 0, count_zero]
+    simp [count_zero]
+  rw [count, count_succ 1, h1]
+  norm_num [Finset.antidiagonal, count_zero, h1]
+
+end MotzTree
