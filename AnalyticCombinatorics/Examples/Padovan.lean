@@ -278,10 +278,31 @@ private lemma padovanClass_count_twenty_four : padovanClass.count 24 = 351 := by
     _ = 200 + 151 := by rw [padovanClass_count_twenty_two, padovanClass_count_twenty_one]
     _ = 351 := by decide
 
+private lemma padovanClass_count_twenty_five : padovanClass.count 25 = 465 := by
+  calc
+    padovanClass.count 25 = padovanClass.count 23 + padovanClass.count 22 :=
+      padovanClass_count_succ_succ_succ 22
+    _ = 265 + 200 := by rw [padovanClass_count_twenty_three, padovanClass_count_twenty_two]
+    _ = 465 := by decide
+
+private lemma padovanClass_count_twenty_six : padovanClass.count 26 = 616 := by
+  calc
+    padovanClass.count 26 = padovanClass.count 24 + padovanClass.count 23 :=
+      padovanClass_count_succ_succ_succ 23
+    _ = 351 + 265 := by rw [padovanClass_count_twenty_four, padovanClass_count_twenty_three]
+    _ = 616 := by decide
+
+private lemma padovanClass_count_twenty_seven : padovanClass.count 27 = 816 := by
+  calc
+    padovanClass.count 27 = padovanClass.count 25 + padovanClass.count 24 :=
+      padovanClass_count_succ_succ_succ 24
+    _ = 465 + 351 := by rw [padovanClass_count_twenty_five, padovanClass_count_twenty_four]
+    _ = 816 := by decide
+
 /-!
 Sanity checks:
 1, 0, 1, 1, 1, 2, 2, 3, 4, 5, 7, 9, 12, 16, 21, 28, 37, 49, 65, 86,
-114, 151, 200, 265, 351.
+114, 151, 200, 265, 351, 465, 616, 816.
 -/
 example : padovanClass.count 0 = 1 := by
   calc
@@ -407,6 +428,21 @@ example : padovanClass.count 24 = 351 := by
   calc
     padovanClass.count 24 = 351 := padovanClass_count_twenty_four
     _ = 351 := by decide
+
+example : padovanClass.count 25 = 465 := by
+  calc
+    padovanClass.count 25 = 465 := padovanClass_count_twenty_five
+    _ = 465 := by decide
+
+example : padovanClass.count 26 = 616 := by
+  calc
+    padovanClass.count 26 = 616 := padovanClass_count_twenty_six
+    _ = 616 := by decide
+
+example : padovanClass.count 27 = 816 := by
+  calc
+    padovanClass.count 27 = 816 := padovanClass_count_twenty_seven
+    _ = 816 := by decide
 
 /-- The OGF for a single part of size 2 or 3 is `z^2 + z^3`. -/
 private lemma step23Class_ogfZ :

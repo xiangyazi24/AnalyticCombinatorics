@@ -162,6 +162,9 @@ example : fibClass.count 22 = 28657 := by rw [fibClass_count_eq_fib]; decide
 example : fibClass.count 23 = 46368 := by rw [fibClass_count_eq_fib]; decide
 example : fibClass.count 24 = 75025 := by rw [fibClass_count_eq_fib]; decide
 example : fibClass.count 25 = 121393 := by rw [fibClass_count_eq_fib]; decide
+example : fibClass.count 26 = 196418 := by rw [fibClass_count_eq_fib]; decide
+example : fibClass.count 27 = 317811 := by rw [fibClass_count_eq_fib]; decide
+example : fibClass.count 28 = 514229 := by rw [fibClass_count_eq_fib]; decide
 
 /-- Closed form for the OGF of compositions into parts of size 1 or 2:
     `1 / (1 - z - z^2)`. -/
