@@ -228,3 +228,11 @@ example (n : ℕ) :
   simp only [PowerSeries.coeff_exp, CombinatorialClass.coeff_egf,
     derangementClass_count_eq_numDerangements] at h
   simpa [div_eq_mul_inv, mul_assoc, mul_comm, mul_left_comm] using h
+
+/-- Explicit intermediate form of the derangement EGF identity:
+    `(1 - X) * D(X) = exp(-X)`.  Mathlib writes `exp(-X)` as
+    `PowerSeries.evalNegHom (PowerSeries.exp ℚ)`. -/
+example :
+    (1 - PowerSeries.X) * derangementClass.egf =
+      PowerSeries.evalNegHom (PowerSeries.exp ℚ) := by
+  exact one_sub_X_mul_derangementClass_egf
