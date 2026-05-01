@@ -26,3 +26,4 @@ import AnalyticCombinatorics.PartB.Ch6.TransferTheorems
 import AnalyticCombinatorics.Examples.BinaryTrees
 import AnalyticCombinatorics.Examples.Strings
 import AnalyticCombinatorics.Examples.Compositions
+import AnalyticCombinatorics.Examples.SetPartitions
