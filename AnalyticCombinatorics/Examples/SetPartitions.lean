@@ -751,3 +751,12 @@ example : ∑ k ∈ Finset.range 5, Nat.stirlingFirst 4 k = 24 := by
 example : ∑ k ∈ Finset.range 6, Nat.stirlingFirst 5 k = 120 := by
   rw [stirlingFirst_sum_eq_factorial]
   decide
+
+example : ∑ k ∈ Finset.range 4, Nat.stirlingSecond 3 k = Nat.bell 3 := by
+  rw [stirlingSecond_sum_eq_bell]
+
+example : ∑ k ∈ Finset.range 5, Nat.stirlingSecond 4 k = Nat.bell 4 := by
+  rw [stirlingSecond_sum_eq_bell]
+
+example : ∑ k ∈ Finset.range 6, Nat.stirlingSecond 5 k = Nat.bell 5 := by
+  rw [stirlingSecond_sum_eq_bell]
