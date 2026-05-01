@@ -265,6 +265,20 @@ example :
       PowerSeries.evalNegHom (PowerSeries.exp ℚ) := by
   exact one_sub_X_mul_derangementClass_egf
 
+/-- Derangement EGF closed form, in right-multiplied reciprocal form:
+    `D(X) * (1 - X) = exp(-X)`.  Mathlib writes `exp(-X)` as
+    `PowerSeries.evalNegHom (PowerSeries.exp ℚ)`. -/
+theorem derangementClass_egf_mul_one_sub_X_eq_exp_neg :
+    derangementClass.egf * (1 - PowerSeries.X) =
+      PowerSeries.evalNegHom (PowerSeries.exp ℚ) := by
+  rw [mul_comm, one_sub_X_mul_derangementClass_egf]
+
+/-- Combined derangement EGF identity: `D(X) * exp(X) * (1 - X) = 1`. -/
+theorem derangementClass_egf_mul_exp_mul_one_sub_X :
+    derangementClass.egf * PowerSeries.exp ℚ * (1 - PowerSeries.X) = 1 := by
+  rw [derangementClass_egf_mul_exp_eq_permClass_egf, permClass_egf_eq_mk_one]
+  exact PowerSeries.mk_one_mul_one_sub_eq_one ℚ
+
 /-- Classical derangement recurrence. -/
 theorem numDerangements_recurrence (n : ℕ) :
     Nat.numDerangements (n + 2) =
