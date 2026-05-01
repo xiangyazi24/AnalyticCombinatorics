@@ -133,3 +133,13 @@ example : fibClass.count 1 = 1 := fibClass_count_eq_fib 1
 example : fibClass.count 2 = 2 := fibClass_count_eq_fib 2
 example : fibClass.count 3 = 3 := fibClass_count_eq_fib 3
 example : fibClass.count 4 = 5 := fibClass_count_eq_fib 4
+
+/-! Sanity checks: fib(n+1) sequence is 1, 1, 2, 3, 5, 8, 13, 21, 34, 55. -/
+example : fibClass.count 0 = 1 := by rw [fibClass_count_eq_fib]; decide
+example : fibClass.count 1 = 1 := by rw [fibClass_count_eq_fib]; decide
+example : fibClass.count 2 = 2 := by rw [fibClass_count_eq_fib]; decide
+example : fibClass.count 3 = 3 := by rw [fibClass_count_eq_fib]; decide
+example : fibClass.count 4 = 5 := by rw [fibClass_count_eq_fib]; decide
+example : fibClass.count 5 = 8 := by rw [fibClass_count_eq_fib]; decide
+example : fibClass.count 6 = 13 := by rw [fibClass_count_eq_fib]; decide
+example : fibClass.count 7 = 21 := by rw [fibClass_count_eq_fib]; decide
