@@ -906,3 +906,31 @@ set_option linter.style.nativeDecide false in
 example : labelSetCount posIntClass 18 = (682076806159 : ℚ) := by
   rw [labelSetCount_posIntClass_eq_bell]
   native_decide
+
+example : Nat.stirlingSecond 2 1 = 1 := by
+  rw [show 2 = 1 + 1 by rfl, show 1 = 0 + 1 by rfl, stirlingSecond_succ 1 0]
+  decide
+
+example : Nat.stirlingSecond 3 2 = 3 := by
+  rw [show 3 = 2 + 1 by rfl, show 2 = 1 + 1 by rfl, stirlingSecond_succ 2 1]
+  decide
+
+example : Nat.stirlingSecond 4 2 = 7 := by
+  rw [show 4 = 3 + 1 by rfl, show 2 = 1 + 1 by rfl, stirlingSecond_succ 3 1]
+  decide
+
+example : Nat.stirlingSecond 5 3 = 25 := by
+  rw [show 5 = 4 + 1 by rfl, show 3 = 2 + 1 by rfl, stirlingSecond_succ 4 2]
+  decide
+
+example : Nat.stirlingFirst 2 1 = 1 := by
+  rw [show 2 = 1 + 1 by rfl, show 1 = 0 + 1 by rfl, stirlingFirst_succ 1 0]
+  decide
+
+example : Nat.stirlingFirst 3 2 = 3 := by
+  rw [show 3 = 2 + 1 by rfl, show 2 = 1 + 1 by rfl, stirlingFirst_succ 2 1]
+  decide
+
+example : Nat.stirlingFirst 4 2 = 11 := by
+  rw [show 4 = 3 + 1 by rfl, show 2 = 1 + 1 by rfl, stirlingFirst_succ 3 1]
+  decide

@@ -44,3 +44,28 @@ theorem catalan_recurrence (n : ℕ) :
       ∑ i ∈ Finset.range (n + 1), _root_.catalan i * _root_.catalan (n - i) := by
   rw [Finset.sum_range]
   exact _root_.catalan_succ n
+
+set_option linter.style.nativeDecide false in
+example : _root_.catalan 1 = 1 := by
+  rw [show 1 = 0 + 1 by rfl, catalan_recurrence 0]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : _root_.catalan 2 = 2 := by
+  rw [show 2 = 1 + 1 by rfl, catalan_recurrence 1]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : _root_.catalan 3 = 5 := by
+  rw [show 3 = 2 + 1 by rfl, catalan_recurrence 2]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : _root_.catalan 4 = 14 := by
+  rw [show 4 = 3 + 1 by rfl, catalan_recurrence 3]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : _root_.catalan 5 = 42 := by
+  rw [show 5 = 4 + 1 by rfl, catalan_recurrence 4]
+  native_decide
