@@ -471,6 +471,8 @@ private abbrev compPart1 : posIntClass.Obj := ⟨1, by decide⟩
 private abbrev compPart2 : posIntClass.Obj := ⟨2, by decide⟩
 private abbrev compPart3 : posIntClass.Obj := ⟨3, by decide⟩
 private abbrev compPart4 : posIntClass.Obj := ⟨4, by decide⟩
+private abbrev compPart5 : posIntClass.Obj := ⟨5, by decide⟩
+private abbrev compPart6 : posIntClass.Obj := ⟨6, by decide⟩
 
 private def compLevel0 : Finset compositionClass.Obj :=
   ([[]] : List compositionClass.Obj).toFinset
@@ -490,6 +492,46 @@ private def compLevel4 : Finset compositionClass.Obj :=
     [compPart2, compPart2], [compPart1, compPart1, compPart2],
     [compPart1, compPart2, compPart1], [compPart2, compPart1, compPart1],
     [compPart1, compPart1, compPart1, compPart1]] : List compositionClass.Obj).toFinset
+
+private def compLevel5 : Finset compositionClass.Obj :=
+  ([[compPart5], [compPart1, compPart4], [compPart4, compPart1],
+    [compPart2, compPart3], [compPart3, compPart2],
+    [compPart1, compPart1, compPart3], [compPart1, compPart3, compPart1],
+    [compPart3, compPart1, compPart1], [compPart1, compPart2, compPart2],
+    [compPart2, compPart1, compPart2], [compPart2, compPart2, compPart1],
+    [compPart1, compPart1, compPart1, compPart2],
+    [compPart1, compPart1, compPart2, compPart1],
+    [compPart1, compPart2, compPart1, compPart1],
+    [compPart2, compPart1, compPart1, compPart1],
+    [compPart1, compPart1, compPart1, compPart1, compPart1]] :
+      List compositionClass.Obj).toFinset
+
+private def compLevel6 : Finset compositionClass.Obj :=
+  ([[compPart6], [compPart1, compPart5], [compPart5, compPart1],
+    [compPart2, compPart4], [compPart4, compPart2],
+    [compPart1, compPart1, compPart4], [compPart1, compPart4, compPart1],
+    [compPart4, compPart1, compPart1], [compPart3, compPart3],
+    [compPart1, compPart2, compPart3], [compPart1, compPart3, compPart2],
+    [compPart2, compPart1, compPart3], [compPart2, compPart3, compPart1],
+    [compPart3, compPart1, compPart2], [compPart3, compPart2, compPart1],
+    [compPart1, compPart1, compPart1, compPart3],
+    [compPart1, compPart1, compPart3, compPart1],
+    [compPart1, compPart3, compPart1, compPart1],
+    [compPart3, compPart1, compPart1, compPart1],
+    [compPart2, compPart2, compPart2],
+    [compPart1, compPart1, compPart2, compPart2],
+    [compPart1, compPart2, compPart1, compPart2],
+    [compPart1, compPart2, compPart2, compPart1],
+    [compPart2, compPart1, compPart1, compPart2],
+    [compPart2, compPart1, compPart2, compPart1],
+    [compPart2, compPart2, compPart1, compPart1],
+    [compPart1, compPart1, compPart1, compPart1, compPart2],
+    [compPart1, compPart1, compPart1, compPart2, compPart1],
+    [compPart1, compPart1, compPart2, compPart1, compPart1],
+    [compPart1, compPart2, compPart1, compPart1, compPart1],
+    [compPart2, compPart1, compPart1, compPart1, compPart1],
+    [compPart1, compPart1, compPart1, compPart1, compPart1, compPart1]] :
+      List compositionClass.Obj).toFinset
 
 private lemma compositionClass_level_eq_of_subset_card {n : ℕ} {s : Finset compositionClass.Obj}
     (hsubset : s ⊆ compositionClass.level n)
@@ -530,6 +572,21 @@ private lemma compLevel4_subset_level : compLevel4 ⊆ compositionClass.level 4 
   simp only [compLevel4, List.mem_toFinset, List.mem_cons, List.not_mem_nil, or_false] at hx
   rcases hx with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> rfl
 
+private lemma compLevel5_subset_level : compLevel5 ⊆ compositionClass.level 5 := by
+  intro x hx
+  rw [CombinatorialClass.level_mem_iff]
+  simp only [compLevel5, List.mem_toFinset, List.mem_cons, List.not_mem_nil, or_false] at hx
+  rcases hx with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
+    rfl | rfl | rfl | rfl | rfl <;> rfl
+
+private lemma compLevel6_subset_level : compLevel6 ⊆ compositionClass.level 6 := by
+  intro x hx
+  rw [CombinatorialClass.level_mem_iff]
+  simp only [compLevel6, List.mem_toFinset, List.mem_cons, List.not_mem_nil, or_false] at hx
+  rcases hx with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
+    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
+    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> rfl
+
 private lemma compositionClass_level_zero : compositionClass.level 0 = compLevel0 := by
   apply compositionClass_level_eq_of_subset_card compLevel0_subset_level
   rw [show (compositionClass.level 0).card = compositionClass.count 0 by rfl,
@@ -557,6 +614,18 @@ private lemma compositionClass_level_three : compositionClass.level 3 = compLeve
 private lemma compositionClass_level_four : compositionClass.level 4 = compLevel4 := by
   apply compositionClass_level_eq_of_subset_card compLevel4_subset_level
   rw [show (compositionClass.level 4).card = compositionClass.count 4 by rfl,
+    compositionClass_count_succ]
+  decide
+
+private lemma compositionClass_level_five : compositionClass.level 5 = compLevel5 := by
+  apply compositionClass_level_eq_of_subset_card compLevel5_subset_level
+  rw [show (compositionClass.level 5).card = compositionClass.count 5 by rfl,
+    compositionClass_count_succ]
+  decide
+
+private lemma compositionClass_level_six : compositionClass.level 6 = compLevel6 := by
+  apply compositionClass_level_eq_of_subset_card compLevel6_subset_level
+  rw [show (compositionClass.level 6).card = compositionClass.count 6 by rfl,
     compositionClass_count_succ]
   decide
 
@@ -603,6 +672,58 @@ example : compositionClass.jointCount compMaxPart 4 3 = 2 := by
 
 example : compositionClass.jointCount compMaxPart 4 4 = 1 := by
   rw [CombinatorialClass.jointCount, compositionClass_level_four]
+  decide
+
+example : compositionClass.jointCount compMaxPart 5 1 = 1 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_five]
+  decide
+
+example : compositionClass.jointCount compMaxPart 5 2 = 7 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_five]
+  decide
+
+example : compositionClass.jointCount compMaxPart 5 3 = 5 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_five]
+  decide
+
+example : compositionClass.jointCount compMaxPart 5 4 = 2 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_five]
+  decide
+
+example : compositionClass.jointCount compMaxPart 5 5 = 1 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_five]
+  decide
+
+example : 1 + 7 + 5 + 2 + 1 = compositionClass.count 5 := by
+  rw [compositionClass_count_succ]
+  decide
+
+example : compositionClass.jointCount compMaxPart 6 1 = 1 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_six]
+  decide
+
+example : compositionClass.jointCount compMaxPart 6 2 = 12 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_six]
+  decide
+
+example : compositionClass.jointCount compMaxPart 6 3 = 11 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_six]
+  decide
+
+example : compositionClass.jointCount compMaxPart 6 4 = 5 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_six]
+  decide
+
+example : compositionClass.jointCount compMaxPart 6 5 = 2 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_six]
+  decide
+
+example : compositionClass.jointCount compMaxPart 6 6 = 1 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_six]
+  decide
+
+example : 1 + 12 + 11 + 5 + 2 + 1 = compositionClass.count 6 := by
+  rw [compositionClass_count_succ]
   decide
 
 /-! ## Parameter: first part -/
