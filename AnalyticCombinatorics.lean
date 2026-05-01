@@ -34,6 +34,7 @@ import AnalyticCombinatorics.Examples.Compositions
 import AnalyticCombinatorics.Examples.IntegerPartitions
 import AnalyticCombinatorics.Examples.Fibonacci
 import AnalyticCombinatorics.Examples.Tribonacci
+import AnalyticCombinatorics.Examples.Padovan
 import AnalyticCombinatorics.Examples.SetPartitions
 import AnalyticCombinatorics.Examples.Derangements
 import AnalyticCombinatorics.Examples.CyclicPermutations
