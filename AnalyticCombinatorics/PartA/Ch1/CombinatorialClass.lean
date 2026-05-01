@@ -54,9 +54,38 @@ def Atom : CombinatorialClass where
   size _ := 1
   finite_level _ := Set.finite_univ.subset (Set.subset_univ _)
 
+/-- A single object of size n (`atomOfSize 0 = Epsilon`, `atomOfSize 1 = Atom`). -/
+def atomOfSize (n : ℕ) : CombinatorialClass where
+  Obj := Unit
+  size _ := n
+  finite_level _ := Set.finite_univ.subset (Set.subset_univ _)
+
 theorem level_mem_iff {C : CombinatorialClass} {n : ℕ} (x : C.Obj) :
     x ∈ C.level n ↔ C.size x = n := by
   simp [level, Set.Finite.mem_toFinset]
+
+/-- Count formula: 1 if k = n else 0. -/
+theorem atomOfSize_count (n k : ℕ) :
+    (atomOfSize n).count k = if k = n then 1 else 0 := by
+  simp only [count]
+  haveI : Unique (atomOfSize n).Obj := inferInstanceAs (Unique Unit)
+  have hmem : ∀ x : (atomOfSize n).Obj, x ∈ (atomOfSize n).level k ↔ k = n := fun x => by
+    rw [level_mem_iff]; change n = k ↔ k = n; omega
+  by_cases h : k = n
+  · have hcard : ((atomOfSize n).level k).card = 1 := by
+      rw [Finset.card_eq_one]
+      exact ⟨(), Finset.eq_singleton_iff_unique_mem.mpr
+        ⟨(hmem ()).mpr h, fun x _ => Unique.eq_default x⟩⟩
+    rw [hcard]; simp [h]
+  · have hcard : ((atomOfSize n).level k).card = 0 := by
+      rw [Finset.card_eq_zero]
+      exact Finset.eq_empty_of_forall_notMem (fun x hx => h ((hmem x).mp hx))
+    rw [hcard]; simp [h]
+
+/-- OGF: `atomOfSize n` has OGF `X^n`. -/
+theorem atomOfSize_ogf (n : ℕ) : (atomOfSize n).ogf = PowerSeries.X ^ n := by
+  ext m
+  rw [coeff_ogf, atomOfSize_count, PowerSeries.coeff_X_pow]
 
 theorem Epsilon_ogf : Epsilon.ogf = 1 := by
   ext n
