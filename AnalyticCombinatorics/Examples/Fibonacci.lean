@@ -328,3 +328,8 @@ example : fibClass.jointCount fibNumParts 2 2 = 1 := by
 example (n : ℕ) :
     fibClass.egf.coeff n = (Nat.fib (n + 1) : ℚ) / n.factorial := by
   rw [CombinatorialClass.coeff_egf, fibClass_count_eq_fib]
+
+example : fibClass.ogf.coeff 0 = 1 := by
+  rw [coeff_ogf, fibClass_count_eq_fib]; decide
+example : fibClass.ogf.coeff 5 = 8 := by
+  rw [coeff_ogf, fibClass_count_eq_fib]; decide
