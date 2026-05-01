@@ -547,3 +547,8 @@ example (n : ℕ) :
     labelSetCount posIntClass n / (n.factorial : ℚ) =
       (Nat.bell n : ℚ) / n.factorial := by
   rw [labelSetCount_posIntClass_eq_bell]
+
+example (n : ℕ) :
+    (CombinatorialClass.labelSeq posIntClass posIntClass.count_zero).count n =
+      ∑ k ∈ Finset.range (n + 1), k.factorial * Nat.stirlingSecond n k :=
+  labelSeq_posIntClass_count_eq_fubini n
