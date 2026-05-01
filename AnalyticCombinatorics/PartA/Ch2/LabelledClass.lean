@@ -600,6 +600,44 @@ theorem labelCycCount_div_factorial_eq_partial_log_coeff
     rw [← labelPow_count_div_factorial_eq_coeff_pow B k n]
     field_simp [Nat.cast_ne_zero.mpr n.factorial_pos.ne', Nat.cast_ne_zero.mpr hk]
 
+/-- `labelCycCount Atom` is zero at size 0. -/
+example : labelCycCount Atom 0 = 0 := by
+  simp [labelCycCount]
+
+/-- `labelCycCount Atom = (n - 1)!` for positive sizes. -/
+theorem labelCycCount_Atom_succ (n : ℕ) :
+    labelCycCount Atom (n + 1) = (n.factorial : ℚ) := by
+  rw [labelCycCount]
+  rw [Finset.sum_eq_single (n + 1)]
+  · rw [if_neg (Nat.succ_ne_zero n), CombinatorialClass.labelPow_Atom_count (n + 1) (n + 1),
+      if_pos rfl, Nat.factorial_succ, Nat.cast_mul, Nat.cast_add_one]
+    field_simp [show ((n : ℚ) + 1) ≠ 0 by positivity]
+  · intro k _ hkn
+    by_cases hk : k = 0
+    · simp [hk]
+    · rw [if_neg hk, CombinatorialClass.labelPow_Atom_count k (n + 1),
+        if_neg (Ne.symm hkn)]
+      simp
+  · intro hn
+    exfalso
+    exact hn (Finset.mem_range.mpr (Nat.lt_succ_self (n + 1)))
+
+example : labelCycCount Atom 1 = 1 := by
+  rw [labelCycCount_Atom_succ]
+  rfl
+
+example : labelCycCount Atom 2 = 1 := by
+  rw [labelCycCount_Atom_succ]
+  rfl
+
+example : labelCycCount Atom 3 = 2 := by
+  rw [labelCycCount_Atom_succ]
+  rfl
+
+example : labelCycCount Atom 4 = 6 := by
+  rw [labelCycCount_Atom_succ]
+  rfl
+
 /-- labelProd is EGF-associative: `((A ⋆ B) ⋆ C).egf = (A ⋆ (B ⋆ C)).egf`. -/
 theorem labelProd_assoc_egf (A B C : CombinatorialClass.{0}) :
     ((A.labelProd B).labelProd C).egf = (A.labelProd (B.labelProd C)).egf := by
