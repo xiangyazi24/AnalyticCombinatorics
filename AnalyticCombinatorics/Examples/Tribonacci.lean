@@ -6,6 +6,7 @@
 -/
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 import AnalyticCombinatorics.PartA.Ch1.Sequences
+import AnalyticCombinatorics.PartA.Ch3.Parameters
 
 open PowerSeries CombinatorialClass Finset
 
@@ -347,3 +348,415 @@ theorem tribClass_count_recurrence (n : ℕ) :
     tribClass.count (n + 3) =
       tribClass.count (n + 2) + tribClass.count (n + 1) + tribClass.count n := by
   exact tribClass_count_succ_succ_succ n
+
+/-! ## Parameter: number of parts -/
+
+/-- Number of parts in a Tribonacci composition. -/
+def tribNumParts : Parameter tribClass := List.length
+
+private abbrev tribPart1 : step123Class.Obj := Sum.inl (Sum.inl ())
+private abbrev tribPart2 : step123Class.Obj := Sum.inl (Sum.inr ())
+private abbrev tribPart3 : step123Class.Obj := Sum.inr ()
+
+private instance : DecidableEq step123Class.Obj := by
+  unfold step123Class CombinatorialClass.disjSum atomOfSize
+  infer_instance
+
+private lemma tribPart1_size : step123Class.size tribPart1 = 1 := rfl
+private lemma tribPart2_size : step123Class.size tribPart2 = 2 := rfl
+private lemma tribPart3_size : step123Class.size tribPart3 = 3 := rfl
+
+private lemma step123Class_obj_eq (x : step123Class.Obj) :
+    x = tribPart1 ∨ x = tribPart2 ∨ x = tribPart3 := by
+  rcases x with x | x
+  · rcases x with x | x
+    · cases x
+      left
+      rfl
+    · cases x
+      right
+      left
+      rfl
+  · cases x
+    right
+    right
+    rfl
+
+private lemma tribClass_jointCount_tribNumParts_eq_one_of_unique
+    {n k : ℕ} (x₀ : tribClass.Obj)
+    (hx₀ : x₀ ∈ tribClass.level n)
+    (hnum₀ : tribNumParts x₀ = k)
+    (huniq : ∀ x : tribClass.Obj,
+      x ∈ tribClass.level n → tribNumParts x = k → x = x₀) :
+    tribClass.jointCount tribNumParts n k = 1 := by
+  unfold CombinatorialClass.jointCount
+  rw [Finset.card_eq_one]
+  refine ⟨x₀, ?_⟩
+  ext x
+  rw [Finset.mem_filter, Finset.mem_singleton]
+  constructor
+  · intro hx
+    exact huniq x hx.1 hx.2
+  · intro hx
+    subst hx
+    exact ⟨hx₀, hnum₀⟩
+
+private lemma tribClass_jointCount_tribNumParts_eq_two_of_unique_pair
+    {n k : ℕ} (x₁ x₂ : tribClass.Obj)
+    (hx₁ : x₁ ∈ tribClass.level n)
+    (hx₂ : x₂ ∈ tribClass.level n)
+    (hnum₁ : tribNumParts x₁ = k)
+    (hnum₂ : tribNumParts x₂ = k)
+    (hne : x₁ ≠ x₂)
+    (huniq : ∀ x : tribClass.Obj,
+      x ∈ tribClass.level n → tribNumParts x = k → x = x₁ ∨ x = x₂) :
+    tribClass.jointCount tribNumParts n k = 2 := by
+  classical
+  unfold CombinatorialClass.jointCount
+  rw [Finset.card_eq_two]
+  refine ⟨x₁, x₂, hne, ?_⟩
+  ext x
+  rw [Finset.mem_filter]
+  simp only [Finset.mem_insert, Finset.mem_singleton]
+  constructor
+  · intro hx
+    exact huniq x hx.1 hx.2
+  · intro hx
+    rcases hx with rfl | rfl
+    · exact ⟨hx₁, hnum₁⟩
+    · exact ⟨hx₂, hnum₂⟩
+
+private lemma tribClass_jointCount_tribNumParts_eq_three_of_unique_triple
+    {n k : ℕ} (x₁ x₂ x₃ : tribClass.Obj)
+    (hx₁ : x₁ ∈ tribClass.level n)
+    (hx₂ : x₂ ∈ tribClass.level n)
+    (hx₃ : x₃ ∈ tribClass.level n)
+    (hnum₁ : tribNumParts x₁ = k)
+    (hnum₂ : tribNumParts x₂ = k)
+    (hnum₃ : tribNumParts x₃ = k)
+    (hne₁₂ : x₁ ≠ x₂)
+    (hne₁₃ : x₁ ≠ x₃)
+    (hne₂₃ : x₂ ≠ x₃)
+    (huniq : ∀ x : tribClass.Obj,
+      x ∈ tribClass.level n → tribNumParts x = k →
+        x = x₁ ∨ x = x₂ ∨ x = x₃) :
+    tribClass.jointCount tribNumParts n k = 3 := by
+  classical
+  unfold CombinatorialClass.jointCount
+  rw [Finset.card_eq_three]
+  refine ⟨x₁, x₂, x₃, hne₁₂, hne₁₃, hne₂₃, ?_⟩
+  ext x
+  rw [Finset.mem_filter]
+  simp only [Finset.mem_insert, Finset.mem_singleton]
+  constructor
+  · intro hx
+    exact huniq x hx.1 hx.2
+  · intro hx
+    rcases hx with rfl | rfl | rfl
+    · exact ⟨hx₁, hnum₁⟩
+    · exact ⟨hx₂, hnum₂⟩
+    · exact ⟨hx₃, hnum₃⟩
+
+/-- Sanity: small jointCount values by number of parts. -/
+example : tribClass.jointCount tribNumParts 0 0 = 1 := by
+  apply tribClass_jointCount_tribNumParts_eq_one_of_unique ([] : tribClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · intro x _ hnum
+    change x.length = 0 at hnum
+    exact List.eq_nil_of_length_eq_zero hnum
+
+example : tribClass.jointCount tribNumParts 1 1 = 1 := by
+  apply tribClass_jointCount_tribNumParts_eq_one_of_unique
+    ([tribPart1] : tribClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step123Class.size b + acc) 0 = 1 := by
+      exact (CombinatorialClass.level_mem_iff (C := tribClass) x).mp hx
+    change x.length = 1 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil =>
+            simp only [List.foldr_cons, List.foldr_nil] at hsize
+            rcases step123Class_obj_eq a with rfl | rfl | rfl
+            all_goals
+              first
+              | rfl
+              | norm_num [tribPart1_size, tribPart2_size, tribPart3_size] at hsize
+        | cons _ _ => simp at hnum
+
+example : tribClass.jointCount tribNumParts 2 1 = 1 := by
+  apply tribClass_jointCount_tribNumParts_eq_one_of_unique
+    ([tribPart2] : tribClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step123Class.size b + acc) 0 = 2 := by
+      exact (CombinatorialClass.level_mem_iff (C := tribClass) x).mp hx
+    change x.length = 1 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil =>
+            simp only [List.foldr_cons, List.foldr_nil] at hsize
+            rcases step123Class_obj_eq a with rfl | rfl | rfl
+            all_goals
+              first
+              | rfl
+              | norm_num [tribPart1_size, tribPart2_size, tribPart3_size] at hsize
+        | cons _ _ => simp at hnum
+
+example : tribClass.jointCount tribNumParts 2 2 = 1 := by
+  apply tribClass_jointCount_tribNumParts_eq_one_of_unique
+    ([tribPart1, tribPart1] : tribClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step123Class.size b + acc) 0 = 2 := by
+      exact (CombinatorialClass.level_mem_iff (C := tribClass) x).mp hx
+    change x.length = 2 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil =>
+                simp only [List.foldr_cons, List.foldr_nil] at hsize
+                rcases step123Class_obj_eq a with rfl | rfl | rfl <;>
+                  rcases step123Class_obj_eq b with rfl | rfl | rfl
+                all_goals
+                  first
+                  | rfl
+                  | norm_num [tribPart1_size, tribPart2_size, tribPart3_size] at hsize
+            | cons _ _ => simp at hnum
+
+example : tribClass.jointCount tribNumParts 3 1 = 1 := by
+  apply tribClass_jointCount_tribNumParts_eq_one_of_unique
+    ([tribPart3] : tribClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step123Class.size b + acc) 0 = 3 := by
+      exact (CombinatorialClass.level_mem_iff (C := tribClass) x).mp hx
+    change x.length = 1 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil =>
+            simp only [List.foldr_cons, List.foldr_nil] at hsize
+            rcases step123Class_obj_eq a with rfl | rfl | rfl
+            all_goals
+              first
+              | rfl
+              | norm_num [tribPart1_size, tribPart2_size, tribPart3_size] at hsize
+        | cons _ _ => simp at hnum
+
+example : tribClass.jointCount tribNumParts 3 2 = 2 := by
+  apply tribClass_jointCount_tribNumParts_eq_two_of_unique_pair
+    ([tribPart1, tribPart2] : tribClass.Obj)
+    ([tribPart2, tribPart1] : tribClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · decide
+  · intro h
+    injection h with hhead _
+    cases hhead
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step123Class.size b + acc) 0 = 3 := by
+      exact (CombinatorialClass.level_mem_iff (C := tribClass) x).mp hx
+    change x.length = 2 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil =>
+                simp only [List.foldr_cons, List.foldr_nil] at hsize
+                rcases step123Class_obj_eq a with rfl | rfl | rfl <;>
+                  rcases step123Class_obj_eq b with rfl | rfl | rfl
+                all_goals
+                  first
+                  | left; rfl
+                  | right; rfl
+                  | norm_num [tribPart1_size, tribPart2_size, tribPart3_size] at hsize
+            | cons _ _ => simp at hnum
+
+example : tribClass.jointCount tribNumParts 3 3 = 1 := by
+  apply tribClass_jointCount_tribNumParts_eq_one_of_unique
+    ([tribPart1, tribPart1, tribPart1] : tribClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step123Class.size b + acc) 0 = 3 := by
+      exact (CombinatorialClass.level_mem_iff (C := tribClass) x).mp hx
+    change x.length = 3 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil => simp at hnum
+            | cons c xs =>
+                cases xs with
+                | nil =>
+                    simp only [List.foldr_cons, List.foldr_nil] at hsize
+                    rcases step123Class_obj_eq a with rfl | rfl | rfl <;>
+                      rcases step123Class_obj_eq b with rfl | rfl | rfl <;>
+                        rcases step123Class_obj_eq c with rfl | rfl | rfl
+                    all_goals
+                      first
+                      | rfl
+                      | norm_num [tribPart1_size, tribPart2_size, tribPart3_size] at hsize
+                | cons _ _ => simp at hnum
+
+example : tribClass.jointCount tribNumParts 4 2 = 3 := by
+  apply tribClass_jointCount_tribNumParts_eq_three_of_unique_triple
+    ([tribPart1, tribPart3] : tribClass.Obj)
+    ([tribPart3, tribPart1] : tribClass.Obj)
+    ([tribPart2, tribPart2] : tribClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · decide
+  · decide
+  · intro h
+    injection h with hhead _
+    cases hhead
+  · intro h
+    injection h with hhead _
+    cases hhead
+  · intro h
+    injection h with hhead _
+    cases hhead
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step123Class.size b + acc) 0 = 4 := by
+      exact (CombinatorialClass.level_mem_iff (C := tribClass) x).mp hx
+    change x.length = 2 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil =>
+                simp only [List.foldr_cons, List.foldr_nil] at hsize
+                rcases step123Class_obj_eq a with rfl | rfl | rfl <;>
+                  rcases step123Class_obj_eq b with rfl | rfl | rfl
+                all_goals
+                  first
+                  | left; rfl
+                  | right; left; rfl
+                  | right; right; rfl
+                  | norm_num [tribPart1_size, tribPart2_size, tribPart3_size] at hsize
+            | cons _ _ => simp at hnum
+
+example : tribClass.jointCount tribNumParts 4 3 = 3 := by
+  apply tribClass_jointCount_tribNumParts_eq_three_of_unique_triple
+    ([tribPart1, tribPart1, tribPart2] : tribClass.Obj)
+    ([tribPart1, tribPart2, tribPart1] : tribClass.Obj)
+    ([tribPart2, tribPart1, tribPart1] : tribClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · decide
+  · decide
+  · intro h
+    injection h with _ htail
+    injection htail with hhead _
+    cases hhead
+  · intro h
+    injection h with hhead _
+    cases hhead
+  · intro h
+    injection h with hhead _
+    cases hhead
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step123Class.size b + acc) 0 = 4 := by
+      exact (CombinatorialClass.level_mem_iff (C := tribClass) x).mp hx
+    change x.length = 3 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil => simp at hnum
+            | cons c xs =>
+                cases xs with
+                | nil =>
+                    simp only [List.foldr_cons, List.foldr_nil] at hsize
+                    rcases step123Class_obj_eq a with rfl | rfl | rfl <;>
+                      rcases step123Class_obj_eq b with rfl | rfl | rfl <;>
+                        rcases step123Class_obj_eq c with rfl | rfl | rfl
+                    all_goals
+                      first
+                      | left; rfl
+                      | right; left; rfl
+                      | right; right; rfl
+                      | norm_num [tribPart1_size, tribPart2_size, tribPart3_size] at hsize
+                | cons _ _ => simp at hnum
+
+example : tribClass.jointCount tribNumParts 4 4 = 1 := by
+  apply tribClass_jointCount_tribNumParts_eq_one_of_unique
+    ([tribPart1, tribPart1, tribPart1, tribPart1] : tribClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step123Class.size b + acc) 0 = 4 := by
+      exact (CombinatorialClass.level_mem_iff (C := tribClass) x).mp hx
+    change x.length = 4 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil => simp at hnum
+            | cons c xs =>
+                cases xs with
+                | nil => simp at hnum
+                | cons d xs =>
+                    cases xs with
+                    | nil =>
+                        simp only [List.foldr_cons, List.foldr_nil] at hsize
+                        rcases step123Class_obj_eq a with rfl | rfl | rfl <;>
+                          rcases step123Class_obj_eq b with rfl | rfl | rfl <;>
+                            rcases step123Class_obj_eq c with rfl | rfl | rfl <;>
+                              rcases step123Class_obj_eq d with rfl | rfl | rfl
+                        all_goals
+                          first
+                          | rfl
+                          | norm_num [tribPart1_size, tribPart2_size, tribPart3_size] at hsize
+                    | cons _ _ => simp at hnum
