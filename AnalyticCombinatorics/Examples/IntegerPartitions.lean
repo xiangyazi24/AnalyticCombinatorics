@@ -10,6 +10,7 @@
 -/
 import Mathlib.Combinatorics.Enumerative.Partition.Basic
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
+import AnalyticCombinatorics.PartA.Ch3.Parameters
 
 set_option linter.style.show false
 set_option linter.style.multiGoal false
@@ -129,3 +130,94 @@ example : intPartitionClass.count 10 = 42 := by
 -- Mathlib's `Nat.Partition.genFun` already contains the corresponding product
 -- theorem for weighted partition generating functions; bridging it to this
 -- `CombinatorialClass.ogf` is a separate task.
+
+/-!
+Bivariate sanity: integer partitions by number of parts.
+-/
+
+/-- Number of parts of an integer partition. -/
+def intPartNumParts : Parameter intPartitionClass :=
+  fun p => p.2.parts.card
+
+/-- Joint counts by number of parts agree with the computable Mathlib partition finset. -/
+theorem intPartitionClass_jointCount_intPartNumParts_eq_card (n k : ℕ) :
+    intPartitionClass.jointCount intPartNumParts n k =
+      ((Finset.univ : Finset (Nat.Partition n)).filter
+        (fun p => p.parts.card = k)).card := by
+  rw [CombinatorialClass.jointCount]
+  refine Finset.card_bij
+    (fun x hx => by
+      have hlevel : x ∈ intPartitionClass.level n := (Finset.mem_filter.mp hx).1
+      have hsz : intPartitionClass.size x = n :=
+        (CombinatorialClass.level_mem_iff (C := intPartitionClass) x).mp hlevel
+      cases x with
+      | mk m p =>
+          change m = n at hsz
+          subst m
+          exact p)
+    ?_ ?_ ?_
+  · intro x hx
+    have hparam : intPartNumParts x = k := (Finset.mem_filter.mp hx).2
+    have hlevel : x ∈ intPartitionClass.level n := (Finset.mem_filter.mp hx).1
+    have hsz : intPartitionClass.size x = n :=
+      (CombinatorialClass.level_mem_iff (C := intPartitionClass) x).mp hlevel
+    cases x with
+    | mk m p =>
+        change m = n at hsz
+        subst m
+        exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, hparam⟩
+  · intro x hx y hy hxy
+    have hxlevel : x ∈ intPartitionClass.level n := (Finset.mem_filter.mp hx).1
+    have hylevel : y ∈ intPartitionClass.level n := (Finset.mem_filter.mp hy).1
+    have hxsz : intPartitionClass.size x = n :=
+      (CombinatorialClass.level_mem_iff (C := intPartitionClass) x).mp hxlevel
+    have hysz : intPartitionClass.size y = n :=
+      (CombinatorialClass.level_mem_iff (C := intPartitionClass) y).mp hylevel
+    cases x with
+    | mk mx px =>
+      cases y with
+      | mk my py =>
+          change mx = n at hxsz
+          change my = n at hysz
+          subst mx
+          subst my
+          change px = py at hxy
+          subst hxy
+          rfl
+  · intro p hp
+    refine ⟨(⟨n, p⟩ : intPartitionClass.Obj), ?_, ?_⟩
+    · exact Finset.mem_filter.mpr
+        ⟨(CombinatorialClass.level_mem_iff (C := intPartitionClass) _).mpr rfl,
+          (Finset.mem_filter.mp hp).2⟩
+    · simp
+
+example : intPartitionClass.jointCount intPartNumParts 4 1 = 1 := by
+  rw [intPartitionClass_jointCount_intPartNumParts_eq_card]
+  native_decide
+
+example : intPartitionClass.jointCount intPartNumParts 4 2 = 2 := by
+  rw [intPartitionClass_jointCount_intPartNumParts_eq_card]
+  native_decide
+
+example : intPartitionClass.jointCount intPartNumParts 4 3 = 1 := by
+  rw [intPartitionClass_jointCount_intPartNumParts_eq_card]
+  native_decide
+
+example : intPartitionClass.jointCount intPartNumParts 4 4 = 1 := by
+  rw [intPartitionClass_jointCount_intPartNumParts_eq_card]
+  native_decide
+
+example : intPartitionClass.jointCount intPartNumParts 5 2 = 2 := by
+  rw [intPartitionClass_jointCount_intPartNumParts_eq_card]
+  native_decide
+
+example : intPartitionClass.jointCount intPartNumParts 5 3 = 2 := by
+  rw [intPartitionClass_jointCount_intPartNumParts_eq_card]
+  native_decide
+
+example :
+    ∑ k ∈ (intPartitionClass.level 4).image intPartNumParts,
+      intPartitionClass.jointCount intPartNumParts 4 k = 5 := by
+  rw [CombinatorialClass.jointCount_sum_eq_count]
+  rw [intPartitionClass_count_eq_card]
+  native_decide
