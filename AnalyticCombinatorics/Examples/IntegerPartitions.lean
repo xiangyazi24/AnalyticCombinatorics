@@ -173,6 +173,29 @@ example : intPartitionClass.count 21 = 792 := by
 -- is still usable at `n = 21` locally.  Adding the same checks for
 -- `n = 22, 23, 24, 25` made this file fail to finish checking in
 -- reasonable time, so the documented threshold here is `n = 21`.
+-- A separate test of the next check (`n = 22`) exceeded a 60-second CPU
+-- limit, so the requested `n = 26, 27, 28, 29, 30` checks are beyond the
+-- current `native_decide` threshold for this representation:
+--
+-- example : intPartitionClass.count 26 = 2436 := by
+--   rw [intPartitionClass_count_eq_card]
+--   native_decide
+--
+-- example : intPartitionClass.count 27 = 3010 := by
+--   rw [intPartitionClass_count_eq_card]
+--   native_decide
+--
+-- example : intPartitionClass.count 28 = 3718 := by
+--   rw [intPartitionClass_count_eq_card]
+--   native_decide
+--
+-- example : intPartitionClass.count 29 = 4565 := by
+--   rw [intPartitionClass_count_eq_card]
+--   native_decide
+--
+-- example : intPartitionClass.count 30 = 5604 := by
+--   rw [intPartitionClass_count_eq_card]
+--   native_decide
 
 -- TODO: State the F&S OGF identity in project notation:
 --   intPartitionClass.ogf = ∏_{k ≥ 1} (1 - z^k)⁻¹.
