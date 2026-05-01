@@ -695,3 +695,15 @@ private lemma bell_eleven_sanity : Nat.bell 11 = 678570 := by
 example : labelSetCount posIntClass 11 = (678570 : ℚ) := by
   rw [labelSetCount_posIntClass_eq_bell]
   norm_num [bell_eleven_sanity]
+
+example (n : ℕ) :
+    CombinatorialClass.labelCycCount posIntClass n =
+      ∑ k ∈ Finset.range (n + 1),
+        if k = 0 then 0
+        else ((k - 1).factorial * Nat.stirlingSecond n k : ℚ) := by
+  rw [labelCycCount_posIntClass_eq_cyclic_fubini]
+  apply Finset.sum_congr rfl
+  intro k _
+  by_cases hk : k = 0
+  · simp [hk]
+  · simp [hk, Nat.cast_mul]
