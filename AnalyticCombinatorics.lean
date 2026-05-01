@@ -30,6 +30,7 @@ import AnalyticCombinatorics.Examples.DyckPaths
 import AnalyticCombinatorics.Examples.Triangulations
 import AnalyticCombinatorics.Examples.CatalanFamily
 import AnalyticCombinatorics.Examples.Strings
+import AnalyticCombinatorics.Examples.StringsNoConsecutiveOnes
 import AnalyticCombinatorics.Examples.Compositions
 import AnalyticCombinatorics.Examples.IntegerPartitions
 import AnalyticCombinatorics.Examples.Fibonacci
