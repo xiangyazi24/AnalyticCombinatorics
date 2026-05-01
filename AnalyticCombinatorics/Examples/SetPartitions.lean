@@ -839,3 +839,18 @@ example : Nat.stirlingFirst 6 5 = 15 := by decide
 example : Nat.stirlingFirst 6 6 = 1 := by decide
 
 example : ∑ k ∈ Finset.range 7, Nat.stirlingFirst 6 k = 720 := by decide
+
+set_option linter.style.nativeDecide false in
+example : labelSetCount posIntClass 16 = (10480142147 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : labelSetCount posIntClass 17 = (82864869804 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : labelSetCount posIntClass 18 = (682076806159 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  native_decide
