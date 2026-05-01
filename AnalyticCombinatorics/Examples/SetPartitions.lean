@@ -511,3 +511,34 @@ example : CombinatorialClass.labelProdCount permClass posIntClass 1 = 1 := by
 example : CombinatorialClass.labelProdCount permClass posIntClass 2 = 3 := by
   rw [labelProdCount_permClass_posIntClass_eq_sum]
   decide
+
+/-! Bell EGF identities, parallel to the Fubini EGF identity above. -/
+
+/-- The Bell EGF has coefficient `Bell n / n!`. -/
+theorem coeff_bellSeries_eq_bell_div_factorial (n : ℕ) :
+    coeff n bellSeries = (Nat.bell n : ℚ) / n.factorial := by
+  rw [bellSeries, PowerSeries.coeff_mk]
+
+/-- Sanity: the labelled SET EGF over nonempty sets has coefficient `Bell n / n!`. -/
+theorem coeff_labelSetSeries_posIntClass_eq_bell_div_factorial (n : ℕ) :
+    coeff n (labelSetSeries posIntClass) = (Nat.bell n : ℚ) / n.factorial := by
+  rw [labelSetSeries_eq_bellSeries, coeff_bellSeries_eq_bell_div_factorial]
+
+/-- The Bell EGF as a labelled SET construction is `bellSeries`. -/
+theorem labelSetSeries_posIntClass_eq_bellSeries :
+    labelSetSeries posIntClass = bellSeries :=
+  labelSetSeries_eq_bellSeries
+
+/-- Bell ODE in `posIntClass.egf = exp(z) - 1` form:
+    `B' = (1 + posIntClass.egf) * B`. -/
+theorem labelSetSeries_posIntClass_derivative_eq_one_add_egf_mul :
+    d⁄dX ℚ (labelSetSeries posIntClass) =
+      (1 + posIntClass.egf) * labelSetSeries posIntClass := by
+  rw [labelSetSeries_derivative, ← posIntClass_egf_add_one_eq_exp]
+  ring
+
+/-- The same Bell ODE for the named Bell-number EGF. -/
+theorem bellSeries_derivative_eq_one_add_posIntClass_egf_mul :
+    d⁄dX ℚ bellSeries = (1 + posIntClass.egf) * bellSeries := by
+  rw [bellSeries_derivative, ← posIntClass_egf_add_one_eq_exp]
+  ring

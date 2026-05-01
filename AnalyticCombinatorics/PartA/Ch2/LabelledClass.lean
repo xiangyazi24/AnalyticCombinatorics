@@ -223,6 +223,12 @@ theorem coeff_exp_sq_eq_pow_div_factorial (n : ℕ) :
   push_cast
   rfl
 
+/-- `[zⁿ] (exp z)^k = k^n / n!`. Generalizes `coeff_exp_sq` (`k = 2`). -/
+theorem coeff_exp_pow_eq_pow_div_factorial (k n : ℕ) :
+    coeff n ((PowerSeries.exp ℚ) ^ k) = (k ^ n : ℚ) / n.factorial := by
+  rw [PowerSeries.exp_pow_eq_rescale_exp (A := ℚ) k]
+  simp [PowerSeries.coeff_rescale, PowerSeries.coeff_exp, div_eq_mul_inv]
+
 /-! ## Permutations -/
 
 /-- The class of permutations: at size `n`, the objects are bijections of `Fin n`. -/
