@@ -825,3 +825,7 @@ example : quatStringClass.count 3 = 64 := quatStringClass_count_eq_pow 3
 example : quatStringClass.count 4 = 256 := quatStringClass_count_eq_pow 4
 example : quatStringClass.count 5 = 1024 := quatStringClass_count_eq_pow 5
 example : quatStringClass.count 6 = 4096 := quatStringClass_count_eq_pow 6
+example : quatStringClass.count 7 = 16384 := quatStringClass_count_eq_pow 7
+example : quatStringClass.count 8 = 65536 := quatStringClass_count_eq_pow 8
+example : quatStringClass.count 9 = 262144 := quatStringClass_count_eq_pow 9
+example : quatStringClass.count 10 = 1048576 := quatStringClass_count_eq_pow 10

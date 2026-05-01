@@ -379,6 +379,24 @@ private lemma count_twelve : MotzTree.asClass.count 12 = 15511 := by
   norm_num [Finset.antidiagonal, count_zero, count_one, count_two, count_three, count_four,
     count_five, count_six, count_seven, count_eight, count_nine, count_ten, count_eleven]
 
+private lemma count_thirteen : MotzTree.asClass.count 13 = 41835 := by
+  rw [show 13 = 11 + 2 by norm_num, count_succ_succ 11]
+  norm_num [Finset.antidiagonal, count_zero, count_one, count_two, count_three, count_four,
+    count_five, count_six, count_seven, count_eight, count_nine, count_ten, count_eleven,
+    count_twelve]
+
+private lemma count_fourteen : MotzTree.asClass.count 14 = 113634 := by
+  rw [show 14 = 12 + 2 by norm_num, count_succ_succ 12]
+  norm_num [Finset.antidiagonal, count_zero, count_one, count_two, count_three, count_four,
+    count_five, count_six, count_seven, count_eight, count_nine, count_ten, count_eleven,
+    count_twelve, count_thirteen]
+
+private lemma count_fifteen : MotzTree.asClass.count 15 = 310572 := by
+  rw [show 15 = 13 + 2 by norm_num, count_succ_succ 13]
+  norm_num [Finset.antidiagonal, count_zero, count_one, count_two, count_three, count_four,
+    count_five, count_six, count_seven, count_eight, count_nine, count_ten, count_eleven,
+    count_twelve, count_thirteen, count_fourteen]
+
 example : decide (MotzTree.asClass.count 7 = 127) = true := by
   rw [count_seven]
   decide
@@ -401,6 +419,18 @@ example : decide (MotzTree.asClass.count 11 = 5798) = true := by
 
 example : decide (MotzTree.asClass.count 12 = 15511) = true := by
   rw [count_twelve]
+  decide
+
+example : decide (MotzTree.asClass.count 13 = 41835) = true := by
+  rw [count_thirteen]
+  decide
+
+example : decide (MotzTree.asClass.count 14 = 113634) = true := by
+  rw [count_fourteen]
+  decide
+
+example : decide (MotzTree.asClass.count 15 = 310572) = true := by
+  rw [count_fifteen]
   decide
 
 example : decide (MotzTree.asClass.count 7 + MotzTree.asClass.count 6 = 178) = true := by
