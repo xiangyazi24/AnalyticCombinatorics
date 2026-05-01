@@ -50,6 +50,18 @@ Every tmux line between Zinan and Sonnet starts with the sender's name + colon:
 
 Xiang's messages on this pane are unsigned and override the protocol.
 
+## Phantom-write hazard (codex specifically)
+
+**Problem observed (2026-04-30 task-bell-numbers):** codex sometimes prints
+"已写 HANDOFF/outbox/task-X-reply.md" in chat but does NOT actually call
+the Write tool. The reply file never lands on disk, the watcher never fires,
+and the task is silently lost.
+
+**Fix:** every blocker / done message MUST be backed by a real `Write`
+call to `HANDOFF/outbox/task-X-reply.md`. Driver verifies via `ls
+HANDOFF/outbox/` before believing the chat status. If the file is missing,
+the message is a phantom — re-prompt or write it manually from chat content.
+
 ## Hard rules for partner (Sonnet)
 
 1. **Never** replace `sorry` with `axiom`, `True`, `trivial` on a non-trivial goal, or any other escape hatch. If you can't prove it, file a blocker.
