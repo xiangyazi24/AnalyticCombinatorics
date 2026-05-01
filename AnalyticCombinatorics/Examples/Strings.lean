@@ -133,3 +133,7 @@ theorem stringClass_ogfZ_mul_one_sub_two_X :
     rw [map_sub, hshift]
     simp [ogfZ, coeff_ogf, stringClass_count_eq_pow, pow_succ]
     ring
+
+example : stringClass.count 2 = 4 := by rw [stringClass_count_eq_pow]; decide
+example : stringClass.count 4 = 16 := by rw [stringClass_count_eq_pow]; decide
+example : stringClass.count 5 = 32 := by rw [stringClass_count_eq_pow]; decide

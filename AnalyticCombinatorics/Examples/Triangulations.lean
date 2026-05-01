@@ -9,3 +9,11 @@ theorem triangulationClass_count (n : ℕ) :
     triangulationClass.count n = _root_.catalan n := by
   rw [show triangulationClass = BinTree.asClass from rfl]
   exact BinTree.catalan_eq_nat_catalan n
+
+example : triangulationClass.count 0 = 1 := by rw [triangulationClass_count, catalan_zero]
+example : triangulationClass.count 1 = 1 := by rw [triangulationClass_count, catalan_one]
+example : triangulationClass.count 2 = 2 := by rw [triangulationClass_count, catalan_two]
+example : triangulationClass.count 3 = 5 := by rw [triangulationClass_count, catalan_three]
+example : triangulationClass.count 4 = 14 := by
+  rw [triangulationClass_count]
+  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
