@@ -212,3 +212,24 @@ example : noConsecOnesClass.count 5 = 13 := by
 example : noConsecOnesClass.count 6 = 21 := by
   rw [noConsecOnesClass.count_eq_card]
   decide
+
+/-! Sanity checks from the closed form for n = 7..11. -/
+example : noConsecOnesClass.count 7 = 34 := by
+  rw [noConsecOnesClass_count_eq_fib]
+  decide
+
+example : noConsecOnesClass.count 8 = 55 := by
+  rw [noConsecOnesClass_count_eq_fib]
+  decide
+
+example : noConsecOnesClass.count 9 = 89 := by
+  rw [noConsecOnesClass_count_eq_fib]
+  decide
+
+example : noConsecOnesClass.count 10 = 144 := by
+  rw [noConsecOnesClass_count_eq_fib]
+  decide
+
+example : noConsecOnesClass.count 11 = 233 := by
+  rw [noConsecOnesClass_count_eq_fib]
+  decide

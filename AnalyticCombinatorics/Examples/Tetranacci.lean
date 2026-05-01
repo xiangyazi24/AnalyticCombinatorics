@@ -502,6 +502,10 @@ private instance : DecidableEq step1234Class.Obj := by
   unfold step1234Class CombinatorialClass.disjSum atomOfSize
   infer_instance
 
+private instance : DecidableEq tetraClass.Obj := by
+  change DecidableEq (List step1234Class.Obj)
+  infer_instance
+
 private lemma tetraPart1_size : step1234Class.size tetraPart1 = 1 := rfl
 private lemma tetraPart2_size : step1234Class.size tetraPart2 = 2 := rfl
 private lemma tetraPart3_size : step1234Class.size tetraPart3 = 3 := rfl
@@ -941,3 +945,228 @@ example : tetraClass.jointCount tetraNumParts 4 4 = 1 := by
                           | norm_num [tetraPart1_size, tetraPart2_size, tetraPart3_size,
                               tetraPart4_size] at hsize
                     | cons _ _ => simp at hnum
+
+private lemma tetraClass_jointCount_tetraNumParts_eq_card_of_finset
+    {n k : ℕ} (s : Finset tetraClass.Obj)
+    (hs : ∀ x : tetraClass.Obj,
+      x ∈ s ↔ x ∈ tetraClass.level n ∧ tetraNumParts x = k) :
+    tetraClass.jointCount tetraNumParts n k = s.card := by
+  unfold CombinatorialClass.jointCount
+  have hset :
+      (tetraClass.level n).filter (fun a => tetraNumParts a = k) = s := by
+    ext x
+    rw [Finset.mem_filter]
+    exact (hs x).symm
+  rw [hset]
+
+example : tetraClass.jointCount tetraNumParts 5 2 = 4 := by
+  let s : Finset tetraClass.Obj :=
+    ([ [tetraPart1, tetraPart4],
+      [tetraPart4, tetraPart1],
+      [tetraPart2, tetraPart3],
+      [tetraPart3, tetraPart2] ] : List tetraClass.Obj).toFinset
+  have h := tetraClass_jointCount_tetraNumParts_eq_card_of_finset (n := 5) (k := 2) s (by
+    intro x
+    constructor
+    · intro hx
+      have hx' :
+          x = [tetraPart1, tetraPart4] ∨
+            x = [tetraPart4, tetraPart1] ∨
+              x = [tetraPart2, tetraPart3] ∨ x = [tetraPart3, tetraPart2] := by
+        simpa [s] using hx
+      rcases hx' with rfl | rfl | rfl | rfl
+      all_goals
+        constructor
+        · rw [CombinatorialClass.level_mem_iff]
+          rfl
+        · decide
+    · intro hx
+      have hsize : x.foldr (fun b acc => step1234Class.size b + acc) 0 = 5 := by
+        exact (CombinatorialClass.level_mem_iff (C := tetraClass) x).mp hx.1
+      have hnum := hx.2
+      change x.length = 2 at hnum
+      cases x with
+      | nil => simp at hnum
+      | cons a xs =>
+          cases xs with
+          | nil => simp at hnum
+          | cons b xs =>
+              cases xs with
+              | nil =>
+                  simp only [List.foldr_cons, List.foldr_nil] at hsize
+                  rcases step1234Class_obj_eq a with rfl | rfl | rfl | rfl <;>
+                    rcases step1234Class_obj_eq b with rfl | rfl | rfl | rfl
+                  all_goals
+                    first
+                    | simp only [tetraPart1_size, tetraPart2_size, tetraPart3_size,
+                        tetraPart4_size] at hsize
+                      omega
+                    | simp [s]
+              | cons _ _ => simp at hnum)
+  rw [h]
+  decide
+
+example : tetraClass.jointCount tetraNumParts 5 3 = 6 := by
+  let s : Finset tetraClass.Obj :=
+    ([ [tetraPart1, tetraPart1, tetraPart3],
+      [tetraPart1, tetraPart3, tetraPart1],
+      [tetraPart3, tetraPart1, tetraPart1],
+      [tetraPart1, tetraPart2, tetraPart2],
+      [tetraPart2, tetraPart1, tetraPart2],
+      [tetraPart2, tetraPart2, tetraPart1] ] : List tetraClass.Obj).toFinset
+  have h := tetraClass_jointCount_tetraNumParts_eq_card_of_finset (n := 5) (k := 3) s (by
+    intro x
+    constructor
+    · intro hx
+      have hx' :
+          x = [tetraPart1, tetraPart1, tetraPart3] ∨
+            x = [tetraPart1, tetraPart3, tetraPart1] ∨
+              x = [tetraPart3, tetraPart1, tetraPart1] ∨
+                x = [tetraPart1, tetraPart2, tetraPart2] ∨
+                  x = [tetraPart2, tetraPart1, tetraPart2] ∨
+                    x = [tetraPart2, tetraPart2, tetraPart1] := by
+        simpa [s] using hx
+      rcases hx' with rfl | rfl | rfl | rfl | rfl | rfl
+      all_goals
+        constructor
+        · rw [CombinatorialClass.level_mem_iff]
+          rfl
+        · decide
+    · intro hx
+      have hsize : x.foldr (fun b acc => step1234Class.size b + acc) 0 = 5 := by
+        exact (CombinatorialClass.level_mem_iff (C := tetraClass) x).mp hx.1
+      have hnum := hx.2
+      change x.length = 3 at hnum
+      cases x with
+      | nil => simp at hnum
+      | cons a xs =>
+          cases xs with
+          | nil => simp at hnum
+          | cons b xs =>
+              cases xs with
+              | nil => simp at hnum
+              | cons c xs =>
+                  cases xs with
+                  | nil =>
+                      simp only [List.foldr_cons, List.foldr_nil] at hsize
+                      rcases step1234Class_obj_eq a with rfl | rfl | rfl | rfl <;>
+                        rcases step1234Class_obj_eq b with rfl | rfl | rfl | rfl <;>
+                          rcases step1234Class_obj_eq c with rfl | rfl | rfl | rfl
+                      all_goals
+                        first
+                        | simp only [tetraPart1_size, tetraPart2_size, tetraPart3_size,
+                            tetraPart4_size] at hsize
+                          omega
+                        | simp [s]
+                  | cons _ _ => simp at hnum)
+  rw [h]
+  decide
+
+example : tetraClass.jointCount tetraNumParts 5 4 = 4 := by
+  let s : Finset tetraClass.Obj :=
+    ([ [tetraPart1, tetraPart1, tetraPart1, tetraPart2],
+      [tetraPart1, tetraPart1, tetraPart2, tetraPart1],
+      [tetraPart1, tetraPart2, tetraPart1, tetraPart1],
+      [tetraPart2, tetraPart1, tetraPart1, tetraPart1] ] : List tetraClass.Obj).toFinset
+  have h := tetraClass_jointCount_tetraNumParts_eq_card_of_finset (n := 5) (k := 4) s (by
+    intro x
+    constructor
+    · intro hx
+      have hx' :
+          x = [tetraPart1, tetraPart1, tetraPart1, tetraPart2] ∨
+            x = [tetraPart1, tetraPart1, tetraPart2, tetraPart1] ∨
+              x = [tetraPart1, tetraPart2, tetraPart1, tetraPart1] ∨
+                x = [tetraPart2, tetraPart1, tetraPart1, tetraPart1] := by
+        simpa [s] using hx
+      rcases hx' with rfl | rfl | rfl | rfl
+      all_goals
+        constructor
+        · rw [CombinatorialClass.level_mem_iff]
+          rfl
+        · decide
+    · intro hx
+      have hsize : x.foldr (fun b acc => step1234Class.size b + acc) 0 = 5 := by
+        exact (CombinatorialClass.level_mem_iff (C := tetraClass) x).mp hx.1
+      have hnum := hx.2
+      change x.length = 4 at hnum
+      cases x with
+      | nil => simp at hnum
+      | cons a xs =>
+          cases xs with
+          | nil => simp at hnum
+          | cons b xs =>
+              cases xs with
+              | nil => simp at hnum
+              | cons c xs =>
+                  cases xs with
+                  | nil => simp at hnum
+                  | cons d xs =>
+                      cases xs with
+                      | nil =>
+                          simp only [List.foldr_cons, List.foldr_nil] at hsize
+                          rcases step1234Class_obj_eq a with rfl | rfl | rfl | rfl <;>
+                            rcases step1234Class_obj_eq b with rfl | rfl | rfl | rfl <;>
+                              rcases step1234Class_obj_eq c with rfl | rfl | rfl | rfl <;>
+                                rcases step1234Class_obj_eq d with rfl | rfl | rfl | rfl
+                          all_goals
+                            first
+                            | simp only [tetraPart1_size, tetraPart2_size, tetraPart3_size,
+                                tetraPart4_size] at hsize
+                              omega
+                            | simp [s]
+                      | cons _ _ => simp at hnum)
+  rw [h]
+  decide
+
+example : tetraClass.jointCount tetraNumParts 5 5 = 1 := by
+  let s : Finset tetraClass.Obj :=
+    ([ [tetraPart1, tetraPart1, tetraPart1, tetraPart1, tetraPart1] ] :
+      List tetraClass.Obj).toFinset
+  have h := tetraClass_jointCount_tetraNumParts_eq_card_of_finset (n := 5) (k := 5) s (by
+    intro x
+    constructor
+    · intro hx
+      have hx' : x = [tetraPart1, tetraPart1, tetraPart1, tetraPart1, tetraPart1] := by
+        simpa [s] using hx
+      subst x
+      constructor
+      · rw [CombinatorialClass.level_mem_iff]
+        rfl
+      · decide
+    · intro hx
+      have hsize : x.foldr (fun b acc => step1234Class.size b + acc) 0 = 5 := by
+        exact (CombinatorialClass.level_mem_iff (C := tetraClass) x).mp hx.1
+      have hnum := hx.2
+      change x.length = 5 at hnum
+      cases x with
+      | nil => simp at hnum
+      | cons a xs =>
+          cases xs with
+          | nil => simp at hnum
+          | cons b xs =>
+              cases xs with
+              | nil => simp at hnum
+              | cons c xs =>
+                  cases xs with
+                  | nil => simp at hnum
+                  | cons d xs =>
+                      cases xs with
+                      | nil => simp at hnum
+                      | cons e xs =>
+                          cases xs with
+                          | nil =>
+                              simp only [List.foldr_cons, List.foldr_nil] at hsize
+                              rcases step1234Class_obj_eq a with rfl | rfl | rfl | rfl <;>
+                                rcases step1234Class_obj_eq b with rfl | rfl | rfl | rfl <;>
+                                  rcases step1234Class_obj_eq c with rfl | rfl | rfl | rfl <;>
+                                    rcases step1234Class_obj_eq d with rfl | rfl | rfl | rfl <;>
+                                      rcases step1234Class_obj_eq e with rfl | rfl | rfl | rfl
+                              all_goals
+                                first
+                                | simp only [tetraPart1_size, tetraPart2_size,
+                                    tetraPart3_size, tetraPart4_size] at hsize
+                                  omega
+                                | simp [s]
+                          | cons _ _ => simp at hnum)
+  rw [h]
+  decide

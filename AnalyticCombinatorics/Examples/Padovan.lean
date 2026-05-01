@@ -346,6 +346,18 @@ def padovanNumParts : Parameter padovanClass := List.length
 private abbrev padovanPart2 : step23Class.Obj := Sum.inl ()
 private abbrev padovanPart3 : step23Class.Obj := Sum.inr ()
 
+private lemma step23Class_size_ge_two (x : step23Class.Obj) : 2 ≤ step23Class.size x := by
+  rcases x with x | x <;> cases x <;> decide
+
+private lemma padovanClass_size_ge_two_mul_length (x : padovanClass.Obj) :
+    2 * x.length ≤ x.foldr (fun b acc => step23Class.size b + acc) 0 := by
+  induction x with
+  | nil => simp
+  | cons a xs ih =>
+      simp only [List.length_cons, List.foldr_cons]
+      have ha := step23Class_size_ge_two a
+      omega
+
 private lemma padovanClass_jointCount_padovanNumParts_eq_one_of_unique
     {n k : ℕ} (x₀ : padovanClass.Obj)
     (hx₀ : x₀ ∈ padovanClass.level n)
@@ -651,6 +663,160 @@ example : padovanClass.jointCount padovanNumParts 6 3 = 1 := by
                       change (3 : ℕ) + (3 + (3 + 0)) = 6 at hsize
                       omega
                 | cons _ _ => simp at hnum
+
+example : padovanClass.jointCount padovanNumParts 7 4 = 0 := by
+  unfold CombinatorialClass.jointCount
+  rw [Finset.card_eq_zero]
+  apply Finset.eq_empty_of_forall_notMem
+  intro x hx
+  rw [Finset.mem_filter] at hx
+  have hsize : x.foldr (fun b acc => step23Class.size b + acc) 0 = 7 := by
+    exact (CombinatorialClass.level_mem_iff (C := padovanClass) x).mp hx.1
+  have hnum : padovanNumParts x = 4 := hx.2
+  change x.length = 4 at hnum
+  have hbound := padovanClass_size_ge_two_mul_length x
+  omega
+
+example : padovanClass.jointCount padovanNumParts 8 3 = 3 := by
+  apply padovanClass_jointCount_padovanNumParts_eq_three_of_unique_triple
+    ([padovanPart2, padovanPart3, padovanPart3] : padovanClass.Obj)
+    ([padovanPart3, padovanPart2, padovanPart3] : padovanClass.Obj)
+    ([padovanPart3, padovanPart3, padovanPart2] : padovanClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rfl
+  · rfl
+  · rfl
+  · intro h
+    injection h with hhead _
+    cases hhead
+  · intro h
+    injection h with hhead _
+    cases hhead
+  · intro h
+    injection h with _ htail
+    injection htail with hhead _
+    cases hhead
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step23Class.size b + acc) 0 = 8 := by
+      exact (CombinatorialClass.level_mem_iff (C := padovanClass) x).mp hx
+    change x.length = 3 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil => simp at hnum
+            | cons c xs =>
+                cases xs with
+                | nil =>
+                    simp only [List.foldr_cons, List.foldr_nil] at hsize
+                    rcases a with a | a <;> rcases b with b | b <;> rcases c with c | c
+                    · cases a
+                      cases b
+                      cases c
+                      change (2 : ℕ) + (2 + (2 + 0)) = 8 at hsize
+                      omega
+                    · cases a
+                      cases b
+                      cases c
+                      change (2 : ℕ) + (2 + (3 + 0)) = 8 at hsize
+                      omega
+                    · cases a
+                      cases b
+                      cases c
+                      change (2 : ℕ) + (3 + (2 + 0)) = 8 at hsize
+                      omega
+                    · cases a
+                      cases b
+                      cases c
+                      left
+                      rfl
+                    · cases a
+                      cases b
+                      cases c
+                      change (3 : ℕ) + (2 + (2 + 0)) = 8 at hsize
+                      omega
+                    · cases a
+                      cases b
+                      cases c
+                      right
+                      left
+                      rfl
+                    · cases a
+                      cases b
+                      cases c
+                      right
+                      right
+                      rfl
+                    · cases a
+                      cases b
+                      cases c
+                      change (3 : ℕ) + (3 + (3 + 0)) = 8 at hsize
+                      omega
+                | cons _ _ => simp at hnum
+
+example : padovanClass.jointCount padovanNumParts 8 4 = 1 := by
+  apply padovanClass_jointCount_padovanNumParts_eq_one_of_unique
+    ([padovanPart2, padovanPart2, padovanPart2, padovanPart2] : padovanClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rfl
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step23Class.size b + acc) 0 = 8 := by
+      exact (CombinatorialClass.level_mem_iff (C := padovanClass) x).mp hx
+    change x.length = 4 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil => simp at hnum
+            | cons c xs =>
+                cases xs with
+                | nil => simp at hnum
+                | cons d xs =>
+                    cases xs with
+                    | nil =>
+                        simp only [List.foldr_cons, List.foldr_nil] at hsize
+                        have ha := step23Class_size_ge_two a
+                        have hb := step23Class_size_ge_two b
+                        have hc := step23Class_size_ge_two c
+                        have hd := step23Class_size_ge_two d
+                        have hsa : step23Class.size a = 2 := by omega
+                        have hsb : step23Class.size b = 2 := by omega
+                        have hsc : step23Class.size c = 2 := by omega
+                        have hsd : step23Class.size d = 2 := by omega
+                        rcases a with a | a
+                        · rcases b with b | b
+                          · rcases c with c | c
+                            · rcases d with d | d
+                              · cases a
+                                cases b
+                                cases c
+                                cases d
+                                rfl
+                              · cases d
+                                change (3 : ℕ) = 2 at hsd
+                                omega
+                            · cases c
+                              change (3 : ℕ) = 2 at hsc
+                              omega
+                          · cases b
+                            change (3 : ℕ) = 2 at hsb
+                            omega
+                        · cases a
+                          change (3 : ℕ) = 2 at hsa
+                          omega
+                    | cons _ _ => simp at hnum
 
 example : padovanClass.jointCount padovanNumParts 7 3 = 3 := by
   apply padovanClass_jointCount_padovanNumParts_eq_three_of_unique_triple
