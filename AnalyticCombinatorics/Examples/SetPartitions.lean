@@ -552,3 +552,31 @@ example (n : ℕ) :
     (CombinatorialClass.labelSeq posIntClass posIntClass.count_zero).count n =
       ∑ k ∈ Finset.range (n + 1), k.factorial * Nat.stirlingSecond n k :=
   labelSeq_posIntClass_count_eq_fubini n
+
+private lemma bell_eight_sanity : Nat.bell 8 = 4140 := by
+  rw [show 8 = 7 + 1 by rfl, Nat.bell_succ']
+  norm_num [Finset.antidiagonal, Nat.choose, bell_three_sanity, bell_four_sanity,
+    bell_five_sanity, bell_six_sanity, bell_seven_sanity]
+
+private lemma bell_nine_sanity : Nat.bell 9 = 21147 := by
+  rw [show 9 = 8 + 1 by rfl, Nat.bell_succ']
+  norm_num [Finset.antidiagonal, Nat.choose, bell_three_sanity, bell_four_sanity,
+    bell_five_sanity, bell_six_sanity, bell_seven_sanity, bell_eight_sanity]
+
+private lemma bell_ten_sanity : Nat.bell 10 = 115975 := by
+  rw [show 10 = 9 + 1 by rfl, Nat.bell_succ']
+  norm_num [Finset.antidiagonal, Nat.choose, bell_three_sanity, bell_four_sanity,
+    bell_five_sanity, bell_six_sanity, bell_seven_sanity, bell_eight_sanity,
+    bell_nine_sanity]
+
+example : labelSetCount posIntClass 8 = (4140 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  norm_num [bell_eight_sanity]
+
+example : labelSetCount posIntClass 9 = (21147 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  norm_num [bell_nine_sanity]
+
+example : labelSetCount posIntClass 10 = (115975 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  norm_num [bell_ten_sanity]
