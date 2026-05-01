@@ -28,6 +28,7 @@ import AnalyticCombinatorics.Examples.MotzkinTrees
 import AnalyticCombinatorics.Examples.PlaneTrees
 import AnalyticCombinatorics.Examples.DyckPaths
 import AnalyticCombinatorics.Examples.Triangulations
+import AnalyticCombinatorics.Examples.CatalanFamily
 import AnalyticCombinatorics.Examples.Strings
 import AnalyticCombinatorics.Examples.Compositions
 import AnalyticCombinatorics.Examples.IntegerPartitions
