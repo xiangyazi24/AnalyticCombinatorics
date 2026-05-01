@@ -33,6 +33,7 @@ import AnalyticCombinatorics.Examples.Strings
 import AnalyticCombinatorics.Examples.StringsNoConsecutiveOnes
 import AnalyticCombinatorics.Examples.Compositions
 import AnalyticCombinatorics.Examples.CompositionsOdd
+import AnalyticCombinatorics.Examples.CompositionsEven
 import AnalyticCombinatorics.Examples.IntegerPartitions
 import AnalyticCombinatorics.Examples.Fibonacci
 import AnalyticCombinatorics.Examples.Tribonacci
