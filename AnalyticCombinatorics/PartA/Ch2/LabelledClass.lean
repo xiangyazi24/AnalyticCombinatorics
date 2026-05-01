@@ -513,12 +513,19 @@ theorem labelSetCount_div_factorial_eq_partial_exp_coeff
 
 end CombinatorialClass
 
-/-! Sanity checks: 0!=1, 1!=1, 2!=2, 3!=6, 4!=24. -/
+/-! Sanity checks: concrete factorial counts for permutations. -/
 example : permClass.count 0 = 1 := by rw [permClass_count_eq_factorial]; rfl
 example : permClass.count 1 = 1 := by rw [permClass_count_eq_factorial]; rfl
 example : permClass.count 2 = 2 := by rw [permClass_count_eq_factorial]; rfl
 example : permClass.count 3 = 6 := by rw [permClass_count_eq_factorial]; rfl
 example : permClass.count 4 = 24 := by rw [permClass_count_eq_factorial]; rfl
+example : permClass.count 5 = 120 := by rw [permClass_count_eq_factorial]; rfl
+example : permClass.count 6 = 720 := by rw [permClass_count_eq_factorial]; rfl
+example : permClass.count 7 = 5040 := by rw [permClass_count_eq_factorial]; rfl
+
+/-! Sanity examples for `permClass` via the EGF coefficient identity. -/
+example : (PowerSeries.coeff 0 permClass.egf : ℚ) = 1 := permClass_egf_coeff 0
+example : (PowerSeries.coeff 5 permClass.egf : ℚ) = 1 := permClass_egf_coeff 5
 
 example : CombinatorialClass.labelProdCount singletonClass singletonClass 3 = 8 :=
   singletonClass_labelProdCount_pow 3
@@ -592,5 +599,35 @@ theorem labelCycCount_div_factorial_eq_partial_log_coeff
   · simp only [if_neg hk]
     rw [← labelPow_count_div_factorial_eq_coeff_pow B k n]
     field_simp [Nat.cast_ne_zero.mpr n.factorial_pos.ne', Nat.cast_ne_zero.mpr hk]
+
+/-- labelProd is EGF-associative: `((A ⋆ B) ⋆ C).egf = (A ⋆ (B ⋆ C)).egf`. -/
+theorem labelProd_assoc_egf (A B C : CombinatorialClass.{0}) :
+    ((A.labelProd B).labelProd C).egf = (A.labelProd (B.labelProd C)).egf := by
+  rw [labelProd_egf, labelProd_egf, labelProd_egf, labelProd_egf, mul_assoc]
+
+/-- Symmetry: `A ⋆ B` and `B ⋆ A` have the same EGF. -/
+theorem labelProd_comm_egf (A B : CombinatorialClass.{0}) :
+    (A.labelProd B).egf = (B.labelProd A).egf := by
+  rw [labelProd_egf, labelProd_egf, mul_comm]
+
+/-- labelProdCount is associative at the count level. -/
+theorem labelProdCount_assoc (A B C : CombinatorialClass.{0}) (n : ℕ) :
+    labelProdCount (A.labelProd B) C n = labelProdCount A (B.labelProd C) n := by
+  apply Nat.cast_injective (R := ℚ)
+  have h := congrArg (fun f : PowerSeries ℚ => coeff n f) (labelProd_assoc_egf A B C)
+  simp only [coeff_egf, labelProd_count_eq_labelProdCount] at h
+  have h' := congrArg (fun x : ℚ => x * (n.factorial : ℚ)) h
+  field_simp [Nat.cast_ne_zero.mpr n.factorial_pos.ne'] at h'
+  exact h'
+
+/-- labelProdCount is symmetric. -/
+theorem labelProdCount_comm (A B : CombinatorialClass.{0}) (n : ℕ) :
+    labelProdCount A B n = labelProdCount B A n := by
+  apply Nat.cast_injective (R := ℚ)
+  have h := congrArg (fun f : PowerSeries ℚ => coeff n f) (labelProd_comm_egf A B)
+  simp only [coeff_egf, labelProd_count_eq_labelProdCount] at h
+  have h' := congrArg (fun x : ℚ => x * (n.factorial : ℚ)) h
+  field_simp [Nat.cast_ne_zero.mpr n.factorial_pos.ne'] at h'
+  exact h'
 
 end CombinatorialClass
