@@ -260,6 +260,9 @@ theorem stringClass_cartProd_count (n : ℕ) :
 /-- Parameter: number of `true`s in a binary string. -/
 def numOnes : Parameter stringClass := fun (xs : List Bool) => xs.count true
 
+/-- Parameter: number of `true`s in a binary string. -/
+def stringNumTrue : Parameter stringClass := numOnes
+
 private lemma bool_foldr_one_eq_length (xs : List Bool) :
     xs.foldr (fun _ acc => 1 + acc) 0 = xs.length := by
   induction xs with
@@ -399,6 +402,35 @@ example : stringClass.jointCount numOnes 2 1 = 2 := by
 example : stringClass.jointCount numOnes 2 2 = 1 := by
   rw [stringClass_jointCount_numOnes]
   rfl
+
+/-! Sanity checks for the requested `stringNumTrue` parameter. -/
+
+example : stringClass.jointCount stringNumTrue 3 0 = 1 := by
+  rw [show stringNumTrue = numOnes by rfl, stringClass_jointCount_numOnes]
+  decide
+
+example : stringClass.jointCount stringNumTrue 3 1 = 3 := by
+  rw [show stringNumTrue = numOnes by rfl, stringClass_jointCount_numOnes]
+  decide
+
+example : stringClass.jointCount stringNumTrue 3 2 = 3 := by
+  rw [show stringNumTrue = numOnes by rfl, stringClass_jointCount_numOnes]
+  decide
+
+example : stringClass.jointCount stringNumTrue 3 3 = 1 := by
+  rw [show stringNumTrue = numOnes by rfl, stringClass_jointCount_numOnes]
+  decide
+
+example : stringClass.jointCount stringNumTrue 4 2 = 6 := by
+  rw [show stringNumTrue = numOnes by rfl, stringClass_jointCount_numOnes]
+  decide
+
+example :
+    ∑ k ∈ (stringClass.level 4).image stringNumTrue,
+      stringClass.jointCount stringNumTrue 4 k = 16 := by
+  rw [CombinatorialClass.jointCount_sum_eq_count]
+  rw [stringClass_count_eq_pow]
+  norm_num
 
 example : stringClass.count 6 = 64 := stringClass_count_eq_pow 6
 example : stringClass.count 7 = 128 := stringClass_count_eq_pow 7
