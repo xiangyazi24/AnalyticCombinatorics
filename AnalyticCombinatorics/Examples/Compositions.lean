@@ -1048,6 +1048,18 @@ example : compositionClass.count 15 = 16384 := by
   rw [compositionClass_count_succ]
   decide
 
+example : compositionClass.count 16 = 32768 := by
+  rw [compositionClass_count_succ]
+  decide
+
+example : compositionClass.count 17 = 65536 := by
+  rw [compositionClass_count_succ]
+  decide
+
+example : compositionClass.count 18 = 131072 := by
+  rw [compositionClass_count_succ]
+  decide
+
 example : compositionGe2Class.count 8 = 13 := by
   rw [compositionGe2Class_count_succ_succ]
   decide
@@ -1065,5 +1077,29 @@ example : compositionGe2Class.count 11 = 55 := by
   decide
 
 example : compositionGe2Class.count 12 = 89 := by
+  rw [compositionGe2Class_count_succ_succ]
+  decide
+
+example : compositionGe2Class.count 13 = 144 := by
+  rw [compositionGe2Class_count_succ_succ]
+  decide
+
+example : compositionGe2Class.count 14 = 233 := by
+  rw [compositionGe2Class_count_succ_succ]
+  decide
+
+example : compositionGe2Class.count 15 = 377 := by
+  rw [compositionGe2Class_count_succ_succ]
+  decide
+
+example : compositionGe2Class.count 16 = 610 := by
+  rw [compositionGe2Class_count_succ_succ]
+  decide
+
+example : compositionGe2Class.count 17 = 987 := by
+  rw [compositionGe2Class_count_succ_succ]
+  decide
+
+example : compositionGe2Class.count 18 = 1597 := by
   rw [compositionGe2Class_count_succ_succ]
   decide

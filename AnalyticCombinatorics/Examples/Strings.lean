@@ -856,3 +856,27 @@ example : (quatStringClass.cartProd quatStringClass).count 2 = 48 := by
 example : (quatStringClass.cartProd quatStringClass).count 5 = 6144 := by
   rw [quatStringClass_cartProd_count]
   norm_num
+
+/-! Additional sanity checks for the main string classes at higher lengths. -/
+
+example : stringClass.count 11 = 2048 := stringClass_count_eq_pow 11
+example : stringClass.count 12 = 4096 := stringClass_count_eq_pow 12
+example : stringClass.count 13 = 8192 := stringClass_count_eq_pow 13
+example : stringClass.count 14 = 16384 := stringClass_count_eq_pow 14
+example : stringClass.count 15 = 32768 := stringClass_count_eq_pow 15
+
+example : ternaryStringClass.count 7 = 2187 := ternaryStringClass_count_eq_pow 7
+example : ternaryStringClass.count 8 = 6561 := ternaryStringClass_count_eq_pow 8
+example : ternaryStringClass.count 9 = 19683 := ternaryStringClass_count_eq_pow 9
+example : ternaryStringClass.count 10 = 59049 := ternaryStringClass_count_eq_pow 10
+example : ternaryStringClass.count 11 = 177147 := ternaryStringClass_count_eq_pow 11
+example : ternaryStringClass.count 12 = 531441 := ternaryStringClass_count_eq_pow 12
+example : ternaryStringClass.count 13 = 1594323 := ternaryStringClass_count_eq_pow 13
+example : ternaryStringClass.count 14 = 4782969 := ternaryStringClass_count_eq_pow 14
+example : ternaryStringClass.count 15 = 14348907 := ternaryStringClass_count_eq_pow 15
+
+example : quatStringClass.count 11 = 4194304 := quatStringClass_count_eq_pow 11
+example : quatStringClass.count 12 = 16777216 := quatStringClass_count_eq_pow 12
+example : quatStringClass.count 13 = 67108864 := quatStringClass_count_eq_pow 13
+example : quatStringClass.count 14 = 268435456 := quatStringClass_count_eq_pow 14
+example : quatStringClass.count 15 = 1073741824 := quatStringClass_count_eq_pow 15
