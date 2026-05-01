@@ -361,3 +361,15 @@ example (n : ℕ) :
   rw [hsize]
 
 end BinTree
+
+example : ((BinTree.asClass.cartProd BinTree.asClass).cartProd BinTree.asClass).count 0 = 1 := by
+  rw [CombinatorialClass.cartProd_count]
+  simp [BinTree_asClass_cartProd_count_eq_catalan_succ, BinTree.count_zero]
+
+example : ((BinTree.asClass.cartProd BinTree.asClass).cartProd BinTree.asClass).count 1 = 3 := by
+  rw [CombinatorialClass.cartProd_count]
+  have h1 : BinTree.asClass.count 1 = 1 := by
+    rw [show BinTree.asClass.count 1 = BinTree.catalan 1 from rfl,
+        BinTree.catalan_eq_nat_catalan, _root_.catalan_one]
+  norm_num [Finset.antidiagonal, BinTree_asClass_cartProd_count_eq_catalan_succ,
+    BinTree.count_zero, h1, _root_.catalan_two]
