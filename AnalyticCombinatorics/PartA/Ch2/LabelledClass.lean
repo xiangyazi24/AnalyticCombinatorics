@@ -785,4 +785,58 @@ example : CombinatorialClass.labelProdCount permClass permClass 2 = 6 := by
   simp [permClass_count_eq_factorial]
   decide
 
+/-- Coefficients of a power of the geometric series, in multichoose form. -/
+theorem coeff_mk_one_pow_eq_multichoose (k n : ℕ) :
+    coeff n ((PowerSeries.mk fun _ : ℕ => (1 : ℚ)) ^ k) =
+      (Nat.multichoose k n : ℚ) := by
+  cases k with
+  | zero =>
+      cases n with
+      | zero => simp
+      | succ n => simp
+  | succ d =>
+      change coeff n ((PowerSeries.mk (1 : ℕ → ℚ)) ^ (d + 1)) =
+        (Nat.multichoose (d + 1) n : ℚ)
+      rw [PowerSeries.mk_one_pow_eq_mk_choose_add]
+      simp only [PowerSeries.coeff_mk]
+      norm_cast
+      rw [Nat.multichoose_eq]
+      have h : d + 1 + n - 1 = d + n := by omega
+      rw [h, Nat.choose_symm_add]
+
+/-- Count formula for `k` labelled factors of the permutation class. -/
+theorem labelPow_permClass_count_multichoose (k n : ℕ) :
+    (CombinatorialClass.labelPow permClass k).count n =
+      n.factorial * Nat.multichoose k n := by
+  apply Nat.cast_injective (R := ℚ)
+  have h := CombinatorialClass.labelPow_count_div_factorial_eq_coeff_pow permClass k n
+  rw [permClass_egf_eq_mk_one, coeff_mk_one_pow_eq_multichoose] at h
+  have h' := congrArg (fun x : ℚ => x * (n.factorial : ℚ)) h
+  field_simp [Nat.cast_ne_zero.mpr n.factorial_pos.ne'] at h'
+  rw [Nat.cast_mul]
+  exact h'
+
+/-- Count formula for `k` labelled factors of the permutation class, as a binomial coefficient. -/
+theorem labelPow_permClass_count (k n : ℕ) :
+    (CombinatorialClass.labelPow permClass k).count n =
+      n.factorial * (n + k - 1).choose n := by
+  rw [labelPow_permClass_count_multichoose, Nat.multichoose_eq]
+  congr 1
+  rw [Nat.add_comm]
+
+example : (CombinatorialClass.labelPow permClass 0).count 0 = 1 := by
+  simp [CombinatorialClass.labelPow, Epsilon_count_zero]
+
+example : (CombinatorialClass.labelPow permClass 0).count 1 = 0 := by
+  simp [CombinatorialClass.labelPow]
+  rw [Epsilon_count_pos (by omega)]
+
+example : (CombinatorialClass.labelPow permClass 1).count 1 = 1 := by
+  rw [labelPow_permClass_count]
+  rfl
+
+example : (CombinatorialClass.labelPow permClass 2).count 2 = 6 := by
+  rw [labelPow_permClass_count]
+  decide
+
 end CombinatorialClass
