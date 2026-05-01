@@ -1,28 +1,32 @@
-# Task — Bell EGF identity (1 - exp(exp(z)-1))-style
+# Task — Bell EGF identity (state-or-blocker)
 
 **File:** `AnalyticCombinatorics/Examples/SetPartitions.lean` (append)
 
-**Goal:** Document the relationship `bellSeries · (1 - posIntClass.egf) ?` etc, parallel to Fubini.
+The Bell EGF identity: `B(z) = exp(exp(z) - 1)`. In our setup that's:
 
-The Bell numbers' EGF is `exp(exp(z) - 1)`. We have `posIntClass.egf = exp(z) - 1` and `labelSetSeries posIntClass` (the Bell EGF) satisfies the Bell ODE.
+`bellSeries = PowerSeries.exp ℚ (posIntClass.egf)`
+
+(with `posIntClass.egf = exp(X) - 1`, already proved as `posIntClass_egf_eq_exp_sub_one`).
+
+Try to **state and prove**:
 
 ```lean
-/-- Sanity: the Bell EGF coefficient at n equals (Bell n : ℚ) / n!. 
-    Already implicit in labelSetCount_posIntClass_eq_bell. -/
-example (n : ℕ) :
-    coeff n (CombinatorialClass.labelSetCount posIntClass · ↑n.factorial⁻¹) = ?_ :=
-  sorry  -- adapt or remove as needed
-
-/-- Bell ODE (already proven internally to bell-numbers task):
-    (labelSetSeries posIntClass)' = exp(z) · (labelSetSeries posIntClass).
-    Equivalently: posIntClass.egf' · (labelSetSeries) = exp · labelSetSeries — adapt as needed. -/
+theorem bellSeries_eq_exp_comp_posIntClass_egf :
+    bellSeries = (PowerSeries.exp ℚ).comp posIntClass.egf := by
+  sorry
 ```
 
-If the existing proof of `labelSetCount_posIntClass_eq_bell` already exposes `labelSetSeries` and `bellSeries`, just rename or document them; otherwise file blocker.
+(Or whatever statement matches the existing `bellSeries` definition and `PowerSeries.exp.comp` API.)
+
+## Approach
+
+The file likely already proves `labelSetCount_posIntClass_eq_bell` via an ODE F'·(1-X) = exp·F or similar. The EGF identity follows by exp ∘ B integration if `posIntClass.egf = exp(X) - 1`. The composition `exp(exp(X) - 1)` should reduce to `bellSeries` directly using the labelSet → exp identity already in the file.
 
 ## Hard constraints
 
-- Build green
-- No new sorrys when delivered
-- Reply at HANDOFF/outbox/task-bell-egf-reply.md
-- File blocker if the ODE doesn't expose cleanly
+- Build green.
+- No new sorrys.
+- Reply at HANDOFF/outbox/task-bell-egf-reply.md.
+- If `PowerSeries.comp` doesn't exist or doesn't behave nicely (e.g. requires a constant-zero hypothesis on the composed series), document and fall back to a coefficient-form identity:
+  `bellSeries = PowerSeries.mk (fun n => ∑ k, choose n k * bell k)` (or the existing labelSet identity).
+- Do NOT introduce axioms.

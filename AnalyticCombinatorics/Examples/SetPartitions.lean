@@ -541,6 +541,27 @@ theorem labelSetSeries_posIntClass_eq_bellSeries :
     labelSetSeries posIntClass = bellSeries :=
   labelSetSeries_eq_bellSeries
 
+/-- Bell EGF identity. Mathlib's power-series composition API is `subst`. -/
+theorem bellSeries_eq_exp_subst_posIntClass_egf :
+    bellSeries = (PowerSeries.exp ℚ).subst posIntClass.egf := by
+  rw [← labelSetSeries_eq_bellSeries]
+  ext n
+  rw [labelSetSeries_coeff_eq_partial posIntClass n, coeff_labelSetPartial]
+  rw [PowerSeries.coeff_subst'
+    (PowerSeries.HasSubst.of_constantCoeff_zero' posIntClass_egf_constantCoeff_zero)]
+  rw [finsum_eq_sum_of_support_subset]
+  · apply Finset.sum_congr rfl
+    intro k _
+    rw [PowerSeries.coeff_exp]
+    simp [div_eq_mul_inv, smul_eq_mul, mul_comm]
+  · rw [Function.support_subset_iff']
+    intro k hk
+    have hnk : n < k := by
+      have hk' : ¬ k < n + 1 := by simpa using hk
+      omega
+    rw [coeff_pow_eq_zero_of_constantCoeff_eq_zero posIntClass_egf_constantCoeff_zero hnk]
+    simp
+
 /-- Bell ODE in `posIntClass.egf = exp(z) - 1` form:
     `B' = (1 + posIntClass.egf) * B`. -/
 theorem labelSetSeries_posIntClass_derivative_eq_one_add_egf_mul :

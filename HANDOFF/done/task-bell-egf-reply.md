@@ -1,14 +1,19 @@
 Done.
 
-- Appended Bell EGF documentation theorems to `AnalyticCombinatorics/Examples/SetPartitions.lean`.
-- Added coefficient identities for `bellSeries` and `labelSetSeries posIntClass`.
-- Exposed the Bell ODE in `posIntClass.egf = exp(z) - 1` form:
-  `B' = (1 + posIntClass.egf) * B`, for both `labelSetSeries posIntClass` and `bellSeries`.
-- No blocker: the existing ODEs were already cleanly exposed.
+Added the Bell EGF identity using the Mathlib API that exists here:
+
+```lean
+theorem bellSeries_eq_exp_subst_posIntClass_egf :
+    bellSeries = (PowerSeries.exp ℚ).subst posIntClass.egf := by
+```
+
+`PowerSeries.comp` is not the univariate power-series composition API in this checkout; `PowerSeries.subst` is. The proof uses the existing `labelSetSeries_eq_bellSeries`, expands `subst` coefficientwise with `PowerSeries.coeff_subst'`, and truncates the finsum via `posIntClass_egf_constantCoeff_zero`.
 
 Verification:
 
-- `lake build AnalyticCombinatorics.Examples.SetPartitions`
-- `lake build`
+```text
+lake env lean AnalyticCombinatorics/Examples/SetPartitions.lean
+lake build
+```
 
-Both passed. The build still reports pre-existing lint warnings in other files.
+Both passed. No new `sorry` or `axiom` in `SetPartitions.lean`.
