@@ -145,6 +145,26 @@ example : intPartitionClass.count 15 = 176 := by
   rw [intPartitionClass_count_eq_card]
   native_decide
 
+example : intPartitionClass.count 16 = 231 := by
+  rw [intPartitionClass_count_eq_card]
+  native_decide
+
+example : intPartitionClass.count 17 = 297 := by
+  rw [intPartitionClass_count_eq_card]
+  native_decide
+
+example : intPartitionClass.count 18 = 385 := by
+  rw [intPartitionClass_count_eq_card]
+  native_decide
+
+example : intPartitionClass.count 19 = 490 := by
+  rw [intPartitionClass_count_eq_card]
+  native_decide
+
+example : intPartitionClass.count 20 = 627 := by
+  rw [intPartitionClass_count_eq_card]
+  native_decide
+
 -- TODO: State the F&S OGF identity in project notation:
 --   intPartitionClass.ogf = ∏_{k ≥ 1} (1 - z^k)⁻¹.
 -- Mathlib's `Nat.Partition.genFun` already contains the corresponding product
