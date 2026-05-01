@@ -187,3 +187,15 @@ example (n : ℕ) :
     2 * compositionClass.count (n + 1) = compositionClass.count (n + 2) := by
   rw [compositionClass_count_succ, compositionClass_count_succ, pow_succ]
   ring
+
+/-- EGF coefficient: [zⁿ] compositionClass.egf = compositionClass.count n / n!
+    = 2^(n-1) / n! for n ≥ 1, 1 for n = 0. -/
+example : compositionClass.egf.coeff 0 = 1 := by
+  rw [CombinatorialClass.coeff_egf, compositionClass_count_zero]
+  simp
+
+example (n : ℕ) (hn : 1 ≤ n) :
+    compositionClass.egf.coeff n = (2 ^ (n - 1) : ℚ) / n.factorial := by
+  rw [CombinatorialClass.coeff_egf, compositionClass_count_eq_pow_pred n hn]
+  push_cast
+  rfl

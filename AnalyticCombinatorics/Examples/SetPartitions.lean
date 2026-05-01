@@ -379,3 +379,15 @@ example : (labelSeq posIntClass posIntClass.count_zero).count 2 = 3 := by
 example : (labelSeq posIntClass posIntClass.count_zero).count 3 = 13 := by
   rw [labelSeq_posIntClass_count_eq_fubini]
   decide
+
+example : (labelSeq posIntClass posIntClass.count_zero).count 4 = 75 := by
+  rw [labelSeq_posIntClass_count_eq_fubini]
+  decide
+
+example : (labelSeq posIntClass posIntClass.count_zero).count 5 = 541 := by
+  rw [labelSeq_posIntClass_count_eq_fubini]
+  decide
+
+example : (labelSeq posIntClass posIntClass.count_zero).count 6 = 4683 := by
+  rw [labelSeq_posIntClass_count_eq_fubini]
+  decide
