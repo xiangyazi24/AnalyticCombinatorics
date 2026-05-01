@@ -580,3 +580,11 @@ example : labelSetCount posIntClass 9 = (21147 : ℚ) := by
 example : labelSetCount posIntClass 10 = (115975 : ℚ) := by
   rw [labelSetCount_posIntClass_eq_bell]
   norm_num [bell_ten_sanity]
+
+example : (CombinatorialClass.labelSeq posIntClass posIntClass.count_zero).count 7 = 47293 := by
+  rw [labelSeq_posIntClass_count_eq_fubini]
+  decide
+
+example : (CombinatorialClass.labelSeq posIntClass posIntClass.count_zero).count 8 = 545835 := by
+  rw [labelSeq_posIntClass_count_eq_fubini]
+  decide
