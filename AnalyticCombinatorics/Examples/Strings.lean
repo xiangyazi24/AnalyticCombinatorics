@@ -397,3 +397,9 @@ example : stringClass.jointCount numOnes 2 1 = 2 := by
 example : stringClass.jointCount numOnes 2 2 = 1 := by
   rw [stringClass_jointCount_numOnes]
   rfl
+
+example : stringClass.count 6 = 64 := stringClass_count_eq_pow 6
+example : stringClass.count 7 = 128 := stringClass_count_eq_pow 7
+example : stringClass.count 8 = 256 := stringClass_count_eq_pow 8
+example : stringClass.count 9 = 512 := stringClass_count_eq_pow 9
+example : stringClass.count 10 = 1024 := stringClass_count_eq_pow 10
