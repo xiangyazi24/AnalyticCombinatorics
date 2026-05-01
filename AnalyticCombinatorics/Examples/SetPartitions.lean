@@ -826,6 +826,37 @@ theorem bell_recurrence (n : ℕ) :
   rw [Nat.sub_sub_self hk_le]
   rw [Nat.choose_symm hk_le]
 
+example : Nat.bell 1 = Nat.choose 0 0 * Nat.bell 0 := by
+  rw [show 1 = 0 + 1 by rfl, bell_recurrence 0]
+  norm_num [Finset.sum_range_succ, bell_three_sanity, bell_four_sanity]
+
+example :
+    Nat.bell 2 = Nat.choose 1 0 * Nat.bell 0 + Nat.choose 1 1 * Nat.bell 1 := by
+  rw [show 2 = 1 + 1 by rfl, bell_recurrence 1]
+  norm_num [Finset.sum_range_succ, bell_three_sanity, bell_four_sanity]
+
+example :
+    Nat.bell 3 =
+      Nat.choose 2 0 * Nat.bell 0 + Nat.choose 2 1 * Nat.bell 1 +
+        Nat.choose 2 2 * Nat.bell 2 := by
+  rw [show 3 = 2 + 1 by rfl, bell_recurrence 2]
+  norm_num [Finset.sum_range_succ, bell_three_sanity, bell_four_sanity]
+
+example :
+    Nat.bell 4 =
+      Nat.choose 3 0 * Nat.bell 0 + Nat.choose 3 1 * Nat.bell 1 +
+        Nat.choose 3 2 * Nat.bell 2 + Nat.choose 3 3 * Nat.bell 3 := by
+  rw [show 4 = 3 + 1 by rfl, bell_recurrence 3]
+  norm_num [Finset.sum_range_succ, bell_three_sanity, bell_four_sanity]
+
+example :
+    Nat.bell 5 =
+      Nat.choose 4 0 * Nat.bell 0 + Nat.choose 4 1 * Nat.bell 1 +
+        Nat.choose 4 2 * Nat.bell 2 + Nat.choose 4 3 * Nat.bell 3 +
+          Nat.choose 4 4 * Nat.bell 4 := by
+  rw [show 5 = 4 + 1 by rfl, bell_recurrence 4]
+  norm_num [Finset.sum_range_succ, bell_three_sanity, bell_four_sanity]
+
 /-- Project-facing name for the classical recurrence of Stirling numbers of the second kind. -/
 theorem stirlingSecond_succ (n k : ℕ) :
     Nat.stirlingSecond (n + 1) (k + 1) =
