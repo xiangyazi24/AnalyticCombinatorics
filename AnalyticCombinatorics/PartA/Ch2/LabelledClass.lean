@@ -31,6 +31,7 @@ import Mathlib.Topology.Instances.Rat
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
+import AnalyticCombinatorics.PartA.Ch3.Parameters
 
 open PowerSeries
 open scoped PowerSeries.WithPiTopology
@@ -300,6 +301,51 @@ theorem permClass_egf_mul_one_sub_X :
     permClass.egf * (1 - PowerSeries.X) = 1 := by
   rw [permClass_egf_eq_mk_one]
   exact PowerSeries.mk_one_mul_one_sub_eq_one ℚ
+
+/-- For `(n, σ) ∈ permClass`, the number of fixed points of `σ`. -/
+noncomputable def permClass.numFixedPoints :
+    Parameter permClass :=
+  fun s => (Finset.univ.filter (fun i : Fin s.fst => s.snd i = i)).card
+
+/-- Sanity: the empty permutation has all zero of its points fixed. -/
+example : permClass.jointCount permClass.numFixedPoints 0 0 = 1 := by
+  rw [CombinatorialClass.jointCount]
+  have hfilter :
+      (permClass.level 0).filter (fun a => permClass.numFixedPoints a = 0) =
+        permClass.level 0 := by
+    apply Finset.filter_true_of_mem
+    intro a ha
+    obtain ⟨n, σ⟩ := a
+    have hn : n = 0 :=
+      (CombinatorialClass.level_mem_iff (C := permClass) ⟨n, σ⟩).mp ha
+    subst n
+    simp [permClass.numFixedPoints]
+  rw [hfilter]
+  rw [← CombinatorialClass.count, permClass_count_eq_factorial]
+  rfl
+
+/-- Sanity: the unique permutation of one point fixes that point. -/
+example : permClass.jointCount permClass.numFixedPoints 1 1 = 1 := by
+  rw [CombinatorialClass.jointCount]
+  have hfilter :
+      (permClass.level 1).filter (fun a => permClass.numFixedPoints a = 1) =
+        permClass.level 1 := by
+    apply Finset.filter_true_of_mem
+    intro a ha
+    obtain ⟨n, σ⟩ := a
+    have hn : n = 1 :=
+      (CombinatorialClass.level_mem_iff (C := permClass) ⟨n, σ⟩).mp ha
+    subst n
+    rw [permClass.numFixedPoints]
+    have hfixed :
+        (Finset.univ.filter (fun i : Fin 1 => σ i = i)) = Finset.univ := by
+      apply Finset.filter_true_of_mem
+      intro i _
+      exact Subsingleton.elim (σ i) i
+    rw [hfixed, Finset.card_univ, Fintype.card_fin]
+  rw [hfilter]
+  rw [← CombinatorialClass.count, permClass_count_eq_factorial]
+  rfl
 
 namespace CombinatorialClass
 
