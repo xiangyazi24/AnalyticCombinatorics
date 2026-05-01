@@ -817,3 +817,25 @@ theorem stirlingFirst_succ (n k : ℕ) :
     Nat.stirlingFirst (n + 1) (k + 1) =
       n * Nat.stirlingFirst n (k + 1) + Nat.stirlingFirst n k := by
   exact Nat.stirlingFirst_succ_succ n k
+
+/-! Complete `n = 6` Stirling sanity rows. -/
+
+example : Nat.stirlingSecond 6 0 = 0 := by decide
+example : Nat.stirlingSecond 6 1 = 1 := by decide
+example : Nat.stirlingSecond 6 2 = 31 := by decide
+example : Nat.stirlingSecond 6 3 = 90 := by decide
+example : Nat.stirlingSecond 6 4 = 65 := by decide
+example : Nat.stirlingSecond 6 5 = 15 := by decide
+example : Nat.stirlingSecond 6 6 = 1 := by decide
+
+example : ∑ k ∈ Finset.range 7, Nat.stirlingSecond 6 k = 203 := by decide
+
+example : Nat.stirlingFirst 6 0 = 0 := by decide
+example : Nat.stirlingFirst 6 1 = 120 := by decide
+example : Nat.stirlingFirst 6 2 = 274 := by decide
+example : Nat.stirlingFirst 6 3 = 225 := by decide
+example : Nat.stirlingFirst 6 4 = 85 := by decide
+example : Nat.stirlingFirst 6 5 = 15 := by decide
+example : Nat.stirlingFirst 6 6 = 1 := by decide
+
+example : ∑ k ∈ Finset.range 7, Nat.stirlingFirst 6 k = 720 := by decide
