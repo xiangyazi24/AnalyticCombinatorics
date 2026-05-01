@@ -296,6 +296,11 @@ theorem BinTree_asClass_cartProd_count (n : ℕ) :
   rw [show BinTree.asClass.count p.2 = _root_.catalan p.2 from
         BinTree.catalan_eq_nat_catalan p.2]
 
+/-- The Catalan convolution for two binary-tree classes gives the next Catalan number. -/
+example (n : ℕ) :
+    (BinTree.asClass.cartProd BinTree.asClass).count n = _root_.catalan (n + 1) := by
+  rw [BinTree_asClass_cartProd_count, _root_.catalan_succ']
+
 example : (BinTree.asClass.cartProd BinTree.asClass).count 0 = 1 := by
   rw [BinTree_asClass_cartProd_count]
   native_decide
