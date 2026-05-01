@@ -423,3 +423,101 @@ example : (stringClass.disjSum stringClass).count 0 = 2 := by
 example : (stringClass.disjSum stringClass).count 3 = 16 := by
   rw [CombinatorialClass.disjSum_count, stringClass_count_eq_pow]
   decide
+
+/-! ## Ternary strings -/
+
+/-- The 3-letter alphabet: every `Fin 3` is an atom of size 1. -/
+def ternaryClass : CombinatorialClass where
+  Obj := Fin 3
+  size _ := 1
+  finite_level _ := Set.finite_univ.subset (Set.subset_univ _)
+
+-- Bridge instances so that `Finset ternaryClass.Obj` is well-behaved.
+instance : DecidableEq ternaryClass.Obj := inferInstanceAs (DecidableEq (Fin 3))
+instance : Fintype ternaryClass.Obj := inferInstanceAs (Fintype (Fin 3))
+
+namespace ternaryClass
+
+/-- All `Fin 3` elements have size 1, so `ternaryClass.count 0 = 0`. -/
+lemma count_zero : ternaryClass.count 0 = 0 := by
+  simp only [count]
+  rw [Finset.card_eq_zero]
+  ext a
+  simp only [Finset.notMem_empty, iff_false]
+  intro ha
+  have hsz : ternaryClass.size a = 0 :=
+    (ternaryClass.finite_level 0).mem_toFinset.mp ha
+  exact absurd hsz (by show (1 : ℕ) ≠ 0; omega)
+
+/-- There are exactly 3 letters of size 1. -/
+lemma count_one : ternaryClass.count 1 = 3 := by
+  show (ternaryClass.level 1).card = 3
+  have h_level : ternaryClass.level 1 = (Finset.univ : Finset ternaryClass.Obj) := by
+    ext a
+    constructor
+    · intro _
+      exact Finset.mem_univ a
+    · intro _
+      rw [CombinatorialClass.level_mem_iff]
+      rfl
+  rw [h_level]
+  exact Fintype.card_fin 3
+
+/-- For `k ≠ 1`, no letter has size `k`. -/
+private lemma count_eq_zero_of_ne_one {k : ℕ} (hk : k ≠ 1) :
+    ternaryClass.count k = 0 := by
+  simp only [count]
+  rw [Finset.card_eq_zero]
+  ext a
+  simp only [Finset.notMem_empty, iff_false]
+  intro ha
+  have hsz : ternaryClass.size a = k :=
+    (ternaryClass.finite_level k).mem_toFinset.mp ha
+  exact hk hsz.symm
+
+end ternaryClass
+
+/-- The class of ternary strings: finite sequences over a 3-letter alphabet. -/
+noncomputable def ternaryStringClass : CombinatorialClass :=
+  seqClass ternaryClass ternaryClass.count_zero
+
+/-- A ternary string of length n is a `List (Fin 3)` whose total size is n.
+    There are 3ⁿ such strings. -/
+theorem ternaryStringClass_count_eq_pow (n : ℕ) :
+    ternaryStringClass.count n = 3 ^ n := by
+  induction n with
+  | zero =>
+    show (seqClass ternaryClass _).count 0 = 1
+    rw [seqClass.count_zero]
+  | succ m ih =>
+    show (seqClass ternaryClass _).count (m + 1) = 3 ^ (m + 1)
+    rw [seqClass.count_succ]
+    rw [Finset.sum_eq_single (1, m)]
+    · show ternaryClass.count 1 * (seqClass ternaryClass _).count m = 3 ^ (m + 1)
+      rw [ternaryClass.count_one]
+      change 3 * ternaryStringClass.count m = 3 ^ (m + 1)
+      rw [ih, pow_succ]
+      ring
+    · rintro ⟨k, j⟩ hkj hne
+      by_cases hk : k = 1
+      · exfalso
+        subst hk
+        rw [Finset.mem_antidiagonal] at hkj
+        apply hne
+        congr
+        omega
+      · rw [ternaryClass.count_eq_zero_of_ne_one hk, zero_mul]
+    · intro h
+      exfalso
+      apply h
+      rw [Finset.mem_antidiagonal]
+      omega
+
+/-! Sanity checks: 3⁰ through 3⁶ ternary strings. -/
+example : ternaryStringClass.count 0 = 1 := ternaryStringClass_count_eq_pow 0
+example : ternaryStringClass.count 1 = 3 := ternaryStringClass_count_eq_pow 1
+example : ternaryStringClass.count 2 = 9 := ternaryStringClass_count_eq_pow 2
+example : ternaryStringClass.count 3 = 27 := ternaryStringClass_count_eq_pow 3
+example : ternaryStringClass.count 4 = 81 := ternaryStringClass_count_eq_pow 4
+example : ternaryStringClass.count 5 = 243 := ternaryStringClass_count_eq_pow 5
+example : ternaryStringClass.count 6 = 729 := ternaryStringClass_count_eq_pow 6
