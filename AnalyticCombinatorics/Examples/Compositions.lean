@@ -17,6 +17,9 @@ import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 import AnalyticCombinatorics.PartA.Ch1.Sequences
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 
+set_option linter.style.show false
+set_option linter.style.multiGoal false
+
 open PowerSeries CombinatorialClass Finset
 
 /-- Positive integers as a combinatorial class: each k ≥ 1 has size k. -/

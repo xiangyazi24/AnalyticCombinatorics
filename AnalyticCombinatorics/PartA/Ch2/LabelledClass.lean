@@ -33,6 +33,8 @@ import Mathlib.Tactic.LinearCombination
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 
+set_option linter.style.show false
+
 open PowerSeries
 open scoped PowerSeries.WithPiTopology
 
@@ -776,10 +778,12 @@ example : permClass.ogf.coeff 0 = 1 := by
 example : permClass.ogf.coeff 3 = 6 := by
   rw [coeff_ogf, permClass_count_eq_factorial]; decide
 
+set_option linter.flexible false in
 example : CombinatorialClass.labelProdCount permClass permClass 0 = 1 := by
   unfold CombinatorialClass.labelProdCount
   simp [permClass_count_eq_factorial]
 
+set_option linter.flexible false in
 example : CombinatorialClass.labelProdCount permClass permClass 2 = 6 := by
   unfold CombinatorialClass.labelProdCount
   simp [permClass_count_eq_factorial]
@@ -824,9 +828,11 @@ theorem labelPow_permClass_count (k n : ℕ) :
   congr 1
   rw [Nat.add_comm]
 
+set_option linter.flexible false in
 example : (CombinatorialClass.labelPow permClass 0).count 0 = 1 := by
   simp [CombinatorialClass.labelPow, Epsilon_count_zero]
 
+set_option linter.flexible false in
 example : (CombinatorialClass.labelPow permClass 0).count 1 = 0 := by
   simp [CombinatorialClass.labelPow]
   rw [Epsilon_count_pos (by omega)]

@@ -21,6 +21,8 @@ import AnalyticCombinatorics.PartA.Ch1.Sequences
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 
+set_option linter.style.show false
+
 open PowerSeries CombinatorialClass
 
 /-- The 2-letter alphabet: every Bool is an atom of size 1. -/

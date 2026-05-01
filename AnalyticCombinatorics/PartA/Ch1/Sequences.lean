@@ -12,6 +12,8 @@ import Mathlib.Data.Set.Finite.List
 import Mathlib.Algebra.Order.BigOperators.Group.List
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 
+set_option linter.style.show false
+
 open PowerSeries CombinatorialClass
 
 /-- SEQ(B): finite sequences of objects from B, including the empty sequence.

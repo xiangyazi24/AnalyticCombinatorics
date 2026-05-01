@@ -13,6 +13,8 @@ import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Nat.Choose.Basic
 
+set_option linter.style.show false
+
 open PowerSeries
 
 /-! ## I.1 Combinatorial classes -/
@@ -126,6 +128,7 @@ theorem Atom_ogf : Atom.ogf = PowerSeries.X := by
 
 /-! ## I.2 Admissible constructions -/
 
+set_option linter.flexible false in
 /-- Disjoint union A + B. OGF satisfies (A+B)(z) = A(z) + B(z). -/
 noncomputable def disjSum : CombinatorialClass where
   Obj := A.Obj ⊕ B.Obj

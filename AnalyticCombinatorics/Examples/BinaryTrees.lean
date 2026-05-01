@@ -18,6 +18,9 @@ import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 import AnalyticCombinatorics.PartA.Ch1.Sequences
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 
+set_option linter.style.show false
+set_option linter.style.nativeDecide false
+
 open PowerSeries CombinatorialClass
 
 /-- Binary trees: leaf or node with two subtrees. -/
