@@ -776,4 +776,13 @@ example : permClass.ogf.coeff 0 = 1 := by
 example : permClass.ogf.coeff 3 = 6 := by
   rw [coeff_ogf, permClass_count_eq_factorial]; decide
 
+example : CombinatorialClass.labelProdCount permClass permClass 0 = 1 := by
+  unfold CombinatorialClass.labelProdCount
+  simp [permClass_count_eq_factorial]
+
+example : CombinatorialClass.labelProdCount permClass permClass 2 = 6 := by
+  unfold CombinatorialClass.labelProdCount
+  simp [permClass_count_eq_factorial]
+  decide
+
 end CombinatorialClass
