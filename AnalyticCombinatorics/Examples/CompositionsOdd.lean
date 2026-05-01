@@ -182,3 +182,189 @@ example : oddCompClass.count 3 = 2 := oddCompClass_count_three
 example : oddCompClass.count 4 = 3 := oddCompClass_count_four
 example : oddCompClass.count 5 = 5 := oddCompClass_count_five
 example : oddCompClass.count 6 = 8 := oddCompClass_count_six
+
+private lemma oddCompClass_mem_level_iff (n : ℕ) (xs : List oddPartClass.Obj) :
+    xs ∈ oddCompClass.level n ↔ xs.foldr (fun b acc => b.1 + acc) 0 = n := by
+  exact CombinatorialClass.level_mem_iff (C := oddCompClass) (n := n) xs
+
+private def oddPartOne : oddPartClass.Obj :=
+  ⟨1, by decide⟩
+
+private def oddPartPred2 (a : oddPartClass.Obj) (h : a.1 ≠ 1) : oddPartClass.Obj :=
+  ⟨a.1 - 2, by
+    have haodd : a.1 % 2 = 1 := a.2
+    omega⟩
+
+private def oddPartAdd2 (a : oddPartClass.Obj) : oddPartClass.Obj :=
+  ⟨a.1 + 2, by
+    have haodd : a.1 % 2 = 1 := a.2
+    omega⟩
+
+private lemma oddPart_eq_one_of_val_eq_one (a : oddPartClass.Obj) (h : a.1 = 1) :
+    a = oddPartOne := by
+  apply Subtype.ext
+  exact h
+
+private lemma oddPart_add2_pred2 (a : oddPartClass.Obj) (h : a.1 ≠ 1) :
+    oddPartAdd2 (oddPartPred2 a h) = a := by
+  apply Subtype.ext
+  have haodd : a.1 % 2 = 1 := a.2
+  have ha3 : 3 ≤ a.1 := by omega
+  change (a.1 - 2) + 2 = a.1
+  omega
+
+private lemma oddPart_pred2_add2 (a : oddPartClass.Obj) (h : (oddPartAdd2 a).1 ≠ 1) :
+    oddPartPred2 (oddPartAdd2 a) h = a := by
+  apply Subtype.ext
+  change (a.1 + 2) - 2 = a.1
+  omega
+
+private lemma mem_left_of_inl_mem_disjSum {α β : Type*} {s : Finset α} {t : Finset β}
+    {x : α} (h : Sum.inl x ∈ s.disjSum t) : x ∈ s := by
+  rcases Finset.mem_disjSum.mp h with ⟨a, ha, hx⟩ | ⟨b, _hb, hx⟩
+  · cases hx
+    exact ha
+  · cases hx
+
+private lemma mem_right_of_inr_mem_disjSum {α β : Type*} {s : Finset α} {t : Finset β}
+    {x : β} (h : Sum.inr x ∈ s.disjSum t) : x ∈ t := by
+  rcases Finset.mem_disjSum.mp h with ⟨a, _ha, hx⟩ | ⟨b, hb, hx⟩
+  · cases hx
+  · cases hx
+    exact hb
+
+private def oddCompSplit (xs : List oddPartClass.Obj) :
+    List oddPartClass.Obj ⊕ List oddPartClass.Obj :=
+  match xs with
+  | [] => Sum.inl []
+  | a :: ys =>
+      if h : a.1 = 1 then
+        Sum.inl ys
+      else
+        Sum.inr (oddPartPred2 a h :: ys)
+
+private def oddCompUnsplit :
+    List oddPartClass.Obj ⊕ List oddPartClass.Obj → List oddPartClass.Obj
+  | Sum.inl ys => oddPartOne :: ys
+  | Sum.inr [] => []
+  | Sum.inr (a :: ys) => oddPartAdd2 a :: ys
+
+/-- Fibonacci recurrence for compositions into odd parts, starting at size `1`. -/
+private lemma oddCompClass_count_add_three (n : ℕ) :
+    oddCompClass.count (n + 3) =
+      oddCompClass.count (n + 2) + oddCompClass.count (n + 1) := by
+  let target :=
+    (oddCompClass.level (n + 2)).disjSum (oddCompClass.level (n + 1))
+  have hcard : (oddCompClass.level (n + 3)).card = target.card := by
+    apply Finset.card_bij'
+      (s := oddCompClass.level (n + 3))
+      (t := target)
+      (fun xs _ => oddCompSplit xs)
+      (fun y _ => oddCompUnsplit y)
+    · intro xs hxs
+      cases xs with
+      | nil =>
+          have hsz := (oddCompClass_mem_level_iff (n + 3) ([] : List oddPartClass.Obj)).mp hxs
+          simp at hsz
+      | cons a ys =>
+          by_cases h1 : a.1 = 1
+          · have hys : ys ∈ oddCompClass.level (n + 2) := by
+              have hsz :=
+                (oddCompClass_mem_level_iff (n + 3) (a :: ys)).mp hxs
+              apply (oddCompClass_mem_level_iff (n + 2) ys).mpr
+              simp only [List.foldr_cons] at hsz
+              omega
+            change oddCompSplit (a :: ys) ∈ target
+            rw [oddCompSplit]
+            rw [dif_pos h1]
+            exact Finset.mem_disjSum.mpr (Or.inl ⟨ys, hys, rfl⟩)
+          · have hys : oddPartPred2 a h1 :: ys ∈ oddCompClass.level (n + 1) := by
+              have hsz :=
+                (oddCompClass_mem_level_iff (n + 3) (a :: ys)).mp hxs
+              apply (oddCompClass_mem_level_iff (n + 1) (oddPartPred2 a h1 :: ys)).mpr
+              simp only [List.foldr_cons] at hsz
+              change a.1 - 2 + ys.foldr (fun b acc => b.1 + acc) 0 = n + 1
+              have haodd : a.1 % 2 = 1 := a.2
+              have ha3 : 3 ≤ a.1 := by omega
+              omega
+            change oddCompSplit (a :: ys) ∈ target
+            rw [oddCompSplit]
+            rw [dif_neg h1]
+            exact Finset.mem_disjSum.mpr (Or.inr ⟨oddPartPred2 a h1 :: ys, hys, rfl⟩)
+    · intro y hy
+      cases y with
+      | inl ys =>
+          have hys : ys ∈ oddCompClass.level (n + 2) :=
+            mem_left_of_inl_mem_disjSum hy
+          have hsz := (oddCompClass_mem_level_iff (n + 2) ys).mp hys
+          apply (oddCompClass_mem_level_iff (n + 3) (oddCompUnsplit (Sum.inl ys))).mpr
+          simp only [oddCompUnsplit, List.foldr_cons]
+          change 1 + ys.foldr (fun b acc => b.1 + acc) 0 = n + 3
+          omega
+      | inr zs =>
+          have hzs : zs ∈ oddCompClass.level (n + 1) :=
+            mem_right_of_inr_mem_disjSum hy
+          cases zs with
+          | nil =>
+              have hsz :=
+                (oddCompClass_mem_level_iff (n + 1) ([] : List oddPartClass.Obj)).mp hzs
+              simp at hsz
+          | cons a ys =>
+              have hsz := (oddCompClass_mem_level_iff (n + 1) (a :: ys)).mp hzs
+              apply (oddCompClass_mem_level_iff (n + 3)
+                (oddCompUnsplit (Sum.inr (a :: ys)))).mpr
+              simp only [oddCompUnsplit, List.foldr_cons]
+              change a.1 + 2 + ys.foldr (fun b acc => b.1 + acc) 0 = n + 3
+              simp only [List.foldr_cons] at hsz
+              omega
+    · intro xs hxs
+      cases xs with
+      | nil =>
+          have hsz := (oddCompClass_mem_level_iff (n + 3) ([] : List oddPartClass.Obj)).mp hxs
+          simp at hsz
+      | cons a ys =>
+          by_cases h1 : a.1 = 1
+          · rw [oddPart_eq_one_of_val_eq_one a h1]
+            simp [oddCompSplit, oddCompUnsplit, oddPartOne]
+          · simp [oddCompSplit, oddCompUnsplit, h1, oddPart_add2_pred2 a h1]
+    · intro y hy
+      cases y with
+      | inl ys =>
+          simp [oddCompSplit, oddCompUnsplit, oddPartOne]
+          rfl
+      | inr zs =>
+          have hzs : zs ∈ oddCompClass.level (n + 1) :=
+            mem_right_of_inr_mem_disjSum hy
+          cases zs with
+          | nil =>
+              have hsz :=
+                (oddCompClass_mem_level_iff (n + 1) ([] : List oddPartClass.Obj)).mp hzs
+              simp at hsz
+          | cons a ys =>
+              have hne : (oddPartAdd2 a).1 ≠ 1 := by
+                change a.1 + 2 ≠ 1
+                omega
+              simp [oddCompSplit, oddCompUnsplit, hne, oddPart_pred2_add2 a hne]
+              rfl
+  rw [show oddCompClass.count (n + 3) = (oddCompClass.level (n + 3)).card from rfl,
+    hcard]
+  dsimp [target]
+  rw [Finset.card_disjSum]
+  rfl
+
+/-- Compositions of `n + 1` into odd parts are counted by `fib (n + 1)`. -/
+theorem oddCompClass_count_succ_eq_fib (n : ℕ) :
+    oddCompClass.count (n + 1) = Nat.fib (n + 1) := by
+  induction n using Nat.twoStepInduction with
+  | zero =>
+      rw [oddCompClass_count_one, Nat.fib_one]
+  | one =>
+      rw [oddCompClass_count_two, Nat.fib_two]
+  | more n ih0 ih1 =>
+      rw [show n + 2 + 1 = n + 3 by omega]
+      rw [oddCompClass_count_add_three, ih0, ih1]
+      rw [show n + 1 + 1 = n + 2 by omega]
+      rw [show n + 2 + 1 = n + 3 by omega]
+      rw [show Nat.fib (n + 2) + Nat.fib (n + 1) =
+        Nat.fib (n + 1) + Nat.fib (n + 2) by ac_rfl]
+      exact (Nat.fib_add_two (n := n + 1)).symm
