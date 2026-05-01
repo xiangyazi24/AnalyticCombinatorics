@@ -425,6 +425,58 @@ example : stringClass.jointCount stringNumTrue 4 2 = 6 := by
   rw [show stringNumTrue = numOnes by rfl, stringClass_jointCount_numOnes]
   decide
 
+example : stringClass.jointCount stringNumTrue 5 0 = 1 := by
+  rw [show stringNumTrue = numOnes by rfl, stringClass_jointCount_numOnes]
+  decide
+
+example : stringClass.jointCount stringNumTrue 5 1 = 5 := by
+  rw [show stringNumTrue = numOnes by rfl, stringClass_jointCount_numOnes]
+  decide
+
+example : stringClass.jointCount stringNumTrue 5 2 = 10 := by
+  rw [show stringNumTrue = numOnes by rfl, stringClass_jointCount_numOnes]
+  decide
+
+example : stringClass.jointCount stringNumTrue 5 3 = 10 := by
+  rw [show stringNumTrue = numOnes by rfl, stringClass_jointCount_numOnes]
+  decide
+
+example : stringClass.jointCount stringNumTrue 5 4 = 5 := by
+  rw [show stringNumTrue = numOnes by rfl, stringClass_jointCount_numOnes]
+  decide
+
+example : stringClass.jointCount stringNumTrue 5 5 = 1 := by
+  rw [show stringNumTrue = numOnes by rfl, stringClass_jointCount_numOnes]
+  decide
+
+example : stringClass.jointCount stringNumTrue 6 0 = 1 := by
+  rw [show stringNumTrue = numOnes by rfl, stringClass_jointCount_numOnes]
+  decide
+
+example : stringClass.jointCount stringNumTrue 6 1 = 6 := by
+  rw [show stringNumTrue = numOnes by rfl, stringClass_jointCount_numOnes]
+  decide
+
+example : stringClass.jointCount stringNumTrue 6 2 = 15 := by
+  rw [show stringNumTrue = numOnes by rfl, stringClass_jointCount_numOnes]
+  decide
+
+example : stringClass.jointCount stringNumTrue 6 3 = 20 := by
+  rw [show stringNumTrue = numOnes by rfl, stringClass_jointCount_numOnes]
+  decide
+
+example : stringClass.jointCount stringNumTrue 6 4 = 15 := by
+  rw [show stringNumTrue = numOnes by rfl, stringClass_jointCount_numOnes]
+  decide
+
+example : stringClass.jointCount stringNumTrue 6 5 = 6 := by
+  rw [show stringNumTrue = numOnes by rfl, stringClass_jointCount_numOnes]
+  decide
+
+example : stringClass.jointCount stringNumTrue 6 6 = 1 := by
+  rw [show stringNumTrue = numOnes by rfl, stringClass_jointCount_numOnes]
+  decide
+
 example :
     ∑ k ∈ (stringClass.level 4).image stringNumTrue,
       stringClass.jointCount stringNumTrue 4 k = 16 := by
