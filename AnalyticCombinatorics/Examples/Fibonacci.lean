@@ -324,3 +324,7 @@ example : fibClass.jointCount fibNumParts 2 2 = 1 := by
                     omega
             | cons c xs =>
                 simp at hnum
+
+example (n : ℕ) :
+    fibClass.egf.coeff n = (Nat.fib (n + 1) : ℚ) / n.factorial := by
+  rw [CombinatorialClass.coeff_egf, fibClass_count_eq_fib]
