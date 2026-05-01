@@ -29,6 +29,7 @@ import AnalyticCombinatorics.Examples.PlaneTrees
 import AnalyticCombinatorics.Examples.Triangulations
 import AnalyticCombinatorics.Examples.Strings
 import AnalyticCombinatorics.Examples.Compositions
+import AnalyticCombinatorics.Examples.IntegerPartitions
 import AnalyticCombinatorics.Examples.Fibonacci
 import AnalyticCombinatorics.Examples.SetPartitions
 import AnalyticCombinatorics.Examples.Derangements
