@@ -38,6 +38,7 @@ import AnalyticCombinatorics.Examples.Tribonacci
 import AnalyticCombinatorics.Examples.Tetranacci
 import AnalyticCombinatorics.Examples.Padovan
 import AnalyticCombinatorics.Examples.SetPartitions
+import AnalyticCombinatorics.Examples.Surjections
 import AnalyticCombinatorics.Examples.Derangements
 import AnalyticCombinatorics.Examples.CyclicPermutations
 import AnalyticCombinatorics.Examples.SchroderTrees
