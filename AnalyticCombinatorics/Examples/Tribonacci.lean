@@ -358,6 +358,77 @@ example : tribClass.count 18 = 35890 := by
       rw [tribClass_count_two, tribClass_count_one, tribClass_count_zero]
     _ = 35890 := by decide
 
+private lemma tribClass_count_sixteen_value : tribClass.count 16 = 10609 := by
+  calc
+    tribClass.count 16 = tribClass.count 15 + tribClass.count 14 + tribClass.count 13 :=
+      tribClass_count_succ_succ_succ 13
+    _ = 5768 + 3136 + 1705 := by
+      repeat rw [tribClass_count_succ_succ_succ]
+      rw [tribClass_count_two, tribClass_count_one, tribClass_count_zero]
+    _ = 10609 := by decide
+
+private lemma tribClass_count_seventeen_value : tribClass.count 17 = 19513 := by
+  calc
+    tribClass.count 17 = tribClass.count 16 + tribClass.count 15 + tribClass.count 14 :=
+      tribClass_count_succ_succ_succ 14
+    _ = 10609 + 5768 + 3136 := by
+      repeat rw [tribClass_count_succ_succ_succ]
+      rw [tribClass_count_two, tribClass_count_one, tribClass_count_zero]
+    _ = 19513 := by decide
+
+private lemma tribClass_count_eighteen_value : tribClass.count 18 = 35890 := by
+  calc
+    tribClass.count 18 = tribClass.count 17 + tribClass.count 16 + tribClass.count 15 :=
+      tribClass_count_succ_succ_succ 15
+    _ = 19513 + 10609 + 5768 := by
+      repeat rw [tribClass_count_succ_succ_succ]
+      rw [tribClass_count_two, tribClass_count_one, tribClass_count_zero]
+    _ = 35890 := by decide
+
+private lemma tribClass_count_nineteen_value : tribClass.count 19 = 66012 := by
+  calc
+    tribClass.count 19 = tribClass.count 18 + tribClass.count 17 + tribClass.count 16 :=
+      tribClass_count_succ_succ_succ 16
+    _ = 35890 + 19513 + 10609 := by
+      rw [tribClass_count_eighteen_value, tribClass_count_seventeen_value,
+        tribClass_count_sixteen_value]
+    _ = 66012 := by decide
+
+private lemma tribClass_count_twenty_value : tribClass.count 20 = 121415 := by
+  calc
+    tribClass.count 20 = tribClass.count 19 + tribClass.count 18 + tribClass.count 17 :=
+      tribClass_count_succ_succ_succ 17
+    _ = 66012 + 35890 + 19513 := by
+      rw [tribClass_count_nineteen_value, tribClass_count_eighteen_value,
+        tribClass_count_seventeen_value]
+    _ = 121415 := by decide
+
+private lemma tribClass_count_twenty_one_value : tribClass.count 21 = 223317 := by
+  calc
+    tribClass.count 21 = tribClass.count 20 + tribClass.count 19 + tribClass.count 18 :=
+      tribClass_count_succ_succ_succ 18
+    _ = 121415 + 66012 + 35890 := by
+      rw [tribClass_count_twenty_value, tribClass_count_nineteen_value,
+        tribClass_count_eighteen_value]
+    _ = 223317 := by decide
+
+private lemma tribClass_count_twenty_two_value : tribClass.count 22 = 410744 := by
+  calc
+    tribClass.count 22 = tribClass.count 21 + tribClass.count 20 + tribClass.count 19 :=
+      tribClass_count_succ_succ_succ 19
+    _ = 223317 + 121415 + 66012 := by
+      rw [tribClass_count_twenty_one_value, tribClass_count_twenty_value,
+        tribClass_count_nineteen_value]
+    _ = 410744 := by decide
+
+example : tribClass.count 19 = 66012 := tribClass_count_nineteen_value
+
+example : tribClass.count 20 = 121415 := tribClass_count_twenty_value
+
+example : tribClass.count 21 = 223317 := tribClass_count_twenty_one_value
+
+example : tribClass.count 22 = 410744 := tribClass_count_twenty_two_value
+
 /-- The OGF for a single part of size 1, 2, or 3 is `z + z^2 + z^3`. -/
 private lemma step123Class_ogfZ :
     ogfZ step123Class = PowerSeries.X + PowerSeries.X ^ 2 + PowerSeries.X ^ 3 := by

@@ -155,6 +155,10 @@ example : fibClass.count 15 = 987 := by rw [fibClass_count_eq_fib]; decide
 example : fibClass.count 16 = 1597 := by rw [fibClass_count_eq_fib]; decide
 example : fibClass.count 17 = 2584 := by rw [fibClass_count_eq_fib]; decide
 example : fibClass.count 18 = 4181 := by rw [fibClass_count_eq_fib]; decide
+example : fibClass.count 19 = 6765 := by rw [fibClass_count_eq_fib]; decide
+example : fibClass.count 20 = 10946 := by rw [fibClass_count_eq_fib]; decide
+example : fibClass.count 21 = 17711 := by rw [fibClass_count_eq_fib]; decide
+example : fibClass.count 22 = 28657 := by rw [fibClass_count_eq_fib]; decide
 
 /-- Closed form for the OGF of compositions into parts of size 1 or 2:
     `1 / (1 - z - z^2)`. -/

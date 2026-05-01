@@ -907,6 +907,16 @@ example : labelSetCount posIntClass 18 = (682076806159 : ℚ) := by
   rw [labelSetCount_posIntClass_eq_bell]
   native_decide
 
+set_option linter.style.nativeDecide false in
+example : labelSetCount posIntClass 19 = (5832742205057 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : labelSetCount posIntClass 20 = (51724158235372 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  native_decide
+
 example : Nat.stirlingSecond 2 1 = 1 := by
   rw [show 2 = 1 + 1 by rfl, show 1 = 0 + 1 by rfl, stirlingSecond_succ 1 0]
   decide
