@@ -751,4 +751,11 @@ example (n : ℕ) :
     (CombinatorialClass.labelSeq Atom Atom_count_zero).count n = permClass.count n := by
   rw [labelSeq_Atom_count, permClass_count_eq_factorial]
 
+example (n : ℕ) :
+    permClass.egf.coeff n = 1 := permClass_egf_coeff n
+
+example (n : ℕ) :
+    permClass.ogf.coeff n = (n.factorial : ℕ) := by
+  rw [coeff_ogf, permClass_count_eq_factorial]
+
 end CombinatorialClass
