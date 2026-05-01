@@ -88,6 +88,15 @@ example : labelCycCount Atom 11 = 3628800 := by
 example : labelCycCount Atom 12 = 39916800 := by
   rw [labelCycCount_Atom_succ]
   decide
+example : labelCycCount Atom 13 = 479001600 := by
+  rw [labelCycCount_Atom_succ]
+  decide
+example : labelCycCount Atom 14 = 6227020800 := by
+  rw [labelCycCount_Atom_succ]
+  decide
+example : labelCycCount Atom 15 = 87178291200 := by
+  rw [labelCycCount_Atom_succ]
+  decide
 
 /-- The Atom labelled SET equals 1, the Atom labelled CYC at `n` equals
     `(n - 1)!`, and these connect via the standard `exp(log(...))` relation;

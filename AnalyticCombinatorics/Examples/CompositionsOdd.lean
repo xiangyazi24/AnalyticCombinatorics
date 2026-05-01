@@ -368,3 +368,27 @@ theorem oddCompClass_count_succ_eq_fib (n : ℕ) :
       rw [show Nat.fib (n + 2) + Nat.fib (n + 1) =
         Nat.fib (n + 1) + Nat.fib (n + 2) by ac_rfl]
       exact (Nat.fib_add_two (n := n + 1)).symm
+
+example : oddCompClass.count 7 = 13 := by
+  rw [show 7 = 6 + 1 by decide, oddCompClass_count_succ_eq_fib]
+  decide
+
+example : oddCompClass.count 8 = 21 := by
+  rw [show 8 = 7 + 1 by decide, oddCompClass_count_succ_eq_fib]
+  decide
+
+example : oddCompClass.count 9 = 34 := by
+  rw [show 9 = 8 + 1 by decide, oddCompClass_count_succ_eq_fib]
+  decide
+
+example : oddCompClass.count 10 = 55 := by
+  rw [show 10 = 9 + 1 by decide, oddCompClass_count_succ_eq_fib]
+  decide
+
+example : oddCompClass.count 11 = 89 := by
+  rw [show 11 = 10 + 1 by decide, oddCompClass_count_succ_eq_fib]
+  decide
+
+example : oddCompClass.count 12 = 144 := by
+  rw [show 12 = 11 + 1 by decide, oddCompClass_count_succ_eq_fib]
+  decide

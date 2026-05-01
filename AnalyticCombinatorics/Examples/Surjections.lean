@@ -18,7 +18,8 @@ theorem surjectionClass_egf_mul_two_sub_exp :
     surjectionClass.egf * (2 - PowerSeries.exp ℚ) = 1 := by
   exact labelSeq_posIntClass_egf_mul_two_sub_exp
 
-/-! Sanity checks: Fubini numbers are 1, 1, 3, 13, 75, 541, 4683. -/
+/-! Sanity checks: Fubini numbers are 1, 1, 3, 13, 75, 541, 4683, 47293,
+545835, 7087261, 102247563. -/
 
 example : surjectionClass.count 0 = 1 := by
   rw [surjectionClass_count_eq_fubini]
@@ -45,5 +46,21 @@ example : surjectionClass.count 5 = 541 := by
   decide
 
 example : surjectionClass.count 6 = 4683 := by
+  rw [surjectionClass_count_eq_fubini]
+  decide
+
+example : surjectionClass.count 7 = 47293 := by
+  rw [surjectionClass_count_eq_fubini]
+  decide
+
+example : surjectionClass.count 8 = 545835 := by
+  rw [surjectionClass_count_eq_fubini]
+  decide
+
+example : surjectionClass.count 9 = 7087261 := by
+  rw [surjectionClass_count_eq_fubini]
+  decide
+
+example : surjectionClass.count 10 = 102247563 := by
   rw [surjectionClass_count_eq_fubini]
   decide
