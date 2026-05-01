@@ -590,6 +590,8 @@ end ternaryClass
 noncomputable def ternaryStringClass : CombinatorialClass :=
   seqClass ternaryClass ternaryClass.count_zero
 
+instance : DecidableEq ternaryStringClass.Obj := inferInstanceAs (DecidableEq (List (Fin 3)))
+
 /-- A ternary string of length n is a `List (Fin 3)` whose total size is n.
     There are 3ⁿ such strings. -/
 theorem ternaryStringClass_count_eq_pow (n : ℕ) :
@@ -630,6 +632,87 @@ example : ternaryStringClass.count 3 = 27 := ternaryStringClass_count_eq_pow 3
 example : ternaryStringClass.count 4 = 81 := ternaryStringClass_count_eq_pow 4
 example : ternaryStringClass.count 5 = 243 := ternaryStringClass_count_eq_pow 5
 example : ternaryStringClass.count 6 = 729 := ternaryStringClass_count_eq_pow 6
+
+/-! ## Parameter: number of zero letters in a ternary string -/
+
+/-- Parameter: number of `(0 : Fin 3)` letters in a ternary string. -/
+def ternaryNumZero : Parameter ternaryStringClass :=
+  fun (xs : List (Fin 3)) => xs.count (0 : Fin 3)
+
+private lemma ternary_foldr_one_eq_length (xs : List (Fin 3)) :
+    xs.foldr (fun _ acc => 1 + acc) 0 = xs.length := by
+  induction xs with
+  | nil => rfl
+  | cons _ xs ih =>
+      simp only [List.foldr_cons, List.length_cons]
+      rw [ih]
+      omega
+
+private lemma ternaryStringClass_size_eq_length (xs : List (Fin 3)) :
+    ternaryStringClass.size xs = xs.length := by
+  change xs.foldr (fun a acc => ternaryClass.size a + acc) 0 = xs.length
+  simpa [ternaryClass] using ternary_foldr_one_eq_length xs
+
+private def ternaryWordsOfLength (n : ℕ) : Finset (List (Fin 3)) :=
+  (Finset.univ : Finset (Fin n → Fin 3)).image List.ofFn
+
+private theorem ternaryStringClass_level_eq_wordsOfLength (n : ℕ) :
+    ternaryStringClass.level n = ternaryWordsOfLength n := by
+  ext xs
+  constructor
+  · intro hxs
+    have hsize : ternaryStringClass.size xs = n :=
+      (CombinatorialClass.level_mem_iff (C := ternaryStringClass) xs).mp hxs
+    have hlen : xs.length = n := by
+      simpa [ternaryStringClass_size_eq_length] using hsize
+    clear hsize
+    subst n
+    apply Finset.mem_image.mpr
+    exact ⟨fun i : Fin xs.length => xs.get i, Finset.mem_univ _, List.ofFn_get xs⟩
+  · intro hxs
+    rcases Finset.mem_image.mp hxs with ⟨f, _hf, rfl⟩
+    apply (CombinatorialClass.level_mem_iff (C := ternaryStringClass) (List.ofFn f)).mpr
+    rw [ternaryStringClass_size_eq_length]
+    exact List.length_ofFn
+
+example : ternaryStringClass.jointCount ternaryNumZero 0 0 = 1 := by
+  rw [CombinatorialClass.jointCount, ternaryStringClass_level_eq_wordsOfLength]
+  decide
+
+example : ternaryStringClass.jointCount ternaryNumZero 1 0 = 2 := by
+  rw [CombinatorialClass.jointCount, ternaryStringClass_level_eq_wordsOfLength]
+  decide
+
+example : ternaryStringClass.jointCount ternaryNumZero 1 1 = 1 := by
+  rw [CombinatorialClass.jointCount, ternaryStringClass_level_eq_wordsOfLength]
+  decide
+
+example : ternaryStringClass.jointCount ternaryNumZero 2 0 = 4 := by
+  rw [CombinatorialClass.jointCount, ternaryStringClass_level_eq_wordsOfLength]
+  decide
+
+example : ternaryStringClass.jointCount ternaryNumZero 2 1 = 4 := by
+  rw [CombinatorialClass.jointCount, ternaryStringClass_level_eq_wordsOfLength]
+  decide
+
+example : ternaryStringClass.jointCount ternaryNumZero 2 2 = 1 := by
+  rw [CombinatorialClass.jointCount, ternaryStringClass_level_eq_wordsOfLength]
+  decide
+
+example : ternaryStringClass.jointCount ternaryNumZero 3 1 = 12 := by
+  rw [CombinatorialClass.jointCount, ternaryStringClass_level_eq_wordsOfLength]
+  decide
+
+example : ternaryStringClass.jointCount ternaryNumZero 3 2 = 6 := by
+  rw [CombinatorialClass.jointCount, ternaryStringClass_level_eq_wordsOfLength]
+  decide
+
+example :
+    ∑ k ∈ (ternaryStringClass.level 3).image ternaryNumZero,
+      ternaryStringClass.jointCount ternaryNumZero 3 k = 27 := by
+  rw [CombinatorialClass.jointCount_sum_eq_count]
+  rw [ternaryStringClass_count_eq_pow]
+  norm_num
 
 /-! ## Closed form and symmetry for `stringNumTrue` -/
 
