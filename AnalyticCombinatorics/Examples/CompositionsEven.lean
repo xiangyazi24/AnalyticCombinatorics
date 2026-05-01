@@ -9,6 +9,7 @@
 -/
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 import AnalyticCombinatorics.PartA.Ch1.Sequences
+import AnalyticCombinatorics.Examples.Compositions
 
 set_option linter.style.nativeDecide false
 
@@ -258,3 +259,111 @@ example : evenCompClass.count 10 = 16 := by
   apply of_decide_eq_true
   rw [evenCompClass_count_ten]
   native_decide
+
+private def halveEvenPart (x : evenPartClass.Obj) : posIntClass.Obj :=
+  ⟨x.1 / 2, by
+    obtain ⟨a, ha⟩ : ∃ a, x.1 = 2 * a := Nat.dvd_iff_mod_eq_zero.mpr x.2.1
+    have hx_pos : 0 < x.1 := x.2.2
+    rw [ha] at hx_pos
+    have ha_pos : 0 < a := by omega
+    have hdiv : x.1 / 2 = a := by
+      calc
+        x.1 / 2 = (2 * a) / 2 := by rw [ha]
+        _ = a := Nat.mul_div_right a (by decide : 0 < 2)
+    rw [hdiv]
+    exact Nat.succ_le_of_lt ha_pos⟩
+
+private def doublePosPart (x : posIntClass.Obj) : evenPartClass.Obj :=
+  ⟨2 * x.1, by
+    constructor
+    · rw [Nat.mul_mod_right]
+    · exact Nat.mul_pos (by decide : 0 < 2) (Nat.lt_of_lt_of_le Nat.zero_lt_one x.2)⟩
+
+private lemma evenPart_size_halve (x : evenPartClass.Obj) :
+    evenPartClass.size x = 2 * posIntClass.size (halveEvenPart x) := by
+  obtain ⟨a, ha⟩ : ∃ a, x.1 = 2 * a := Nat.dvd_iff_mod_eq_zero.mpr x.2.1
+  change x.1 = 2 * (x.1 / 2)
+  have hdiv : x.1 / 2 = a := by
+    calc
+      x.1 / 2 = (2 * a) / 2 := by rw [ha]
+      _ = a := Nat.mul_div_right a (by decide : 0 < 2)
+  rw [hdiv]
+  exact ha
+
+private lemma halveEvenList_size (xs : List evenPartClass.Obj) :
+    (seqClass evenPartClass evenPartClass.count_zero).size xs =
+      2 * (seqClass posIntClass posIntClass.count_zero).size (xs.map halveEvenPart) := by
+  induction xs with
+  | nil => simp [seqClass]
+  | cons x xs ih =>
+      change evenPartClass.size x +
+          (seqClass evenPartClass evenPartClass.count_zero).size xs =
+        2 * (posIntClass.size (halveEvenPart x) +
+          (seqClass posIntClass posIntClass.count_zero).size (xs.map halveEvenPart))
+      rw [evenPart_size_halve x, ih]
+      ring
+
+private lemma doublePosList_size (xs : List posIntClass.Obj) :
+    (seqClass evenPartClass evenPartClass.count_zero).size (xs.map doublePosPart) =
+      2 * (seqClass posIntClass posIntClass.count_zero).size xs := by
+  induction xs with
+  | nil => simp [seqClass]
+  | cons x xs ih =>
+      change evenPartClass.size (doublePosPart x) +
+          (seqClass evenPartClass evenPartClass.count_zero).size (xs.map doublePosPart) =
+        2 * (posIntClass.size x +
+          (seqClass posIntClass posIntClass.count_zero).size xs)
+      change 2 * posIntClass.size x +
+          (seqClass evenPartClass evenPartClass.count_zero).size (xs.map doublePosPart) =
+        2 * (posIntClass.size x +
+          (seqClass posIntClass posIntClass.count_zero).size xs)
+      rw [ih]
+      ring
+
+private lemma doublePosPart_halveEvenPart (x : evenPartClass.Obj) :
+    doublePosPart (halveEvenPart x) = x := by
+  apply Subtype.ext
+  change 2 * (halveEvenPart x).1 = x.1
+  exact (evenPart_size_halve x).symm
+
+private lemma halveEvenPart_doublePosPart (x : posIntClass.Obj) :
+    halveEvenPart (doublePosPart x) = x := by
+  apply Subtype.ext
+  change (2 * x.1) / 2 = x.1
+  exact Nat.mul_div_right x.1 (by decide : 0 < 2)
+
+private lemma evenCompClass_count_even_eq_compositionClass (n : ℕ) :
+    evenCompClass.count (2 * n) = compositionClass.count n := by
+  unfold evenCompClass compositionClass
+  change ((seqClass evenPartClass evenPartClass.count_zero).level (2 * n)).card =
+    ((seqClass posIntClass posIntClass.count_zero).level n).card
+  apply Finset.card_bij (fun xs _ => xs.map halveEvenPart)
+  · intro xs hxs
+    rw [CombinatorialClass.level_mem_iff] at hxs ⊢
+    have hsize := halveEvenList_size xs
+    omega
+  · intro xs₁ _ xs₂ _ hmap
+    have h := congrArg (List.map doublePosPart) hmap
+    simpa [List.map_map, Function.comp_def, doublePosPart_halveEvenPart] using h
+  · intro ys hys
+    refine ⟨ys.map doublePosPart, ?_, ?_⟩
+    · rw [CombinatorialClass.level_mem_iff] at hys ⊢
+      rw [doublePosList_size, hys]
+    · simp [List.map_map, Function.comp_def, halveEvenPart_doublePosPart]
+
+theorem evenCompClass_count_odd (k : ℕ) :
+    evenCompClass.count (2 * k + 1) = 0 := by
+  unfold evenCompClass
+  change ((seqClass evenPartClass evenPartClass.count_zero).level (2 * k + 1)).card = 0
+  rw [Finset.card_eq_zero]
+  ext xs
+  simp only [Finset.notMem_empty, iff_false]
+  intro hxs
+  rw [CombinatorialClass.level_mem_iff] at hxs
+  have hsize := halveEvenList_size xs
+  omega
+
+theorem evenCompClass_count_even_succ (k : ℕ) :
+    evenCompClass.count (2 * (k + 1)) = 2 ^ k := by
+  rw [evenCompClass_count_even_eq_compositionClass]
+  exact compositionClass_count_succ k
