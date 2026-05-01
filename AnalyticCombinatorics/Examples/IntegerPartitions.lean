@@ -165,6 +165,15 @@ example : intPartitionClass.count 20 = 627 := by
   rw [intPartitionClass_count_eq_card]
   native_decide
 
+example : intPartitionClass.count 21 = 792 := by
+  rw [intPartitionClass_count_eq_card]
+  native_decide
+
+-- `native_decide` with Mathlib's default `Nat.Partition` `Fintype`
+-- is still usable at `n = 21` locally.  Adding the same checks for
+-- `n = 22, 23, 24, 25` made this file fail to finish checking in
+-- reasonable time, so the documented threshold here is `n = 21`.
+
 -- TODO: State the F&S OGF identity in project notation:
 --   intPartitionClass.ogf = ∏_{k ≥ 1} (1 - z^k)⁻¹.
 -- Mathlib's `Nat.Partition.genFun` already contains the corresponding product

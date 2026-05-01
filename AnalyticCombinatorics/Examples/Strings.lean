@@ -829,3 +829,30 @@ example : quatStringClass.count 7 = 16384 := quatStringClass_count_eq_pow 7
 example : quatStringClass.count 8 = 65536 := quatStringClass_count_eq_pow 8
 example : quatStringClass.count 9 = 262144 := quatStringClass_count_eq_pow 9
 example : quatStringClass.count 10 = 1048576 := quatStringClass_count_eq_pow 10
+
+/-- The cartesian product convolution:
+    `∑ p ∈ antidiag n, 4^p.1 · 4^p.2 = (n+1) · 4^n`. -/
+theorem quatStringClass_cartProd_count (n : ℕ) :
+    (quatStringClass.cartProd quatStringClass).count n = (n + 1) * 4 ^ n := by
+  rw [CombinatorialClass.cartProd_count]
+  rw [show ∑ p ∈ Finset.antidiagonal n, quatStringClass.count p.1 * quatStringClass.count p.2
+        = ∑ _p ∈ Finset.antidiagonal n, 4 ^ n from ?_]
+  · simp [Finset.sum_const, Finset.Nat.card_antidiagonal]
+  · apply Finset.sum_congr rfl
+    intro p hp
+    rw [Finset.mem_antidiagonal] at hp
+    rw [quatStringClass_count_eq_pow, quatStringClass_count_eq_pow]
+    rw [← pow_add, hp]
+
+/-! Sanity checks for pairs of quaternary strings under size convolution. -/
+example : (quatStringClass.cartProd quatStringClass).count 0 = 1 := by
+  rw [quatStringClass_cartProd_count]
+  norm_num
+
+example : (quatStringClass.cartProd quatStringClass).count 2 = 48 := by
+  rw [quatStringClass_cartProd_count]
+  norm_num
+
+example : (quatStringClass.cartProd quatStringClass).count 5 = 6144 := by
+  rw [quatStringClass_cartProd_count]
+  norm_num
