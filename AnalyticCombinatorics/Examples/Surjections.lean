@@ -19,7 +19,7 @@ theorem surjectionClass_egf_mul_two_sub_exp :
   exact labelSeq_posIntClass_egf_mul_two_sub_exp
 
 /-! Sanity checks: Fubini numbers are 1, 1, 3, 13, 75, 541, 4683, 47293,
-545835, 7087261, 102247563. -/
+545835, 7087261, 102247563, 1622632573, 28091567595, 526858348381. -/
 
 example : surjectionClass.count 0 = 1 := by
   rw [surjectionClass_count_eq_fubini]
@@ -64,3 +64,18 @@ example : surjectionClass.count 9 = 7087261 := by
 example : surjectionClass.count 10 = 102247563 := by
   rw [surjectionClass_count_eq_fubini]
   decide
+
+set_option linter.style.nativeDecide false in
+example : surjectionClass.count 11 = 1622632573 := by
+  rw [surjectionClass_count_eq_fubini]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : surjectionClass.count 12 = 28091567595 := by
+  rw [surjectionClass_count_eq_fubini]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : surjectionClass.count 13 = 526858348381 := by
+  rw [surjectionClass_count_eq_fubini]
+  native_decide
