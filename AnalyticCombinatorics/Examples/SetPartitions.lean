@@ -409,6 +409,18 @@ example : (CombinatorialClass.labelPow posIntClass 3).count 4 = 36 := by
   rw [labelPow_posIntClass_count_eq_factorial_mul_stirlingSecond]
   decide
 
+example : (CombinatorialClass.labelPow posIntClass 2).count 4 = 14 := by
+  rw [labelPow_posIntClass_count_eq_factorial_mul_stirlingSecond]
+  decide  -- 2! · S(4,2) = 2 · 7 = 14
+
+example : (CombinatorialClass.labelPow posIntClass 3).count 5 = 150 := by
+  rw [labelPow_posIntClass_count_eq_factorial_mul_stirlingSecond]
+  decide  -- 3! · S(5,3) = 6 · 25 = 150
+
+example : (CombinatorialClass.labelPow posIntClass 2).count 5 = 30 := by
+  rw [labelPow_posIntClass_count_eq_factorial_mul_stirlingSecond]
+  decide  -- 2! · S(5,2) = 2 · 15 = 30
+
 /-! Sanity: labelled cycles of nonempty sets are cyclically ordered set partitions.
     The values are `0, 1, 2, 6, 26, 150, 1082, ...`; for positive `n` this is
     OEIS A000629 with index shifted by one. -/
