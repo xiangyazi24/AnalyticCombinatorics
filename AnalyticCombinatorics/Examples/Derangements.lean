@@ -252,3 +252,10 @@ example :
     (1 - PowerSeries.X) * derangementClass.egf =
       PowerSeries.evalNegHom (PowerSeries.exp ℚ) := by
   exact one_sub_X_mul_derangementClass_egf
+
+/-- Classical derangement recurrence. -/
+theorem numDerangements_recurrence (n : ℕ) :
+    Nat.numDerangements (n + 2) =
+      (n + 1) * (Nat.numDerangements (n + 1) + Nat.numDerangements n) := by
+  rw [Nat.numDerangements, numDerangements_add_two]
+  rw [add_comm (numDerangements n) (numDerangements (n + 1))]
