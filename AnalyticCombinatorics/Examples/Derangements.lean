@@ -86,3 +86,31 @@ end derangementClass
 theorem derangementClass_count_eq_numDerangements (n : ℕ) :
     derangementClass.count n = Nat.numDerangements n :=
   derangementClass.count_eq_numDerangements n
+
+example : derangementClass.count 0 = 1 := by
+  rw [derangementClass_count_eq_numDerangements]
+  decide
+
+example : derangementClass.count 1 = 0 := by
+  rw [derangementClass_count_eq_numDerangements]
+  decide
+
+example : derangementClass.count 2 = 1 := by
+  rw [derangementClass_count_eq_numDerangements]
+  decide
+
+example : derangementClass.count 3 = 2 := by
+  rw [derangementClass_count_eq_numDerangements]
+  decide
+
+example : derangementClass.count 4 = 9 := by
+  rw [derangementClass_count_eq_numDerangements]
+  decide
+
+example : derangementClass.count 5 = 44 := by
+  rw [derangementClass_count_eq_numDerangements]
+  decide
+
+example : derangementClass.count 6 = 265 := by
+  rw [derangementClass_count_eq_numDerangements]
+  decide

@@ -30,3 +30,4 @@ import AnalyticCombinatorics.Examples.Compositions
 import AnalyticCombinatorics.Examples.Fibonacci
 import AnalyticCombinatorics.Examples.SetPartitions
 import AnalyticCombinatorics.Examples.Derangements
+import AnalyticCombinatorics.Examples.CyclicPermutations
