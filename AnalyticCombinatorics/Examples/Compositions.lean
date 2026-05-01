@@ -171,3 +171,19 @@ theorem compositionClass_count_eq_pow_pred (n : ℕ) (hn : 1 ≤ n) :
   obtain ⟨k, rfl⟩ : ∃ k, n = k + 1 := ⟨n - 1, by omega⟩
   rw [compositionClass_count_succ]
   congr 1
+
+/-- The OGF of compositions has coefficient 2^(n-1) for n ≥ 1 over ℤ. -/
+theorem compositionClass_ogfZ_coeff_pos (n : ℕ) (hn : 1 ≤ n) :
+    PowerSeries.coeff n (ogfZ compositionClass) = (2 ^ (n - 1) : ℤ) := by
+  unfold ogfZ
+  rw [PowerSeries.coeff_map]
+  rw [coeff_ogf]
+  rw [compositionClass_count_eq_pow_pred n hn]
+  push_cast
+  rfl
+
+/-- Sum identity: 2 · count(n+1) = count(n+2). Linear recurrence. -/
+example (n : ℕ) :
+    2 * compositionClass.count (n + 1) = compositionClass.count (n + 2) := by
+  rw [compositionClass_count_succ, compositionClass_count_succ, pow_succ]
+  ring

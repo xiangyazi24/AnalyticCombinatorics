@@ -69,3 +69,18 @@ example : labelCycCount Atom 4 = 6 := by
 example : labelCycCount Atom 5 = 24 := by
   rw [labelCycCount_Atom_succ]
   rfl
+
+/-- The Atom labelled SET equals 1, the Atom labelled CYC at `n` equals
+    `(n - 1)!`, and these connect via the standard `exp(log(...))` relation;
+    we do not formalize that composition here.
+
+    A simpler concrete identity: the EGF of permutation cycles equals
+    `log(1/(1-z))`. The EGF coefficient at `n` is `1/n`: that is,
+    `labelCycCount Atom n / n! = (n-1)! / n! = 1/n`. -/
+example (n : ℕ) (hn : 1 ≤ n) :
+    labelCycCount Atom n / (n.factorial : ℚ) = 1 / (n : ℚ) := by
+  obtain ⟨m, rfl⟩ : ∃ m, n = m + 1 := ⟨n - 1, by omega⟩
+  rw [labelCycCount_Atom_succ]
+  rw [Nat.factorial_succ]
+  push_cast
+  field_simp
