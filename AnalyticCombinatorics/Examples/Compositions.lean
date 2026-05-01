@@ -1013,3 +1013,57 @@ example : PowerSeries.coeff 0 (CombinatorialClass.ogfZ compositionClass) = (1 : 
   unfold CombinatorialClass.ogfZ
   rw [PowerSeries.coeff_map, coeff_ogf, compositionClass_count_zero]
   rfl
+
+/-! Additional count sanity checks. -/
+
+example : compositionClass.count 8 = 128 := by
+  rw [compositionClass_count_succ]
+  decide
+
+example : compositionClass.count 9 = 256 := by
+  rw [compositionClass_count_succ]
+  decide
+
+example : compositionClass.count 10 = 512 := by
+  rw [compositionClass_count_succ]
+  decide
+
+example : compositionClass.count 11 = 1024 := by
+  rw [compositionClass_count_succ]
+  decide
+
+example : compositionClass.count 12 = 2048 := by
+  rw [compositionClass_count_succ]
+  decide
+
+example : compositionClass.count 13 = 4096 := by
+  rw [compositionClass_count_succ]
+  decide
+
+example : compositionClass.count 14 = 8192 := by
+  rw [compositionClass_count_succ]
+  decide
+
+example : compositionClass.count 15 = 16384 := by
+  rw [compositionClass_count_succ]
+  decide
+
+example : compositionGe2Class.count 8 = 13 := by
+  rw [compositionGe2Class_count_succ_succ]
+  decide
+
+example : compositionGe2Class.count 9 = 21 := by
+  rw [compositionGe2Class_count_succ_succ]
+  decide
+
+example : compositionGe2Class.count 10 = 34 := by
+  rw [compositionGe2Class_count_succ_succ]
+  decide
+
+example : compositionGe2Class.count 11 = 55 := by
+  rw [compositionGe2Class_count_succ_succ]
+  decide
+
+example : compositionGe2Class.count 12 = 89 := by
+  rw [compositionGe2Class_count_succ_succ]
+  decide

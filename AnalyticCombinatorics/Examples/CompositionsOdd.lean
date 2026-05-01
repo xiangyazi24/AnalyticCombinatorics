@@ -424,3 +424,15 @@ example : oddCompClass.count 19 = 4181 := by
 example : oddCompClass.count 20 = 6765 := by
   rw [show 20 = 19 + 1 by decide, oddCompClass_count_succ_eq_fib]
   decide
+
+example : oddCompClass.count 21 = 10946 := by
+  rw [show 21 = 20 + 1 by decide, oddCompClass_count_succ_eq_fib]
+  decide
+
+example : oddCompClass.count 22 = 17711 := by
+  rw [show 22 = 21 + 1 by decide, oddCompClass_count_succ_eq_fib]
+  decide
+
+example : oddCompClass.count 23 = 28657 := by
+  rw [show 23 = 22 + 1 by decide, oddCompClass_count_succ_eq_fib]
+  decide

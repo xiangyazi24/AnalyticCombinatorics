@@ -944,3 +944,18 @@ example : Nat.stirlingFirst 3 2 = 3 := by
 example : Nat.stirlingFirst 4 2 = 11 := by
   rw [show 4 = 3 + 1 by rfl, show 2 = 1 + 1 by rfl, stirlingFirst_succ 3 1]
   decide
+
+set_option linter.style.nativeDecide false in
+example : labelSetCount posIntClass 21 = (474869816156751 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : labelSetCount posIntClass 22 = (4506715738447323 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : labelSetCount posIntClass 23 = (44152005855084346 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  native_decide
