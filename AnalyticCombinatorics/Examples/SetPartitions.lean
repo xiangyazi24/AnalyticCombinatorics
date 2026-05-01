@@ -707,3 +707,15 @@ example (n : ℕ) :
   by_cases hk : k = 0
   · simp [hk]
   · simp [hk, Nat.cast_mul]
+
+example : CombinatorialClass.labelCycCount posIntClass 5 = (150 : ℚ) := by
+  rw [labelCycCount_posIntClass_eq_cyclic_fubini]
+  norm_num [Finset.sum_range_succ, Nat.factorial, Nat.factorial_succ, Nat.stirlingSecond]
+
+example : CombinatorialClass.labelCycCount posIntClass 6 = (1082 : ℚ) := by
+  rw [labelCycCount_posIntClass_eq_cyclic_fubini]
+  norm_num [Finset.sum_range_succ, Nat.factorial, Nat.factorial_succ, Nat.stirlingSecond]
+
+example : CombinatorialClass.labelCycCount posIntClass 7 = (9366 : ℚ) := by
+  rw [labelCycCount_posIntClass_eq_cyclic_fubini]
+  norm_num [Finset.sum_range_succ, Nat.factorial, Nat.factorial_succ, Nat.stirlingSecond]
