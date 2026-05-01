@@ -108,3 +108,12 @@ example : surjectionClass.count 18 = 3385534663256845323 := by
   rw [surjectionClass_count_eq_fubini]
   native_decide
 
+set_option linter.style.nativeDecide false in
+example : surjectionClass.count 19 = 92801587319328411133 := by
+  rw [surjectionClass_count_eq_fubini]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : surjectionClass.count 20 = 2677687796244384203115 := by
+  rw [surjectionClass_count_eq_fubini]
+  native_decide
