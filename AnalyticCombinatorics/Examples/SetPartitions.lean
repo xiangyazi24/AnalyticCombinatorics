@@ -810,3 +810,10 @@ theorem stirlingSecond_succ (n k : ℕ) :
     Nat.stirlingSecond (n + 1) (k + 1) =
       (k + 1) * Nat.stirlingSecond n (k + 1) + Nat.stirlingSecond n k := by
   exact Nat.stirlingSecond_succ_succ n k
+
+/-- Project-facing name for the classical recurrence of unsigned Stirling numbers of the first
+kind. -/
+theorem stirlingFirst_succ (n k : ℕ) :
+    Nat.stirlingFirst (n + 1) (k + 1) =
+      n * Nat.stirlingFirst n (k + 1) + Nat.stirlingFirst n k := by
+  exact Nat.stirlingFirst_succ_succ n k
