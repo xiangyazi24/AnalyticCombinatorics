@@ -370,8 +370,49 @@ private lemma tetraClass_count_fourteen : tetraClass.count 14 = 5536 := by
         tetraClass_count_ten]
     _ = 5536 := by decide
 
+private lemma tetraClass_count_fifteen : tetraClass.count 15 = 10671 := by
+  calc
+    tetraClass.count 15 =
+        tetraClass.count 14 + tetraClass.count 13 + tetraClass.count 12 + tetraClass.count 11 :=
+      tetraClass_count_succ_succ_succ_succ 11
+    _ = 5536 + 2872 + 1490 + 773 := by
+      rw [tetraClass_count_fourteen, tetraClass_count_thirteen, tetraClass_count_twelve,
+        tetraClass_count_eleven]
+    _ = 10671 := by decide
+
+private lemma tetraClass_count_sixteen : tetraClass.count 16 = 20569 := by
+  calc
+    tetraClass.count 16 =
+        tetraClass.count 15 + tetraClass.count 14 + tetraClass.count 13 + tetraClass.count 12 :=
+      tetraClass_count_succ_succ_succ_succ 12
+    _ = 10671 + 5536 + 2872 + 1490 := by
+      rw [tetraClass_count_fifteen, tetraClass_count_fourteen, tetraClass_count_thirteen,
+        tetraClass_count_twelve]
+    _ = 20569 := by decide
+
+private lemma tetraClass_count_seventeen : tetraClass.count 17 = 39648 := by
+  calc
+    tetraClass.count 17 =
+        tetraClass.count 16 + tetraClass.count 15 + tetraClass.count 14 + tetraClass.count 13 :=
+      tetraClass_count_succ_succ_succ_succ 13
+    _ = 20569 + 10671 + 5536 + 2872 := by
+      rw [tetraClass_count_sixteen, tetraClass_count_fifteen, tetraClass_count_fourteen,
+        tetraClass_count_thirteen]
+    _ = 39648 := by decide
+
+private lemma tetraClass_count_eighteen : tetraClass.count 18 = 76424 := by
+  calc
+    tetraClass.count 18 =
+        tetraClass.count 17 + tetraClass.count 16 + tetraClass.count 15 + tetraClass.count 14 :=
+      tetraClass_count_succ_succ_succ_succ 14
+    _ = 39648 + 20569 + 10671 + 5536 := by
+      rw [tetraClass_count_seventeen, tetraClass_count_sixteen, tetraClass_count_fifteen,
+        tetraClass_count_fourteen]
+    _ = 76424 := by decide
+
 /-! Sanity checks:
-  1, 1, 2, 4, 8, 15, 29, 56, 108, 208, 401, 773, 1490, 2872, 5536. -/
+  1, 1, 2, 4, 8, 15, 29, 56, 108, 208, 401, 773, 1490, 2872, 5536, 10671,
+  20569, 39648, 76424. -/
 example : tetraClass.count 0 = 1 := by
   calc
     tetraClass.count 0 = 1 := tetraClass_count_zero
@@ -446,6 +487,26 @@ example : tetraClass.count 14 = 5536 := by
   calc
     tetraClass.count 14 = 5536 := tetraClass_count_fourteen
     _ = 5536 := by decide
+
+example : tetraClass.count 15 = 10671 := by
+  calc
+    tetraClass.count 15 = 10671 := tetraClass_count_fifteen
+    _ = 10671 := by decide
+
+example : tetraClass.count 16 = 20569 := by
+  calc
+    tetraClass.count 16 = 20569 := tetraClass_count_sixteen
+    _ = 20569 := by decide
+
+example : tetraClass.count 17 = 39648 := by
+  calc
+    tetraClass.count 17 = 39648 := tetraClass_count_seventeen
+    _ = 39648 := by decide
+
+example : tetraClass.count 18 = 76424 := by
+  calc
+    tetraClass.count 18 = 76424 := tetraClass_count_eighteen
+    _ = 76424 := by decide
 
 /-- The OGF for a single part of size 1, 2, 3, or 4 is `z + z^2 + z^3 + z^4`. -/
 private lemma step1234Class_ogfZ :
