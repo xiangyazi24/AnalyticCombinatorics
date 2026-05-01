@@ -50,6 +50,9 @@ theorem labelCycCount_Atom_eq_cyclicPermutationCount_succ (n : ℕ) :
   rw [labelCycCount_Atom_succ, cyclicPermutationCount_succ]
 
 /-- Sanity: 1-cycles, 2-cycles, 3-cycles, 4-cycles, 5-cycles. -/
+example : labelCycCount Atom 0 = 0 := by
+  simp [CombinatorialClass.labelCycCount]
+
 example : labelCycCount Atom 1 = 1 := by
   rw [labelCycCount_Atom_succ]
   rfl
