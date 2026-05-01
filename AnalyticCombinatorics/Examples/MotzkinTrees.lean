@@ -379,4 +379,26 @@ example (n : ℕ) :
     MotzTree.asClass.ogf.coeff n = MotzTree.asClass.count n := by
   rw [coeff_ogf]
 
+/-- Numerical check of the Motzkin recurrence at `n = 3`. -/
+example :
+    asClass.count (3 + 2) = asClass.count (3 + 1) +
+      ∑ k ∈ Finset.range (3 + 1), asClass.count k * asClass.count (3 - k) := by
+  rw [show 3 + 2 = 5 by norm_num, show 3 + 1 = 4 by norm_num, count_five,
+    count_four]
+  norm_num [Finset.range, count_zero, count_one, count_two, count_three]
+
+/-- Alias for the Motzkin-tree combinatorial class. -/
+noncomputable abbrev motzClass : CombinatorialClass := asClass
+
+/-- Motzkin recurrence in range-indexed form:
+    `M(n+2) = M(n+1) + ∑_{k=0}^{n} M(k) M(n-k)`. -/
+theorem motzClass_count_recurrence (n : ℕ) :
+    motzClass.count (n + 2) = motzClass.count (n + 1) +
+      ∑ k ∈ Finset.range (n + 1), motzClass.count k * motzClass.count (n - k) := by
+  change asClass.count (n + 2) = asClass.count (n + 1) +
+      ∑ k ∈ Finset.range (n + 1), asClass.count k * asClass.count (n - k)
+  rw [count_succ_succ,
+    Finset.Nat.sum_antidiagonal_eq_sum_range_succ
+      (fun k l => asClass.count k * asClass.count l) n]
+
 end MotzTree
