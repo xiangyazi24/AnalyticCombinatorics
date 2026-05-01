@@ -319,3 +319,7 @@ example : compositionClass.jointCount numParts 2 2 = 1 := by
                 simp
             | cons c xs =>
                 simp at hnum
+
+example : compositionClass.count 8 = 128 := compositionClass_count_succ 7
+example : compositionClass.count 10 = 512 := compositionClass_count_succ 9
+example : compositionClass.count 12 = 2048 := compositionClass_count_succ 11
