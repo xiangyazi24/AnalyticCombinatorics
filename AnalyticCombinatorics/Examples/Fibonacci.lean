@@ -7,6 +7,7 @@
 -/
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 import AnalyticCombinatorics.PartA.Ch1.Sequences
+import AnalyticCombinatorics.PartA.Ch3.Parameters
 import Mathlib.Data.Nat.Fib.Basic
 
 open PowerSeries CombinatorialClass Finset
@@ -186,3 +187,135 @@ theorem fibClass_ogfZ_coeff (n : ℕ) :
   unfold ogfZ
   rw [PowerSeries.coeff_map, coeff_ogf, fibClass_count_eq_fib]
   rfl
+
+/-! ## Parameter: number of parts -/
+
+/-- Number of parts in a fibClass composition. -/
+def fibNumParts : Parameter fibClass := List.length
+
+private lemma fibClass_jointCount_fibNumParts_eq_one_of_unique
+    {n k : ℕ} (x₀ : fibClass.Obj)
+    (hx₀ : x₀ ∈ fibClass.level n)
+    (hnum₀ : fibNumParts x₀ = k)
+    (huniq : ∀ x : fibClass.Obj,
+      x ∈ fibClass.level n → fibNumParts x = k → x = x₀) :
+    fibClass.jointCount fibNumParts n k = 1 := by
+  unfold CombinatorialClass.jointCount
+  rw [Finset.card_eq_one]
+  refine ⟨x₀, ?_⟩
+  ext x
+  rw [Finset.mem_filter, Finset.mem_singleton]
+  constructor
+  · intro hx
+    exact huniq x hx.1 hx.2
+  · intro hx
+    subst hx
+    exact ⟨hx₀, hnum₀⟩
+
+/-- Sanity: small jointCount values. -/
+example : fibClass.jointCount fibNumParts 0 0 = 1 := by
+  apply fibClass_jointCount_fibNumParts_eq_one_of_unique ([] : fibClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rfl
+  · intro x hx _hnum
+    have hsize : x.foldr (fun b acc => stepClass.size b + acc) 0 = 0 := by
+      exact (CombinatorialClass.level_mem_iff (C := fibClass) x).mp hx
+    cases x with
+    | nil => rfl
+    | cons a xs =>
+        simp only [List.foldr_cons] at hsize
+        rcases a with a | a
+        · have hbad : stepClass.size (Sum.inl a) = 0 := by omega
+          change (1 : ℕ) = 0 at hbad
+          omega
+        · have hbad : stepClass.size (Sum.inr a) = 0 := by omega
+          change (2 : ℕ) = 0 at hbad
+          omega
+
+example : fibClass.jointCount fibNumParts 1 1 = 1 := by
+  apply fibClass_jointCount_fibNumParts_eq_one_of_unique
+    ([Sum.inl ()] : fibClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rfl
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => stepClass.size b + acc) 0 = 1 := by
+      exact (CombinatorialClass.level_mem_iff (C := fibClass) x).mp hx
+    change x.length = 1 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil =>
+            simp only [List.foldr_cons, List.foldr_nil] at hsize
+            rcases a with a | a
+            · cases a
+              rfl
+            · have hbad := hsize
+              change (2 : ℕ) = 1 at hbad
+              omega
+        | cons b xs =>
+            simp at hnum
+
+example : fibClass.jointCount fibNumParts 2 1 = 1 := by
+  apply fibClass_jointCount_fibNumParts_eq_one_of_unique
+    ([Sum.inr ()] : fibClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rfl
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => stepClass.size b + acc) 0 = 2 := by
+      exact (CombinatorialClass.level_mem_iff (C := fibClass) x).mp hx
+    change x.length = 1 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil =>
+            simp only [List.foldr_cons, List.foldr_nil] at hsize
+            rcases a with a | a
+            · have hbad := hsize
+              change (1 : ℕ) = 2 at hbad
+              omega
+            · cases a
+              rfl
+        | cons b xs =>
+            simp at hnum
+
+example : fibClass.jointCount fibNumParts 2 2 = 1 := by
+  apply fibClass_jointCount_fibNumParts_eq_one_of_unique
+    ([Sum.inl (), Sum.inl ()] : fibClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rfl
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => stepClass.size b + acc) 0 = 2 := by
+      exact (CombinatorialClass.level_mem_iff (C := fibClass) x).mp hx
+    change x.length = 2 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil =>
+                simp only [List.foldr_cons, List.foldr_nil] at hsize
+                rcases a with a | a
+                · rcases b with b | b
+                  · cases a
+                    cases b
+                    rfl
+                  · have hbad := hsize
+                    change (1 : ℕ) + 2 = 2 at hbad
+                    omega
+                · rcases b with _ | _
+                  · have hbad := hsize
+                    change (2 : ℕ) + 1 = 2 at hbad
+                    omega
+                  · have hbad := hsize
+                    change (2 : ℕ) + 2 = 2 at hbad
+                    omega
+            | cons c xs =>
+                simp at hnum
