@@ -14,6 +14,7 @@ import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Data.Fintype.Basic
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 import AnalyticCombinatorics.PartA.Ch1.Sequences
+import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 
 open PowerSeries CombinatorialClass
 
@@ -137,3 +138,77 @@ theorem stringClass_ogfZ_mul_one_sub_two_X :
 example : stringClass.count 2 = 4 := by rw [stringClass_count_eq_pow]; decide
 example : stringClass.count 4 = 16 := by rw [stringClass_count_eq_pow]; decide
 example : stringClass.count 5 = 32 := by rw [stringClass_count_eq_pow]; decide
+
+lemma boolClass_count_eq_zero_of_ne_one {k : ℕ} (hk : k ≠ 1) : boolClass.count k = 0 := by
+  simp only [CombinatorialClass.count]
+  rw [Finset.card_eq_zero]
+  ext b
+  simp only [Finset.notMem_empty, iff_false]
+  intro hb
+  have hsz : boolClass.size b = k :=
+    (boolClass.finite_level k).mem_toFinset.mp hb
+  exact hk hsz.symm
+
+lemma boolClass_egf : boolClass.egf = PowerSeries.C (2 : ℚ) * PowerSeries.X := by
+  ext n
+  rw [CombinatorialClass.coeff_egf]
+  rw [show PowerSeries.X = (PowerSeries.X : PowerSeries ℚ) ^ 1 by simp]
+  rw [PowerSeries.coeff_C_mul_X_pow]
+  by_cases hn : n = 1
+  · subst n
+    rw [boolClass.count_one]
+    norm_num
+  · rw [boolClass_count_eq_zero_of_ne_one hn]
+    simp [hn]
+
+lemma coeff_C_two_mul_X_pow (k n : ℕ) :
+    coeff n ((PowerSeries.C (2 : ℚ) * PowerSeries.X) ^ k) =
+      if n = k then (2 ^ k : ℚ) else 0 := by
+  have hbase : PowerSeries.C (2 : ℚ) * PowerSeries.X = PowerSeries.monomial 1 (2 : ℚ) := by
+    ext m
+    rw [show PowerSeries.X = (PowerSeries.X : PowerSeries ℚ) ^ 1 by simp]
+    rw [PowerSeries.coeff_C_mul_X_pow, PowerSeries.coeff_monomial]
+  rw [hbase]
+  have hpow : (PowerSeries.monomial 1 (2 : ℚ)) ^ k =
+      PowerSeries.monomial k (2 ^ k : ℚ) := by
+    induction k with
+    | zero => simp [PowerSeries.monomial_zero_eq_C_apply]
+    | succ k ih =>
+      rw [pow_succ, ih, PowerSeries.monomial_mul_monomial]
+      congr
+      rw [pow_succ]
+  rw [hpow, PowerSeries.coeff_monomial]
+
+/-- `(labelPow boolClass k).count n = 2^k · k!` when `n = k`, else 0.
+    A labelled k-tuple of binary atoms has `2^k` label choices and `k!` orderings. -/
+theorem labelPow_boolClass_count (k n : ℕ) :
+    (CombinatorialClass.labelPow boolClass k).count n =
+      if n = k then 2 ^ k * k.factorial else 0 := by
+  have hcoeff := CombinatorialClass.labelPow_count_div_factorial_eq_coeff_pow boolClass k n
+  rw [boolClass_egf, coeff_C_two_mul_X_pow] at hcoeff
+  by_cases hnk : n = k
+  · subst n
+    simp only [if_true] at hcoeff ⊢
+    field_simp [Nat.cast_ne_zero.mpr k.factorial_pos.ne'] at hcoeff
+    rw [Nat.mul_comm]
+    exact_mod_cast hcoeff
+  · simp only [if_false, hnk] at hcoeff ⊢
+    field_simp [Nat.cast_ne_zero.mpr n.factorial_pos.ne'] at hcoeff
+    rw [mul_zero] at hcoeff
+    exact Nat.cast_eq_zero.mp hcoeff
+
+/-- `labelSetCount boolClass n = 2^n`. -/
+theorem labelSetCount_boolClass (n : ℕ) :
+    CombinatorialClass.labelSetCount boolClass n = 2 ^ n := by
+  rw [CombinatorialClass.labelSetCount]
+  rw [Finset.sum_eq_single n]
+  · rw [labelPow_boolClass_count n n, if_pos rfl]
+    rw [Nat.cast_mul]
+    field_simp [Nat.cast_ne_zero.mpr n.factorial_pos.ne']
+    norm_num
+  · intro k _ hkn
+    rw [labelPow_boolClass_count k n, if_neg (Ne.symm hkn)]
+    simp
+  · intro hn
+    exfalso
+    exact hn (Finset.mem_range.mpr (Nat.lt_succ_self n))

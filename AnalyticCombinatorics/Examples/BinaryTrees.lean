@@ -13,7 +13,9 @@
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Combinatorics.Enumerative.Catalan
+import Mathlib.Tactic.LinearCombination
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
+import AnalyticCombinatorics.PartA.Ch1.Sequences
 
 open PowerSeries CombinatorialClass
 
@@ -232,5 +234,18 @@ example : asClass.ogf.coeff 0 = 1 := by
   rw [coeff_ogf]
   show asClass.count 0 = 1
   exact count_zero
+
+/-- Lift the functional equation to ℤ[[z]] via ogfZ. -/
+theorem ogfZ_functional_equation :
+    ogfZ asClass = 1 + PowerSeries.X * (ogfZ asClass) ^ 2 := by
+  unfold ogfZ
+  have := congrArg (PowerSeries.map (algebraMap ℕ ℤ)) ogf_functional_equation
+  simpa [PowerSeries.map_X] using this
+
+/-- Quadratic form: X · C² - C + 1 = 0 in ℤ[[z]]. -/
+theorem ogfZ_quadratic :
+    PowerSeries.X * (ogfZ asClass) ^ 2 - ogfZ asClass + 1 = 0 := by
+  have h := ogfZ_functional_equation
+  linear_combination -h
 
 end BinTree
