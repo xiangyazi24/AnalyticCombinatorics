@@ -388,3 +388,10 @@ theorem tetraClass_ogfZ_mul_one_sub_X_sub_X_sq_sub_X_cub_sub_X_fourth :
         = (1 - (PowerSeries.X + PowerSeries.X ^ 2 + PowerSeries.X ^ 3 +
             PowerSeries.X ^ 4)) * ogfZ tetraClass := by ring
     _ = 1 := hseq
+
+/-- Tetranacci recurrence for compositions into parts 1, 2, 3, and 4. -/
+theorem tetraClass_count_recurrence (n : ℕ) :
+    tetraClass.count (n + 4)
+      = tetraClass.count (n + 3) + tetraClass.count (n + 2)
+        + tetraClass.count (n + 1) + tetraClass.count n := by
+  exact tetraClass_count_succ_succ_succ_succ n

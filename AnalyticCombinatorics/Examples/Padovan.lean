@@ -333,6 +333,11 @@ theorem padovanClass_ogfZ_mul_one_sub_X_sq_sub_X_cub :
         = (1 - (PowerSeries.X ^ 2 + PowerSeries.X ^ 3)) * ogfZ padovanClass := by ring
     _ = 1 := hseq
 
+/-- Padovan recurrence for compositions into parts 2 and 3. -/
+theorem padovanClass_count_recurrence (n : ℕ) :
+    padovanClass.count (n + 3) = padovanClass.count (n + 1) + padovanClass.count n := by
+  exact padovanClass_count_succ_succ_succ n
+
 /-! ## Parameter: number of parts -/
 
 /-- Number of parts in a Padovan composition. -/
