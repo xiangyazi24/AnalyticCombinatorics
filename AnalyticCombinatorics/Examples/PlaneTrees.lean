@@ -164,3 +164,9 @@ example : planeTreeClass.count 3 = 5 := by rw [planeTreeClass_count, catalan_thr
 example : planeTreeClass.count 4 = 14 := by
   rw [planeTreeClass_count]
   norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
+example : planeTreeClass.count 5 = 42 := by
+  rw [planeTreeClass_count]
+  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
+example : planeTreeClass.count 6 = 132 := by
+  rw [planeTreeClass_count]
+  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
