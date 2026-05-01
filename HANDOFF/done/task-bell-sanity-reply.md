@@ -1,27 +1,9 @@
-# Task task-bell-sanity Reply
+已在 `AnalyticCombinatorics/Examples/SetPartitions.lean` 追加 `B_12..B_15` sanity examples，全部经
+`labelSetCount_posIntClass_eq_bell` 转到 `Nat.bell`，再用 `native_decide` 验证：
 
-Done.
+- `B_12 = 4213597`
+- `B_13 = 27644437`
+- `B_14 = 190899322`
+- `B_15 = 1382958545`
 
-Added Bell-number sanity checks at the end of
-`AnalyticCombinatorics/Examples/SetPartitions.lean`:
-
-- `labelSetCount posIntClass 0 = 1`
-- `labelSetCount posIntClass 1 = 1`
-- `labelSetCount posIntClass 2 = 2`
-- `labelSetCount posIntClass 3 = 5`
-- `labelSetCount posIntClass 4 = 15`
-
-Used `norm_num` for `0..2` and `Nat.bell_succ'` plus finite
-`Finset.antidiagonal` evaluation for `3` and `4`; no `sorry`s.
-
-Verification:
-
-```text
-PATH="/Users/huangx/.elan/bin:$PATH" lake env lean AnalyticCombinatorics/Examples/SetPartitions.lean
-PATH="/Users/huangx/.elan/bin:$PATH" lake build
-```
-
-Both pass. `lake build` still reports pre-existing linter warnings in other
-files, but the build completes successfully.
-
-Codex: idle — task done
+`decide` 在这些桥接后的 `ℚ` 等式上从 `n = 12` 起规约卡住，不是 30 秒超时；`native_decide` 的目标文件检查约 4 秒，全仓 `lake build` 通过，约 7 秒。

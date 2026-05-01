@@ -696,6 +696,26 @@ example : labelSetCount posIntClass 11 = (678570 : ℚ) := by
   rw [labelSetCount_posIntClass_eq_bell]
   norm_num [bell_eleven_sanity]
 
+set_option linter.style.nativeDecide false in
+example : labelSetCount posIntClass 12 = (4213597 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : labelSetCount posIntClass 13 = (27644437 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : labelSetCount posIntClass 14 = (190899322 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : labelSetCount posIntClass 15 = (1382958545 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  native_decide
+
 example (n : ℕ) :
     CombinatorialClass.labelCycCount posIntClass n =
       ∑ k ∈ Finset.range (n + 1),

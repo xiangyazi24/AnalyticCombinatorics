@@ -1,26 +1,15 @@
-# Task — Bell number sanity checks
+# Task — Bell number sanity beyond what's already done
 
-**File:** `AnalyticCombinatorics/Examples/SetPartitions.lean` (append at end)
+**File:** `AnalyticCombinatorics/Examples/SetPartitions.lean` (append)
 
-**Goal:** Add concrete sanity checks for `labelSetCount posIntClass n` matching small Bell numbers.
+The file already verifies Bell `B_0..B_11`. Push the table further: add explicit `decide`/`native_decide` sanity examples for `B_12 = 4213597`, `B_13 = 27644437`, `B_14 = 190899322`, `B_15 = 1382958545`, going through whatever lemma already bridges to `Nat.bell` (look for `bell` identifications already proved in the file — likely `labelSetCount_posIntClass_eq_bell` or similar).
 
-```lean
-/-! Sanity checks: Bell sequence starts 1, 1, 2, 5, 15, 52, 203, ... -/
-example : labelSetCount posIntClass 0 = (1 : ℚ) := by
-  rw [labelSetCount_posIntClass_eq_bell]; rfl
-example : labelSetCount posIntClass 1 = (1 : ℚ) := by
-  rw [labelSetCount_posIntClass_eq_bell]; decide
-example : labelSetCount posIntClass 2 = (2 : ℚ) := by
-  rw [labelSetCount_posIntClass_eq_bell]; decide
-example : labelSetCount posIntClass 3 = (5 : ℚ) := by
-  rw [labelSetCount_posIntClass_eq_bell]; decide
-example : labelSetCount posIntClass 4 = (15 : ℚ) := by
-  rw [labelSetCount_posIntClass_eq_bell]; decide
-```
+Switch to `native_decide` if `decide` is slow at `B_14` / `B_15`.
 
-If `decide` doesn't reduce, try `native_decide` or `Nat.bell_succ' ; rfl`-chain. Adapt as needed but no sorrys.
+If both routes blow up at `n = 14` or beyond, **document the threshold** in the reply (which `n` works in <30s, which doesn't) — this is useful baseline data for future kernel/decide work.
 
 ## Hard constraints
 
-- Build green
-- Reply at HANDOFF/outbox/task-bell-sanity-reply.md
+- Build green.
+- No new sorrys.
+- Reply at HANDOFF/outbox/task-bell-sanity-reply.md.
