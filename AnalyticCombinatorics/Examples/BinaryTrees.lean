@@ -263,6 +263,18 @@ theorem ogfZ_quadratic :
 
 end BinTree
 
+example : BinTree.asClass.egf.coeff 0 = 1 := by
+  rw [CombinatorialClass.coeff_egf]
+  rw [show (BinTree.asClass.count 0 : ℕ) = 1 from BinTree.count_zero]
+  simp
+
+example : BinTree.asClass.egf.coeff 2 = (2 : ℚ) / 2 := by
+  rw [CombinatorialClass.coeff_egf]
+  rw [show (BinTree.asClass.count 2 : ℕ) = BinTree.catalan 2 from rfl]
+  rw [show BinTree.catalan 2 = 2 from by
+        rw [BinTree.catalan_eq_nat_catalan, _root_.catalan_two]]
+  simp [Nat.factorial]
+
 /-- Rational EGF coefficient: [zⁿ] BinTree.asClass.egf = catalan n / n!. -/
 example (n : ℕ) :
     BinTree.asClass.egf.coeff n = (_root_.catalan n : ℚ) / n.factorial := by
