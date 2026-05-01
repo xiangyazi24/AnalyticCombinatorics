@@ -600,3 +600,27 @@ example : (CombinatorialClass.labelSeq posIntClass posIntClass.count_zero).count
 example : (CombinatorialClass.labelSeq posIntClass posIntClass.count_zero).count 8 = 545835 := by
   rw [labelSeq_posIntClass_count_eq_fubini]
   decide
+
+/-!
+## Narayana blocker
+
+This Mathlib snapshot provides `catalan`, `Nat.stirlingFirst`, and `Nat.stirlingSecond`, but
+source search and Lean `#check` found no `Nat.narayana` or root-level `narayana` identifier.
+Thus the usual Narayana formula
+`N(n,k) = (1 / n) * (n.choose k) * (n.choose (k - 1))` and the Catalan summation
+`∑ k = 1..n, N(n,k) = catalan n` do not currently have a Mathlib Narayana-number target to
+connect to here.
+
+The available labelled-cycle bridge to the unsigned Stirling numbers of the first kind is recorded
+below: one labelled cycle on atoms is a permutation with exactly one cycle.
+-/
+
+/-- Labelled cycles on atoms count permutations with one cycle, i.e. the unsigned Stirling
+number of the first kind `Nat.stirlingFirst n 1`. -/
+theorem labelCycCount_Atom_eq_stirlingFirst_one (n : ℕ) :
+    labelCycCount Atom n = (Nat.stirlingFirst n 1 : ℚ) := by
+  cases n with
+  | zero =>
+      simp [CombinatorialClass.labelCycCount, Nat.stirlingFirst_zero_succ]
+  | succ n =>
+      rw [labelCycCount_Atom_succ, Nat.stirlingFirst_one_right]
