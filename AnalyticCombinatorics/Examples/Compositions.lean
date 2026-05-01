@@ -12,6 +12,7 @@
   Reference: F&S Example I.7.
 -/
 import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.Data.Nat.Fib.Basic
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 import AnalyticCombinatorics.PartA.Ch1.Sequences
 import AnalyticCombinatorics.PartA.Ch3.Parameters
@@ -323,3 +324,172 @@ example : compositionClass.jointCount numParts 2 2 = 1 := by
 example : compositionClass.count 8 = 128 := compositionClass_count_succ 7
 example : compositionClass.count 10 = 512 := compositionClass_count_succ 9
 example : compositionClass.count 12 = 2048 := compositionClass_count_succ 11
+
+/-! ## Compositions into parts of size at least 2 -/
+
+/-- Positive integers with size ≥ 2: each k ≥ 2 has size k. -/
+def posIntGe2Class : CombinatorialClass where
+  Obj := {n : ℕ // 2 ≤ n}
+  size := fun ⟨n, _⟩ => n
+  finite_level n := by
+    by_cases h : 2 ≤ n
+    · apply Set.Finite.subset (Set.finite_singleton (⟨n, h⟩ : {k : ℕ // 2 ≤ k}))
+      intro x hx
+      simp only [Set.mem_setOf_eq] at hx
+      obtain ⟨v, hv⟩ := x
+      have hvn : v = n := hx
+      subst hvn
+      rfl
+    · apply Set.Finite.subset Set.finite_empty
+      intro x hx
+      simp only [Set.mem_setOf_eq] at hx
+      obtain ⟨v, hv⟩ := x
+      change v = n at hx
+      omega
+
+namespace posIntGe2Class
+
+/-- count 0 = 0 (no part of size 0). -/
+lemma count_zero : posIntGe2Class.count 0 = 0 := by
+  change (posIntGe2Class.level 0).card = 0
+  rw [Finset.card_eq_zero]
+  ext x
+  simp only [Finset.notMem_empty, iff_false]
+  intro hx
+  have hsz : posIntGe2Class.size x = 0 :=
+    (posIntGe2Class.finite_level 0).mem_toFinset.mp hx
+  obtain ⟨v, hv⟩ := x
+  change v = 0 at hsz
+  omega
+
+/-- count 1 = 0 (no part of size 1). -/
+lemma count_one : posIntGe2Class.count 1 = 0 := by
+  change (posIntGe2Class.level 1).card = 0
+  rw [Finset.card_eq_zero]
+  ext x
+  simp only [Finset.notMem_empty, iff_false]
+  intro hx
+  have hsz : posIntGe2Class.size x = 1 :=
+    (posIntGe2Class.finite_level 1).mem_toFinset.mp hx
+  obtain ⟨v, hv⟩ := x
+  change v = 1 at hsz
+  omega
+
+/-- For each k ≥ 2, exactly one positive integer has size k. -/
+lemma count_ge_two {k : ℕ} (hk : 2 ≤ k) : posIntGe2Class.count k = 1 := by
+  change (posIntGe2Class.level k).card = 1
+  rw [Finset.card_eq_one]
+  refine ⟨⟨k, hk⟩, ?_⟩
+  ext x
+  refine ⟨fun hx => ?_, fun hx => ?_⟩
+  · have hsz : posIntGe2Class.size x = k :=
+      (posIntGe2Class.finite_level k).mem_toFinset.mp hx
+    obtain ⟨v, hv⟩ := x
+    change v = k at hsz
+    subst hsz
+    exact Finset.mem_singleton_self _
+  · rw [Finset.mem_singleton] at hx
+    subst hx
+    exact (posIntGe2Class.finite_level k).mem_toFinset.mpr rfl
+
+end posIntGe2Class
+
+/-- The class of compositions into parts of size ≥ 2. -/
+noncomputable def compositionGe2Class : CombinatorialClass :=
+  seqClass posIntGe2Class posIntGe2Class.count_zero
+
+/-- Empty composition is the unique composition of 0. -/
+theorem compositionGe2Class_count_zero : compositionGe2Class.count 0 = 1 := by
+  change (seqClass posIntGe2Class posIntGe2Class.count_zero).count 0 = 1
+  rw [seqClass.count_zero]
+
+/-- There is no composition of 1 into parts of size ≥ 2. -/
+theorem compositionGe2Class_count_one : compositionGe2Class.count 1 = 0 := by
+  change (compositionGe2Class.level 1).card = 0
+  rw [Finset.card_eq_zero]
+  ext xs
+  simp only [Finset.notMem_empty, iff_false]
+  intro hxs
+  have hsz : xs.foldr (fun b acc => posIntGe2Class.size b + acc) 0 = 1 :=
+    (CombinatorialClass.level_mem_iff (C := compositionGe2Class) xs).mp hxs
+  cases xs with
+  | nil => simp at hsz
+  | cons a xs =>
+      obtain ⟨v, hv⟩ := a
+      change v + xs.foldr (fun b acc => posIntGe2Class.size b + acc) 0 = 1 at hsz
+      omega
+
+/-- Recurrence: count(n+2) is the sum of all previous counts through n. -/
+private lemma compositionGe2Class_count_succ_succ_eq_sum (n : ℕ) :
+    compositionGe2Class.count (n + 2) =
+      ∑ j ∈ Finset.range (n + 1), compositionGe2Class.count j := by
+  change (seqClass posIntGe2Class posIntGe2Class.count_zero).count (n + 2) = _
+  rw [show n + 2 = (n + 1) + 1 by omega]
+  rw [seqClass.count_succ]
+  rw [show (n + 1) + 1 = n + 2 by omega]
+  rw [show Finset.antidiagonal (n + 2)
+        = (Finset.range (n + 3)).image (fun k => (k, n + 2 - k)) from ?_]
+  · rw [Finset.sum_image]
+    · rw [Finset.sum_range_succ' _ (n + 2),
+          posIntGe2Class.count_zero, zero_mul, add_zero]
+      rw [Finset.sum_range_succ' _ (n + 1),
+          posIntGe2Class.count_one, zero_mul, add_zero]
+      rw [← Finset.sum_range_reflect _ (n + 1)]
+      apply Finset.sum_congr rfl
+      intro k hk
+      simp only [Finset.mem_range] at hk
+      rw [posIntGe2Class.count_ge_two (by omega), one_mul]
+      congr 1
+      omega
+    · intros a _ b _ heq
+      exact (Prod.mk.injEq _ _ _ _).mp heq |>.1
+  · ext ⟨k, m⟩
+    simp only [Finset.mem_antidiagonal, Finset.mem_image, Finset.mem_range, Prod.mk.injEq]
+    refine ⟨fun h => ⟨k, by omega, by omega, by omega⟩,
+            fun ⟨a, _, ha1, ha2⟩ => by omega⟩
+
+/-- Fibonacci recurrence for compositions into parts of size ≥ 2. -/
+private lemma compositionGe2Class_count_add_three (n : ℕ) :
+    compositionGe2Class.count (n + 3) =
+      compositionGe2Class.count (n + 2) + compositionGe2Class.count (n + 1) := by
+  rw [show n + 3 = (n + 1) + 2 by omega]
+  rw [compositionGe2Class_count_succ_succ_eq_sum (n + 1)]
+  rw [Finset.sum_range_succ]
+  rw [← compositionGe2Class_count_succ_succ_eq_sum n]
+
+/-- The number of compositions of n+2 into parts ≥ 2 equals fib(n+1). -/
+theorem compositionGe2Class_count_succ_succ (n : ℕ) :
+    compositionGe2Class.count (n + 2) = Nat.fib (n + 1) := by
+  induction n using Nat.twoStepInduction with
+  | zero =>
+      rw [compositionGe2Class_count_succ_succ_eq_sum, Finset.sum_range_one,
+        compositionGe2Class_count_zero, Nat.fib_one]
+  | one =>
+      rw [compositionGe2Class_count_succ_succ_eq_sum, Finset.sum_range_succ,
+        Finset.sum_range_one, compositionGe2Class_count_zero, compositionGe2Class_count_one,
+        Nat.fib_two]
+  | more n ih0 ih1 =>
+      rw [show n + 1 + 1 + 2 = n + 4 by omega]
+      rw [show n + 4 = (n + 1) + 3 by omega]
+      rw [compositionGe2Class_count_add_three, ih0, ih1]
+      rw [show n + 1 + 1 + 1 = (n + 1) + 2 by omega]
+      rw [show Nat.fib (n + 2) + Nat.fib (n + 1) =
+        Nat.fib (n + 1) + Nat.fib (n + 2) by ac_rfl]
+      exact (Nat.fib_add_two (n := n + 1)).symm
+
+/-- Closed form for n ≥ 2: count of compositions of n into parts ≥ 2 is fib(n-1). -/
+theorem compositionGe2Class_count_eq_fib_pred (n : ℕ) (hn : 2 ≤ n) :
+    compositionGe2Class.count n = Nat.fib (n - 1) := by
+  obtain ⟨k, rfl⟩ : ∃ k, n = k + 2 := ⟨n - 2, by omega⟩
+  rw [compositionGe2Class_count_succ_succ]
+  congr 1
+
+/-! Sanity checks: counts are 1, 0, 1, 1, 2, 3, 5, 8, ... -/
+example : compositionGe2Class.count 0 = 1 := compositionGe2Class_count_zero
+example : compositionGe2Class.count 1 = 0 := compositionGe2Class_count_one
+example : compositionGe2Class.count 2 = 1 := compositionGe2Class_count_succ_succ 0
+example : compositionGe2Class.count 3 = 1 := compositionGe2Class_count_succ_succ 1
+example : compositionGe2Class.count 4 = 2 := compositionGe2Class_count_succ_succ 2
+example : compositionGe2Class.count 5 = 3 := compositionGe2Class_count_succ_succ 3
+example : compositionGe2Class.count 6 = 5 := compositionGe2Class_count_succ_succ 4
+example : compositionGe2Class.count 7 = 8 := compositionGe2Class_count_succ_succ 5
