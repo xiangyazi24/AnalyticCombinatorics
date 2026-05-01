@@ -524,3 +524,47 @@ example : CombinatorialClass.labelProdCount singletonClass singletonClass 3 = 8 
   singletonClass_labelProdCount_pow 3
 example : CombinatorialClass.labelProdCount singletonClass singletonClass 5 = 32 :=
   singletonClass_labelProdCount_pow 5
+
+namespace CombinatorialClass
+
+/-- Atom has no size-0 element. -/
+theorem Atom_count_zero : Atom.count 0 = 0 := by
+  change (Atom.level 0).card = 0
+  rw [Finset.card_eq_zero]
+  ext x
+  simp only [Finset.notMem_empty, iff_false]
+  intro hx
+  have := (CombinatorialClass.level_mem_iff (C := Atom) x).mp hx
+  change (1 : ℕ) = 0 at this
+  exact one_ne_zero this
+
+/-- Iterated labelled product of Atom: count is k! · δ_{k,n}. -/
+theorem labelPow_Atom_count (k n : ℕ) :
+    (CombinatorialClass.labelPow Atom k).count n = if n = k then n.factorial else 0 := by
+  have hcoeff := CombinatorialClass.labelPow_count_div_factorial_eq_coeff_pow Atom k n
+  rw [CombinatorialClass.Atom_egf, PowerSeries.coeff_X_pow] at hcoeff
+  by_cases hnk : n = k
+  · subst n
+    simp only [if_true] at hcoeff ⊢
+    field_simp [Nat.cast_ne_zero.mpr k.factorial_pos.ne'] at hcoeff
+    exact_mod_cast hcoeff
+  · simp only [if_false, hnk] at hcoeff ⊢
+    field_simp [Nat.cast_ne_zero.mpr n.factorial_pos.ne'] at hcoeff
+    rw [mul_zero] at hcoeff
+    exact Nat.cast_eq_zero.mp hcoeff
+
+/-- The labelled SET of Atom has constant count 1 at every size. -/
+theorem labelSetCount_Atom (n : ℕ) :
+    CombinatorialClass.labelSetCount Atom n = 1 := by
+  rw [CombinatorialClass.labelSetCount]
+  rw [Finset.sum_eq_single n]
+  · rw [CombinatorialClass.labelPow_Atom_count n n, if_pos rfl]
+    exact div_self (Nat.cast_ne_zero.mpr n.factorial_pos.ne')
+  · intro k _ hkn
+    rw [CombinatorialClass.labelPow_Atom_count k n, if_neg (Ne.symm hkn)]
+    simp
+  · intro hn
+    exfalso
+    exact hn (Finset.mem_range.mpr (Nat.lt_succ_self n))
+
+end CombinatorialClass
