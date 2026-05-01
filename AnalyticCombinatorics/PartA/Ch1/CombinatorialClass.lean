@@ -314,4 +314,8 @@ theorem cartProd_disjSum_distrib_ogf (C : CombinatorialClass) :
     ((A.cartProd B).disjSum (A.cartProd C)).ogf := by
   rw [cartProd_ogf, disjSum_ogf, disjSum_ogf, cartProd_ogf, cartProd_ogf, mul_add]
 
+/-- The OGF of `Atom + Atom` is `2 · X`. Two atoms of size 1, OGF doubles. -/
+theorem Atom_disjSum_Atom_ogf : (Atom.disjSum Atom).ogf = 2 * PowerSeries.X := by
+  rw [disjSum_ogf, Atom_ogf, two_mul]
+
 end CombinatorialClass
