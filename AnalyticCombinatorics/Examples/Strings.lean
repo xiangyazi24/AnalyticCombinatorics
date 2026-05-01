@@ -255,6 +255,31 @@ theorem stringClass_cartProd_count (n : ℕ) :
     rw [stringClass_count_eq_pow, stringClass_count_eq_pow]
     rw [← pow_add, hp]
 
+/-! Sanity checks for pairs of binary strings under size convolution. -/
+example : (stringClass.cartProd stringClass).count 0 = 1 := by
+  rw [CombinatorialClass.cartProd_count]
+  norm_num [Finset.antidiagonal, stringClass_count_eq_pow]
+
+example : (stringClass.cartProd stringClass).count 1 = 4 := by
+  rw [CombinatorialClass.cartProd_count]
+  norm_num [Finset.antidiagonal, stringClass_count_eq_pow]
+
+example : (stringClass.cartProd stringClass).count 2 = 12 := by
+  rw [CombinatorialClass.cartProd_count]
+  norm_num [Finset.antidiagonal, stringClass_count_eq_pow]
+
+example : (stringClass.cartProd stringClass).count 3 = 32 := by
+  rw [CombinatorialClass.cartProd_count]
+  norm_num [Finset.antidiagonal, stringClass_count_eq_pow]
+
+example : (stringClass.cartProd stringClass).count 4 = 80 := by
+  rw [CombinatorialClass.cartProd_count]
+  norm_num [Finset.antidiagonal, stringClass_count_eq_pow]
+
+example : (stringClass.cartProd stringClass).count 5 = 192 := by
+  rw [CombinatorialClass.cartProd_count]
+  norm_num [Finset.antidiagonal, stringClass_count_eq_pow]
+
 /-! ## Parameter: number of ones in a binary string -/
 
 /-- Parameter: number of `true`s in a binary string. -/
