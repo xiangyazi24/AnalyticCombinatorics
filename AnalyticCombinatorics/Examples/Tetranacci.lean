@@ -6,6 +6,7 @@
 -/
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 import AnalyticCombinatorics.PartA.Ch1.Sequences
+import AnalyticCombinatorics.PartA.Ch3.Parameters
 
 open PowerSeries CombinatorialClass Finset
 
@@ -486,3 +487,457 @@ theorem tetraClass_count_recurrence (n : ℕ) :
       = tetraClass.count (n + 3) + tetraClass.count (n + 2)
         + tetraClass.count (n + 1) + tetraClass.count n := by
   exact tetraClass_count_succ_succ_succ_succ n
+
+/-! ## Parameter: number of parts -/
+
+/-- Number of parts in a Tetranacci composition. -/
+def tetraNumParts : Parameter tetraClass := List.length
+
+private abbrev tetraPart1 : step1234Class.Obj := Sum.inl (Sum.inl (Sum.inl ()))
+private abbrev tetraPart2 : step1234Class.Obj := Sum.inl (Sum.inl (Sum.inr ()))
+private abbrev tetraPart3 : step1234Class.Obj := Sum.inl (Sum.inr ())
+private abbrev tetraPart4 : step1234Class.Obj := Sum.inr ()
+
+private instance : DecidableEq step1234Class.Obj := by
+  unfold step1234Class CombinatorialClass.disjSum atomOfSize
+  infer_instance
+
+private lemma tetraPart1_size : step1234Class.size tetraPart1 = 1 := rfl
+private lemma tetraPart2_size : step1234Class.size tetraPart2 = 2 := rfl
+private lemma tetraPart3_size : step1234Class.size tetraPart3 = 3 := rfl
+private lemma tetraPart4_size : step1234Class.size tetraPart4 = 4 := rfl
+
+private lemma step1234Class_obj_eq (x : step1234Class.Obj) :
+    x = tetraPart1 ∨ x = tetraPart2 ∨ x = tetraPart3 ∨ x = tetraPart4 := by
+  rcases x with x | x
+  · rcases x with x | x
+    · rcases x with x | x
+      · cases x
+        left
+        rfl
+      · cases x
+        right
+        left
+        rfl
+    · cases x
+      right
+      right
+      left
+      rfl
+  · cases x
+    right
+    right
+    right
+    rfl
+
+private lemma tetraClass_jointCount_tetraNumParts_eq_one_of_unique
+    {n k : ℕ} (x₀ : tetraClass.Obj)
+    (hx₀ : x₀ ∈ tetraClass.level n)
+    (hnum₀ : tetraNumParts x₀ = k)
+    (huniq : ∀ x : tetraClass.Obj,
+      x ∈ tetraClass.level n → tetraNumParts x = k → x = x₀) :
+    tetraClass.jointCount tetraNumParts n k = 1 := by
+  unfold CombinatorialClass.jointCount
+  rw [Finset.card_eq_one]
+  refine ⟨x₀, ?_⟩
+  ext x
+  rw [Finset.mem_filter, Finset.mem_singleton]
+  constructor
+  · intro hx
+    exact huniq x hx.1 hx.2
+  · intro hx
+    subst hx
+    exact ⟨hx₀, hnum₀⟩
+
+private lemma tetraClass_jointCount_tetraNumParts_eq_two_of_unique_pair
+    {n k : ℕ} (x₁ x₂ : tetraClass.Obj)
+    (hx₁ : x₁ ∈ tetraClass.level n)
+    (hx₂ : x₂ ∈ tetraClass.level n)
+    (hnum₁ : tetraNumParts x₁ = k)
+    (hnum₂ : tetraNumParts x₂ = k)
+    (hne : x₁ ≠ x₂)
+    (huniq : ∀ x : tetraClass.Obj,
+      x ∈ tetraClass.level n → tetraNumParts x = k → x = x₁ ∨ x = x₂) :
+    tetraClass.jointCount tetraNumParts n k = 2 := by
+  classical
+  unfold CombinatorialClass.jointCount
+  rw [Finset.card_eq_two]
+  refine ⟨x₁, x₂, hne, ?_⟩
+  ext x
+  rw [Finset.mem_filter]
+  simp only [Finset.mem_insert, Finset.mem_singleton]
+  constructor
+  · intro hx
+    exact huniq x hx.1 hx.2
+  · intro hx
+    rcases hx with rfl | rfl
+    · exact ⟨hx₁, hnum₁⟩
+    · exact ⟨hx₂, hnum₂⟩
+
+private lemma tetraClass_jointCount_tetraNumParts_eq_three_of_unique_triple
+    {n k : ℕ} (x₁ x₂ x₃ : tetraClass.Obj)
+    (hx₁ : x₁ ∈ tetraClass.level n)
+    (hx₂ : x₂ ∈ tetraClass.level n)
+    (hx₃ : x₃ ∈ tetraClass.level n)
+    (hnum₁ : tetraNumParts x₁ = k)
+    (hnum₂ : tetraNumParts x₂ = k)
+    (hnum₃ : tetraNumParts x₃ = k)
+    (hne₁₂ : x₁ ≠ x₂)
+    (hne₁₃ : x₁ ≠ x₃)
+    (hne₂₃ : x₂ ≠ x₃)
+    (huniq : ∀ x : tetraClass.Obj,
+      x ∈ tetraClass.level n → tetraNumParts x = k →
+        x = x₁ ∨ x = x₂ ∨ x = x₃) :
+    tetraClass.jointCount tetraNumParts n k = 3 := by
+  classical
+  unfold CombinatorialClass.jointCount
+  rw [Finset.card_eq_three]
+  refine ⟨x₁, x₂, x₃, hne₁₂, hne₁₃, hne₂₃, ?_⟩
+  ext x
+  rw [Finset.mem_filter]
+  simp only [Finset.mem_insert, Finset.mem_singleton]
+  constructor
+  · intro hx
+    exact huniq x hx.1 hx.2
+  · intro hx
+    rcases hx with rfl | rfl | rfl
+    · exact ⟨hx₁, hnum₁⟩
+    · exact ⟨hx₂, hnum₂⟩
+    · exact ⟨hx₃, hnum₃⟩
+
+/-- Sanity: small jointCount values by number of parts. -/
+example : tetraClass.jointCount tetraNumParts 0 0 = 1 := by
+  apply tetraClass_jointCount_tetraNumParts_eq_one_of_unique ([] : tetraClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · intro x _ hnum
+    change x.length = 0 at hnum
+    exact List.eq_nil_of_length_eq_zero hnum
+
+example : tetraClass.jointCount tetraNumParts 1 1 = 1 := by
+  apply tetraClass_jointCount_tetraNumParts_eq_one_of_unique
+    ([tetraPart1] : tetraClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step1234Class.size b + acc) 0 = 1 := by
+      exact (CombinatorialClass.level_mem_iff (C := tetraClass) x).mp hx
+    change x.length = 1 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil =>
+            simp only [List.foldr_cons, List.foldr_nil] at hsize
+            rcases step1234Class_obj_eq a with rfl | rfl | rfl | rfl
+            all_goals
+              first
+              | rfl
+              | norm_num [tetraPart1_size, tetraPart2_size, tetraPart3_size,
+                  tetraPart4_size] at hsize
+        | cons _ _ => simp at hnum
+
+example : tetraClass.jointCount tetraNumParts 2 1 = 1 := by
+  apply tetraClass_jointCount_tetraNumParts_eq_one_of_unique
+    ([tetraPart2] : tetraClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step1234Class.size b + acc) 0 = 2 := by
+      exact (CombinatorialClass.level_mem_iff (C := tetraClass) x).mp hx
+    change x.length = 1 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil =>
+            simp only [List.foldr_cons, List.foldr_nil] at hsize
+            rcases step1234Class_obj_eq a with rfl | rfl | rfl | rfl
+            all_goals
+              first
+              | rfl
+              | norm_num [tetraPart1_size, tetraPart2_size, tetraPart3_size,
+                  tetraPart4_size] at hsize
+        | cons _ _ => simp at hnum
+
+example : tetraClass.jointCount tetraNumParts 2 2 = 1 := by
+  apply tetraClass_jointCount_tetraNumParts_eq_one_of_unique
+    ([tetraPart1, tetraPart1] : tetraClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step1234Class.size b + acc) 0 = 2 := by
+      exact (CombinatorialClass.level_mem_iff (C := tetraClass) x).mp hx
+    change x.length = 2 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil =>
+                simp only [List.foldr_cons, List.foldr_nil] at hsize
+                rcases step1234Class_obj_eq a with rfl | rfl | rfl | rfl <;>
+                  rcases step1234Class_obj_eq b with rfl | rfl | rfl | rfl
+                all_goals
+                  first
+                  | rfl
+                  | norm_num [tetraPart1_size, tetraPart2_size, tetraPart3_size,
+                      tetraPart4_size] at hsize
+            | cons _ _ => simp at hnum
+
+example : tetraClass.jointCount tetraNumParts 3 1 = 1 := by
+  apply tetraClass_jointCount_tetraNumParts_eq_one_of_unique
+    ([tetraPart3] : tetraClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step1234Class.size b + acc) 0 = 3 := by
+      exact (CombinatorialClass.level_mem_iff (C := tetraClass) x).mp hx
+    change x.length = 1 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil =>
+            simp only [List.foldr_cons, List.foldr_nil] at hsize
+            rcases step1234Class_obj_eq a with rfl | rfl | rfl | rfl
+            all_goals
+              first
+              | rfl
+              | norm_num [tetraPart1_size, tetraPart2_size, tetraPart3_size,
+                  tetraPart4_size] at hsize
+        | cons _ _ => simp at hnum
+
+example : tetraClass.jointCount tetraNumParts 3 2 = 2 := by
+  apply tetraClass_jointCount_tetraNumParts_eq_two_of_unique_pair
+    ([tetraPart1, tetraPart2] : tetraClass.Obj)
+    ([tetraPart2, tetraPart1] : tetraClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · decide
+  · intro h
+    injection h with hhead _
+    cases hhead
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step1234Class.size b + acc) 0 = 3 := by
+      exact (CombinatorialClass.level_mem_iff (C := tetraClass) x).mp hx
+    change x.length = 2 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil =>
+                simp only [List.foldr_cons, List.foldr_nil] at hsize
+                rcases step1234Class_obj_eq a with rfl | rfl | rfl | rfl <;>
+                  rcases step1234Class_obj_eq b with rfl | rfl | rfl | rfl
+                all_goals
+                  first
+                  | left; rfl
+                  | right; rfl
+                  | norm_num [tetraPart1_size, tetraPart2_size, tetraPart3_size,
+                      tetraPart4_size] at hsize
+            | cons _ _ => simp at hnum
+
+example : tetraClass.jointCount tetraNumParts 3 3 = 1 := by
+  apply tetraClass_jointCount_tetraNumParts_eq_one_of_unique
+    ([tetraPart1, tetraPart1, tetraPart1] : tetraClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step1234Class.size b + acc) 0 = 3 := by
+      exact (CombinatorialClass.level_mem_iff (C := tetraClass) x).mp hx
+    change x.length = 3 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil => simp at hnum
+            | cons c xs =>
+                cases xs with
+                | nil =>
+                    simp only [List.foldr_cons, List.foldr_nil] at hsize
+                    rcases step1234Class_obj_eq a with rfl | rfl | rfl | rfl <;>
+                      rcases step1234Class_obj_eq b with rfl | rfl | rfl | rfl <;>
+                        rcases step1234Class_obj_eq c with rfl | rfl | rfl | rfl
+                    all_goals
+                      first
+                      | rfl
+                      | norm_num [tetraPart1_size, tetraPart2_size, tetraPart3_size,
+                          tetraPart4_size] at hsize
+                | cons _ _ => simp at hnum
+
+example : tetraClass.jointCount tetraNumParts 4 1 = 1 := by
+  apply tetraClass_jointCount_tetraNumParts_eq_one_of_unique
+    ([tetraPart4] : tetraClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step1234Class.size b + acc) 0 = 4 := by
+      exact (CombinatorialClass.level_mem_iff (C := tetraClass) x).mp hx
+    change x.length = 1 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil =>
+            simp only [List.foldr_cons, List.foldr_nil] at hsize
+            rcases step1234Class_obj_eq a with rfl | rfl | rfl | rfl
+            all_goals
+              first
+              | rfl
+              | norm_num [tetraPart1_size, tetraPart2_size, tetraPart3_size,
+                  tetraPart4_size] at hsize
+        | cons _ _ => simp at hnum
+
+example : tetraClass.jointCount tetraNumParts 4 2 = 3 := by
+  apply tetraClass_jointCount_tetraNumParts_eq_three_of_unique_triple
+    ([tetraPart1, tetraPart3] : tetraClass.Obj)
+    ([tetraPart3, tetraPart1] : tetraClass.Obj)
+    ([tetraPart2, tetraPart2] : tetraClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · decide
+  · decide
+  · intro h
+    injection h with hhead _
+    cases hhead
+  · intro h
+    injection h with hhead _
+    cases hhead
+  · intro h
+    injection h with hhead _
+    cases hhead
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step1234Class.size b + acc) 0 = 4 := by
+      exact (CombinatorialClass.level_mem_iff (C := tetraClass) x).mp hx
+    change x.length = 2 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil =>
+                simp only [List.foldr_cons, List.foldr_nil] at hsize
+                rcases step1234Class_obj_eq a with rfl | rfl | rfl | rfl <;>
+                  rcases step1234Class_obj_eq b with rfl | rfl | rfl | rfl
+                all_goals
+                  first
+                  | left; rfl
+                  | right; left; rfl
+                  | right; right; rfl
+                  | norm_num [tetraPart1_size, tetraPart2_size, tetraPart3_size,
+                      tetraPart4_size] at hsize
+            | cons _ _ => simp at hnum
+
+example : tetraClass.jointCount tetraNumParts 4 3 = 3 := by
+  apply tetraClass_jointCount_tetraNumParts_eq_three_of_unique_triple
+    ([tetraPart1, tetraPart1, tetraPart2] : tetraClass.Obj)
+    ([tetraPart1, tetraPart2, tetraPart1] : tetraClass.Obj)
+    ([tetraPart2, tetraPart1, tetraPart1] : tetraClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · decide
+  · decide
+  · intro h
+    injection h with _ htail
+    injection htail with hhead _
+    cases hhead
+  · intro h
+    injection h with hhead _
+    cases hhead
+  · intro h
+    injection h with hhead _
+    cases hhead
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step1234Class.size b + acc) 0 = 4 := by
+      exact (CombinatorialClass.level_mem_iff (C := tetraClass) x).mp hx
+    change x.length = 3 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil => simp at hnum
+            | cons c xs =>
+                cases xs with
+                | nil =>
+                    simp only [List.foldr_cons, List.foldr_nil] at hsize
+                    rcases step1234Class_obj_eq a with rfl | rfl | rfl | rfl <;>
+                      rcases step1234Class_obj_eq b with rfl | rfl | rfl | rfl <;>
+                        rcases step1234Class_obj_eq c with rfl | rfl | rfl | rfl
+                    all_goals
+                      first
+                      | left; rfl
+                      | right; left; rfl
+                      | right; right; rfl
+                      | norm_num [tetraPart1_size, tetraPart2_size, tetraPart3_size,
+                          tetraPart4_size] at hsize
+                | cons _ _ => simp at hnum
+
+example : tetraClass.jointCount tetraNumParts 4 4 = 1 := by
+  apply tetraClass_jointCount_tetraNumParts_eq_one_of_unique
+    ([tetraPart1, tetraPart1, tetraPart1, tetraPart1] : tetraClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step1234Class.size b + acc) 0 = 4 := by
+      exact (CombinatorialClass.level_mem_iff (C := tetraClass) x).mp hx
+    change x.length = 4 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil => simp at hnum
+            | cons c xs =>
+                cases xs with
+                | nil => simp at hnum
+                | cons d xs =>
+                    cases xs with
+                    | nil =>
+                        simp only [List.foldr_cons, List.foldr_nil] at hsize
+                        rcases step1234Class_obj_eq a with rfl | rfl | rfl | rfl <;>
+                          rcases step1234Class_obj_eq b with rfl | rfl | rfl | rfl <;>
+                            rcases step1234Class_obj_eq c with rfl | rfl | rfl | rfl <;>
+                              rcases step1234Class_obj_eq d with rfl | rfl | rfl | rfl
+                        all_goals
+                          first
+                          | rfl
+                          | norm_num [tetraPart1_size, tetraPart2_size, tetraPart3_size,
+                              tetraPart4_size] at hsize
+                    | cons _ _ => simp at hnum
