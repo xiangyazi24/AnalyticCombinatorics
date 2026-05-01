@@ -328,4 +328,8 @@ example : MotzTree.asClass.count 6 = 51 := by
   rw [show 6 = 4 + 2 by norm_num, count_succ_succ 4]
   norm_num [Finset.antidiagonal, count_zero, count_one, h2, h3, h4, h5]
 
+example (n : ℕ) :
+    MotzTree.asClass.ogf.coeff n = MotzTree.asClass.count n := by
+  rw [coeff_ogf]
+
 end MotzTree
