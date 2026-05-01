@@ -770,4 +770,10 @@ example : permClass.count 10 = 3628800 := by
   rw [permClass_count_eq_factorial]
   decide
 
+example : permClass.ogf.coeff 0 = 1 := by
+  rw [coeff_ogf, permClass_count_eq_factorial]; rfl
+
+example : permClass.ogf.coeff 3 = 6 := by
+  rw [coeff_ogf, permClass_count_eq_factorial]; decide
+
 end CombinatorialClass
