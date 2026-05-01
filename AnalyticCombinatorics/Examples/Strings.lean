@@ -12,9 +12,14 @@
 -/
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Finset.Powerset
+import Mathlib.Data.List.OfFn
+import Mathlib.Data.List.Count
+import Mathlib.Algebra.BigOperators.Fin
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 import AnalyticCombinatorics.PartA.Ch1.Sequences
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
+import AnalyticCombinatorics.PartA.Ch3.Parameters
 
 open PowerSeries CombinatorialClass
 
@@ -247,3 +252,148 @@ theorem stringClass_cartProd_count (n : ℕ) :
     rw [Finset.mem_antidiagonal] at hp
     rw [stringClass_count_eq_pow, stringClass_count_eq_pow]
     rw [← pow_add, hp]
+
+/-! ## Parameter: number of ones in a binary string -/
+
+/-- Parameter: number of `true`s in a binary string. -/
+def numOnes : Parameter stringClass := fun (xs : List Bool) => xs.count true
+
+private lemma bool_foldr_one_eq_length (xs : List Bool) :
+    xs.foldr (fun _ acc => 1 + acc) 0 = xs.length := by
+  induction xs with
+  | nil => rfl
+  | cons _ xs ih =>
+      simp only [List.foldr_cons, List.length_cons]
+      rw [ih]
+      omega
+
+private lemma stringClass_size_eq_length (xs : List Bool) :
+    stringClass.size xs = xs.length := by
+  change xs.foldr (fun b acc => boolClass.size b + acc) 0 = xs.length
+  simpa [boolClass] using bool_foldr_one_eq_length xs
+
+private lemma list_countP_congr {α : Type*} {l : List α} {p q : α → Bool}
+    (h : ∀ x ∈ l, p x = q x) : l.countP p = l.countP q := by
+  induction l with
+  | nil => rfl
+  | cons a l ih =>
+      simp only [List.mem_cons, forall_eq_or_imp] at h
+      simp [List.countP_cons, h.1, ih h.2]
+
+private lemma count_true_ofFn {n : ℕ} (f : Fin n → Bool) :
+    (List.ofFn f).count true = Fin.countP f := by
+  rw [Fin.countP_eq_countP_map_finRange]
+  rw [List.ofFn_eq_map]
+  simp only [List.count, List.countP_map]
+  apply list_countP_congr
+  intro i _hi
+  cases hfi : f i <;> simp [hfi]
+
+private lemma fin_countP_eq_card_filter {n : ℕ} (f : Fin n → Bool) :
+    Fin.countP f = ((Finset.univ : Finset (Fin n)).filter (fun i => f i = true)).card := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+      rw [Fin.countP_succ]
+      rw [Finset.card_filter]
+      rw [Fin.sum_univ_succ]
+      rw [← Finset.card_filter]
+      rw [ih (fun i => f i.succ)]
+      cases h0 : f 0 <;> simp
+
+private lemma count_true_subsetString {n : ℕ} (s : Finset (Fin n)) :
+    (List.ofFn (fun i : Fin n => decide (i ∈ s) : Fin n → Bool)).count true = s.card := by
+  rw [count_true_ofFn]
+  rw [fin_countP_eq_card_filter]
+  rw [show ((Finset.univ : Finset (Fin n)).filter
+      (fun i => (decide (i ∈ s) : Bool) = true)) = s by
+    ext i
+    by_cases hi : i ∈ s <;> simp [hi]]
+
+private lemma subsetString_injective {n : ℕ} :
+    Function.Injective (fun s : Finset (Fin n) =>
+      List.ofFn (fun i : Fin n => decide (i ∈ s) : Fin n → Bool)) := by
+  intro s t hst
+  rw [List.ofFn_inj] at hst
+  ext i
+  have h := congrFun hst i
+  by_cases his : i ∈ s <;> by_cases hit : i ∈ t <;> simp [his, hit] at h ⊢
+
+/-- Joint count is the binomial coefficient: C(n, k). -/
+theorem stringClass_jointCount_numOnes (n k : ℕ) :
+    stringClass.jointCount numOnes n k = n.choose k := by
+  classical
+  let source : Finset (Finset (Fin n)) := (Finset.univ : Finset (Fin n)).powersetCard k
+  let target : Finset (List Bool) := (stringClass.level n).filter (fun xs => numOnes xs = k)
+  have hcard : source.card = target.card := by
+    apply Finset.card_bij
+      (fun s _hs => List.ofFn (fun i : Fin n => decide (i ∈ s) : Fin n → Bool))
+    · intro s hs
+      have hs_card : s.card = k := (Finset.mem_powersetCard.mp hs).2
+      apply Finset.mem_filter.mpr
+      refine ⟨?_, ?_⟩
+      · apply (CombinatorialClass.level_mem_iff (C := stringClass) _).mpr
+        rw [stringClass_size_eq_length, List.length_ofFn]
+      · simp [numOnes, count_true_subsetString, hs_card]
+    · intro s₁ _hs₁ s₂ _hs₂ h
+      exact subsetString_injective h
+    · intro xs hxs
+      have hx_level : xs ∈ stringClass.level n := (Finset.mem_filter.mp hxs).1
+      have hx_param : numOnes xs = k := (Finset.mem_filter.mp hxs).2
+      have hx_size : stringClass.size xs = n :=
+        (CombinatorialClass.level_mem_iff (C := stringClass) xs).mp hx_level
+      have hlen : xs.length = n := by
+        rw [← stringClass_size_eq_length xs]
+        exact hx_size
+      clear hx_size hx_level hxs
+      subst n
+      let s : Finset (Fin xs.length) :=
+        (Finset.univ : Finset (Fin xs.length)).filter (fun i => xs.get i = true)
+      refine ⟨s, ?_, ?_⟩
+      · apply Finset.mem_powersetCard.mpr
+        refine ⟨Finset.subset_univ _, ?_⟩
+        have hcount : xs.count true = s.card := by
+          have h1 := count_true_ofFn (fun i : Fin xs.length => xs.get i)
+          rw [fin_countP_eq_card_filter] at h1
+          simpa [s, List.ofFn_get xs] using h1
+        rw [← hx_param]
+        exact hcount.symm
+      · have hlist :
+            (List.ofFn fun i : Fin xs.length => decide (i ∈ s)) =
+              List.ofFn (fun i : Fin xs.length => xs.get i) := by
+          rw [List.ofFn_inj]
+          funext i
+          by_cases _h : xs.get i = true <;> simp [s]
+        exact hlist.trans (List.ofFn_get xs)
+  rw [CombinatorialClass.jointCount]
+  change target.card = n.choose k
+  rw [← hcard]
+  simp [source]
+
+/-- Sanity at small sizes:
+    n = 0: 1 string with 0 ones.
+    n = 1: 1 string with 0 ones (false), 1 string with 1 one (true).
+    n = 2: 1 string with 0 ones (ff), 2 with 1 one (ft, tf), 1 with 2 ones (tt). -/
+example : stringClass.jointCount numOnes 0 0 = 1 := by
+  rw [stringClass_jointCount_numOnes]
+  rfl
+
+example : stringClass.jointCount numOnes 1 0 = 1 := by
+  rw [stringClass_jointCount_numOnes]
+  rfl
+
+example : stringClass.jointCount numOnes 1 1 = 1 := by
+  rw [stringClass_jointCount_numOnes]
+  rfl
+
+example : stringClass.jointCount numOnes 2 0 = 1 := by
+  rw [stringClass_jointCount_numOnes]
+  rfl
+
+example : stringClass.jointCount numOnes 2 1 = 2 := by
+  rw [stringClass_jointCount_numOnes]
+  rfl
+
+example : stringClass.jointCount numOnes 2 2 = 1 := by
+  rw [stringClass_jointCount_numOnes]
+  rfl
