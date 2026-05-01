@@ -519,3 +519,15 @@ example : compositionGe2Class.count 1 = 0 := by
           rw [posIntGe2Class.count_one, zero_mul]
       | succ k =>
           omega
+
+namespace CombinatorialClass
+
+noncomputable def ogfZ (A : CombinatorialClass) : PowerSeries ℤ :=
+  A.ogf.map (algebraMap ℕ ℤ)
+
+end CombinatorialClass
+
+example : PowerSeries.coeff 0 (CombinatorialClass.ogfZ compositionClass) = (1 : ℤ) := by
+  unfold CombinatorialClass.ogfZ
+  rw [PowerSeries.coeff_map, coeff_ogf, compositionClass_count_zero]
+  rfl
