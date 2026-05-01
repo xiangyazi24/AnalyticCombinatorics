@@ -53,7 +53,9 @@ theorem dyckPathClass_count (n : ℕ) :
   rw [hcard]
   exact DyckWord.card_dyckWord_semilength_eq_catalan n
 
-/-! Sanity checks: C₀=1, C₁=1, C₂=2, C₃=5, C₄=14, C₅=42. -/
+/-! Sanity checks:
+    C₀=1, C₁=1, C₂=2, C₃=5, C₄=14, C₅=42,
+    C₆=132, C₇=429, C₈=1430, C₉=4862, C₁₀=16796. -/
 
 example : dyckPathClass.count 0 = 1 := by
   rw [dyckPathClass_count]
@@ -71,6 +73,21 @@ example : dyckPathClass.count 4 = 14 := by
   rw [dyckPathClass_count]
   native_decide
 example : dyckPathClass.count 5 = 42 := by
+  rw [dyckPathClass_count]
+  native_decide
+example : dyckPathClass.count 6 = 132 := by
+  rw [dyckPathClass_count]
+  native_decide
+example : dyckPathClass.count 7 = 429 := by
+  rw [dyckPathClass_count]
+  native_decide
+example : dyckPathClass.count 8 = 1430 := by
+  rw [dyckPathClass_count]
+  native_decide
+example : dyckPathClass.count 9 = 4862 := by
+  rw [dyckPathClass_count]
+  native_decide
+example : dyckPathClass.count 10 = 16796 := by
   rw [dyckPathClass_count]
   native_decide
 

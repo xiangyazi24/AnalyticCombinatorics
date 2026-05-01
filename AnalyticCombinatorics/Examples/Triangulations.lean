@@ -30,6 +30,18 @@ example : triangulationClass.count 7 = 429 := by
 example : triangulationClass.count 8 = 1430 := by
   rw [triangulationClass_count]
   norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
+example : triangulationClass.count 9 = 4862 := by
+  rw [triangulationClass_count]
+  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
+example : triangulationClass.count 10 = 16796 := by
+  rw [triangulationClass_count]
+  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
+example : triangulationClass.count 11 = 58786 := by
+  rw [triangulationClass_count]
+  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
+example : triangulationClass.count 12 = 208012 := by
+  rw [triangulationClass_count]
+  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
 
 /-- (n+1) · #triangulations of (n+2)-gon = C(2n, n) (central binomial). -/
 theorem succ_mul_triangulationClass_count_eq_centralBinom (n : ℕ) :

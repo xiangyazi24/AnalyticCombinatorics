@@ -176,6 +176,18 @@ example : planeTreeClass.count 7 = 429 := by
 example : planeTreeClass.count 8 = 1430 := by
   rw [planeTreeClass_count]
   norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
+example : planeTreeClass.count 9 = 4862 := by
+  rw [planeTreeClass_count]
+  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
+example : planeTreeClass.count 10 = 16796 := by
+  rw [planeTreeClass_count]
+  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
+example : planeTreeClass.count 11 = 58786 := by
+  rw [planeTreeClass_count]
+  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
+example : planeTreeClass.count 12 = 208012 := by
+  rw [planeTreeClass_count]
+  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
 
 example (n : ℕ) :
     PowerSeries.coeff n planeTreeClass.ogf = _root_.catalan n := by
