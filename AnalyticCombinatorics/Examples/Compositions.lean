@@ -605,6 +605,63 @@ example : compositionClass.jointCount compMaxPart 4 4 = 1 := by
   rw [CombinatorialClass.jointCount, compositionClass_level_four]
   decide
 
+/-! ## Parameter: first part -/
+
+/-- First part of a composition, with value `0` for the empty composition. -/
+def compFirstPart : Parameter compositionClass := fun
+  | [] => 0
+  | x :: _ => x.1
+
+/-- Sanity at small n: count compositions of n by first part. -/
+example : compositionClass.jointCount compFirstPart 0 0 = 1 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_zero]
+  decide
+
+example : compositionClass.jointCount compFirstPart 1 1 = 1 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_one]
+  decide
+
+example : compositionClass.jointCount compFirstPart 2 1 = 1 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_two]
+  decide
+
+example : compositionClass.jointCount compFirstPart 2 2 = 1 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_two]
+  decide
+
+example : compositionClass.jointCount compFirstPart 3 1 = 2 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_three]
+  decide
+
+example : compositionClass.jointCount compFirstPart 3 2 = 1 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_three]
+  decide
+
+example : compositionClass.jointCount compFirstPart 3 3 = 1 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_three]
+  decide
+
+example : compositionClass.jointCount compFirstPart 4 1 = 4 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_four]
+  decide
+
+example : compositionClass.jointCount compFirstPart 4 2 = 2 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_four]
+  decide
+
+example : compositionClass.jointCount compFirstPart 4 3 = 1 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_four]
+  decide
+
+example : compositionClass.jointCount compFirstPart 4 4 = 1 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_four]
+  decide
+
+example (n : ℕ) :
+    ∑ k ∈ (compositionClass.level n).image compFirstPart,
+      compositionClass.jointCount compFirstPart n k = compositionClass.count n := by
+  rw [CombinatorialClass.jointCount_sum_eq_count]
+
 example : compositionClass.count 8 = 128 := compositionClass_count_succ 7
 example : compositionClass.count 10 = 512 := compositionClass_count_succ 9
 example : compositionClass.count 12 = 2048 := compositionClass_count_succ 11
