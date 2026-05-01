@@ -421,6 +421,33 @@ private lemma tribClass_count_twenty_two_value : tribClass.count 22 = 410744 := 
         tribClass_count_nineteen_value]
     _ = 410744 := by decide
 
+private lemma tribClass_count_twenty_three_value : tribClass.count 23 = 755476 := by
+  calc
+    tribClass.count 23 = tribClass.count 22 + tribClass.count 21 + tribClass.count 20 :=
+      tribClass_count_succ_succ_succ 20
+    _ = 410744 + 223317 + 121415 := by
+      rw [tribClass_count_twenty_two_value, tribClass_count_twenty_one_value,
+        tribClass_count_twenty_value]
+    _ = 755476 := by decide
+
+private lemma tribClass_count_twenty_four_value : tribClass.count 24 = 1389537 := by
+  calc
+    tribClass.count 24 = tribClass.count 23 + tribClass.count 22 + tribClass.count 21 :=
+      tribClass_count_succ_succ_succ 21
+    _ = 755476 + 410744 + 223317 := by
+      rw [tribClass_count_twenty_three_value, tribClass_count_twenty_two_value,
+        tribClass_count_twenty_one_value]
+    _ = 1389537 := by decide
+
+private lemma tribClass_count_twenty_five_value : tribClass.count 25 = 2555757 := by
+  calc
+    tribClass.count 25 = tribClass.count 24 + tribClass.count 23 + tribClass.count 22 :=
+      tribClass_count_succ_succ_succ 22
+    _ = 1389537 + 755476 + 410744 := by
+      rw [tribClass_count_twenty_four_value, tribClass_count_twenty_three_value,
+        tribClass_count_twenty_two_value]
+    _ = 2555757 := by decide
+
 example : tribClass.count 19 = 66012 := tribClass_count_nineteen_value
 
 example : tribClass.count 20 = 121415 := tribClass_count_twenty_value
@@ -428,6 +455,12 @@ example : tribClass.count 20 = 121415 := tribClass_count_twenty_value
 example : tribClass.count 21 = 223317 := tribClass_count_twenty_one_value
 
 example : tribClass.count 22 = 410744 := tribClass_count_twenty_two_value
+
+example : tribClass.count 23 = 755476 := tribClass_count_twenty_three_value
+
+example : tribClass.count 24 = 1389537 := tribClass_count_twenty_four_value
+
+example : tribClass.count 25 = 2555757 := tribClass_count_twenty_five_value
 
 /-- The OGF for a single part of size 1, 2, or 3 is `z + z^2 + z^3`. -/
 private lemma step123Class_ogfZ :

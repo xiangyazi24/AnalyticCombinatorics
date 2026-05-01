@@ -250,7 +250,39 @@ private lemma padovanClass_count_twenty : padovanClass.count 20 = 114 := by
     _ = 65 + 49 := by rw [padovanClass_count_eighteen, padovanClass_count_seventeen]
     _ = 114 := by decide
 
-/-! Sanity checks: 1, 0, 1, 1, 1, 2, 2, 3, 4, 5, 7, 9, 12, 16, 21, 28, 37, 49, 65, 86, 114. -/
+private lemma padovanClass_count_twenty_one : padovanClass.count 21 = 151 := by
+  calc
+    padovanClass.count 21 = padovanClass.count 19 + padovanClass.count 18 :=
+      padovanClass_count_succ_succ_succ 18
+    _ = 86 + 65 := by rw [padovanClass_count_nineteen, padovanClass_count_eighteen]
+    _ = 151 := by decide
+
+private lemma padovanClass_count_twenty_two : padovanClass.count 22 = 200 := by
+  calc
+    padovanClass.count 22 = padovanClass.count 20 + padovanClass.count 19 :=
+      padovanClass_count_succ_succ_succ 19
+    _ = 114 + 86 := by rw [padovanClass_count_twenty, padovanClass_count_nineteen]
+    _ = 200 := by decide
+
+private lemma padovanClass_count_twenty_three : padovanClass.count 23 = 265 := by
+  calc
+    padovanClass.count 23 = padovanClass.count 21 + padovanClass.count 20 :=
+      padovanClass_count_succ_succ_succ 20
+    _ = 151 + 114 := by rw [padovanClass_count_twenty_one, padovanClass_count_twenty]
+    _ = 265 := by decide
+
+private lemma padovanClass_count_twenty_four : padovanClass.count 24 = 351 := by
+  calc
+    padovanClass.count 24 = padovanClass.count 22 + padovanClass.count 21 :=
+      padovanClass_count_succ_succ_succ 21
+    _ = 200 + 151 := by rw [padovanClass_count_twenty_two, padovanClass_count_twenty_one]
+    _ = 351 := by decide
+
+/-!
+Sanity checks:
+1, 0, 1, 1, 1, 2, 2, 3, 4, 5, 7, 9, 12, 16, 21, 28, 37, 49, 65, 86,
+114, 151, 200, 265, 351.
+-/
 example : padovanClass.count 0 = 1 := by
   calc
     padovanClass.count 0 = 1 := padovanClass_count_zero
@@ -355,6 +387,26 @@ example : padovanClass.count 20 = 114 := by
   calc
     padovanClass.count 20 = 114 := padovanClass_count_twenty
     _ = 114 := by decide
+
+example : padovanClass.count 21 = 151 := by
+  calc
+    padovanClass.count 21 = 151 := padovanClass_count_twenty_one
+    _ = 151 := by decide
+
+example : padovanClass.count 22 = 200 := by
+  calc
+    padovanClass.count 22 = 200 := padovanClass_count_twenty_two
+    _ = 200 := by decide
+
+example : padovanClass.count 23 = 265 := by
+  calc
+    padovanClass.count 23 = 265 := padovanClass_count_twenty_three
+    _ = 265 := by decide
+
+example : padovanClass.count 24 = 351 := by
+  calc
+    padovanClass.count 24 = 351 := padovanClass_count_twenty_four
+    _ = 351 := by decide
 
 /-- The OGF for a single part of size 2 or 3 is `z^2 + z^3`. -/
 private lemma step23Class_ogfZ :
