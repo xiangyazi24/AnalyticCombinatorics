@@ -8,7 +8,7 @@
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 import AnalyticCombinatorics.PartA.Ch1.Sequences
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
--- import AnalyticCombinatorics.PartA.Ch3.Parameters        -- MGF, todo
+import AnalyticCombinatorics.PartA.Ch3.Parameters
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
