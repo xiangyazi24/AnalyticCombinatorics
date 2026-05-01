@@ -758,4 +758,16 @@ example (n : ℕ) :
     permClass.ogf.coeff n = (n.factorial : ℕ) := by
   rw [coeff_ogf, permClass_count_eq_factorial]
 
+example : permClass.count 8 = 40320 := by
+  rw [permClass_count_eq_factorial]
+  decide
+
+example : permClass.count 9 = 362880 := by
+  rw [permClass_count_eq_factorial]
+  decide
+
+example : permClass.count 10 = 3628800 := by
+  rw [permClass_count_eq_factorial]
+  decide
+
 end CombinatorialClass
