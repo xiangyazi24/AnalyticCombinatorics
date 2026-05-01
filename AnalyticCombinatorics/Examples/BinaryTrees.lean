@@ -16,6 +16,7 @@ import Mathlib.Combinatorics.Enumerative.Catalan
 import Mathlib.Tactic.LinearCombination
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 import AnalyticCombinatorics.PartA.Ch1.Sequences
+import AnalyticCombinatorics.PartA.Ch3.Parameters
 
 open PowerSeries CombinatorialClass
 
@@ -274,3 +275,36 @@ theorem BinTree_asClass_cartProd_count (n : ℕ) :
 /-- The OGF of `BinTree × BinTree` is the square of `BinTree.asClass.ogf`. -/
 example : (BinTree.asClass.cartProd BinTree.asClass).ogf = BinTree.asClass.ogf ^ 2 := by
   rw [CombinatorialClass.cartProd_ogf, sq]
+
+namespace BinTree
+
+/-- Number of leaves of a binary tree. -/
+def numLeaves : BinTree → ℕ
+  | leaf => 1
+  | node l r => l.numLeaves + r.numLeaves
+
+/-- `numLeaves t = size t + 1` for any binary tree. -/
+theorem numLeaves_eq_size_add_one (t : BinTree) :
+    t.numLeaves = t.size + 1 := by
+  induction t with
+  | leaf => rfl
+  | node l r ih_l ih_r =>
+      simp [numLeaves, size, ih_l, ih_r]
+      omega
+
+/-- As a Parameter on asClass: numLeaves a = a.size + 1. -/
+def numLeavesParam : Parameter asClass := numLeaves
+
+/-- jointCount of (size, leaves) is just count when k = n+1. -/
+example (n : ℕ) :
+    asClass.jointCount numLeavesParam n (n + 1) = asClass.count n := by
+  unfold CombinatorialClass.jointCount CombinatorialClass.count
+  rw [Finset.filter_eq_self.mpr]
+  intro a ha
+  have hsize : BinTree.size a = n := by
+    exact (CombinatorialClass.level_mem_iff (C := asClass) a).mp ha
+  change numLeaves a = n + 1
+  rw [numLeaves_eq_size_add_one a]
+  rw [hsize]
+
+end BinTree
