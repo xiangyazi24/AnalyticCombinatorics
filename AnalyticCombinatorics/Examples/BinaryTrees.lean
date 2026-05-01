@@ -297,7 +297,7 @@ theorem BinTree_asClass_cartProd_count (n : ℕ) :
         BinTree.catalan_eq_nat_catalan p.2]
 
 /-- The Catalan convolution for two binary-tree classes gives the next Catalan number. -/
-example (n : ℕ) :
+theorem BinTree_asClass_cartProd_count_eq_catalan_succ (n : ℕ) :
     (BinTree.asClass.cartProd BinTree.asClass).count n = _root_.catalan (n + 1) := by
   rw [BinTree_asClass_cartProd_count, _root_.catalan_succ']
 
@@ -307,6 +307,22 @@ example : (BinTree.asClass.cartProd BinTree.asClass).count 0 = 1 := by
 
 example : (BinTree.asClass.cartProd BinTree.asClass).count 2 = 5 := by
   rw [BinTree_asClass_cartProd_count]
+  native_decide
+
+example : (BinTree.asClass.cartProd BinTree.asClass).count 0 = 1 := by
+  rw [BinTree_asClass_cartProd_count_eq_catalan_succ]
+  native_decide
+
+example : (BinTree.asClass.cartProd BinTree.asClass).count 1 = 2 := by
+  rw [BinTree_asClass_cartProd_count_eq_catalan_succ]
+  native_decide
+
+example : (BinTree.asClass.cartProd BinTree.asClass).count 2 = 5 := by
+  rw [BinTree_asClass_cartProd_count_eq_catalan_succ]
+  native_decide
+
+example : (BinTree.asClass.cartProd BinTree.asClass).count 3 = 14 := by
+  rw [BinTree_asClass_cartProd_count_eq_catalan_succ]
   native_decide
 
 /-- The OGF of `BinTree × BinTree` is the square of `BinTree.asClass.ogf`. -/
