@@ -313,6 +313,51 @@ example : tribClass.count 13 = 1705 := by
         tribClass_count_two, tribClass_count_one, tribClass_count_zero]
     _ = 1705 := by decide
 
+example : tribClass.count 14 = 3136 := by
+  calc
+    tribClass.count 14 = tribClass.count 13 + tribClass.count 12 + tribClass.count 11 :=
+      tribClass_count_succ_succ_succ 11
+    _ = 1705 + 927 + 504 := by
+      repeat rw [tribClass_count_succ_succ_succ]
+      rw [tribClass_count_two, tribClass_count_one, tribClass_count_zero]
+    _ = 3136 := by decide
+
+example : tribClass.count 15 = 5768 := by
+  calc
+    tribClass.count 15 = tribClass.count 14 + tribClass.count 13 + tribClass.count 12 :=
+      tribClass_count_succ_succ_succ 12
+    _ = 3136 + 1705 + 927 := by
+      repeat rw [tribClass_count_succ_succ_succ]
+      rw [tribClass_count_two, tribClass_count_one, tribClass_count_zero]
+    _ = 5768 := by decide
+
+example : tribClass.count 16 = 10609 := by
+  calc
+    tribClass.count 16 = tribClass.count 15 + tribClass.count 14 + tribClass.count 13 :=
+      tribClass_count_succ_succ_succ 13
+    _ = 5768 + 3136 + 1705 := by
+      repeat rw [tribClass_count_succ_succ_succ]
+      rw [tribClass_count_two, tribClass_count_one, tribClass_count_zero]
+    _ = 10609 := by decide
+
+example : tribClass.count 17 = 19513 := by
+  calc
+    tribClass.count 17 = tribClass.count 16 + tribClass.count 15 + tribClass.count 14 :=
+      tribClass_count_succ_succ_succ 14
+    _ = 10609 + 5768 + 3136 := by
+      repeat rw [tribClass_count_succ_succ_succ]
+      rw [tribClass_count_two, tribClass_count_one, tribClass_count_zero]
+    _ = 19513 := by decide
+
+example : tribClass.count 18 = 35890 := by
+  calc
+    tribClass.count 18 = tribClass.count 17 + tribClass.count 16 + tribClass.count 15 :=
+      tribClass_count_succ_succ_succ 15
+    _ = 19513 + 10609 + 5768 := by
+      repeat rw [tribClass_count_succ_succ_succ]
+      rw [tribClass_count_two, tribClass_count_one, tribClass_count_zero]
+    _ = 35890 := by decide
+
 /-- The OGF for a single part of size 1, 2, or 3 is `z + z^2 + z^3`. -/
 private lemma step123Class_ogfZ :
     ogfZ step123Class = PowerSeries.X + PowerSeries.X ^ 2 + PowerSeries.X ^ 3 := by
