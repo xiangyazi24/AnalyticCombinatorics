@@ -328,6 +328,53 @@ example : MotzTree.asClass.count 6 = 51 := by
   rw [show 6 = 4 + 2 by norm_num, count_succ_succ 4]
   norm_num [Finset.antidiagonal, count_zero, count_one, h2, h3, h4, h5]
 
+private lemma count_two : MotzTree.asClass.count 2 = 2 := by
+  rw [show 2 = 0 + 2 by norm_num, count_succ_succ 0, count_one]
+  norm_num [Finset.antidiagonal, count_zero]
+
+private lemma count_three : MotzTree.asClass.count 3 = 4 := by
+  rw [show 3 = 1 + 2 by norm_num, count_succ_succ 1]
+  norm_num [Finset.antidiagonal, count_zero, count_one, count_two]
+
+private lemma count_four : MotzTree.asClass.count 4 = 9 := by
+  rw [show 4 = 2 + 2 by norm_num, count_succ_succ 2]
+  norm_num [Finset.antidiagonal, count_zero, count_one, count_two, count_three]
+
+private lemma count_five : MotzTree.asClass.count 5 = 21 := by
+  rw [show 5 = 3 + 2 by norm_num, count_succ_succ 3]
+  norm_num [Finset.antidiagonal, count_zero, count_one, count_two, count_three, count_four]
+
+private lemma count_six : MotzTree.asClass.count 6 = 51 := by
+  rw [show 6 = 4 + 2 by norm_num, count_succ_succ 4]
+  norm_num [Finset.antidiagonal, count_zero, count_one, count_two, count_three, count_four,
+    count_five]
+
+private lemma count_seven : MotzTree.asClass.count 7 = 127 := by
+  rw [show 7 = 5 + 2 by norm_num, count_succ_succ 5]
+  norm_num [Finset.antidiagonal, count_zero, count_one, count_two, count_three, count_four,
+    count_five, count_six]
+
+private lemma count_eight : MotzTree.asClass.count 8 = 323 := by
+  rw [show 8 = 6 + 2 by norm_num, count_succ_succ 6]
+  norm_num [Finset.antidiagonal, count_zero, count_one, count_two, count_three, count_four,
+    count_five, count_six, count_seven]
+
+example : decide (MotzTree.asClass.count 7 = 127) = true := by
+  rw [count_seven]
+  decide
+
+example : decide (MotzTree.asClass.count 8 = 323) = true := by
+  rw [count_eight]
+  decide
+
+example : decide (MotzTree.asClass.count 7 + MotzTree.asClass.count 6 = 178) = true := by
+  rw [count_seven, count_six]
+  decide
+
+example : decide (MotzTree.asClass.count 8 = MotzTree.asClass.count 7 + 196) = true := by
+  rw [count_eight, count_seven]
+  decide
+
 example (n : ℕ) :
     MotzTree.asClass.ogf.coeff n = MotzTree.asClass.count n := by
   rw [coeff_ogf]

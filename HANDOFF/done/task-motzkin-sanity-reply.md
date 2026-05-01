@@ -1,11 +1,21 @@
-DONE
+Done.
 
-- Updated `MotzTree.size` to count edges, so binary nodes contribute `2`; this gives OEIS A001006 rather than the large Schroeder recurrence.
-- Added `MotzTree.count_one` and replaced the recurrence with `MotzTree.count_succ_succ`.
-- Added sanity examples for `MotzTree.asClass.count 0..6 = 1, 1, 2, 4, 9, 21, 51`.
-- Updated the OGF equation to `M = 1 + X * M + X * (X * M^2)`.
+Changed `AnalyticCombinatorics/Examples/MotzkinTrees.lean`:
 
-Verification:
+- Added private count lemmas through size 8 using the existing edge-size convention.
+- Added explicit `decide` sanity checks for:
+  - `count 7 = 127`
+  - `count 8 = 323`
+  - `count 7 + count 6 = 178`
+  - `count 8 = count 7 + 196`
 
-- `lake env lean AnalyticCombinatorics/Examples/MotzkinTrees.lean`
-- `lake build`
+Note: the file defines `MotzTree.size` as number of edges, with `leaf` at size 0. Under that convention the sequence continues `... 51, 127, 323`; the `132` value in the prompt does not match the existing recurrence/convention.
+
+Verified:
+
+```text
+lake env lean AnalyticCombinatorics/Examples/MotzkinTrees.lean
+lake build
+```
+
+Both passed.
