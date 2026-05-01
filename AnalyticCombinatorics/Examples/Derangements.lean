@@ -285,3 +285,18 @@ theorem numDerangements_recurrence (n : ℕ) :
       (n + 1) * (Nat.numDerangements (n + 1) + Nat.numDerangements n) := by
   rw [Nat.numDerangements, numDerangements_add_two]
   rw [add_comm (numDerangements n) (numDerangements (n + 1))]
+
+example : Nat.numDerangements 2 = 1 * (0 + 1) := by
+  simpa using numDerangements_recurrence 0
+
+example : Nat.numDerangements 3 = 2 * (1 + 0) := by
+  simpa using numDerangements_recurrence 1
+
+example : Nat.numDerangements 4 = 3 * (2 + 1) := by
+  simpa using numDerangements_recurrence 2
+
+example : Nat.numDerangements 5 = 4 * (9 + 2) := by
+  simpa using numDerangements_recurrence 3
+
+example : Nat.numDerangements 6 = 5 * (44 + 9) := by
+  simpa using numDerangements_recurrence 4
