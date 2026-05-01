@@ -24,6 +24,7 @@ import AnalyticCombinatorics.PartB.Ch6.TransferTheorems
 -- │  Examples                               │
 -- └─────────────────────────────────────────┘
 import AnalyticCombinatorics.Examples.BinaryTrees
+import AnalyticCombinatorics.Examples.Triangulations
 import AnalyticCombinatorics.Examples.Strings
 import AnalyticCombinatorics.Examples.Compositions
 import AnalyticCombinatorics.Examples.Fibonacci
