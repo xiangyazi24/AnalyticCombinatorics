@@ -397,6 +397,25 @@ private lemma count_fifteen : MotzTree.asClass.count 15 = 310572 := by
     count_five, count_six, count_seven, count_eight, count_nine, count_ten, count_eleven,
     count_twelve, count_thirteen, count_fourteen]
 
+private lemma count_sixteen : MotzTree.asClass.count 16 = 853467 := by
+  rw [show 16 = 14 + 2 by norm_num, count_succ_succ 14]
+  norm_num [Finset.antidiagonal, count_zero, count_one, count_two, count_three, count_four,
+    count_five, count_six, count_seven, count_eight, count_nine, count_ten, count_eleven,
+    count_twelve, count_thirteen, count_fourteen, count_fifteen]
+
+private lemma count_seventeen : MotzTree.asClass.count 17 = 2356779 := by
+  rw [show 17 = 15 + 2 by norm_num, count_succ_succ 15]
+  norm_num [Finset.antidiagonal, count_zero, count_one, count_two, count_three, count_four,
+    count_five, count_six, count_seven, count_eight, count_nine, count_ten, count_eleven,
+    count_twelve, count_thirteen, count_fourteen, count_fifteen, count_sixteen]
+
+private lemma count_eighteen : MotzTree.asClass.count 18 = 6536382 := by
+  rw [show 18 = 16 + 2 by norm_num, count_succ_succ 16]
+  norm_num [Finset.antidiagonal, count_zero, count_one, count_two, count_three, count_four,
+    count_five, count_six, count_seven, count_eight, count_nine, count_ten, count_eleven,
+    count_twelve, count_thirteen, count_fourteen, count_fifteen, count_sixteen,
+    count_seventeen]
+
 example : decide (MotzTree.asClass.count 7 = 127) = true := by
   rw [count_seven]
   decide
@@ -431,6 +450,18 @@ example : decide (MotzTree.asClass.count 14 = 113634) = true := by
 
 example : decide (MotzTree.asClass.count 15 = 310572) = true := by
   rw [count_fifteen]
+  decide
+
+example : decide (MotzTree.asClass.count 16 = 853467) = true := by
+  rw [count_sixteen]
+  decide
+
+example : decide (MotzTree.asClass.count 17 = 2356779) = true := by
+  rw [count_seventeen]
+  decide
+
+example : decide (MotzTree.asClass.count 18 = 6536382) = true := by
+  rw [count_eighteen]
   decide
 
 example : decide (MotzTree.asClass.count 7 + MotzTree.asClass.count 6 = 178) = true := by

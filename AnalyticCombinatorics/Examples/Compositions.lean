@@ -778,6 +778,26 @@ example : compositionClass.jointCount compFirstPart 4 4 = 1 := by
   rw [CombinatorialClass.jointCount, compositionClass_level_four]
   decide
 
+example : compositionClass.jointCount compFirstPart 5 1 = 8 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_five]
+  decide
+
+example : compositionClass.jointCount compFirstPart 5 2 = 4 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_five]
+  decide
+
+example : compositionClass.jointCount compFirstPart 5 3 = 2 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_five]
+  decide
+
+example : compositionClass.jointCount compFirstPart 5 4 = 1 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_five]
+  decide
+
+example : compositionClass.jointCount compFirstPart 5 5 = 1 := by
+  rw [CombinatorialClass.jointCount, compositionClass_level_five]
+  decide
+
 example (n : ℕ) :
     ∑ k ∈ (compositionClass.level n).image compFirstPart,
       compositionClass.jointCount compFirstPart n k = compositionClass.count n := by

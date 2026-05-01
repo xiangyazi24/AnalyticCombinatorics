@@ -276,10 +276,84 @@ private lemma evenCompClass_count_sixteen : evenCompClass.count 16 = 128 := by
             evenCompClass_count_ten, evenCompClass_count_eight, evenCompClass_count_six,
             evenCompClass_count_four, evenCompClass_count_two, evenCompClass_count_zero]
 
+private lemma evenCompClass_count_seventeen : evenCompClass.count 17 = 0 := by
+  calc
+    evenCompClass.count 17
+        = ∑ p ∈ Finset.antidiagonal 17,
+            (if p.1 % 2 = 0 ∧ 0 < p.1 then evenCompClass.count p.2 else 0) := by
+          simpa using evenCompClass_count_succ 16
+    _ = 0 := by
+          simp [Finset.antidiagonal, evenCompClass_count_fifteen, evenCompClass_count_thirteen,
+            evenCompClass_count_eleven, evenCompClass_count_nine, evenCompClass_count_seven,
+            evenCompClass_count_five, evenCompClass_count_three, evenCompClass_count_one]
+
+private lemma evenCompClass_count_eighteen : evenCompClass.count 18 = 256 := by
+  calc
+    evenCompClass.count 18
+        = ∑ p ∈ Finset.antidiagonal 18,
+            (if p.1 % 2 = 0 ∧ 0 < p.1 then evenCompClass.count p.2 else 0) := by
+          simpa using evenCompClass_count_succ 17
+    _ = 256 := by
+          simp [Finset.antidiagonal, evenCompClass_count_sixteen, evenCompClass_count_fourteen,
+            evenCompClass_count_twelve, evenCompClass_count_ten, evenCompClass_count_eight,
+            evenCompClass_count_six, evenCompClass_count_four, evenCompClass_count_two,
+            evenCompClass_count_zero]
+
+private lemma evenCompClass_count_nineteen : evenCompClass.count 19 = 0 := by
+  calc
+    evenCompClass.count 19
+        = ∑ p ∈ Finset.antidiagonal 19,
+            (if p.1 % 2 = 0 ∧ 0 < p.1 then evenCompClass.count p.2 else 0) := by
+          simpa using evenCompClass_count_succ 18
+    _ = 0 := by
+          simp [Finset.antidiagonal, evenCompClass_count_seventeen,
+            evenCompClass_count_fifteen, evenCompClass_count_thirteen,
+            evenCompClass_count_eleven, evenCompClass_count_nine, evenCompClass_count_seven,
+            evenCompClass_count_five, evenCompClass_count_three, evenCompClass_count_one]
+
+private lemma evenCompClass_count_twenty : evenCompClass.count 20 = 512 := by
+  calc
+    evenCompClass.count 20
+        = ∑ p ∈ Finset.antidiagonal 20,
+            (if p.1 % 2 = 0 ∧ 0 < p.1 then evenCompClass.count p.2 else 0) := by
+          simpa using evenCompClass_count_succ 19
+    _ = 512 := by
+          simp [Finset.antidiagonal, evenCompClass_count_eighteen,
+            evenCompClass_count_sixteen, evenCompClass_count_fourteen,
+            evenCompClass_count_twelve, evenCompClass_count_ten, evenCompClass_count_eight,
+            evenCompClass_count_six, evenCompClass_count_four, evenCompClass_count_two,
+            evenCompClass_count_zero]
+
+private lemma evenCompClass_count_twentyone : evenCompClass.count 21 = 0 := by
+  calc
+    evenCompClass.count 21
+        = ∑ p ∈ Finset.antidiagonal 21,
+            (if p.1 % 2 = 0 ∧ 0 < p.1 then evenCompClass.count p.2 else 0) := by
+          simpa using evenCompClass_count_succ 20
+    _ = 0 := by
+          simp [Finset.antidiagonal, evenCompClass_count_nineteen,
+            evenCompClass_count_seventeen, evenCompClass_count_fifteen,
+            evenCompClass_count_thirteen, evenCompClass_count_eleven,
+            evenCompClass_count_nine, evenCompClass_count_seven, evenCompClass_count_five,
+            evenCompClass_count_three, evenCompClass_count_one]
+
+private lemma evenCompClass_count_twentytwo : evenCompClass.count 22 = 1024 := by
+  calc
+    evenCompClass.count 22
+        = ∑ p ∈ Finset.antidiagonal 22,
+            (if p.1 % 2 = 0 ∧ 0 < p.1 then evenCompClass.count p.2 else 0) := by
+          simpa using evenCompClass_count_succ 21
+    _ = 1024 := by
+          simp [Finset.antidiagonal, evenCompClass_count_twenty,
+            evenCompClass_count_eighteen, evenCompClass_count_sixteen,
+            evenCompClass_count_fourteen, evenCompClass_count_twelve,
+            evenCompClass_count_ten, evenCompClass_count_eight, evenCompClass_count_six,
+            evenCompClass_count_four, evenCompClass_count_two, evenCompClass_count_zero]
+
 /-!
 Sanity checks: compositions into even parts have counts
-`1, 0, 1, 0, 2, 0, 4, 0, 8, 0, 16, 0, 32, 0, 64, 0, 128`
-for `n = 0, 1, ..., 16`.
+`1, 0, 1, 0, 2, 0, 4, 0, 8, 0, 16, 0, 32, 0, 64, 0, 128, 0, 256, 0, 512, 0, 1024`
+for `n = 0, 1, ..., 22`.
 -/
 example : evenCompClass.count 0 = 1 := by
   apply of_decide_eq_true
@@ -348,6 +422,30 @@ example : evenCompClass.count 15 = 0 := by
 example : evenCompClass.count 16 = 128 := by
   apply of_decide_eq_true
   rw [evenCompClass_count_sixteen]
+  native_decide
+example : evenCompClass.count 17 = 0 := by
+  apply of_decide_eq_true
+  rw [evenCompClass_count_seventeen]
+  native_decide
+example : evenCompClass.count 18 = 256 := by
+  apply of_decide_eq_true
+  rw [evenCompClass_count_eighteen]
+  native_decide
+example : evenCompClass.count 19 = 0 := by
+  apply of_decide_eq_true
+  rw [evenCompClass_count_nineteen]
+  native_decide
+example : evenCompClass.count 20 = 512 := by
+  apply of_decide_eq_true
+  rw [evenCompClass_count_twenty]
+  native_decide
+example : evenCompClass.count 21 = 0 := by
+  apply of_decide_eq_true
+  rw [evenCompClass_count_twentyone]
+  native_decide
+example : evenCompClass.count 22 = 1024 := by
+  apply of_decide_eq_true
+  rw [evenCompClass_count_twentytwo]
   native_decide
 
 private def halveEvenPart (x : evenPartClass.Obj) : posIntClass.Obj :=
