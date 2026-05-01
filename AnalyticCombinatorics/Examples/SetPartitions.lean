@@ -760,3 +760,8 @@ example : ∑ k ∈ Finset.range 5, Nat.stirlingSecond 4 k = Nat.bell 4 := by
 
 example : ∑ k ∈ Finset.range 6, Nat.stirlingSecond 5 k = Nat.bell 5 := by
   rw [stirlingSecond_sum_eq_bell]
+
+example : Nat.stirlingSecond 4 2 = 7 := by decide
+example : Nat.stirlingSecond 5 3 = 25 := by decide
+example : Nat.stirlingFirst 4 2 = 11 := by decide
+example : Nat.stirlingFirst 5 3 = 35 := by decide
