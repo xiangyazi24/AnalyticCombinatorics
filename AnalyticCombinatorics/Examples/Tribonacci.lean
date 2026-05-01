@@ -240,6 +240,78 @@ example : tribClass.count 7 = 44 := by
         tribClass_count_two, tribClass_count_one, tribClass_count_zero]
     _ = 44 := by decide
 
+example : tribClass.count 8 = 81 := by
+  calc
+    tribClass.count 8 = tribClass.count 7 + tribClass.count 6 + tribClass.count 5 :=
+      tribClass_count_succ_succ_succ 5
+    _ = 44 + 24 + 13 := by
+      rw [tribClass_count_succ_succ_succ, tribClass_count_succ_succ_succ,
+        tribClass_count_succ_succ_succ, tribClass_count_succ_succ_succ,
+        tribClass_count_succ_succ_succ, tribClass_count_two, tribClass_count_one,
+        tribClass_count_zero]
+    _ = 81 := by decide
+
+example : tribClass.count 9 = 149 := by
+  calc
+    tribClass.count 9 = tribClass.count 8 + tribClass.count 7 + tribClass.count 6 :=
+      tribClass_count_succ_succ_succ 6
+    _ = 81 + 44 + 24 := by
+      rw [tribClass_count_succ_succ_succ, tribClass_count_succ_succ_succ,
+        tribClass_count_succ_succ_succ, tribClass_count_succ_succ_succ,
+        tribClass_count_succ_succ_succ, tribClass_count_succ_succ_succ,
+        tribClass_count_two, tribClass_count_one, tribClass_count_zero]
+    _ = 149 := by decide
+
+example : tribClass.count 10 = 274 := by
+  calc
+    tribClass.count 10 = tribClass.count 9 + tribClass.count 8 + tribClass.count 7 :=
+      tribClass_count_succ_succ_succ 7
+    _ = 149 + 81 + 44 := by
+      rw [tribClass_count_succ_succ_succ, tribClass_count_succ_succ_succ,
+        tribClass_count_succ_succ_succ, tribClass_count_succ_succ_succ,
+        tribClass_count_succ_succ_succ, tribClass_count_succ_succ_succ,
+        tribClass_count_succ_succ_succ, tribClass_count_two, tribClass_count_one,
+        tribClass_count_zero]
+    _ = 274 := by decide
+
+example : tribClass.count 11 = 504 := by
+  calc
+    tribClass.count 11 = tribClass.count 10 + tribClass.count 9 + tribClass.count 8 :=
+      tribClass_count_succ_succ_succ 8
+    _ = 274 + 149 + 81 := by
+      rw [tribClass_count_succ_succ_succ, tribClass_count_succ_succ_succ,
+        tribClass_count_succ_succ_succ, tribClass_count_succ_succ_succ,
+        tribClass_count_succ_succ_succ, tribClass_count_succ_succ_succ,
+        tribClass_count_succ_succ_succ, tribClass_count_succ_succ_succ,
+        tribClass_count_two, tribClass_count_one, tribClass_count_zero]
+    _ = 504 := by decide
+
+example : tribClass.count 12 = 927 := by
+  calc
+    tribClass.count 12 = tribClass.count 11 + tribClass.count 10 + tribClass.count 9 :=
+      tribClass_count_succ_succ_succ 9
+    _ = 504 + 274 + 149 := by
+      rw [tribClass_count_succ_succ_succ, tribClass_count_succ_succ_succ,
+        tribClass_count_succ_succ_succ, tribClass_count_succ_succ_succ,
+        tribClass_count_succ_succ_succ, tribClass_count_succ_succ_succ,
+        tribClass_count_succ_succ_succ, tribClass_count_succ_succ_succ,
+        tribClass_count_succ_succ_succ, tribClass_count_two, tribClass_count_one,
+        tribClass_count_zero]
+    _ = 927 := by decide
+
+example : tribClass.count 13 = 1705 := by
+  calc
+    tribClass.count 13 = tribClass.count 12 + tribClass.count 11 + tribClass.count 10 :=
+      tribClass_count_succ_succ_succ 10
+    _ = 927 + 504 + 274 := by
+      rw [tribClass_count_succ_succ_succ, tribClass_count_succ_succ_succ,
+        tribClass_count_succ_succ_succ, tribClass_count_succ_succ_succ,
+        tribClass_count_succ_succ_succ, tribClass_count_succ_succ_succ,
+        tribClass_count_succ_succ_succ, tribClass_count_succ_succ_succ,
+        tribClass_count_succ_succ_succ, tribClass_count_succ_succ_succ,
+        tribClass_count_two, tribClass_count_one, tribClass_count_zero]
+    _ = 1705 := by decide
+
 /-- The OGF for a single part of size 1, 2, or 3 is `z + z^2 + z^3`. -/
 private lemma step123Class_ogfZ :
     ogfZ step123Class = PowerSeries.X + PowerSeries.X ^ 2 + PowerSeries.X ^ 3 := by
