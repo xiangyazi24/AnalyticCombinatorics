@@ -2,6 +2,7 @@ import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.Examples.Compositions
 import Mathlib.Combinatorics.Enumerative.Bell
+import Mathlib.Combinatorics.Enumerative.Stirling
 
 open PowerSeries CombinatorialClass Finset
 open scoped PowerSeries.WithPiTopology
@@ -259,3 +260,90 @@ example : labelSetCount posIntClass 6 = (203 : ℚ) := by
 example : labelSetCount posIntClass 7 = (877 : ℚ) := by
   rw [labelSetCount_posIntClass_eq_bell]
   norm_num [bell_seven_sanity]
+
+/-!
+Mathlib names the Stirling numbers of the second kind `Nat.stirlingSecond`;
+this is the local naming bridge for the requested `stirling2` convention.
+-/
+
+lemma posIntClass_egf_add_one_eq_exp :
+    posIntClass.egf + 1 = PowerSeries.exp ℚ := by
+  ext n
+  cases n with
+  | zero =>
+      rw [map_add, coeff_egf, posIntClass.count_zero, PowerSeries.coeff_one,
+        PowerSeries.coeff_exp]
+      norm_num
+  | succ n =>
+      rw [map_add, coeff_egf, posIntClass.count_pos (Nat.succ_pos n), PowerSeries.coeff_one,
+        PowerSeries.coeff_exp]
+      simp
+
+lemma derivative_posIntClass_egf_pow_succ (k : ℕ) :
+    d⁄dX ℚ (posIntClass.egf ^ (k + 1)) =
+      ((k + 1 : ℕ) : PowerSeries ℚ) *
+        (posIntClass.egf ^ (k + 1) + posIntClass.egf ^ k) := by
+  rw [PowerSeries.derivative_pow, posIntClass_egf_derivative, ← posIntClass_egf_add_one_eq_exp]
+  simp [pow_succ]
+  ring
+
+lemma coeff_derivative_posIntClass_egf_pow_succ (n k : ℕ) :
+    coeff n (d⁄dX ℚ (posIntClass.egf ^ (k + 1))) =
+      (k + 1 : ℚ) *
+        (coeff n (posIntClass.egf ^ (k + 1)) + coeff n (posIntClass.egf ^ k)) := by
+  rw [derivative_posIntClass_egf_pow_succ]
+  rw [show ((k + 1 : ℕ) : PowerSeries ℚ) = PowerSeries.C ((k + 1 : ℕ) : ℚ) by
+    ext t
+    cases t <;> simp]
+  rw [PowerSeries.coeff_C_mul, map_add]
+  norm_num
+
+lemma coeff_posIntClass_egf_pow_eq_factorial_mul_stirlingSecond (n k : ℕ) :
+    coeff n (posIntClass.egf ^ k) =
+      (((k.factorial * Nat.stirlingSecond n k : ℕ) : ℚ) / n.factorial) := by
+  revert k
+  induction n with
+  | zero =>
+      intro k
+      cases k with
+      | zero =>
+          simp [Nat.stirlingSecond_zero]
+      | succ k =>
+          rw [coeff_pow_eq_zero_of_constantCoeff_eq_zero posIntClass_egf_constantCoeff_zero
+            (show 0 < k + 1 by omega)]
+          simp [Nat.stirlingSecond_zero_succ]
+  | succ n ih =>
+      intro k
+      cases k with
+      | zero =>
+          simp [Nat.stirlingSecond_succ_zero]
+      | succ k =>
+          have hderiv := coeff_derivative_posIntClass_egf_pow_succ n k
+          rw [coeff_derivative] at hderiv
+          rw [ih (k + 1), ih k] at hderiv
+          apply mul_right_cancel₀ (show (n : ℚ) + 1 ≠ 0 by positivity)
+          calc
+            coeff (n + 1) (posIntClass.egf ^ (k + 1)) * ((n : ℚ) + 1)
+                = (k + 1 : ℚ) *
+                    (((((k + 1).factorial * Nat.stirlingSecond n (k + 1) : ℕ) : ℚ) /
+                        n.factorial) +
+                      ((((k.factorial * Nat.stirlingSecond n k : ℕ) : ℚ) / n.factorial))) :=
+                  hderiv
+            _ = (((((k + 1).factorial * Nat.stirlingSecond (n + 1) (k + 1) : ℕ) : ℚ) /
+                    (n + 1).factorial) * ((n : ℚ) + 1)) := by
+                  rw [Nat.stirlingSecond_succ_succ]
+                  simp only [Nat.factorial_succ, Nat.cast_mul, Nat.cast_add, Nat.cast_add_one]
+                  field_simp [Nat.cast_ne_zero.mpr n.factorial_pos.ne',
+                    show (n : ℚ) + 1 ≠ 0 by positivity]
+
+/-- Stirling 2nd kind connection: ordered set partitions of `{1, ..., n}` into `k` blocks.
+
+Mathlib's identifier for the Stirling number of the second kind is `Nat.stirlingSecond`.
+-/
+theorem labelPow_posIntClass_count_eq_factorial_mul_stirlingSecond (n k : ℕ) :
+    (CombinatorialClass.labelPow posIntClass k).count n =
+      k.factorial * Nat.stirlingSecond n k := by
+  have hpow := CombinatorialClass.labelPow_count_div_factorial_eq_coeff_pow posIntClass k n
+  rw [coeff_posIntClass_egf_pow_eq_factorial_mul_stirlingSecond] at hpow
+  field_simp [Nat.cast_ne_zero.mpr n.factorial_pos.ne'] at hpow
+  exact_mod_cast hpow
