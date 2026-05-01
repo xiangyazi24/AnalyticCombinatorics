@@ -33,3 +33,14 @@ theorem planeTree_count_eq_dyckPath (n : ℕ) :
 theorem triangulation_count_eq_dyckPath (n : ℕ) :
     triangulationClass.count n = dyckPathClass.count n := by
   rw [triangulationClass_count, dyckPathClass_count]
+
+/-- Classical Catalan recurrence.
+
+This Mathlib snapshot exposes Catalan numbers as the root-level `_root_.catalan`,
+not as `Nat.catalan`; the proof is just Mathlib's `catalan_succ` rewritten from
+the finite-type sum to an explicit `Finset.range`. -/
+theorem catalan_recurrence (n : ℕ) :
+    _root_.catalan (n + 1) =
+      ∑ i ∈ Finset.range (n + 1), _root_.catalan i * _root_.catalan (n - i) := by
+  rw [Finset.sum_range]
+  exact _root_.catalan_succ n
