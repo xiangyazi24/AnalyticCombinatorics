@@ -624,3 +624,36 @@ theorem labelCycCount_Atom_eq_stirlingFirst_one (n : ℕ) :
       simp [CombinatorialClass.labelCycCount, Nat.stirlingFirst_zero_succ]
   | succ n =>
       rw [labelCycCount_Atom_succ, Nat.stirlingFirst_one_right]
+
+private lemma stirlingFirst_shifted_sum_eq_sum (n : ℕ) (hn : n ≠ 0) :
+    (∑ k ∈ Finset.range (n + 1), Nat.stirlingFirst n (k + 1)) =
+      ∑ k ∈ Finset.range (n + 1), Nat.stirlingFirst n k := by
+  rw [Finset.sum_range_succ, Finset.sum_range_succ']
+  have hzero : Nat.stirlingFirst n 0 = 0 := by
+    cases n with
+    | zero => contradiction
+    | succ n => simp
+  have htop : Nat.stirlingFirst n (n + 1) = 0 :=
+    Nat.stirlingFirst_eq_zero_of_lt (Nat.lt_succ_self n)
+  simp [hzero, htop]
+
+/-- Summing the unsigned Stirling numbers of the first kind over the number of cycles gives
+the total number of permutations of `n` labelled elements. -/
+theorem stirlingFirst_sum_eq_factorial (n : ℕ) :
+    ∑ k ∈ Finset.range (n + 1), Nat.stirlingFirst n k = n.factorial := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+      rw [Finset.sum_range_succ']
+      simp only [Nat.stirlingFirst_succ_zero, add_zero]
+      simp_rw [Nat.stirlingFirst_succ_succ]
+      rw [Finset.sum_add_distrib, ← Finset.mul_sum]
+      by_cases hn : n = 0
+      · subst n
+        simp
+      · rw [stirlingFirst_shifted_sum_eq_sum n hn, ih]
+        simp [Nat.factorial_succ, Nat.succ_mul]
+
+example (n : ℕ) :
+    ∑ k ∈ Finset.range (n + 1), Nat.stirlingFirst n k = n.factorial := by
+  exact stirlingFirst_sum_eq_factorial n
