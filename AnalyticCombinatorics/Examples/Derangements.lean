@@ -128,3 +128,12 @@ example (n : ℕ) :
   rw [CombinatorialClass.coeff_egf]
   rw [show (derangementClass.count n : ℕ) = Nat.numDerangements n from
         derangementClass_count_eq_numDerangements n]
+
+example : derangementClass.ogf.coeff 0 = 1 := by
+  rw [coeff_ogf, derangementClass_count_eq_numDerangements]; rfl
+
+example : derangementClass.ogf.coeff 1 = 0 := by
+  rw [coeff_ogf, derangementClass_count_eq_numDerangements]; rfl
+
+example : derangementClass.ogf.coeff 4 = 9 := by
+  rw [coeff_ogf, derangementClass_count_eq_numDerangements]; decide
