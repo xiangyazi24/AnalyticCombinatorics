@@ -14,6 +14,7 @@
 import Mathlib.RingTheory.PowerSeries.Basic
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 import AnalyticCombinatorics.PartA.Ch1.Sequences
+import AnalyticCombinatorics.PartA.Ch3.Parameters
 
 open PowerSeries CombinatorialClass Finset
 
@@ -199,3 +200,122 @@ example (n : ℕ) (hn : 1 ≤ n) :
   rw [CombinatorialClass.coeff_egf, compositionClass_count_eq_pow_pred n hn]
   push_cast
   rfl
+
+/-! ## Parameter: number of parts -/
+
+/-- Number of parts of a composition (= list length). -/
+def numParts : Parameter compositionClass := List.length
+
+private lemma compositionClass_jointCount_numParts_eq_one_of_unique
+    {n k : ℕ} (x₀ : compositionClass.Obj)
+    (hx₀ : x₀ ∈ compositionClass.level n)
+    (hnum₀ : numParts x₀ = k)
+    (huniq : ∀ x : compositionClass.Obj,
+      x ∈ compositionClass.level n → numParts x = k → x = x₀) :
+    compositionClass.jointCount numParts n k = 1 := by
+  unfold CombinatorialClass.jointCount
+  rw [Finset.card_eq_one]
+  refine ⟨x₀, ?_⟩
+  ext x
+  rw [Finset.mem_filter, Finset.mem_singleton]
+  constructor
+  · intro hx
+    exact huniq x hx.1 hx.2
+  · intro hx
+    subst hx
+    exact ⟨hx₀, hnum₀⟩
+
+/-- Sanity at small n: count compositions of n with exactly k parts. -/
+example : compositionClass.jointCount numParts 0 0 = 1 := by
+  apply compositionClass_jointCount_numParts_eq_one_of_unique ([] : compositionClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rfl
+  · intro x hx _hnum
+    have hsize : x.foldr (fun b acc => posIntClass.size b + acc) 0 = 0 := by
+      exact (CombinatorialClass.level_mem_iff (C := compositionClass) x).mp hx
+    cases x with
+    | nil => rfl
+    | cons a xs =>
+        simp only [List.foldr_cons] at hsize
+        obtain ⟨v, hv⟩ := a
+        change v + xs.foldr (fun b acc => posIntClass.size b + acc) 0 = 0 at hsize
+        omega
+
+example : compositionClass.jointCount numParts 1 1 = 1 := by
+  apply compositionClass_jointCount_numParts_eq_one_of_unique
+    ([⟨1, by norm_num⟩] : compositionClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rfl
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => posIntClass.size b + acc) 0 = 1 := by
+      exact (CombinatorialClass.level_mem_iff (C := compositionClass) x).mp hx
+    change x.length = 1 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil =>
+            simp only [List.foldr_cons, List.foldr_nil] at hsize
+            obtain ⟨v, hv⟩ := a
+            change v + 0 = 1 at hsize
+            have hv1 : v = 1 := by omega
+            subst v
+            simp
+        | cons b xs =>
+            simp at hnum
+
+example : compositionClass.jointCount numParts 2 1 = 1 := by
+  apply compositionClass_jointCount_numParts_eq_one_of_unique
+    ([⟨2, by norm_num⟩] : compositionClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rfl
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => posIntClass.size b + acc) 0 = 2 := by
+      exact (CombinatorialClass.level_mem_iff (C := compositionClass) x).mp hx
+    change x.length = 1 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil =>
+            simp only [List.foldr_cons, List.foldr_nil] at hsize
+            obtain ⟨v, hv⟩ := a
+            change v + 0 = 2 at hsize
+            have hv2 : v = 2 := by omega
+            subst v
+            simp
+        | cons b xs =>
+            simp at hnum
+
+example : compositionClass.jointCount numParts 2 2 = 1 := by
+  apply compositionClass_jointCount_numParts_eq_one_of_unique
+    ([⟨1, by norm_num⟩, ⟨1, by norm_num⟩] : compositionClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rfl
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => posIntClass.size b + acc) 0 = 2 := by
+      exact (CombinatorialClass.level_mem_iff (C := compositionClass) x).mp hx
+    change x.length = 2 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil =>
+                simp only [List.foldr_cons, List.foldr_nil] at hsize
+                obtain ⟨av, hav⟩ := a
+                obtain ⟨bv, hbv⟩ := b
+                change av + (bv + 0) = 2 at hsize
+                have hav1 : av = 1 := by omega
+                have hbv1 : bv = 1 := by omega
+                subst av
+                subst bv
+                simp
+            | cons c xs =>
+                simp at hnum
