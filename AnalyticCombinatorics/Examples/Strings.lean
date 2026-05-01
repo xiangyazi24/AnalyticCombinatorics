@@ -220,3 +220,9 @@ theorem stringClass_ogfZ_coeff (n : ℕ) :
   rw [PowerSeries.coeff_map, coeff_ogf, stringClass_count_eq_pow]
   push_cast
   rfl
+
+example (n : ℕ) :
+    stringClass.egf.coeff n = (2 ^ n : ℚ) / n.factorial := by
+  rw [CombinatorialClass.coeff_egf, stringClass_count_eq_pow]
+  push_cast
+  rfl

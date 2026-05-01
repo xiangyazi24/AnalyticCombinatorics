@@ -249,3 +249,11 @@ theorem ogfZ_quadratic :
   linear_combination -h
 
 end BinTree
+
+/-- Rational EGF coefficient: [zⁿ] BinTree.asClass.egf = catalan n / n!. -/
+example (n : ℕ) :
+    BinTree.asClass.egf.coeff n = (_root_.catalan n : ℚ) / n.factorial := by
+  rw [CombinatorialClass.coeff_egf]
+  show (BinTree.asClass.count n : ℚ) / n.factorial = (_root_.catalan n : ℚ) / n.factorial
+  rw [show BinTree.asClass.count n = _root_.catalan n from
+        BinTree.catalan_eq_nat_catalan n]
