@@ -198,3 +198,30 @@ theorem labelSetCount_posIntClass_eq_bell (n : ℕ) :
   simp [labelSetSeries, bellSeries] at h
   field_simp [Nat.cast_ne_zero.mpr n.factorial_pos.ne'] at h
   exact h
+
+/-! Sanity checks: Bell sequence starts 1, 1, 2, 5, 15, 52, 203, ... -/
+
+example : labelSetCount posIntClass 0 = (1 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  norm_num
+
+example : labelSetCount posIntClass 1 = (1 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  norm_num
+
+example : labelSetCount posIntClass 2 = (2 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  norm_num
+
+example : labelSetCount posIntClass 3 = (5 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  rw [show 3 = 2 + 1 by rfl, Nat.bell_succ']
+  norm_num [Finset.antidiagonal]
+
+example : labelSetCount posIntClass 4 = (15 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  have h3 : Nat.bell 3 = 5 := by
+    rw [show 3 = 2 + 1 by rfl, Nat.bell_succ']
+    norm_num [Finset.antidiagonal]
+  rw [show 4 = 3 + 1 by rfl, Nat.bell_succ']
+  norm_num [Finset.antidiagonal, h3]
