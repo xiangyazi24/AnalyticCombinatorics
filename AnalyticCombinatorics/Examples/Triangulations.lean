@@ -48,3 +48,16 @@ example :
   change PowerSeries.X * (ogfZ BinTree.asClass) ^ 2
         - ogfZ BinTree.asClass + 1 = 0
   exact BinTree.ogfZ_quadratic
+
+example (n : ℕ) :
+    PowerSeries.coeff n triangulationClass.ogf = _root_.catalan n := by
+  rw [show triangulationClass.ogf = BinTree.asClass.ogf from rfl,
+      CombinatorialClass.coeff_ogf]
+  exact BinTree.catalan_eq_nat_catalan n
+
+example (n : ℕ) :
+    triangulationClass.egf.coeff n = (_root_.catalan n : ℚ) / n.factorial := by
+  change BinTree.asClass.egf.coeff n = _
+  rw [CombinatorialClass.coeff_egf]
+  rw [show (BinTree.asClass.count n : ℕ) = _root_.catalan n from
+        BinTree.catalan_eq_nat_catalan n]
