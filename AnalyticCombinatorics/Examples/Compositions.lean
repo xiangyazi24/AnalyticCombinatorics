@@ -127,6 +127,34 @@ theorem compositionClass_count_succ (n : ℕ) :
   | succ m ih =>
     rw [count_succ_succ_eq, ih, pow_succ]; ring
 
+/-- Closed form for the OGF of integer compositions: `(1 - z)/(1 - 2z)`. -/
+theorem compositionClass_ogfZ_mul_one_sub_two_X :
+    ogfZ compositionClass * (1 - 2 * PowerSeries.X) = 1 - PowerSeries.X := by
+  rw [show ogfZ compositionClass * (1 - 2 * PowerSeries.X) =
+      ogfZ compositionClass - 2 * (ogfZ compositionClass * PowerSeries.X) by ring]
+  ext n
+  rcases n with _ | m
+  · simp only [map_sub]
+    rw [show coeff 0 (ogfZ compositionClass) = (compositionClass.count 0 : ℤ) by
+      simp [ogfZ, coeff_ogf]]
+    simp [compositionClass_count_zero]
+  · have hshift : coeff (m + 1) (2 * (ogfZ compositionClass * PowerSeries.X)) =
+        2 * (compositionClass.count m : ℤ) := by
+      rw [show (2 : PowerSeries ℤ) = PowerSeries.C (2 : ℤ) by
+        ext n
+        simp]
+      rw [PowerSeries.coeff_C_mul]
+      rw [PowerSeries.coeff_succ_mul_X]
+      simp [ogfZ, coeff_ogf]
+    rw [map_sub, hshift]
+    cases m with
+    | zero =>
+        simp [ogfZ, coeff_ogf, compositionClass_count_succ,
+          compositionClass_count_zero, PowerSeries.coeff_X]
+    | succ m =>
+        simp [ogfZ, coeff_ogf, compositionClass_count_succ, PowerSeries.coeff_X]
+        ring
+
 /-! Sanity checks: 1 composition of 0, 1 of 1, 2 of 2, 4 of 3, 8 of 4. -/
 example : compositionClass.count 0 = 1 := compositionClass_count_zero
 example : compositionClass.count 1 = 1 := compositionClass_count_succ 0
