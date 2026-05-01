@@ -630,3 +630,17 @@ example : ternaryStringClass.count 3 = 27 := ternaryStringClass_count_eq_pow 3
 example : ternaryStringClass.count 4 = 81 := ternaryStringClass_count_eq_pow 4
 example : ternaryStringClass.count 5 = 243 := ternaryStringClass_count_eq_pow 5
 example : ternaryStringClass.count 6 = 729 := ternaryStringClass_count_eq_pow 6
+
+/-! ## Closed form and symmetry for `stringNumTrue` -/
+
+/-- The bivariate count by number of `true` bits is the binomial coefficient. -/
+theorem stringClass_jointCount_stringNumTrue (n k : ℕ) :
+    stringClass.jointCount stringNumTrue n k = Nat.choose n k := by
+  rw [show stringNumTrue = numOnes by rfl, stringClass_jointCount_numOnes]
+
+/-- Pascal-row symmetry for binary strings counted by number of `true` bits. -/
+theorem stringClass_jointCount_stringNumTrue_symm {n k : ℕ} (hk : k ≤ n) :
+    stringClass.jointCount stringNumTrue n k =
+      stringClass.jointCount stringNumTrue n (n - k) := by
+  rw [stringClass_jointCount_stringNumTrue, stringClass_jointCount_stringNumTrue]
+  exact (Nat.choose_symm hk).symm
