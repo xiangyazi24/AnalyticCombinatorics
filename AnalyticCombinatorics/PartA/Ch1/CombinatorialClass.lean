@@ -370,4 +370,26 @@ theorem disjSum_Epsilon_ogf (A : CombinatorialClass) :
     (A.disjSum Epsilon).ogf = A.ogf + 1 := by
   rw [disjSum_ogf, Epsilon_ogf]
 
+/-- Epsilon disjSum left at EGF level. -/
+theorem Epsilon_disjSum_egf (A : CombinatorialClass) :
+    (Epsilon.disjSum A).egf = 1 + A.egf := by
+  rw [disjSum_egf, Epsilon_egf]
+
+/-- Epsilon disjSum right at EGF level. -/
+theorem disjSum_Epsilon_egf (A : CombinatorialClass) :
+    (A.disjSum Epsilon).egf = A.egf + 1 := by
+  rw [disjSum_egf, Epsilon_egf]
+
+/-- `(Atom + Atom + Atom).egf = 3 · X`. -/
+theorem Atom_disjSum_three_egf : ((Atom.disjSum Atom).disjSum Atom).egf = 3 * PowerSeries.X := by
+  rw [disjSum_egf, disjSum_egf, Atom_egf]
+  ring
+
+/-- `atomOfSize a · X · atomOfSize b` cartProd OGF:
+`X^(a+b+1)` -- size of pair plus a singleton. -/
+theorem atomOfSize_triple_cartProd_ogf (a b : ℕ) :
+    (((atomOfSize a).cartProd (atomOfSize b)).cartProd Atom).ogf = PowerSeries.X ^ (a + b + 1) := by
+  rw [cartProd_ogf, cartProd_ogf, atomOfSize_ogf, atomOfSize_ogf, Atom_ogf]
+  ring
+
 end CombinatorialClass

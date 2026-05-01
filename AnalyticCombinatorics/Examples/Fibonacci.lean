@@ -9,7 +9,7 @@ import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 import AnalyticCombinatorics.PartA.Ch1.Sequences
 import Mathlib.Data.Nat.Fib.Basic
 
-open CombinatorialClass Finset
+open PowerSeries CombinatorialClass Finset
 
 /-- The atom class for parts of size 1 or 2. Count is 1 at sizes 1 and 2, else 0. -/
 noncomputable def stepClass : CombinatorialClass :=
@@ -143,3 +143,39 @@ example : fibClass.count 4 = 5 := by rw [fibClass_count_eq_fib]; decide
 example : fibClass.count 5 = 8 := by rw [fibClass_count_eq_fib]; decide
 example : fibClass.count 6 = 13 := by rw [fibClass_count_eq_fib]; decide
 example : fibClass.count 7 = 21 := by rw [fibClass_count_eq_fib]; decide
+
+/-- Closed form for the OGF of compositions into parts of size 1 or 2:
+    `1 / (1 - z - z^2)`. -/
+theorem fibClass_ogfZ_mul_one_sub_X_sub_X_sq :
+    ogfZ fibClass * (1 - PowerSeries.X - PowerSeries.X ^ 2) = 1 := by
+  rw [show ogfZ fibClass * (1 - PowerSeries.X - PowerSeries.X ^ 2) =
+      ogfZ fibClass - ogfZ fibClass * PowerSeries.X -
+        ogfZ fibClass * PowerSeries.X ^ 2 by ring]
+  ext n
+  rcases n with _ | m
+  · simp only [map_sub]
+    rw [show coeff 0 (ogfZ fibClass) = (fibClass.count 0 : ℤ) by
+      simp [ogfZ, coeff_ogf]]
+    simp [fibClass_count_zero, PowerSeries.coeff_mul_X_pow']
+  · have hshiftX : coeff (m + 1) (ogfZ fibClass * PowerSeries.X) =
+        (fibClass.count m : ℤ) := by
+      rw [PowerSeries.coeff_succ_mul_X]
+      simp [ogfZ, coeff_ogf]
+    rw [map_sub, map_sub, hshiftX]
+    cases m with
+    | zero =>
+        simp [ogfZ, coeff_ogf, fibClass_count_eq_fib, PowerSeries.coeff_mul_X_pow',
+          PowerSeries.coeff_one]
+    | succ m =>
+        have hshiftX2 :
+            coeff (m + 2) (ogfZ fibClass * PowerSeries.X ^ 2) =
+              (fibClass.count m : ℤ) := by
+          rw [show m + 2 = m + 2 by rfl]
+          rw [PowerSeries.coeff_mul_X_pow]
+          simp [ogfZ, coeff_ogf]
+        rw [hshiftX2]
+        rw [show coeff (m + 2) (ogfZ fibClass) = (fibClass.count (m + 2) : ℤ) by
+          simp [ogfZ, coeff_ogf]]
+        rw [show (fibClass.count (m + 1) : ℤ) = coeff (m + 1) (ogfZ fibClass) by
+          simp [ogfZ, coeff_ogf]]
+        simp [ogfZ, coeff_ogf, fibClass_count_eq_fib, Nat.fib_add_two]
