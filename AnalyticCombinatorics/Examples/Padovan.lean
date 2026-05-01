@@ -6,6 +6,7 @@
 -/
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 import AnalyticCombinatorics.PartA.Ch1.Sequences
+import AnalyticCombinatorics.PartA.Ch3.Parameters
 
 open PowerSeries CombinatorialClass Finset
 
@@ -259,3 +260,402 @@ theorem padovanClass_ogfZ_mul_one_sub_X_sq_sub_X_cub :
     ogfZ padovanClass * (1 - PowerSeries.X ^ 2 - PowerSeries.X ^ 3)
         = (1 - (PowerSeries.X ^ 2 + PowerSeries.X ^ 3)) * ogfZ padovanClass := by ring
     _ = 1 := hseq
+
+/-! ## Parameter: number of parts -/
+
+/-- Number of parts in a Padovan composition. -/
+def padovanNumParts : Parameter padovanClass := List.length
+
+private abbrev padovanPart2 : step23Class.Obj := Sum.inl ()
+private abbrev padovanPart3 : step23Class.Obj := Sum.inr ()
+
+private lemma padovanClass_jointCount_padovanNumParts_eq_one_of_unique
+    {n k : ℕ} (x₀ : padovanClass.Obj)
+    (hx₀ : x₀ ∈ padovanClass.level n)
+    (hnum₀ : padovanNumParts x₀ = k)
+    (huniq : ∀ x : padovanClass.Obj,
+      x ∈ padovanClass.level n → padovanNumParts x = k → x = x₀) :
+    padovanClass.jointCount padovanNumParts n k = 1 := by
+  unfold CombinatorialClass.jointCount
+  rw [Finset.card_eq_one]
+  refine ⟨x₀, ?_⟩
+  ext x
+  rw [Finset.mem_filter, Finset.mem_singleton]
+  constructor
+  · intro hx
+    exact huniq x hx.1 hx.2
+  · intro hx
+    subst hx
+    exact ⟨hx₀, hnum₀⟩
+
+private lemma padovanClass_jointCount_padovanNumParts_eq_two_of_unique_pair
+    {n k : ℕ} (x₁ x₂ : padovanClass.Obj)
+    (hx₁ : x₁ ∈ padovanClass.level n)
+    (hx₂ : x₂ ∈ padovanClass.level n)
+    (hnum₁ : padovanNumParts x₁ = k)
+    (hnum₂ : padovanNumParts x₂ = k)
+    (hne : x₁ ≠ x₂)
+    (huniq : ∀ x : padovanClass.Obj,
+      x ∈ padovanClass.level n → padovanNumParts x = k → x = x₁ ∨ x = x₂) :
+    padovanClass.jointCount padovanNumParts n k = 2 := by
+  classical
+  unfold CombinatorialClass.jointCount
+  rw [Finset.card_eq_two]
+  refine ⟨x₁, x₂, hne, ?_⟩
+  ext x
+  rw [Finset.mem_filter]
+  simp only [Finset.mem_insert, Finset.mem_singleton]
+  constructor
+  · intro hx
+    exact huniq x hx.1 hx.2
+  · intro hx
+    rcases hx with rfl | rfl
+    · exact ⟨hx₁, hnum₁⟩
+    · exact ⟨hx₂, hnum₂⟩
+
+private lemma padovanClass_jointCount_padovanNumParts_eq_three_of_unique_triple
+    {n k : ℕ} (x₁ x₂ x₃ : padovanClass.Obj)
+    (hx₁ : x₁ ∈ padovanClass.level n)
+    (hx₂ : x₂ ∈ padovanClass.level n)
+    (hx₃ : x₃ ∈ padovanClass.level n)
+    (hnum₁ : padovanNumParts x₁ = k)
+    (hnum₂ : padovanNumParts x₂ = k)
+    (hnum₃ : padovanNumParts x₃ = k)
+    (hne₁₂ : x₁ ≠ x₂)
+    (hne₁₃ : x₁ ≠ x₃)
+    (hne₂₃ : x₂ ≠ x₃)
+    (huniq : ∀ x : padovanClass.Obj,
+      x ∈ padovanClass.level n → padovanNumParts x = k →
+        x = x₁ ∨ x = x₂ ∨ x = x₃) :
+    padovanClass.jointCount padovanNumParts n k = 3 := by
+  classical
+  unfold CombinatorialClass.jointCount
+  rw [Finset.card_eq_three]
+  refine ⟨x₁, x₂, x₃, hne₁₂, hne₁₃, hne₂₃, ?_⟩
+  ext x
+  rw [Finset.mem_filter]
+  simp only [Finset.mem_insert, Finset.mem_singleton]
+  constructor
+  · intro hx
+    exact huniq x hx.1 hx.2
+  · intro hx
+    rcases hx with rfl | rfl | rfl
+    · exact ⟨hx₁, hnum₁⟩
+    · exact ⟨hx₂, hnum₂⟩
+    · exact ⟨hx₃, hnum₃⟩
+
+example : padovanClass.jointCount padovanNumParts 2 1 = 1 := by
+  apply padovanClass_jointCount_padovanNumParts_eq_one_of_unique
+    ([padovanPart2] : padovanClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rfl
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step23Class.size b + acc) 0 = 2 := by
+      exact (CombinatorialClass.level_mem_iff (C := padovanClass) x).mp hx
+    change x.length = 1 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil =>
+            simp only [List.foldr_cons, List.foldr_nil] at hsize
+            rcases a with a | a
+            · cases a
+              rfl
+            · cases a
+              change (3 : ℕ) + 0 = 2 at hsize
+              omega
+        | cons _ _ => simp at hnum
+
+example : padovanClass.jointCount padovanNumParts 3 1 = 1 := by
+  apply padovanClass_jointCount_padovanNumParts_eq_one_of_unique
+    ([padovanPart3] : padovanClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rfl
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step23Class.size b + acc) 0 = 3 := by
+      exact (CombinatorialClass.level_mem_iff (C := padovanClass) x).mp hx
+    change x.length = 1 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil =>
+            simp only [List.foldr_cons, List.foldr_nil] at hsize
+            rcases a with a | a
+            · cases a
+              change (2 : ℕ) + 0 = 3 at hsize
+              omega
+            · cases a
+              rfl
+        | cons _ _ => simp at hnum
+
+example : padovanClass.jointCount padovanNumParts 4 2 = 1 := by
+  apply padovanClass_jointCount_padovanNumParts_eq_one_of_unique
+    ([padovanPart2, padovanPart2] : padovanClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rfl
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step23Class.size b + acc) 0 = 4 := by
+      exact (CombinatorialClass.level_mem_iff (C := padovanClass) x).mp hx
+    change x.length = 2 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil =>
+                simp only [List.foldr_cons, List.foldr_nil] at hsize
+                rcases a with a | a <;> rcases b with b | b
+                · cases a
+                  cases b
+                  rfl
+                · cases a
+                  cases b
+                  change (2 : ℕ) + (3 + 0) = 4 at hsize
+                  omega
+                · cases a
+                  cases b
+                  change (3 : ℕ) + (2 + 0) = 4 at hsize
+                  omega
+                · cases a
+                  cases b
+                  change (3 : ℕ) + (3 + 0) = 4 at hsize
+                  omega
+            | cons _ _ => simp at hnum
+
+example : padovanClass.jointCount padovanNumParts 5 2 = 2 := by
+  apply padovanClass_jointCount_padovanNumParts_eq_two_of_unique_pair
+    ([padovanPart2, padovanPart3] : padovanClass.Obj)
+    ([padovanPart3, padovanPart2] : padovanClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rfl
+  · rfl
+  · intro h
+    injection h with hhead _
+    cases hhead
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step23Class.size b + acc) 0 = 5 := by
+      exact (CombinatorialClass.level_mem_iff (C := padovanClass) x).mp hx
+    change x.length = 2 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil =>
+                simp only [List.foldr_cons, List.foldr_nil] at hsize
+                rcases a with a | a <;> rcases b with b | b
+                · cases a
+                  cases b
+                  change (2 : ℕ) + (2 + 0) = 5 at hsize
+                  omega
+                · cases a
+                  cases b
+                  left
+                  rfl
+                · cases a
+                  cases b
+                  right
+                  rfl
+                · cases a
+                  cases b
+                  change (3 : ℕ) + (3 + 0) = 5 at hsize
+                  omega
+            | cons _ _ => simp at hnum
+
+example : padovanClass.jointCount padovanNumParts 6 2 = 1 := by
+  apply padovanClass_jointCount_padovanNumParts_eq_one_of_unique
+    ([padovanPart3, padovanPart3] : padovanClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rfl
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step23Class.size b + acc) 0 = 6 := by
+      exact (CombinatorialClass.level_mem_iff (C := padovanClass) x).mp hx
+    change x.length = 2 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil =>
+                simp only [List.foldr_cons, List.foldr_nil] at hsize
+                rcases a with a | a <;> rcases b with b | b
+                · cases a
+                  cases b
+                  change (2 : ℕ) + (2 + 0) = 6 at hsize
+                  omega
+                · cases a
+                  cases b
+                  change (2 : ℕ) + (3 + 0) = 6 at hsize
+                  omega
+                · cases a
+                  cases b
+                  change (3 : ℕ) + (2 + 0) = 6 at hsize
+                  omega
+                · cases a
+                  cases b
+                  rfl
+            | cons _ _ => simp at hnum
+
+example : padovanClass.jointCount padovanNumParts 6 3 = 1 := by
+  apply padovanClass_jointCount_padovanNumParts_eq_one_of_unique
+    ([padovanPart2, padovanPart2, padovanPart2] : padovanClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rfl
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step23Class.size b + acc) 0 = 6 := by
+      exact (CombinatorialClass.level_mem_iff (C := padovanClass) x).mp hx
+    change x.length = 3 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil => simp at hnum
+            | cons c xs =>
+                cases xs with
+                | nil =>
+                    simp only [List.foldr_cons, List.foldr_nil] at hsize
+                    rcases a with a | a <;> rcases b with b | b <;> rcases c with c | c
+                    · cases a
+                      cases b
+                      cases c
+                      rfl
+                    · cases a
+                      cases b
+                      cases c
+                      change (2 : ℕ) + (2 + (3 + 0)) = 6 at hsize
+                      omega
+                    · cases a
+                      cases b
+                      cases c
+                      change (2 : ℕ) + (3 + (2 + 0)) = 6 at hsize
+                      omega
+                    · cases a
+                      cases b
+                      cases c
+                      change (2 : ℕ) + (3 + (3 + 0)) = 6 at hsize
+                      omega
+                    · cases a
+                      cases b
+                      cases c
+                      change (3 : ℕ) + (2 + (2 + 0)) = 6 at hsize
+                      omega
+                    · cases a
+                      cases b
+                      cases c
+                      change (3 : ℕ) + (2 + (3 + 0)) = 6 at hsize
+                      omega
+                    · cases a
+                      cases b
+                      cases c
+                      change (3 : ℕ) + (3 + (2 + 0)) = 6 at hsize
+                      omega
+                    · cases a
+                      cases b
+                      cases c
+                      change (3 : ℕ) + (3 + (3 + 0)) = 6 at hsize
+                      omega
+                | cons _ _ => simp at hnum
+
+example : padovanClass.jointCount padovanNumParts 7 3 = 3 := by
+  apply padovanClass_jointCount_padovanNumParts_eq_three_of_unique_triple
+    ([padovanPart2, padovanPart2, padovanPart3] : padovanClass.Obj)
+    ([padovanPart2, padovanPart3, padovanPart2] : padovanClass.Obj)
+    ([padovanPart3, padovanPart2, padovanPart2] : padovanClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rfl
+  · rfl
+  · rfl
+  · intro h
+    injection h with _ htail
+    injection htail with hhead _
+    cases hhead
+  · intro h
+    injection h with hhead _
+    cases hhead
+  · intro h
+    injection h with hhead _
+    cases hhead
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => step23Class.size b + acc) 0 = 7 := by
+      exact (CombinatorialClass.level_mem_iff (C := padovanClass) x).mp hx
+    change x.length = 3 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil => simp at hnum
+            | cons c xs =>
+                cases xs with
+                | nil =>
+                    simp only [List.foldr_cons, List.foldr_nil] at hsize
+                    rcases a with a | a <;> rcases b with b | b <;> rcases c with c | c
+                    · cases a
+                      cases b
+                      cases c
+                      change (2 : ℕ) + (2 + (2 + 0)) = 7 at hsize
+                      omega
+                    · cases a
+                      cases b
+                      cases c
+                      left
+                      rfl
+                    · cases a
+                      cases b
+                      cases c
+                      right
+                      left
+                      rfl
+                    · cases a
+                      cases b
+                      cases c
+                      change (2 : ℕ) + (3 + (3 + 0)) = 7 at hsize
+                      omega
+                    · cases a
+                      cases b
+                      cases c
+                      right
+                      right
+                      rfl
+                    · cases a
+                      cases b
+                      cases c
+                      change (3 : ℕ) + (2 + (3 + 0)) = 7 at hsize
+                      omega
+                    · cases a
+                      cases b
+                      cases c
+                      change (3 : ℕ) + (3 + (2 + 0)) = 7 at hsize
+                      omega
+                    · cases a
+                      cases b
+                      cases c
+                      change (3 : ℕ) + (3 + (3 + 0)) = 7 at hsize
+                      omega
+                | cons _ _ => simp at hnum
