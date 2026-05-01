@@ -56,7 +56,8 @@ theorem dyckPathClass_count (n : ℕ) :
 /-! Sanity checks:
     C₀=1, C₁=1, C₂=2, C₃=5, C₄=14, C₅=42,
     C₆=132, C₇=429, C₈=1430, C₉=4862, C₁₀=16796,
-    C₁₁=58786, C₁₂=208012, C₁₃=742900, C₁₄=2674440. -/
+    C₁₁=58786, C₁₂=208012, C₁₃=742900, C₁₄=2674440,
+    C₁₅=9694845, C₁₆=35357670, C₁₇=129644790, C₁₈=477638700. -/
 
 example : dyckPathClass.count 0 = 1 := by
   rw [dyckPathClass_count]
@@ -101,6 +102,18 @@ example : dyckPathClass.count 13 = 742900 := by
   rw [dyckPathClass_count]
   native_decide
 example : dyckPathClass.count 14 = 2674440 := by
+  rw [dyckPathClass_count]
+  native_decide
+example : dyckPathClass.count 15 = 9694845 := by
+  rw [dyckPathClass_count]
+  native_decide
+example : dyckPathClass.count 16 = 35357670 := by
+  rw [dyckPathClass_count]
+  native_decide
+example : dyckPathClass.count 17 = 129644790 := by
+  rw [dyckPathClass_count]
+  native_decide
+example : dyckPathClass.count 18 = 477638700 := by
   rw [dyckPathClass_count]
   native_decide
 
