@@ -225,3 +225,37 @@ example : labelSetCount posIntClass 4 = (15 : ℚ) := by
     norm_num [Finset.antidiagonal]
   rw [show 4 = 3 + 1 by rfl, Nat.bell_succ']
   norm_num [Finset.antidiagonal, h3]
+
+private lemma bell_three_sanity : Nat.bell 3 = 5 := by
+  rw [show 3 = 2 + 1 by rfl, Nat.bell_succ']
+  norm_num [Finset.antidiagonal]
+
+private lemma bell_four_sanity : Nat.bell 4 = 15 := by
+  rw [show 4 = 3 + 1 by rfl, Nat.bell_succ']
+  norm_num [Finset.antidiagonal, Nat.choose, bell_three_sanity]
+
+private lemma bell_five_sanity : Nat.bell 5 = 52 := by
+  rw [show 5 = 4 + 1 by rfl, Nat.bell_succ']
+  norm_num [Finset.antidiagonal, Nat.choose, bell_three_sanity, bell_four_sanity]
+
+private lemma bell_six_sanity : Nat.bell 6 = 203 := by
+  rw [show 6 = 5 + 1 by rfl, Nat.bell_succ']
+  norm_num [Finset.antidiagonal, Nat.choose, bell_three_sanity, bell_four_sanity,
+    bell_five_sanity]
+
+private lemma bell_seven_sanity : Nat.bell 7 = 877 := by
+  rw [show 7 = 6 + 1 by rfl, Nat.bell_succ']
+  norm_num [Finset.antidiagonal, Nat.choose, bell_three_sanity, bell_four_sanity,
+    bell_five_sanity, bell_six_sanity]
+
+example : labelSetCount posIntClass 5 = (52 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  norm_num [bell_five_sanity]
+
+example : labelSetCount posIntClass 6 = (203 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  norm_num [bell_six_sanity]
+
+example : labelSetCount posIntClass 7 = (877 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  norm_num [bell_seven_sanity]
