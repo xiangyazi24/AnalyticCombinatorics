@@ -644,3 +644,101 @@ theorem stringClass_jointCount_stringNumTrue_symm {n k : ℕ} (hk : k ≤ n) :
       stringClass.jointCount stringNumTrue n (n - k) := by
   rw [stringClass_jointCount_stringNumTrue, stringClass_jointCount_stringNumTrue]
   exact (Nat.choose_symm hk).symm
+
+/-! ## Quaternary strings -/
+
+/-- The 4-letter alphabet: every `Fin 4` is an atom of size 1. -/
+def quatClass : CombinatorialClass where
+  Obj := Fin 4
+  size _ := 1
+  finite_level _ := Set.finite_univ.subset (Set.subset_univ _)
+
+-- Bridge instances so that `Finset quatClass.Obj` is well-behaved.
+instance : DecidableEq quatClass.Obj := inferInstanceAs (DecidableEq (Fin 4))
+instance : Fintype quatClass.Obj := inferInstanceAs (Fintype (Fin 4))
+
+namespace quatClass
+
+/-- All `Fin 4` elements have size 1, so `quatClass.count 0 = 0`. -/
+lemma count_zero : quatClass.count 0 = 0 := by
+  simp only [count]
+  rw [Finset.card_eq_zero]
+  ext a
+  simp only [Finset.notMem_empty, iff_false]
+  intro ha
+  have hsz : quatClass.size a = 0 :=
+    (quatClass.finite_level 0).mem_toFinset.mp ha
+  exact absurd hsz (by show (1 : ℕ) ≠ 0; omega)
+
+/-- There are exactly 4 letters of size 1. -/
+lemma count_one : quatClass.count 1 = 4 := by
+  show (quatClass.level 1).card = 4
+  have h_level : quatClass.level 1 = (Finset.univ : Finset quatClass.Obj) := by
+    ext a
+    constructor
+    · intro _
+      exact Finset.mem_univ a
+    · intro _
+      rw [CombinatorialClass.level_mem_iff]
+      rfl
+  rw [h_level]
+  exact Fintype.card_fin 4
+
+/-- For `k ≠ 1`, no letter has size `k`. -/
+private lemma count_eq_zero_of_ne_one {k : ℕ} (hk : k ≠ 1) :
+    quatClass.count k = 0 := by
+  simp only [count]
+  rw [Finset.card_eq_zero]
+  ext a
+  simp only [Finset.notMem_empty, iff_false]
+  intro ha
+  have hsz : quatClass.size a = k :=
+    (quatClass.finite_level k).mem_toFinset.mp ha
+  exact hk hsz.symm
+
+end quatClass
+
+/-- The class of quaternary strings: finite sequences over a 4-letter alphabet. -/
+noncomputable def quatStringClass : CombinatorialClass :=
+  seqClass quatClass quatClass.count_zero
+
+/-- A quaternary string of length n is a `List (Fin 4)` whose total size is n.
+    There are 4ⁿ such strings. -/
+theorem quatStringClass_count_eq_pow (n : ℕ) :
+    quatStringClass.count n = 4 ^ n := by
+  induction n with
+  | zero =>
+    show (seqClass quatClass _).count 0 = 1
+    rw [seqClass.count_zero]
+  | succ m ih =>
+    show (seqClass quatClass _).count (m + 1) = 4 ^ (m + 1)
+    rw [seqClass.count_succ]
+    rw [Finset.sum_eq_single (1, m)]
+    · show quatClass.count 1 * (seqClass quatClass _).count m = 4 ^ (m + 1)
+      rw [quatClass.count_one]
+      change 4 * quatStringClass.count m = 4 ^ (m + 1)
+      rw [ih, pow_succ]
+      ring
+    · rintro ⟨k, j⟩ hkj hne
+      by_cases hk : k = 1
+      · exfalso
+        subst hk
+        rw [Finset.mem_antidiagonal] at hkj
+        apply hne
+        congr
+        omega
+      · rw [quatClass.count_eq_zero_of_ne_one hk, zero_mul]
+    · intro h
+      exfalso
+      apply h
+      rw [Finset.mem_antidiagonal]
+      omega
+
+/-! Sanity checks: 4⁰ through 4⁶ quaternary strings. -/
+example : quatStringClass.count 0 = 1 := quatStringClass_count_eq_pow 0
+example : quatStringClass.count 1 = 4 := quatStringClass_count_eq_pow 1
+example : quatStringClass.count 2 = 16 := quatStringClass_count_eq_pow 2
+example : quatStringClass.count 3 = 64 := quatStringClass_count_eq_pow 3
+example : quatStringClass.count 4 = 256 := quatStringClass_count_eq_pow 4
+example : quatStringClass.count 5 = 1024 := quatStringClass_count_eq_pow 5
+example : quatStringClass.count 6 = 4096 := quatStringClass_count_eq_pow 6
