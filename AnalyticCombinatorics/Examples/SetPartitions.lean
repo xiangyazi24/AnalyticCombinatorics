@@ -785,3 +785,22 @@ example : Nat.stirlingSecond 4 2 = 7 := by decide
 example : Nat.stirlingSecond 5 3 = 25 := by decide
 example : Nat.stirlingFirst 4 2 = 11 := by decide
 example : Nat.stirlingFirst 5 3 = 35 := by decide
+
+/-- Bell recurrence in the project-facing `range` form.
+
+Mathlib provides the recurrence as `Nat.bell_succ'`, indexed by
+`Finset.antidiagonal`; this is the same identity after reflecting the finite
+sum and using binomial symmetry. -/
+theorem bell_recurrence (n : ℕ) :
+    Nat.bell (n + 1) = ∑ k ∈ Finset.range (n + 1), Nat.choose n k * Nat.bell k := by
+  rw [Nat.bell_succ']
+  rw [Finset.Nat.sum_antidiagonal_eq_sum_range_succ
+    (fun x y => Nat.choose n x * Nat.bell y) n]
+  rw [← Finset.sum_range_reflect (fun k => Nat.choose n k * Nat.bell (n - k)) (n + 1)]
+  apply Finset.sum_congr rfl
+  intro k hk
+  have hk_le : k ≤ n := by
+    exact Nat.le_of_lt_succ (Finset.mem_range.mp hk)
+  simp only [Nat.add_sub_cancel]
+  rw [Nat.sub_sub_self hk_le]
+  rw [Nat.choose_symm hk_le]
