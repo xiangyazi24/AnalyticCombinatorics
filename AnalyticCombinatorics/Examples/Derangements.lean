@@ -141,6 +141,18 @@ example : derangementClass.count 12 = 176214841 := by
   rw [derangementClass_count_eq_numDerangements]
   decide
 
+example : derangementClass.count 13 = 2290792932 := by
+  rw [derangementClass_count_eq_numDerangements]
+  decide
+
+example : derangementClass.count 14 = 32071101049 := by
+  rw [derangementClass_count_eq_numDerangements]
+  decide
+
+example : derangementClass.count 15 = 481066515734 := by
+  rw [derangementClass_count_eq_numDerangements]
+  decide
+
 example (n : ℕ) :
     derangementClass.egf.coeff n = (Nat.numDerangements n : ℚ) / n.factorial := by
   rw [CombinatorialClass.coeff_egf]
