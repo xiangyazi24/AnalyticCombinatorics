@@ -212,3 +212,11 @@ theorem labelSetCount_boolClass (n : ℕ) :
   · intro hn
     exfalso
     exact hn (Finset.mem_range.mpr (Nat.lt_succ_self n))
+
+/-- Direct coefficient form: [zⁿ] stringClass.ogfZ = 2^n. -/
+theorem stringClass_ogfZ_coeff (n : ℕ) :
+    PowerSeries.coeff n (ogfZ stringClass) = (2 ^ n : ℤ) := by
+  unfold ogfZ
+  rw [PowerSeries.coeff_map, coeff_ogf, stringClass_count_eq_pow]
+  push_cast
+  rfl

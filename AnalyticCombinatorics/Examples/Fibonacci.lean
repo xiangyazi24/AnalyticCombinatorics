@@ -179,3 +179,10 @@ theorem fibClass_ogfZ_mul_one_sub_X_sub_X_sq :
         rw [show (fibClass.count (m + 1) : ℤ) = coeff (m + 1) (ogfZ fibClass) by
           simp [ogfZ, coeff_ogf]]
         simp [ogfZ, coeff_ogf, fibClass_count_eq_fib, Nat.fib_add_two]
+
+/-- The OGF of Fibonacci compositions has [zⁿ] = fib(n+1). -/
+theorem fibClass_ogfZ_coeff (n : ℕ) :
+    PowerSeries.coeff n (ogfZ fibClass) = (Nat.fib (n + 1) : ℤ) := by
+  unfold ogfZ
+  rw [PowerSeries.coeff_map, coeff_ogf, fibClass_count_eq_fib]
+  rfl
