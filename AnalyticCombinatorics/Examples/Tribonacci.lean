@@ -269,3 +269,9 @@ theorem tribClass_ogfZ_mul_one_sub_X_sub_X_sq_sub_X_cub :
         = (1 - (PowerSeries.X + PowerSeries.X ^ 2 + PowerSeries.X ^ 3)) *
             ogfZ tribClass := by ring
     _ = 1 := hseq
+
+/-- Tribonacci recurrence for compositions into parts 1, 2, and 3. -/
+theorem tribClass_count_recurrence (n : ℕ) :
+    tribClass.count (n + 3) =
+      tribClass.count (n + 2) + tribClass.count (n + 1) + tribClass.count n := by
+  exact tribClass_count_succ_succ_succ n
