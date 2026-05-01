@@ -412,4 +412,13 @@ example (A B : CombinatorialClass) (n : ℕ) :
     labelProdCount A B n = ∑ p ∈ Finset.antidiagonal n,
       n.choose p.1 * (A.count p.1 * B.count p.2) := rfl
 
+/-- Atom × Atom × Atom OGF = X³. -/
+example : ((Atom.cartProd Atom).cartProd Atom).ogf = PowerSeries.X ^ 3 := by
+  rw [cartProd_ogf, cartProd_ogf, Atom_ogf]
+  ring
+
+/-- Epsilon disjSum Epsilon OGF = 2. -/
+example : (Epsilon.disjSum Epsilon).ogf = 2 := by
+  rw [disjSum_ogf, Epsilon_ogf]; ring
+
 end CombinatorialClass
