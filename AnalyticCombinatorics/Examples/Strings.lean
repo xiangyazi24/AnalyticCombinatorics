@@ -110,3 +110,26 @@ theorem stringClass_count_eq_pow (n : ℕ) : stringClass.count n = 2 ^ n := by
 example : stringClass.count 0 = 1 := stringClass_count_eq_pow 0
 example : stringClass.count 1 = 2 := stringClass_count_eq_pow 1
 example : stringClass.count 3 = 8 := stringClass_count_eq_pow 3
+
+/-- Closed form for the OGF of binary strings: `1 / (1 - 2z)`. -/
+theorem stringClass_ogfZ_mul_one_sub_two_X :
+    ogfZ stringClass * (1 - 2 * PowerSeries.X) = 1 := by
+  rw [show ogfZ stringClass * (1 - 2 * PowerSeries.X) =
+      ogfZ stringClass - 2 * (ogfZ stringClass * PowerSeries.X) by ring]
+  ext n
+  rcases n with _ | m
+  · simp only [map_sub]
+    rw [show coeff 0 (ogfZ stringClass) = (stringClass.count 0 : ℤ) by
+      simp [ogfZ, coeff_ogf]]
+    simp [stringClass_count_eq_pow]
+  · have hshift : coeff (m + 1) (2 * (ogfZ stringClass * PowerSeries.X)) =
+        2 * (stringClass.count m : ℤ) := by
+      rw [show (2 : PowerSeries ℤ) = PowerSeries.C (2 : ℤ) by
+        ext n
+        simp]
+      rw [PowerSeries.coeff_C_mul]
+      rw [PowerSeries.coeff_succ_mul_X]
+      simp [ogfZ, coeff_ogf]
+    rw [map_sub, hshift]
+    simp [ogfZ, coeff_ogf, stringClass_count_eq_pow, pow_succ]
+    ring
