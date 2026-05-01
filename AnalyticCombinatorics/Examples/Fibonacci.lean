@@ -204,6 +204,30 @@ theorem fibClass_ogfZ_coeff (n : ℕ) :
 /-- Number of parts in a fibClass composition. -/
 def fibNumParts : Parameter fibClass := List.length
 
+private abbrev fibPart1 : stepClass.Obj := Sum.inl ()
+private abbrev fibPart2 : stepClass.Obj := Sum.inr ()
+
+private instance : DecidableEq stepClass.Obj := by
+  unfold stepClass CombinatorialClass.disjSum atomOfSize
+  infer_instance
+
+private instance : DecidableEq fibClass.Obj := by
+  unfold fibClass seqClass
+  infer_instance
+
+private lemma fibPart1_size : stepClass.size fibPart1 = 1 := rfl
+private lemma fibPart2_size : stepClass.size fibPart2 = 2 := rfl
+
+private lemma stepClass_obj_eq (x : stepClass.Obj) :
+    x = fibPart1 ∨ x = fibPart2 := by
+  rcases x with x | x
+  · cases x
+    left
+    rfl
+  · cases x
+    right
+    rfl
+
 private lemma fibClass_jointCount_fibNumParts_eq_one_of_unique
     {n k : ℕ} (x₀ : fibClass.Obj)
     (hx₀ : x₀ ∈ fibClass.level n)
@@ -223,7 +247,100 @@ private lemma fibClass_jointCount_fibNumParts_eq_one_of_unique
     subst hx
     exact ⟨hx₀, hnum₀⟩
 
-/-- Sanity: small jointCount values. -/
+private lemma fibClass_jointCount_fibNumParts_eq_two_of_unique_pair
+    {n k : ℕ} (x₁ x₂ : fibClass.Obj)
+    (hx₁ : x₁ ∈ fibClass.level n)
+    (hx₂ : x₂ ∈ fibClass.level n)
+    (hnum₁ : fibNumParts x₁ = k)
+    (hnum₂ : fibNumParts x₂ = k)
+    (hne : x₁ ≠ x₂)
+    (huniq : ∀ x : fibClass.Obj,
+      x ∈ fibClass.level n → fibNumParts x = k → x = x₁ ∨ x = x₂) :
+    fibClass.jointCount fibNumParts n k = 2 := by
+  classical
+  unfold CombinatorialClass.jointCount
+  rw [Finset.card_eq_two]
+  refine ⟨x₁, x₂, hne, ?_⟩
+  ext x
+  rw [Finset.mem_filter]
+  simp only [Finset.mem_insert, Finset.mem_singleton]
+  constructor
+  · intro hx
+    exact huniq x hx.1 hx.2
+  · intro hx
+    rcases hx with rfl | rfl
+    · exact ⟨hx₁, hnum₁⟩
+    · exact ⟨hx₂, hnum₂⟩
+
+private lemma fibClass_jointCount_fibNumParts_eq_three_of_unique_triple
+    {n k : ℕ} (x₁ x₂ x₃ : fibClass.Obj)
+    (hx₁ : x₁ ∈ fibClass.level n)
+    (hx₂ : x₂ ∈ fibClass.level n)
+    (hx₃ : x₃ ∈ fibClass.level n)
+    (hnum₁ : fibNumParts x₁ = k)
+    (hnum₂ : fibNumParts x₂ = k)
+    (hnum₃ : fibNumParts x₃ = k)
+    (hne₁₂ : x₁ ≠ x₂)
+    (hne₁₃ : x₁ ≠ x₃)
+    (hne₂₃ : x₂ ≠ x₃)
+    (huniq : ∀ x : fibClass.Obj,
+      x ∈ fibClass.level n → fibNumParts x = k →
+        x = x₁ ∨ x = x₂ ∨ x = x₃) :
+    fibClass.jointCount fibNumParts n k = 3 := by
+  classical
+  unfold CombinatorialClass.jointCount
+  rw [Finset.card_eq_three]
+  refine ⟨x₁, x₂, x₃, hne₁₂, hne₁₃, hne₂₃, ?_⟩
+  ext x
+  rw [Finset.mem_filter]
+  simp only [Finset.mem_insert, Finset.mem_singleton]
+  constructor
+  · intro hx
+    exact huniq x hx.1 hx.2
+  · intro hx
+    rcases hx with rfl | rfl | rfl
+    · exact ⟨hx₁, hnum₁⟩
+    · exact ⟨hx₂, hnum₂⟩
+    · exact ⟨hx₃, hnum₃⟩
+
+private lemma fibClass_jointCount_fibNumParts_eq_four_of_unique_quad
+    {n k : ℕ} (x₁ x₂ x₃ x₄ : fibClass.Obj)
+    (hx₁ : x₁ ∈ fibClass.level n)
+    (hx₂ : x₂ ∈ fibClass.level n)
+    (hx₃ : x₃ ∈ fibClass.level n)
+    (hx₄ : x₄ ∈ fibClass.level n)
+    (hnum₁ : fibNumParts x₁ = k)
+    (hnum₂ : fibNumParts x₂ = k)
+    (hnum₃ : fibNumParts x₃ = k)
+    (hnum₄ : fibNumParts x₄ = k)
+    (hne₁₂ : x₁ ≠ x₂)
+    (hne₁₃ : x₁ ≠ x₃)
+    (hne₁₄ : x₁ ≠ x₄)
+    (hne₂₃ : x₂ ≠ x₃)
+    (hne₂₄ : x₂ ≠ x₄)
+    (hne₃₄ : x₃ ≠ x₄)
+    (huniq : ∀ x : fibClass.Obj,
+      x ∈ fibClass.level n → fibNumParts x = k →
+        x = x₁ ∨ x = x₂ ∨ x = x₃ ∨ x = x₄) :
+    fibClass.jointCount fibNumParts n k = 4 := by
+  classical
+  unfold CombinatorialClass.jointCount
+  rw [Finset.card_eq_four]
+  refine ⟨x₁, x₂, x₃, x₄, hne₁₂, hne₁₃, hne₁₄, hne₂₃, hne₂₄, hne₃₄, ?_⟩
+  ext x
+  rw [Finset.mem_filter]
+  simp only [Finset.mem_insert, Finset.mem_singleton]
+  constructor
+  · intro hx
+    exact huniq x hx.1 hx.2
+  · intro hx
+    rcases hx with rfl | rfl | rfl | rfl
+    · exact ⟨hx₁, hnum₁⟩
+    · exact ⟨hx₂, hnum₂⟩
+    · exact ⟨hx₃, hnum₃⟩
+    · exact ⟨hx₄, hnum₄⟩
+
+/-- Sanity: small jointCount values by number of parts. -/
 example : fibClass.jointCount fibNumParts 0 0 = 1 := by
   apply fibClass_jointCount_fibNumParts_eq_one_of_unique ([] : fibClass.Obj)
   · rw [CombinatorialClass.level_mem_iff]
@@ -330,6 +447,320 @@ example : fibClass.jointCount fibNumParts 2 2 = 1 := by
                     omega
             | cons c xs =>
                 simp at hnum
+
+example : fibClass.jointCount fibNumParts 3 2 = 2 := by
+  apply fibClass_jointCount_fibNumParts_eq_two_of_unique_pair
+    ([fibPart1, fibPart2] : fibClass.Obj)
+    ([fibPart2, fibPart1] : fibClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · decide
+  · decide
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => stepClass.size b + acc) 0 = 3 := by
+      exact (CombinatorialClass.level_mem_iff (C := fibClass) x).mp hx
+    change x.length = 2 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil =>
+                simp only [List.foldr_cons, List.foldr_nil] at hsize
+                rcases stepClass_obj_eq a with rfl | rfl <;>
+                  rcases stepClass_obj_eq b with rfl | rfl
+                all_goals
+                  first
+                  | left; rfl
+                  | right; rfl
+                  | norm_num [fibPart1_size, fibPart2_size] at hsize
+            | cons _ _ => simp at hnum
+
+example : fibClass.jointCount fibNumParts 3 3 = 1 := by
+  apply fibClass_jointCount_fibNumParts_eq_one_of_unique
+    ([fibPart1, fibPart1, fibPart1] : fibClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => stepClass.size b + acc) 0 = 3 := by
+      exact (CombinatorialClass.level_mem_iff (C := fibClass) x).mp hx
+    change x.length = 3 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil => simp at hnum
+            | cons c xs =>
+                cases xs with
+                | nil =>
+                    simp only [List.foldr_cons, List.foldr_nil] at hsize
+                    rcases stepClass_obj_eq a with rfl | rfl <;>
+                      rcases stepClass_obj_eq b with rfl | rfl <;>
+                        rcases stepClass_obj_eq c with rfl | rfl
+                    all_goals
+                      first
+                      | rfl
+                      | norm_num [fibPart1_size, fibPart2_size] at hsize
+                | cons _ _ => simp at hnum
+
+example : fibClass.jointCount fibNumParts 4 2 = 1 := by
+  apply fibClass_jointCount_fibNumParts_eq_one_of_unique
+    ([fibPart2, fibPart2] : fibClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => stepClass.size b + acc) 0 = 4 := by
+      exact (CombinatorialClass.level_mem_iff (C := fibClass) x).mp hx
+    change x.length = 2 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil =>
+                simp only [List.foldr_cons, List.foldr_nil] at hsize
+                rcases stepClass_obj_eq a with rfl | rfl <;>
+                  rcases stepClass_obj_eq b with rfl | rfl
+                all_goals
+                  first
+                  | rfl
+                  | norm_num [fibPart1_size, fibPart2_size] at hsize
+            | cons _ _ => simp at hnum
+
+example : fibClass.jointCount fibNumParts 4 3 = 3 := by
+  apply fibClass_jointCount_fibNumParts_eq_three_of_unique_triple
+    ([fibPart1, fibPart1, fibPart2] : fibClass.Obj)
+    ([fibPart1, fibPart2, fibPart1] : fibClass.Obj)
+    ([fibPart2, fibPart1, fibPart1] : fibClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · decide
+  · decide
+  · decide
+  · decide
+  · decide
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => stepClass.size b + acc) 0 = 4 := by
+      exact (CombinatorialClass.level_mem_iff (C := fibClass) x).mp hx
+    change x.length = 3 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil => simp at hnum
+            | cons c xs =>
+                cases xs with
+                | nil =>
+                    simp only [List.foldr_cons, List.foldr_nil] at hsize
+                    rcases stepClass_obj_eq a with rfl | rfl <;>
+                      rcases stepClass_obj_eq b with rfl | rfl <;>
+                        rcases stepClass_obj_eq c with rfl | rfl
+                    all_goals
+                      first
+                      | left; rfl
+                      | right; left; rfl
+                      | right; right; rfl
+                      | norm_num [fibPart1_size, fibPart2_size] at hsize
+                | cons _ _ => simp at hnum
+
+example : fibClass.jointCount fibNumParts 4 4 = 1 := by
+  apply fibClass_jointCount_fibNumParts_eq_one_of_unique
+    ([fibPart1, fibPart1, fibPart1, fibPart1] : fibClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => stepClass.size b + acc) 0 = 4 := by
+      exact (CombinatorialClass.level_mem_iff (C := fibClass) x).mp hx
+    change x.length = 4 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil => simp at hnum
+            | cons c xs =>
+                cases xs with
+                | nil => simp at hnum
+                | cons d xs =>
+                    cases xs with
+                    | nil =>
+                        simp only [List.foldr_cons, List.foldr_nil] at hsize
+                        rcases stepClass_obj_eq a with rfl | rfl <;>
+                          rcases stepClass_obj_eq b with rfl | rfl <;>
+                            rcases stepClass_obj_eq c with rfl | rfl <;>
+                              rcases stepClass_obj_eq d with rfl | rfl
+                        all_goals
+                          first
+                          | rfl
+                          | norm_num [fibPart1_size, fibPart2_size] at hsize
+                    | cons _ _ => simp at hnum
+
+example : fibClass.jointCount fibNumParts 5 3 = 3 := by
+  apply fibClass_jointCount_fibNumParts_eq_three_of_unique_triple
+    ([fibPart1, fibPart2, fibPart2] : fibClass.Obj)
+    ([fibPart2, fibPart1, fibPart2] : fibClass.Obj)
+    ([fibPart2, fibPart2, fibPart1] : fibClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · decide
+  · decide
+  · decide
+  · decide
+  · decide
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => stepClass.size b + acc) 0 = 5 := by
+      exact (CombinatorialClass.level_mem_iff (C := fibClass) x).mp hx
+    change x.length = 3 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil => simp at hnum
+            | cons c xs =>
+                cases xs with
+                | nil =>
+                    simp only [List.foldr_cons, List.foldr_nil] at hsize
+                    rcases stepClass_obj_eq a with rfl | rfl <;>
+                      rcases stepClass_obj_eq b with rfl | rfl <;>
+                        rcases stepClass_obj_eq c with rfl | rfl
+                    all_goals
+                      first
+                      | left; rfl
+                      | right; left; rfl
+                      | right; right; rfl
+                      | norm_num [fibPart1_size, fibPart2_size] at hsize
+                | cons _ _ => simp at hnum
+
+example : fibClass.jointCount fibNumParts 5 4 = 4 := by
+  apply fibClass_jointCount_fibNumParts_eq_four_of_unique_quad
+    ([fibPart1, fibPart1, fibPart1, fibPart2] : fibClass.Obj)
+    ([fibPart1, fibPart1, fibPart2, fibPart1] : fibClass.Obj)
+    ([fibPart1, fibPart2, fibPart1, fibPart1] : fibClass.Obj)
+    ([fibPart2, fibPart1, fibPart1, fibPart1] : fibClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · decide
+  · decide
+  · decide
+  · decide
+  · decide
+  · decide
+  · decide
+  · decide
+  · decide
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => stepClass.size b + acc) 0 = 5 := by
+      exact (CombinatorialClass.level_mem_iff (C := fibClass) x).mp hx
+    change x.length = 4 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil => simp at hnum
+            | cons c xs =>
+                cases xs with
+                | nil => simp at hnum
+                | cons d xs =>
+                    cases xs with
+                    | nil =>
+                        simp only [List.foldr_cons, List.foldr_nil] at hsize
+                        rcases stepClass_obj_eq a with rfl | rfl <;>
+                          rcases stepClass_obj_eq b with rfl | rfl <;>
+                            rcases stepClass_obj_eq c with rfl | rfl <;>
+                              rcases stepClass_obj_eq d with rfl | rfl
+                        all_goals
+                          first
+                          | left; rfl
+                          | right; left; rfl
+                          | right; right; left; rfl
+                          | right; right; right; rfl
+                          | norm_num [fibPart1_size, fibPart2_size] at hsize
+                    | cons _ _ => simp at hnum
+
+example : fibClass.jointCount fibNumParts 5 5 = 1 := by
+  apply fibClass_jointCount_fibNumParts_eq_one_of_unique
+    ([fibPart1, fibPart1, fibPart1, fibPart1, fibPart1] : fibClass.Obj)
+  · rw [CombinatorialClass.level_mem_iff]
+    rfl
+  · decide
+  · intro x hx hnum
+    have hsize : x.foldr (fun b acc => stepClass.size b + acc) 0 = 5 := by
+      exact (CombinatorialClass.level_mem_iff (C := fibClass) x).mp hx
+    change x.length = 5 at hnum
+    cases x with
+    | nil => simp at hnum
+    | cons a xs =>
+        cases xs with
+        | nil => simp at hnum
+        | cons b xs =>
+            cases xs with
+            | nil => simp at hnum
+            | cons c xs =>
+                cases xs with
+                | nil => simp at hnum
+                | cons d xs =>
+                    cases xs with
+                    | nil => simp at hnum
+                    | cons e xs =>
+                        cases xs with
+                        | nil =>
+                            simp only [List.foldr_cons, List.foldr_nil] at hsize
+                            rcases stepClass_obj_eq a with rfl | rfl <;>
+                              rcases stepClass_obj_eq b with rfl | rfl <;>
+                                rcases stepClass_obj_eq c with rfl | rfl <;>
+                                  rcases stepClass_obj_eq d with rfl | rfl <;>
+                                    rcases stepClass_obj_eq e with rfl | rfl
+                            all_goals
+                              first
+                              | rfl
+                              | norm_num [fibPart1_size, fibPart2_size] at hsize
+                        | cons _ _ => simp at hnum
+
+example :
+    ∑ k ∈ (fibClass.level 5).image fibNumParts, fibClass.jointCount fibNumParts 5 k = 8 := by
+  rw [CombinatorialClass.jointCount_sum_eq_count, fibClass_count_eq_fib]
+  decide
 
 example (n : ℕ) :
     fibClass.egf.coeff n = (Nat.fib (n + 1) : ℚ) / n.factorial := by
