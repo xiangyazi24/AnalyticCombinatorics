@@ -1072,6 +1072,18 @@ example : compositionClass.count 21 = 1048576 := by
   rw [compositionClass_count_succ]
   decide
 
+example : compositionClass.count 22 = 2097152 := by
+  rw [compositionClass_count_succ]
+  decide
+
+example : compositionClass.count 23 = 4194304 := by
+  rw [compositionClass_count_succ]
+  decide
+
+example : compositionClass.count 24 = 8388608 := by
+  rw [compositionClass_count_succ]
+  decide
+
 example : compositionGe2Class.count 8 = 13 := by
   rw [compositionGe2Class_count_succ_succ]
   decide
@@ -1125,5 +1137,17 @@ example : compositionGe2Class.count 20 = 4181 := by
   decide
 
 example : compositionGe2Class.count 21 = 6765 := by
+  rw [compositionGe2Class_count_succ_succ]
+  decide
+
+example : compositionGe2Class.count 22 = 10946 := by
+  rw [compositionGe2Class_count_succ_succ]
+  decide
+
+example : compositionGe2Class.count 23 = 17711 := by
+  rw [compositionGe2Class_count_succ_succ]
+  decide
+
+example : compositionGe2Class.count 24 = 28657 := by
   rw [compositionGe2Class_count_succ_succ]
   decide

@@ -117,3 +117,18 @@ set_option linter.style.nativeDecide false in
 example : surjectionClass.count 20 = 2677687796244384203115 := by
   rw [surjectionClass_count_eq_fubini]
   native_decide
+
+set_option linter.style.nativeDecide false in
+example : surjectionClass.count 21 = 81124824998504073881821 := by
+  rw [surjectionClass_count_eq_fubini]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : surjectionClass.count 22 = 2574844419803190384544203 := by
+  rw [surjectionClass_count_eq_fubini]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : surjectionClass.count 23 = 85438451336745709294580413 := by
+  rw [surjectionClass_count_eq_fubini]
+  native_decide

@@ -273,3 +273,15 @@ example : noConsecOnesClass.count 20 = 17711 := by
 example : noConsecOnesClass.count 21 = 28657 := by
   rw [noConsecOnesClass_count_eq_fib]
   decide
+
+example : noConsecOnesClass.count 22 = 46368 := by
+  rw [noConsecOnesClass_count_eq_fib]
+  decide
+
+example : noConsecOnesClass.count 23 = 75025 := by
+  rw [noConsecOnesClass_count_eq_fib]
+  decide
+
+example : noConsecOnesClass.count 24 = 121393 := by
+  rw [noConsecOnesClass_count_eq_fib]
+  decide
