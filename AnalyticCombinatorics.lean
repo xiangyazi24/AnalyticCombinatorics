@@ -67,6 +67,7 @@ import AnalyticCombinatorics.PartA.Ch3.PermutationStatistics
 import AnalyticCombinatorics.PartA.Ch3.ProbabilityGF
 import AnalyticCombinatorics.PartA.Ch3.CombinatoricsOnWords
 import AnalyticCombinatorics.PartA.Ch3.CentralLimitTheorems
+import AnalyticCombinatorics.PartA.Ch3.LatticePathMethods
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -77,12 +78,14 @@ import AnalyticCombinatorics.PartB.Ch4.FormalPowerSeries
 import AnalyticCombinatorics.PartB.Ch4.ComplexAnalysisBasics
 import AnalyticCombinatorics.PartB.Ch4.AnalyticContinuation
 import AnalyticCombinatorics.PartB.Ch4.AsymptoticExpansions
+import AnalyticCombinatorics.PartB.Ch4.RecurrenceRelations
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.DigitalTrees
 import AnalyticCombinatorics.PartB.Ch5.ContextFreeGrammars
 import AnalyticCombinatorics.PartB.Ch5.SpecialFunctions
+import AnalyticCombinatorics.PartB.Ch5.ResidueCalculus
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
@@ -94,6 +97,7 @@ import AnalyticCombinatorics.PartB.Ch6.SingularityTypes
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
+import AnalyticCombinatorics.PartB.Ch7.AnalyticInequalities
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
@@ -104,6 +108,7 @@ import AnalyticCombinatorics.PartB.Ch9.Depoissonization
 import AnalyticCombinatorics.PartB.Ch9.LargePowers
 import AnalyticCombinatorics.PartB.Ch9.RandomAllocations
 import AnalyticCombinatorics.PartB.Ch9.PolyaEnumeration
+import AnalyticCombinatorics.PartB.Ch9.EntropyInformation
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
