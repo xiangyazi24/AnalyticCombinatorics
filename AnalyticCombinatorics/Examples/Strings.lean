@@ -864,6 +864,9 @@ example : stringClass.count 12 = 4096 := stringClass_count_eq_pow 12
 example : stringClass.count 13 = 8192 := stringClass_count_eq_pow 13
 example : stringClass.count 14 = 16384 := stringClass_count_eq_pow 14
 example : stringClass.count 15 = 32768 := stringClass_count_eq_pow 15
+example : stringClass.count 18 = 262144 := stringClass_count_eq_pow 18
+example : stringClass.count 19 = 524288 := stringClass_count_eq_pow 19
+example : stringClass.count 20 = 1048576 := stringClass_count_eq_pow 20
 
 example : ternaryStringClass.count 7 = 2187 := ternaryStringClass_count_eq_pow 7
 example : ternaryStringClass.count 8 = 6561 := ternaryStringClass_count_eq_pow 8
@@ -874,9 +877,15 @@ example : ternaryStringClass.count 12 = 531441 := ternaryStringClass_count_eq_po
 example : ternaryStringClass.count 13 = 1594323 := ternaryStringClass_count_eq_pow 13
 example : ternaryStringClass.count 14 = 4782969 := ternaryStringClass_count_eq_pow 14
 example : ternaryStringClass.count 15 = 14348907 := ternaryStringClass_count_eq_pow 15
+example : ternaryStringClass.count 18 = 387420489 := ternaryStringClass_count_eq_pow 18
+example : ternaryStringClass.count 19 = 1162261467 := ternaryStringClass_count_eq_pow 19
+example : ternaryStringClass.count 20 = 3486784401 := ternaryStringClass_count_eq_pow 20
 
 example : quatStringClass.count 11 = 4194304 := quatStringClass_count_eq_pow 11
 example : quatStringClass.count 12 = 16777216 := quatStringClass_count_eq_pow 12
 example : quatStringClass.count 13 = 67108864 := quatStringClass_count_eq_pow 13
 example : quatStringClass.count 14 = 268435456 := quatStringClass_count_eq_pow 14
 example : quatStringClass.count 15 = 1073741824 := quatStringClass_count_eq_pow 15
+example : quatStringClass.count 18 = 68719476736 := quatStringClass_count_eq_pow 18
+example : quatStringClass.count 19 = 274877906944 := quatStringClass_count_eq_pow 19
+example : quatStringClass.count 20 = 1099511627776 := quatStringClass_count_eq_pow 20

@@ -194,30 +194,51 @@ set_option linter.style.nativeDecide false
 
 example : planeTreeClass.count 13 = 742900 := by
   rw [planeTreeClass_count]
+  rw [_root_.catalan_eq_centralBinom_div]
   native_decide
 example : planeTreeClass.count 14 = 2674440 := by
   rw [planeTreeClass_count]
+  rw [_root_.catalan_eq_centralBinom_div]
   native_decide
 example : planeTreeClass.count 15 = 9694845 := by
   rw [planeTreeClass_count]
+  rw [_root_.catalan_eq_centralBinom_div]
   native_decide
 example : planeTreeClass.count 16 = 35357670 := by
   rw [planeTreeClass_count]
+  rw [_root_.catalan_eq_centralBinom_div]
   native_decide
 example : planeTreeClass.count 17 = 129644790 := by
   rw [planeTreeClass_count]
+  rw [_root_.catalan_eq_centralBinom_div]
   native_decide
 example : planeTreeClass.count 18 = 477638700 := by
   rw [planeTreeClass_count]
+  rw [_root_.catalan_eq_centralBinom_div]
   native_decide
 example : planeTreeClass.count 19 = 1767263190 := by
   rw [planeTreeClass_count]
+  rw [_root_.catalan_eq_centralBinom_div]
   native_decide
 example : planeTreeClass.count 20 = 6564120420 := by
   rw [planeTreeClass_count]
+  rw [_root_.catalan_eq_centralBinom_div]
   native_decide
 example : planeTreeClass.count 21 = 24466267020 := by
   rw [planeTreeClass_count]
+  rw [_root_.catalan_eq_centralBinom_div]
+  native_decide
+example : planeTreeClass.count 22 = 91482563640 := by
+  rw [planeTreeClass_count]
+  rw [_root_.catalan_eq_centralBinom_div]
+  native_decide
+example : planeTreeClass.count 23 = 343059613650 := by
+  rw [planeTreeClass_count]
+  rw [_root_.catalan_eq_centralBinom_div]
+  native_decide
+example : planeTreeClass.count 24 = 1289904147324 := by
+  rw [planeTreeClass_count]
+  rw [_root_.catalan_eq_centralBinom_div]
   native_decide
 
 end

@@ -58,7 +58,8 @@ theorem dyckPathClass_count (n : ℕ) :
     C₆=132, C₇=429, C₈=1430, C₉=4862, C₁₀=16796,
     C₁₁=58786, C₁₂=208012, C₁₃=742900, C₁₄=2674440,
     C₁₅=9694845, C₁₆=35357670, C₁₇=129644790, C₁₈=477638700,
-    C₁₉=1767263190, C₂₀=6564120420, C₂₁=24466267020. -/
+    C₁₉=1767263190, C₂₀=6564120420, C₂₁=24466267020,
+    C₂₂=91482563640, C₂₃=343059613650, C₂₄=1289904147324. -/
 
 example : dyckPathClass.count 0 = 1 := by
   rw [dyckPathClass_count]
@@ -145,6 +146,18 @@ example : dyckPathClass.count 20 = 6564120420 := by
   rw [_root_.catalan_eq_centralBinom_div]
   native_decide
 example : dyckPathClass.count 21 = 24466267020 := by
+  rw [dyckPathClass_count]
+  rw [_root_.catalan_eq_centralBinom_div]
+  native_decide
+example : dyckPathClass.count 22 = 91482563640 := by
+  rw [dyckPathClass_count]
+  rw [_root_.catalan_eq_centralBinom_div]
+  native_decide
+example : dyckPathClass.count 23 = 343059613650 := by
+  rw [dyckPathClass_count]
+  rw [_root_.catalan_eq_centralBinom_div]
+  native_decide
+example : dyckPathClass.count 24 = 1289904147324 := by
   rw [dyckPathClass_count]
   rw [_root_.catalan_eq_centralBinom_div]
   native_decide
