@@ -88,10 +88,22 @@ Bell 28, OddComp 27, Surj 26, Derange 30, Strings 25 — 全部验证通过。
 | PartA/Ch1/SchroederTheory.lean | 79 | 大 Schröder 数 S=1+zS+zS², sanity 1,2,6,22,90 |
 | PartA/Ch2/SetCycleOps.lean | 211 | SET/CYCLE EGF operators, involutions |
 
-### Chapter Theory Batch 4 进行中（5 tasks dispatched）
+### Chapter Theory Batch 4 已提交（2026-05-02）
 
-- task-catalan-bijections: Catalan family = same sequence 验证
-- task-bell-numbers: Bell numbers + Stirling2 递推
-- task-rational-gf: Part B Ch4 rational GF + linear recurrence
-- task-ch3-mgf: Moments, leaf count in binary trees
-- task-unlabelled-structures: Necklace counting (Burnside)
+| 文件 | 行数 | 内容 |
+|------|------|------|
+| PartA/Ch1/CatalanBijections.lean | 94 | Catalan family count equivalence (binary ↔ plane ↔ Dyck) |
+| PartA/Ch1/UnlabelledStructures.lean | 92 | Unlabelled OGF transfer lemmas |
+| PartA/Ch2/BellNumbers.lean | 82 | Bell number recursion + sanity 1,1,2,5,15,52 |
+| PartA/Ch3/Moments.lean | 117 | Moment/variance parameter framework |
+| PartB/Ch4/RationalGF.lean | 72 | Partial fraction + geometric coeff |
+
+Also fixed: SchroederTheory (subtype sum termination), TransferTheorems (motzkinNumber same fix), Surjections (EGF extension).
+
+### Chapter Theory Batch 5 进行中（5 tasks dispatched, 2026-05-02）
+
+- task-involutions: Ch2 involution count + recursion + EGF statement
+- task-meromorphic-gf: Ch4 rational coeff formula + linear recurrence
+- task-general-trees: t-ary tree Fuss-Catalan counts
+- task-singularity-asymptotics: Ch6 exponential growth verification
+- task-cycle-index: Unsigned Stirling 1st kind + row sums = n!
