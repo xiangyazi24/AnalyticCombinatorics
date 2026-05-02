@@ -8,7 +8,6 @@ import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 import AnalyticCombinatorics.PartA.Ch1.Trees
 
 set_option linter.style.nativeDecide false
-set_option linter.flexible false
 
 open PowerSeries CombinatorialClass
 
@@ -74,6 +73,7 @@ theorem catalan_upper_4n (n : ℕ) (hn : 1 ≤ n) : binaryTreeClass.count n < 4 
   rw [algebraic_binaryTreeClass_count_eq_catalan, _root_.catalan_eq_centralBinom_div]
   exact lt_of_le_of_lt (Nat.div_le_self _ _) (Nat.centralBinom_lt_four_pow (by omega))
 
+set_option linter.flexible false in
 /-- The upper bound `C_n < 4^n`, verified directly for `n = 1, ..., 20`. -/
 theorem catalan_upper_4n_1_20 :
     ∀ n ∈ Finset.Icc 1 20, binaryTreeClass.count n < 4 ^ n := by
@@ -81,6 +81,7 @@ theorem catalan_upper_4n_1_20 :
   rcases Finset.mem_Icc.mp hn with ⟨hnlo, hnhi⟩
   interval_cases n <;> simp [algebraic_catalan_formula] <;> native_decide
 
+set_option linter.flexible false in
 /-- The scaled Catalan ratios `C_n (n+1) / 4^n` decrease on `n = 1, ..., 15`,
 written as integer cross-multiplied inequalities. -/
 theorem catalan_scaled_ratio_decreasing_1_15 :
@@ -91,6 +92,7 @@ theorem catalan_scaled_ratio_decreasing_1_15 :
   rcases Finset.mem_Icc.mp hn with ⟨hnlo, hnhi⟩
   interval_cases n <;> simp [algebraic_catalan_formula] <;> native_decide
 
+set_option linter.flexible false in
 /-- The scaled Catalan ratios are positive and at most `1`, represented without
 rational division by `0 < C_n(n+1) ≤ 4^n`, for `n = 1, ..., 15`. -/
 theorem catalan_scaled_ratio_bounded_1_15 :
