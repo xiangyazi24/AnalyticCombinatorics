@@ -12,6 +12,7 @@ import AnalyticCombinatorics.PartA.Ch1.PlaneTrees
 import AnalyticCombinatorics.PartA.Ch1.MotzkinTrees
 import AnalyticCombinatorics.PartA.Ch1.SchroederTheory
 import AnalyticCombinatorics.PartA.Ch1.StringsTheory
+import AnalyticCombinatorics.PartA.Ch1.WordPatterns
 import AnalyticCombinatorics.PartA.Ch1.Newton
 import AnalyticCombinatorics.PartA.Ch1.IntPartTheory
 import AnalyticCombinatorics.PartA.Ch1.LatticePaths
@@ -42,7 +43,7 @@ import AnalyticCombinatorics.PartB.Ch6.Asymptotics
 import AnalyticCombinatorics.PartB.Ch6.DeltaDomain
 import AnalyticCombinatorics.PartB.Ch6.TransferTheorems
 -- import AnalyticCombinatorics.PartB.Ch7.Applications     -- todo
--- import AnalyticCombinatorics.PartB.Ch8.SaddlePoint      -- todo
+import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples                               │
