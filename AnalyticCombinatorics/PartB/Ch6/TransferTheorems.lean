@@ -125,17 +125,20 @@ noncomputable def exponentialGrowthRate (f : ℕ → ℕ) : ℝ :=
     (fun n : ℕ => ENNReal.ofReal ((f (n + 1) : ℝ) ^ (1 / ((n + 1 : ℕ) : ℝ))))
     atTop).toReal
 
-/-- A compact recursive definition of the Motzkin numbers. -/
+/-- The Motzkin numbers: 1, 1, 2, 4, 9, 21, ... -/
 def motzkinNumber : ℕ → ℕ
   | 0 => 1
   | 1 => 1
   | n + 2 =>
       motzkinNumber (n + 1) +
-        ∑ p ∈ Finset.antidiagonal n, motzkinNumber p.1 * motzkinNumber p.2
+        ∑ i : (Finset.range (n + 1) : Set ℕ),
+          motzkinNumber i.1 * motzkinNumber (n - i.1)
 termination_by n => n
 decreasing_by
+  all_goals simp_wf
   all_goals
-    simp_wf
+    try
+      have hi := Finset.mem_range.mp (show i.1 ∈ Finset.range (n + 1) from i.2)
     omega
 
 /-- Fibonacci counts in the ordinary-combinatorics convention used by compositions:
