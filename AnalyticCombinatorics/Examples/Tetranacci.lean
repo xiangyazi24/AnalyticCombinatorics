@@ -480,10 +480,40 @@ private lemma tetraClass_count_twentyfive : tetraClass.count 25 = 7555935 := by
         tetraClass_count_twentytwo, tetraClass_count_twentyone]
     _ = 7555935 := by decide
 
+private lemma tetraClass_count_twentysix : tetraClass.count 26 = 14564533 := by
+  calc
+    tetraClass.count 26 =
+        tetraClass.count 25 + tetraClass.count 24 + tetraClass.count 23 + tetraClass.count 22 :=
+      tetraClass_count_succ_succ_succ_succ 22
+    _ = 7555935 + 3919944 + 2033628 + 1055026 := by
+      rw [tetraClass_count_twentyfive, tetraClass_count_twentyfour,
+        tetraClass_count_twentythree, tetraClass_count_twentytwo]
+    _ = 14564533 := by decide
+
+private lemma tetraClass_count_twentyseven : tetraClass.count 27 = 28074040 := by
+  calc
+    tetraClass.count 27 =
+        tetraClass.count 26 + tetraClass.count 25 + tetraClass.count 24 + tetraClass.count 23 :=
+      tetraClass_count_succ_succ_succ_succ 23
+    _ = 14564533 + 7555935 + 3919944 + 2033628 := by
+      rw [tetraClass_count_twentysix, tetraClass_count_twentyfive,
+        tetraClass_count_twentyfour, tetraClass_count_twentythree]
+    _ = 28074040 := by decide
+
+private lemma tetraClass_count_twentyeight : tetraClass.count 28 = 54114452 := by
+  calc
+    tetraClass.count 28 =
+        tetraClass.count 27 + tetraClass.count 26 + tetraClass.count 25 + tetraClass.count 24 :=
+      tetraClass_count_succ_succ_succ_succ 24
+    _ = 28074040 + 14564533 + 7555935 + 3919944 := by
+      rw [tetraClass_count_twentyseven, tetraClass_count_twentysix,
+        tetraClass_count_twentyfive, tetraClass_count_twentyfour]
+    _ = 54114452 := by decide
+
 /-! Sanity checks:
   1, 1, 2, 4, 8, 15, 29, 56, 108, 208, 401, 773, 1490, 2872, 5536, 10671,
   20569, 39648, 76424, 147312, 283953, 547337, 1055026, 2033628, 3919944,
-  7555935. -/
+  7555935, 14564533, 28074040, 54114452. -/
 example : tetraClass.count 0 = 1 := by
   calc
     tetraClass.count 0 = 1 := tetraClass_count_zero
@@ -613,6 +643,21 @@ example : tetraClass.count 25 = 7555935 := by
   calc
     tetraClass.count 25 = 7555935 := tetraClass_count_twentyfive
     _ = 7555935 := by decide
+
+example : tetraClass.count 26 = 14564533 := by
+  calc
+    tetraClass.count 26 = 14564533 := tetraClass_count_twentysix
+    _ = 14564533 := by decide
+
+example : tetraClass.count 27 = 28074040 := by
+  calc
+    tetraClass.count 27 = 28074040 := tetraClass_count_twentyseven
+    _ = 28074040 := by decide
+
+example : tetraClass.count 28 = 54114452 := by
+  calc
+    tetraClass.count 28 = 54114452 := tetraClass_count_twentyeight
+    _ = 54114452 := by decide
 
 /-- The OGF for a single part of size 1, 2, 3, or 4 is `z + z^2 + z^3 + z^4`. -/
 private lemma step1234Class_ogfZ :

@@ -959,3 +959,13 @@ set_option linter.style.nativeDecide false in
 example : labelSetCount posIntClass 23 = (44152005855084346 : ℚ) := by
   rw [labelSetCount_posIntClass_eq_bell]
   native_decide
+
+set_option linter.style.nativeDecide false in
+example : labelSetCount posIntClass 24 = (445958869294805289 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : labelSetCount posIntClass 25 = (4638590332229999353 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  native_decide
