@@ -7,7 +7,22 @@
 -- └─────────────────────────────────────────┘
 import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 import AnalyticCombinatorics.PartA.Ch1.Sequences
+import AnalyticCombinatorics.PartA.Ch1.Trees
+import AnalyticCombinatorics.PartA.Ch1.PlaneTrees
+import AnalyticCombinatorics.PartA.Ch1.MotzkinTrees
+import AnalyticCombinatorics.PartA.Ch1.SchroederTheory
+import AnalyticCombinatorics.PartA.Ch1.StringsTheory
+import AnalyticCombinatorics.PartA.Ch1.Newton
+import AnalyticCombinatorics.PartA.Ch1.IntPartTheory
+import AnalyticCombinatorics.PartA.Ch1.LatticePaths
+import AnalyticCombinatorics.PartA.Ch1.Multiset
+import AnalyticCombinatorics.PartA.Ch1.Powerset
+import AnalyticCombinatorics.PartA.Ch1.Cycle
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
+import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
+import AnalyticCombinatorics.PartA.Ch2.Surjections
+import AnalyticCombinatorics.PartA.Ch2.Derangements
+import AnalyticCombinatorics.PartA.Ch2.SetCycleOps
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 
 -- ┌─────────────────────────────────────────┐
