@@ -23,7 +23,7 @@ import AnalyticCombinatorics.PartA.Ch1.CatalanBijections
 import AnalyticCombinatorics.PartA.Ch1.UnlabelledStructures
 import AnalyticCombinatorics.PartA.Ch1.GeneralTrees
 import AnalyticCombinatorics.PartA.Ch1.Necklaces
-import AnalyticCombinatorics.PartA.Ch1.WordPatterns
+import AnalyticCombinatorics.PartA.Ch1.QAnalogs
 import AnalyticCombinatorics.PartA.Ch1.SymbolicTransfer
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
@@ -35,7 +35,10 @@ import AnalyticCombinatorics.PartA.Ch2.CycleIndex
 import AnalyticCombinatorics.PartA.Ch2.RestrictedPerms
 import AnalyticCombinatorics.PartA.Ch2.ExponentialFormula
 import AnalyticCombinatorics.PartA.Ch2.SetCycleOps
+import AnalyticCombinatorics.PartA.Ch2.Species
+import AnalyticCombinatorics.PartA.Ch2.ParkingFunctions
 import AnalyticCombinatorics.PartA.Ch3.Parameters
+import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.Moments
 import AnalyticCombinatorics.PartA.Ch3.LimitLaws
 
@@ -51,28 +54,10 @@ import AnalyticCombinatorics.PartB.Ch6.DeltaDomain
 import AnalyticCombinatorics.PartB.Ch6.TransferTheorems
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
+import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 
 -- ┌─────────────────────────────────────────┐
--- │  Examples                               │
+-- │  Examples (build individually)          │
 -- └─────────────────────────────────────────┘
-import AnalyticCombinatorics.Examples.BinaryTrees
-import AnalyticCombinatorics.Examples.MotzkinTrees
-import AnalyticCombinatorics.Examples.PlaneTrees
-import AnalyticCombinatorics.Examples.DyckPaths
-import AnalyticCombinatorics.Examples.Triangulations
-import AnalyticCombinatorics.Examples.CatalanFamily
-import AnalyticCombinatorics.Examples.Strings
-import AnalyticCombinatorics.Examples.StringsNoConsecutiveOnes
-import AnalyticCombinatorics.Examples.Compositions
-import AnalyticCombinatorics.Examples.CompositionsOdd
-import AnalyticCombinatorics.Examples.CompositionsEven
-import AnalyticCombinatorics.Examples.IntegerPartitions
-import AnalyticCombinatorics.Examples.Fibonacci
-import AnalyticCombinatorics.Examples.Tribonacci
-import AnalyticCombinatorics.Examples.Tetranacci
-import AnalyticCombinatorics.Examples.Padovan
-import AnalyticCombinatorics.Examples.SetPartitions
-import AnalyticCombinatorics.Examples.Surjections
-import AnalyticCombinatorics.Examples.Derangements
-import AnalyticCombinatorics.Examples.CyclicPermutations
-import AnalyticCombinatorics.Examples.SchroderTrees
+-- Examples define standalone types that conflict with theory files.
+-- Build with: lake build AnalyticCombinatorics.Examples.<Name>

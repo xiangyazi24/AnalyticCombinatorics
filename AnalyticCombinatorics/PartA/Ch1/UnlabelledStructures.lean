@@ -13,6 +13,8 @@ set_option linter.style.nativeDecide false
 
 open Finset
 
+namespace UnlabelledStructures
+
 /-- The Burnside numerator for binary necklaces of length `n`.
 
 For `n > 0`, Burnside's lemma for the cyclic group gives
@@ -90,3 +92,5 @@ example : unrootedTreeCount 6 = 3 := by native_decide
 example : unrootedTreeCount 7 = 6 := by native_decide
 example : unrootedTreeCount 8 = 11 := by native_decide
 example : unrootedTreeCount 9 = 23 := by native_decide
+
+end UnlabelledStructures

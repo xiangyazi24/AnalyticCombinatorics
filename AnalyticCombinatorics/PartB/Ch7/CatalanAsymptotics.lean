@@ -13,6 +13,8 @@ import AnalyticCombinatorics.PartB.Ch6.TransferTheorems
 
 set_option linter.style.nativeDecide false
 
+open TransferTheorems
+
 open CombinatorialClass
 
 /-! ## Catalan ratios -/
@@ -30,7 +32,7 @@ theorem catalanRatio_cross_decreasing_1_12 :
         binaryTreeClass.count n * (n + 1) * 4 ^ (n + 1) := by
   intro n hn
   rcases Finset.mem_Icc.mp hn with ⟨hnlo, hnhi⟩
-  interval_cases n <;> simp [catalan_formula] <;> native_decide
+  interval_cases n <;> simp [TransferTheorems.catalan_formula] <;> native_decide
 
 /-! ## Motzkin growth checks -/
 
@@ -89,7 +91,7 @@ theorem binaryTreeClass_count_mul_succ_eq_centralBinom_0_12 :
       binaryTreeClass.count n * (n + 1) = (2 * n).choose n := by
   intro n hn
   rcases Finset.mem_Icc.mp hn with ⟨hnlo, hnhi⟩
-  interval_cases n <;> simp [catalan_formula] <;> native_decide
+  interval_cases n <;> simp [TransferTheorems.catalan_formula] <;> native_decide
 
 /-- Finite check of `(2n choose n)/(n+1) ≤ 4^n/(n+1)` for `n = 0, ..., 15`. -/
 theorem centralBinom_div_succ_le_four_pow_div_succ_0_15 :

@@ -25,6 +25,8 @@ set_option linter.style.nativeDecide false
 
 open Real Asymptotics Filter PowerSeries CombinatorialClass
 
+namespace TransferTheorems
+
 /-! ## Standard scale functions -/
 
 /-- Algebraic scale: n^{α-1} / Γ(α) · ρ^{-n}. -/
@@ -195,3 +197,5 @@ def IsDominantSingularity (f : ℂ → ℂ) (ρ : ℂ) : Prop :=
     if `ρ` is dominant, then the exponential growth is `1 / ‖ρ‖`. -/
 def dominantSingularityPrinciple (a : ℕ → ℕ) (f : ℂ → ℂ) (ρ : ℂ) : Prop :=
   IsDominantSingularity f ρ → exponentialGrowthRate a = ‖ρ‖⁻¹
+
+end TransferTheorems

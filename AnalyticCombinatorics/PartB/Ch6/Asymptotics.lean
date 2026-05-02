@@ -11,7 +11,7 @@ import AnalyticCombinatorics.PartB.Ch6.TransferTheorems
 
 set_option linter.style.nativeDecide false
 
-open PowerSeries CombinatorialClass
+open PowerSeries CombinatorialClass TransferTheorems
 
 /-! ## Standard function scale -/
 

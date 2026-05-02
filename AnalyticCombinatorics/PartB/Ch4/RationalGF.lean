@@ -11,6 +11,8 @@ set_option linter.style.nativeDecide false
 
 open PowerSeries
 
+namespace RationalGF
+
 /-! ## Geometric series coefficients -/
 
 /-- The explicitly constructed geometric series has coefficient `a^n`. -/
@@ -70,3 +72,5 @@ theorem fibonacci_growth_bound_upto_20 :
     hasGrowthBoundUpTo 20 Nat.fib 1 2 := by
   change growthBoundCheckUpTo 20 Nat.fib 1 2 = true
   native_decide
+
+end RationalGF

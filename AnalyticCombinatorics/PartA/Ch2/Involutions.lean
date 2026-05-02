@@ -3,6 +3,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace Involutions
+
 /-- Number of involutions on `n` labelled atoms. -/
 def involutionCount : ℕ → ℕ
   | 0 => 1
@@ -52,3 +54,5 @@ noncomputable def expZAddZSquaredDivTwo : PowerSeries ℚ :=
 /-- EGF statement for involutions: `I(z) = exp(z + z^2 / 2)`. -/
 def involutionEgf_eq_exp_z_add_z_squared_div_two : Prop :=
   involutionEgf = expZAddZSquaredDivTwo
+
+end Involutions

@@ -124,7 +124,8 @@ theorem totalLeaves_eq_size_add_one_mul_count (n : ℕ) :
           omega
     _ = (n + 1) * (binaryTreeClass.level n).card := by
           rw [Finset.sum_const, nsmul_eq_mul]
-          rw [Nat.mul_comm]
+          push_cast
+          ring
 
 private theorem binaryTreeClass_count_checked_four : binaryTreeClass.count 4 = 14 := by
   rw [binaryTreeClass_count_eq_card]

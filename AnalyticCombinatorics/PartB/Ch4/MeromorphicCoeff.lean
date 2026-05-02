@@ -10,6 +10,8 @@ import Mathlib.Data.Nat.Fib.Basic
 
 set_option linter.style.nativeDecide false
 
+namespace MeromorphicCoeff
+
 /-! ## Coefficients of `(1 - α z)^{-r}` -/
 
 /-- Coefficient of `z^n` in `(1 - α z)^{-r}` for natural `α`.
@@ -84,3 +86,5 @@ def linearRecurrenceCheckUpTo
 theorem fibonacci_linearRecurrence_upto_ten :
     linearRecurrenceCheckUpTo fibonacciLinearRecurrence (fun n => (Nat.fib n : ℤ)) 10 = true := by
   native_decide
+
+end MeromorphicCoeff

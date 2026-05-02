@@ -14,6 +14,8 @@ set_option linter.style.nativeDecide false
 
 open Finset
 
+namespace Necklaces
+
 /-- Burnside numerator for `k`-colored necklaces of length `n`. -/
 def necklaceBurnsideSum (k n : ℕ) : ℕ :=
   ∑ d ∈ Nat.divisors n, Nat.totient d * k ^ (n / d)
@@ -91,3 +93,5 @@ example :
     8 * necklaceCount 2 8 =
       ∑ d ∈ Nat.divisors 8, Nat.totient d * 2 ^ (8 / d) := by
   native_decide
+
+end Necklaces
