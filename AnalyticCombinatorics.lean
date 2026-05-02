@@ -47,12 +47,14 @@ import AnalyticCombinatorics.PartA.Ch2.AlternatingPerms
 import AnalyticCombinatorics.PartA.Ch2.RandomMappings
 import AnalyticCombinatorics.PartA.Ch2.AnalyticNumberTheory
 import AnalyticCombinatorics.PartA.Ch2.SpecialNumbers
+import AnalyticCombinatorics.PartA.Ch2.UrnsOccupancy
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
 import AnalyticCombinatorics.PartA.Ch3.Moments
 import AnalyticCombinatorics.PartA.Ch3.LimitLaws
 import AnalyticCombinatorics.PartA.Ch3.PermutationStatistics
+import AnalyticCombinatorics.PartA.Ch3.ProbabilityGF
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -60,9 +62,11 @@ import AnalyticCombinatorics.PartA.Ch3.PermutationStatistics
 import AnalyticCombinatorics.PartB.Ch4.RationalGF
 import AnalyticCombinatorics.PartB.Ch4.MeromorphicCoeff
 import AnalyticCombinatorics.PartB.Ch4.FormalPowerSeries
+import AnalyticCombinatorics.PartB.Ch4.ComplexAnalysisBasics
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
+import AnalyticCombinatorics.PartB.Ch5.DigitalTrees
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
 import AnalyticCombinatorics.PartB.Ch6.Asymptotics
@@ -74,6 +78,7 @@ import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
+import AnalyticCombinatorics.PartB.Ch9.LargePowers
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
