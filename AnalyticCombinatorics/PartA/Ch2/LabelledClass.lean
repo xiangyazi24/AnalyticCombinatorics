@@ -309,6 +309,88 @@ noncomputable def permClass.numFixedPoints :
     Parameter permClass :=
   fun s => (Finset.univ.filter (fun i : Fin s.fst => s.snd i = i)).card
 
+namespace permClass
+
+theorem jointCount_numFixedPoints_eq_card_filter (n k : ℕ) :
+    permClass.jointCount permClass.numFixedPoints n k =
+      ((Finset.univ : Finset (Equiv.Perm (Fin n))).filter
+        (fun σ => (Finset.univ.filter (fun i : Fin n => σ i = i)).card = k)).card := by
+  rw [CombinatorialClass.jointCount]
+  refine Finset.card_bij'
+      (fun x hx => by
+        obtain ⟨m, σ⟩ := x
+        have hxlevel : (⟨m, σ⟩ : permClass.Obj) ∈ permClass.level n :=
+          (Finset.mem_filter.mp hx).1
+        have hm : m = n :=
+          (CombinatorialClass.level_mem_iff (C := permClass) ⟨m, σ⟩).mp hxlevel
+        subst m
+        exact σ)
+      (fun σ _ => (⟨n, σ⟩ : permClass.Obj))
+      ?_ ?_ ?_ ?_
+  · intro x hx
+    obtain ⟨m, σ⟩ := x
+    have hxlevel : (⟨m, σ⟩ : permClass.Obj) ∈ permClass.level n :=
+      (Finset.mem_filter.mp hx).1
+    have hχ : permClass.numFixedPoints (⟨m, σ⟩ : permClass.Obj) = k :=
+      (Finset.mem_filter.mp hx).2
+    have hm : m = n :=
+      (CombinatorialClass.level_mem_iff (C := permClass) ⟨m, σ⟩).mp hxlevel
+    subst m
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+    simpa [permClass.numFixedPoints] using hχ
+  · intro σ hσ
+    have hχ : (Finset.univ.filter (fun i : Fin n => σ i = i)).card = k :=
+      (Finset.mem_filter.mp hσ).2
+    simp only [Finset.mem_filter]
+    constructor
+    · exact (CombinatorialClass.level_mem_iff (C := permClass) ⟨n, σ⟩).mpr rfl
+    · simpa [permClass.numFixedPoints] using hχ
+  · intro x hx
+    obtain ⟨m, σ⟩ := x
+    have hxlevel : (⟨m, σ⟩ : permClass.Obj) ∈ permClass.level n :=
+      (Finset.mem_filter.mp hx).1
+    have hm : m = n :=
+      (CombinatorialClass.level_mem_iff (C := permClass) ⟨m, σ⟩).mp hxlevel
+    subst m
+    rfl
+  · intro σ hσ
+    rfl
+
+theorem cumulatedCost_numFixedPoints_eq_sum_univ (n : ℕ) :
+    permClass.cumulatedCost permClass.numFixedPoints n =
+      ∑ σ : Equiv.Perm (Fin n),
+        (Finset.univ.filter (fun i : Fin n => σ i = i)).card := by
+  rw [CombinatorialClass.cumulatedCost_eq_sum_param]
+  refine Finset.sum_bij'
+      (fun x hx => by
+        obtain ⟨m, σ⟩ := x
+        have hm : m = n :=
+          (CombinatorialClass.level_mem_iff (C := permClass) ⟨m, σ⟩).mp hx
+        subst m
+        exact σ)
+      (fun σ _ => (⟨n, σ⟩ : permClass.Obj))
+      ?_ ?_ ?_ ?_ ?_
+  · intro x hx
+    exact Finset.mem_univ _
+  · intro σ hσ
+    exact (CombinatorialClass.level_mem_iff (C := permClass) ⟨n, σ⟩).mpr rfl
+  · intro x hx
+    obtain ⟨m, σ⟩ := x
+    have hm : m = n :=
+      (CombinatorialClass.level_mem_iff (C := permClass) ⟨m, σ⟩).mp hx
+    subst m
+    rfl
+  · intro σ hσ
+    rfl
+  · intro x hx
+    obtain ⟨m, σ⟩ := x
+    have hm : m = n :=
+      (CombinatorialClass.level_mem_iff (C := permClass) ⟨m, σ⟩).mp hx
+    subst m
+    simp [permClass.numFixedPoints]
+
+end permClass
+
 /-- Sanity: the empty permutation has all zero of its points fixed. -/
 example : permClass.jointCount permClass.numFixedPoints 0 0 = 1 := by
   rw [CombinatorialClass.jointCount]
@@ -348,6 +430,43 @@ example : permClass.jointCount permClass.numFixedPoints 1 1 = 1 := by
   rw [hfilter]
   rw [← CombinatorialClass.count, permClass_count_eq_factorial]
   rfl
+
+set_option linter.style.nativeDecide false in
+example : permClass.jointCount permClass.numFixedPoints 2 0 = 1 := by
+  rw [permClass.jointCount_numFixedPoints_eq_card_filter]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : permClass.jointCount permClass.numFixedPoints 2 2 = 1 := by
+  rw [permClass.jointCount_numFixedPoints_eq_card_filter]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : permClass.jointCount permClass.numFixedPoints 3 0 = 2 := by
+  rw [permClass.jointCount_numFixedPoints_eq_card_filter]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : permClass.jointCount permClass.numFixedPoints 3 1 = 3 := by
+  rw [permClass.jointCount_numFixedPoints_eq_card_filter]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : permClass.jointCount permClass.numFixedPoints 3 3 = 1 := by
+  rw [permClass.jointCount_numFixedPoints_eq_card_filter]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : permClass.cumulatedCost permClass.numFixedPoints 3 = 6 := by
+  rw [permClass.cumulatedCost_numFixedPoints_eq_sum_univ]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : permClass.meanParam permClass.numFixedPoints 3 = 1 := by
+  rw [CombinatorialClass.meanParam_eq_cumulatedCost_div]
+  rw [permClass_count_eq_factorial]
+  rw [permClass.cumulatedCost_numFixedPoints_eq_sum_univ]
+  native_decide
 
 namespace CombinatorialClass
 
