@@ -35,6 +35,7 @@ import AnalyticCombinatorics.PartA.Ch1.FunctionalEquations
 import AnalyticCombinatorics.PartA.Ch1.IntegerCompositions
 import AnalyticCombinatorics.PartA.Ch1.PolynomialMethods
 import AnalyticCombinatorics.PartA.Ch1.ContinuedFractions
+import AnalyticCombinatorics.PartA.Ch1.SymbolicMethodAdvanced
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
 import AnalyticCombinatorics.PartA.Ch2.Surjections
@@ -55,6 +56,8 @@ import AnalyticCombinatorics.PartA.Ch2.UrnsOccupancy
 import AnalyticCombinatorics.PartA.Ch2.GraphEnumeration
 import AnalyticCombinatorics.PartA.Ch2.PermutationGroups
 import AnalyticCombinatorics.PartA.Ch2.MapEnumeration
+import AnalyticCombinatorics.PartA.Ch2.NumberTheoreticGF
+import AnalyticCombinatorics.PartA.Ch2.ExponentialStructures
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -87,12 +90,14 @@ import AnalyticCombinatorics.PartB.Ch6.Asymptotics
 import AnalyticCombinatorics.PartB.Ch6.DeltaDomain
 import AnalyticCombinatorics.PartB.Ch6.TransferTheorems
 import AnalyticCombinatorics.PartB.Ch6.PartitionAsymptotics
+import AnalyticCombinatorics.PartB.Ch6.SingularityTypes
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
+import AnalyticCombinatorics.PartB.Ch8.QueueTheory
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
