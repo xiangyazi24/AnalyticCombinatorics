@@ -1,30 +1,52 @@
-# Task — Motzkin OGF identity (state-or-blocker)
+# Task: Motzkin Trees and Unary-Binary Trees — Part A Ch I
 
-**File:** `AnalyticCombinatorics/Examples/MotzkinTrees.lean` (append)
+## Goal
 
-The file has `motzClass.count` and a recurrence. Try to **state and prove** the OGF identity:
+Create file `AnalyticCombinatorics/PartA/Ch1/MotzkinTrees.lean` formalizing Motzkin trees.
 
-`M(z) = 1 + z·M(z) + z²·M(z)²`
+## What to formalize
 
-Or equivalently:
+Motzkin trees (unary-binary trees): each node has 0, 1, or 2 children.
+- `T = Z + Z×T + Z×T×T` → `T(z) = z(1 + T + T²)`
+
+### Required:
+
+1. **`MotzkinTree` inductive type:**
+   ```lean
+   inductive MotzkinTree where
+     | leaf : MotzkinTree
+     | unary : MotzkinTree → MotzkinTree
+     | binary : MotzkinTree → MotzkinTree → MotzkinTree
+   ```
+   Size: leaf = 1, unary t = 1 + size t, binary l r = 1 + size l + size r.
+
+2. **`motzkinTreeClass : CombinatorialClass`**
+
+3. **OGF equation:**
+   ```lean
+   theorem motzkinTree_ogf_eq :
+       motzkinTreeClass.ogf = X * (1 + motzkinTreeClass.ogf + motzkinTreeClass.ogf ^ 2)
+   ```
+
+4. **Sanity (Motzkin numbers):**
+   - count 1 = 1 (leaf)
+   - count 2 = 1 (unary leaf)
+   - count 3 = 2 (binary leaf leaf, unary(unary leaf))
+   - count 4 = 4
+   - count 5 = 9
+
+## Imports
 
 ```lean
-theorem motzClass_ogfZ_eq :
-    motzClass.ogfZ = 1 + PowerSeries.X * motzClass.ogfZ
-                       + PowerSeries.X^2 * motzClass.ogfZ^2 := by
-  sorry
+import Mathlib.RingTheory.PowerSeries.Basic
+import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
 ```
 
-(Adjust to whatever the file's size convention dictates — read the file first to check whether size = #edges, in which case the OGF identity may have a different shape. The relation should mirror the existing `BinTree.asClass.ogf_functional_equation` pattern.)
+## Constraints
 
-## Suggested approach
+- No sorry, no axiom
+- `lake build AnalyticCombinatorics.PartA.Ch1.MotzkinTrees` must pass
 
-The recurrence `motzClass.count_succ` (corresponding to leaf | unary | binary) gives the coefficient identity that, packaged as an OGF, becomes the functional equation. Use `BinTree.asClass.ogf_functional_equation` as a template — it likely uses the existing `cartProd_ogf` / `disjSum_ogf` machinery.
+## Output
 
-## Hard constraints
-
-- Build green.
-- No new sorrys.
-- Reply at HANDOFF/outbox/task-motzkin-ogf-reply.md.
-- If the convention or shape is awkward, document the actual relation that holds. Don't paper over.
-- Do NOT introduce axioms.
+Write the file and report.

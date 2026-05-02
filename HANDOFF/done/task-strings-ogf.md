@@ -1,32 +1,63 @@
-# Task — Strings OGF closed form
+# Task: Strings and Regular Languages — Part A Ch I §3
 
-**File:** `AnalyticCombinatorics/Examples/Strings.lean` (append at end)
+## Goal
 
-**Goal:** Prove `stringClass.ogfZ · (1 - 2 X) = 1` over ℤ[[z]] — analogue of compositions, but for strings.
+Create file `AnalyticCombinatorics/PartA/Ch1/StringsTheory.lean` formalizing the OGF theory of strings over a finite alphabet.
+
+## What to formalize
+
+F&S Chapter I §3: Strings over alphabet of size k.
+
+### Key results:
+
+1. **k-letter alphabet as a CombinatorialClass:**
+   ```lean
+   def alphabetClass (k : ℕ) : CombinatorialClass where
+     Obj := Fin k
+     size _ := 1
+   ```
+   Count: `alphabetClass.count 1 = k`, count n = 0 for n ≠ 1.
+
+2. **Strings = SEQ(alphabet):** The class of strings over k letters is `seqClass (alphabetClass k) _`.
+   - OGF satisfies `(1 - kz) · S(z) = 1`
+   - count n = k^n (prove this!)
+
+3. **Theorem: string count equals k^n:**
+   ```lean
+   theorem stringCount_eq_pow (k : ℕ) (hk : 0 < k) (n : ℕ) :
+       (seqClass (alphabetClass k) _).count n = k ^ n
+   ```
+
+4. **Strings avoiding a pattern (transfer matrix method):**
+   For the simplest case: strings over {0,1} avoiding "11" (no two consecutive ones).
+   - Count = Fibonacci(n+2)
+   - Prove: `stringsNoConsecOnes_count n = fib (n + 2)`
+
+5. **OGF of strings avoiding "11":**
+   - OGF = 1/(1 - z - z²) — the golden ratio OGF
+   - Alternatively prove the recursion: count(n+2) = count(n+1) + count(n)
+
+6. **Sanity checks:**
+   - Binary strings: count 0 = 1, count 1 = 2, count 2 = 4, count 3 = 8
+   - Ternary strings: count 0 = 1, count 1 = 3, count 2 = 9
+   - No-11 strings: count 0 = 1, count 1 = 2, count 2 = 3, count 3 = 5, count 4 = 8
+
+## Imports
 
 ```lean
-theorem stringClass_ogfZ_mul_one_sub_two_X :
-    ogfZ stringClass * (1 - 2 * PowerSeries.X) = 1 := by
-  sorry  -- coefficient comparison: stringClass.count n = 2^n
-         -- pattern from compositionClass_ogfZ_mul_one_sub_two_X but cleaner because
-         -- count is 2^n for all n (no n=0 vs n+1 split)
+import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.Data.Nat.Fib.Basic
+import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
+import AnalyticCombinatorics.PartA.Ch1.Sequences
 ```
 
-## Strategy
+## Constraints
 
-Coefficient comparison at n. Use `stringClass_count_eq_pow` (already have it).
+- No sorry, no axiom
+- `lake build AnalyticCombinatorics.PartA.Ch1.StringsTheory` must pass
+- The key theorem `stringCount_eq_pow` should be proved by induction using `seqClass.count_succ`.
+- For the no-11 case, define the restricted class directly (as lists of Fin 2 with the constraint) rather than using the transfer matrix.
 
-```
-coeff n (stringClass.ogfZ · (1 - 2X)) = coeff n (1)
-  ↔ stringClass.count n − 2 · stringClass.count (n−1) = δ_{n,0}
-  ↔ 2^n − 2 · 2^{n−1} = δ_{n,0}  (for n ≥ 1, both sides are 0; for n = 0, LHS = 1 - 0 = 1)
-```
+## Output
 
-For n = 0: stringClass.count 0 = 1. coeff 0 of (1 - 2X) = 1. So coeff 0 (LHS) = 1 · 1 = 1.
-For n ≥ 1: coeff n via Cauchy product = stringClass.count n · 1 + stringClass.count (n−1) · (−2) = 2^n − 2·2^(n−1) = 0. ✓
-
-## Hard constraints
-
-- Build green
-- No new sorrys
-- Reply at HANDOFF/outbox/task-strings-ogf-reply.md
+Write the complete file and report what you proved.

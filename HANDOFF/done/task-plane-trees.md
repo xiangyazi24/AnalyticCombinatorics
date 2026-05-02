@@ -1,58 +1,86 @@
-# Task — Plane trees example
+# Task: Plane Trees (General/Ordered Trees) — Part A Ch I
 
-**File:** `AnalyticCombinatorics/Examples/PlaneTrees.lean` (new). Add to root.
+## Goal
 
-**Goal:** Define plane trees (rooted, ordered children) and prove count of plane trees with n+1 nodes = Catalan(n). The standard bijection to binary trees.
+Create file `AnalyticCombinatorics/PartA/Ch1/PlaneTrees.lean` formalizing plane (ordered) trees and their OGF equation.
 
-## Required code
+## What to formalize
+
+A plane tree is a rooted tree where children are ordered. The symbolic equation is:
+- `T = Z × SEQ(T)` (a root node followed by a sequence of subtrees)
+
+This gives the OGF functional equation:
+- `T(z) = z / (1 - T(z))`, equivalently `T(z)(1 - T(z)) = z · (1 - T(z)) + z · T(z) = z`
+- Actually: `T(z) = z · (1 + T(z) + T(z)² + ...)` = `z / (1 - T(z))`
+
+Counting: plane trees of size n = Catalan number C_{n-1} (shifted by 1 from binary trees).
+
+### Required:
+
+1. **`PlaneTree` inductive type:**
+   ```lean
+   inductive PlaneTree where
+     | node : List PlaneTree → PlaneTree
+   ```
+   with `size (node children) = 1 + sum of children sizes`.
+
+2. **`planeTreeClass : CombinatorialClass`** with finite_level proof.
+
+3. **Count recursion:**
+   ```lean
+   theorem planeTree_count_recursion (n : ℕ) :
+       planeTreeClass.count (n + 1) =
+         ∑ p ∈ Finset.antidiagonal n, (seqClass planeTreeClass _).count p.1 ... -- or equivalent
+   ```
+
+   Simpler: prove the convolution identity relating plane tree counts to itself.
+
+4. **OGF equation** (the key result):
+   ```lean
+   theorem planeTree_ogf_eq :
+       (1 - planeTreeClass.ogf) * planeTreeClass.ogf = X * (1 - planeTreeClass.ogf)
+   ```
+   or equivalently over ℤ[[z]]:
+   ```lean
+   theorem planeTree_ogf_func_eq :
+       planeTreeClass.ogf = X + X * planeTreeClass.ogf + X * planeTreeClass.ogf ^ 2 + ...
+   ```
+
+   Actually the cleanest form: since T = z·SEQ(T) and SEQ has OGF 1/(1-·):
+   ```lean
+   theorem planeTree_ogf_satisfies :
+       planeTreeClass.ogf = PowerSeries.X * seqOGF planeTreeClass.ogf
+   ```
+   where seqOGF f = 1/(1-f) in the ℤ[[z]] sense.
+
+   **Simplest provable form:**
+   ```lean
+   theorem planeTree_ogf_eq :
+       planeTreeClass.ogf = PowerSeries.X * (1 + planeTreeClass.ogf + planeTreeClass.ogf ^ 2 + ...)
+   ```
+   or at the count level: `count(n+1) = ∑_{k=0}^{n} (seqClass ...).count k * ...`
+
+5. **Sanity checks** (plane trees of size n = C_{n-1} for n≥1):
+   - count 1 = 1 (single node, no children)
+   - count 2 = 1 (root with one child)
+   - count 3 = 2
+   - count 4 = 5
+   - count 5 = 14
+
+## Imports
 
 ```lean
-import AnalyticCombinatorics.Examples.BinaryTrees
-
-/-- Plane tree: a rooted tree with an ordered sequence of children at each node.
-    Equivalent to a list of subtrees. -/
-inductive PlaneTree : Type
-  | mk : List PlaneTree → PlaneTree
-  deriving Inhabited
-
-namespace PlaneTree
-
-/-- Number of nodes in a plane tree. -/
-def numNodes : PlaneTree → ℕ
-  | mk children => 1 + (children.map numNodes).sum
-
-end PlaneTree
-
-/-- The combinatorial class of plane trees with n+1 nodes (size = n means n+1 actual nodes,
-    indexed so that empty plane tree = "single root" → size 0). -/
-noncomputable def planeTreeClass : CombinatorialClass where
-  Obj := PlaneTree
-  size t := t.numNodes - 1   -- size = "number of children-edges" = number of internal arcs
-  finite_level n := by
-    sorry
+import Mathlib.RingTheory.PowerSeries.Basic
+import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
+import AnalyticCombinatorics.PartA.Ch1.Sequences
 ```
 
-Hmm — the recursion looks like `PlaneTree ≃ List PlaneTree` (the children list at root). So the count of plane trees with size n equals... something Catalan-like.
+## Constraints
 
-A simpler/cleaner formulation: plane trees are SEQ of plane trees (the children of the root). So the combinatorial recursion is `PlaneTree(z) = z · SEQ(PlaneTree)(z) = z / (1 - PlaneTree(z))`. This gives the same Catalan-like satisfaction.
+- No sorry, no axiom
+- `lake build AnalyticCombinatorics.PartA.Ch1.PlaneTrees` must pass
+- The `finite_level` proof is the hardest part. Key insight: trees of size ≤ n have at most n nodes, each node has children drawn from trees of size < n. Use well-founded recursion.
 
-If this is too involved, **alternative**: just establish the count formula via `Tree`-style biject without proving size finiteness from scratch. Use Mathlib's existing tree machinery if any.
+## Output
 
-## Easier alternative
-
-If the above is too involved, deliver a stub-only file with a short comment plus a sanity example of `PlaneTree` cardinality at small sizes via a Catalan reference.
-
-```lean
-/-- Plane trees and binary trees are equinumerous: PlaneTree count(n+1) = BinTree count n. 
-    (Standard bijection: rotation correspondence.) -/
-theorem planeTreeClass_count_eq_binTree_count (n : ℕ) :
-    sorry := sorry
-```
-
-You can leave it at sketch level if a clean class definition is hard. Reply with what was achievable.
-
-## Hard constraints
-
-- Build green
-- No new sorrys when delivered (file blocker if class definition gets stuck)
-- Reply at HANDOFF/outbox/task-plane-trees-reply.md
+Write the complete file and report theorems proved.

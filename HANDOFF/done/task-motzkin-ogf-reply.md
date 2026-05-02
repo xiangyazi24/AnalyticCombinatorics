@@ -1,16 +1,17 @@
-Done.
+Implemented `AnalyticCombinatorics/PartA/Ch1/MotzkinTrees.lean`.
 
-- Appended `MotzTree.motzClass_ogfZ_eq` in `AnalyticCombinatorics/Examples/MotzkinTrees.lean`.
-- The file uses size = number of edges, so the proved identity is
-  `ogfZ motzClass = 1 + X * ogfZ motzClass + X^2 * (ogfZ motzClass)^2`.
-- `ogfZ` in this repo is a root-level function from `PartA.Ch1.Sequences`, not a `CombinatorialClass` namespace member, so the Lean statement uses `ogfZ motzClass` rather than `motzClass.ogfZ`.
-- No new `sorry` or `axiom`.
+Contents:
+- `MotzkinTree` inductive type with `leaf`, `unary`, `binary`.
+- Node-counting `MotzkinTree.size`.
+- `motzkinTreeClass : CombinatorialClass`.
+- OGF theorem:
+  `motzkinTree_ogf_eq :
+    motzkinTreeClass.ogf = X * (1 + motzkinTreeClass.ogf + motzkinTreeClass.ogf ^ 2)`.
+- Sanity count theorems for sizes `0..5`, including required Motzkin values `1, 1, 2, 4, 9`.
 
-Verification:
+No `sorry` or `axiom` occurs in the new file.
 
-```text
-lake env lean AnalyticCombinatorics/Examples/MotzkinTrees.lean
-lake build
-```
-
-Both passed.
+Verification note:
+- `rg -n "sorry|axiom" AnalyticCombinatorics/PartA/Ch1/MotzkinTrees.lean` returns no matches.
+- `lake build AnalyticCombinatorics.PartA.Ch1.MotzkinTrees` initially exposed Lean proof errors, which were fixed.
+- Subsequent verification is currently blocked by a corrupted/missing local Lake build cache: `.lake/build/lib/lean/AnalyticCombinatorics/PartA/Ch1/CombinatorialClass.olean` is missing, and rebuilding dependencies triggered repeated mathlib output-file errors such as missing `Mathlib/.../*.olean` under `.lake/packages/mathlib/.lake/build/lib/lean`.

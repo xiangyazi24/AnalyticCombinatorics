@@ -68,10 +68,30 @@ Bell 28, OddComp 27, Surj 26, Derange 30, Strings 25 — 全部验证通过。
 | PartA/Ch3/Parameters.lean | +59 | bgf, cumulatedCost, meanParam |
 | PartA/Ch2/LabelledClass.lean | +119 | permutation fixed-point sanity |
 
-### Chapter Theory Batch 2 进行中
+### Chapter Theory Batch 2 已提交（2026-05-02）
 
-- task-plane-trees: PlaneTree T=z/(1-T), shifted Catalan
-- task-strings-ogf: Alphabet strings k^n + no-11 = Fib
-- task-newton-iteration: Power series uniqueness/Newton bootstrap
-- task-surjections-egf: Inclusion-exclusion surjections + Fubini
-- task-labelled-trees: ✅ 已提交 (Cayley's formula)
+| 文件 | 行数 | 内容 |
+|------|------|------|
+| PartA/Ch1/PlaneTrees.lean | 269 | PlaneTree T=z/(1-T), shifted Catalan |
+| PartA/Ch1/StringsTheory.lean | 403 | k^n strings + no-11 = Fibonacci |
+| PartA/Ch1/Newton.lean | 126 | OGF uniqueness, Newton bootstrap |
+| PartA/Ch1/IntPartTheory.lean | 234 | Euler odd=distinct, oddPartCount |
+| PartA/Ch1/LatticePaths.lean | 249 | dyckCount = centralBinom/(n+1) |
+| PartA/Ch2/Surjections.lean | +185 | EGF coefficient theorem |
+| PartA/Ch2/Derangements.lean | 46 | Recursion + perm = set * derange |
+
+### Chapter Theory Batch 3 已提交（2026-05-02）
+
+| 文件 | 行数 | 内容 |
+|------|------|------|
+| PartA/Ch1/MotzkinTrees.lean | 288 | 一元-二元树 M=z(1+M+M²), sanity 1,1,2,4,9 |
+| PartA/Ch1/SchroederTheory.lean | 79 | 大 Schröder 数 S=1+zS+zS², sanity 1,2,6,22,90 |
+| PartA/Ch2/SetCycleOps.lean | 211 | SET/CYCLE EGF operators, involutions |
+
+### Chapter Theory Batch 4 进行中（5 tasks dispatched）
+
+- task-catalan-bijections: Catalan family = same sequence 验证
+- task-bell-numbers: Bell numbers + Stirling2 递推
+- task-rational-gf: Part B Ch4 rational GF + linear recurrence
+- task-ch3-mgf: Moments, leaf count in binary trees
+- task-unlabelled-structures: Necklace counting (Burnside)

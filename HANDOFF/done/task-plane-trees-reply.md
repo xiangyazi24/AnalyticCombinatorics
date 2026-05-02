@@ -1,16 +1,17 @@
 Done.
 
-- Added `AnalyticCombinatorics/Examples/PlaneTrees.lean`.
-- Defined `PlaneTree`, `PlaneTree.numNodes`, `planeTreeClass`.
-- Proved finite levels via the standard left-child/right-sibling bijection with `BinTree`.
-- Proved `planeTreeClass_count_eq_binTree_count`.
-- Proved `planeTreeClass_count : planeTreeClass.count n = catalan n`.
-- Added sanity examples for counts 0 through 4.
-- Imported the new example from `AnalyticCombinatorics.lean`.
+Created `AnalyticCombinatorics/PartA/Ch1/PlaneTrees.lean`.
+
+Proved:
+- `PlaneTree` with recursive node-counting size.
+- `planeTreeClass : CombinatorialClass`, including `finite_level`.
+- `planeTree_count_zero`.
+- `planeTree_count_succ_seq`.
+- `planeTree_ogf_satisfies`: `T = X * SEQ(T)`.
+- `planeTree_ogf_quadratic`: `T = X + T^2`.
+- `planeTree_count_recursion`: Catalan convolution for coefficients.
+- `planeTree_ogf_eq`: over `ℤ[[z]]`, `(1 - T) * T = X`.
+- sanity checks `count 1 = 1`, `count 2 = 1`, `count 3 = 2`, `count 4 = 5`, `count 5 = 14`.
 
 Verification:
-
-- `lake env lean AnalyticCombinatorics/Examples/PlaneTrees.lean`
-- `lake build`
-
-No `sorry`/`admit` in the new file.
+- `lake build AnalyticCombinatorics.PartA.Ch1.PlaneTrees` passes.
