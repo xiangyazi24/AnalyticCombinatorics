@@ -31,6 +31,8 @@ import AnalyticCombinatorics.PartA.Ch1.LagrangeInversion
 import AnalyticCombinatorics.PartA.Ch1.GeneratingFunctions
 import AnalyticCombinatorics.PartA.Ch1.WordsLanguages
 import AnalyticCombinatorics.PartA.Ch1.PlanarMaps
+import AnalyticCombinatorics.PartA.Ch1.FunctionalEquations
+import AnalyticCombinatorics.PartA.Ch1.IntegerCompositions
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
 import AnalyticCombinatorics.PartA.Ch2.Surjections
@@ -48,6 +50,7 @@ import AnalyticCombinatorics.PartA.Ch2.RandomMappings
 import AnalyticCombinatorics.PartA.Ch2.AnalyticNumberTheory
 import AnalyticCombinatorics.PartA.Ch2.SpecialNumbers
 import AnalyticCombinatorics.PartA.Ch2.UrnsOccupancy
+import AnalyticCombinatorics.PartA.Ch2.GraphEnumeration
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -63,10 +66,12 @@ import AnalyticCombinatorics.PartB.Ch4.RationalGF
 import AnalyticCombinatorics.PartB.Ch4.MeromorphicCoeff
 import AnalyticCombinatorics.PartB.Ch4.FormalPowerSeries
 import AnalyticCombinatorics.PartB.Ch4.ComplexAnalysisBasics
+import AnalyticCombinatorics.PartB.Ch4.AnalyticContinuation
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.DigitalTrees
+import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
 import AnalyticCombinatorics.PartB.Ch6.Asymptotics
