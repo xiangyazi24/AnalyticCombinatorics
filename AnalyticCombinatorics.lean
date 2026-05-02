@@ -37,6 +37,7 @@ import AnalyticCombinatorics.PartA.Ch1.PolynomialMethods
 import AnalyticCombinatorics.PartA.Ch1.ContinuedFractions
 import AnalyticCombinatorics.PartA.Ch1.SymbolicMethodAdvanced
 import AnalyticCombinatorics.PartA.Ch1.OGFCoefficients
+import AnalyticCombinatorics.PartA.Ch1.SpeciesTheory
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
 import AnalyticCombinatorics.PartA.Ch2.Surjections
@@ -59,6 +60,7 @@ import AnalyticCombinatorics.PartA.Ch2.PermutationGroups
 import AnalyticCombinatorics.PartA.Ch2.MapEnumeration
 import AnalyticCombinatorics.PartA.Ch2.NumberTheoreticGF
 import AnalyticCombinatorics.PartA.Ch2.ExponentialStructures
+import AnalyticCombinatorics.PartA.Ch2.DesignTheory
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -70,6 +72,7 @@ import AnalyticCombinatorics.PartA.Ch3.CombinatoricsOnWords
 import AnalyticCombinatorics.PartA.Ch3.CentralLimitTheorems
 import AnalyticCombinatorics.PartA.Ch3.LatticePathMethods
 import AnalyticCombinatorics.PartA.Ch3.PatternAvoidance
+import AnalyticCombinatorics.PartA.Ch3.CombOptimization
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -81,6 +84,7 @@ import AnalyticCombinatorics.PartB.Ch4.ComplexAnalysisBasics
 import AnalyticCombinatorics.PartB.Ch4.AnalyticContinuation
 import AnalyticCombinatorics.PartB.Ch4.AsymptoticExpansions
 import AnalyticCombinatorics.PartB.Ch4.RecurrenceRelations
+import AnalyticCombinatorics.PartB.Ch4.GFTransforms
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
@@ -106,6 +110,7 @@ import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.QueueTheory
+import AnalyticCombinatorics.PartB.Ch8.AlgorithmicComplexity
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
