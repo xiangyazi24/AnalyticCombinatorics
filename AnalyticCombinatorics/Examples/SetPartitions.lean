@@ -712,6 +712,215 @@ private lemma bell_eleven_sanity : Nat.bell 11 = 678570 := by
     bell_five_sanity, bell_six_sanity, bell_seven_sanity, bell_eight_sanity,
     bell_nine_sanity, bell_ten_sanity]
 
+private theorem bell_recurrence_for_sanity (n : ℕ) :
+    Nat.bell (n + 1) = ∑ k ∈ Finset.range (n + 1), Nat.choose n k * Nat.bell k := by
+  rw [Nat.bell_succ']
+  rw [Finset.Nat.sum_antidiagonal_eq_sum_range_succ
+    (fun x y => Nat.choose n x * Nat.bell y) n]
+  rw [← Finset.sum_range_reflect (fun k => Nat.choose n k * Nat.bell (n - k)) (n + 1)]
+  apply Finset.sum_congr rfl
+  intro k hk
+  have hk_le : k ≤ n := by
+    exact Nat.le_of_lt_succ (Finset.mem_range.mp hk)
+  simp only [Nat.add_sub_cancel]
+  rw [Nat.sub_sub_self hk_le]
+  rw [Nat.choose_symm hk_le]
+
+private def bellSanityTable : ℕ → ℕ
+  | 0 => 1
+  | 1 => 1
+  | 2 => 2
+  | 3 => 5
+  | 4 => 15
+  | 5 => 52
+  | 6 => 203
+  | 7 => 877
+  | 8 => 4140
+  | 9 => 21147
+  | 10 => 115975
+  | 11 => 678570
+  | 12 => 4213597
+  | 13 => 27644437
+  | 14 => 190899322
+  | 15 => 1382958545
+  | 16 => 10480142147
+  | 17 => 82864869804
+  | 18 => 682076806159
+  | 19 => 5832742205057
+  | 20 => 51724158235372
+  | 21 => 474869816156751
+  | 22 => 4506715738447323
+  | 23 => 44152005855084346
+  | 24 => 445958869294805289
+  | 25 => 4638590332229999353
+  | 26 => 49631246523618756274
+  | 27 => 545717047936059989389
+  | 28 => 6160539404599934652455
+  | _ => 0
+
+set_option linter.style.nativeDecide false in
+private theorem bellSanityTable_eq_bell (n : ℕ) (hn : n ≤ 28) :
+    Nat.bell n = bellSanityTable n := by
+  induction n using Nat.strong_induction_on with
+  | h n ih =>
+      cases n with
+      | zero => simp [bellSanityTable]
+      | succ m =>
+          rw [bell_recurrence_for_sanity m]
+          have hsum :
+              (∑ k ∈ Finset.range (m + 1), Nat.choose m k * Nat.bell k) =
+                ∑ k ∈ Finset.range (m + 1), Nat.choose m k * bellSanityTable k := by
+            apply Finset.sum_congr rfl
+            intro k hk
+            have hk_le : k ≤ m := Nat.le_of_lt_succ (Finset.mem_range.mp hk)
+            rw [ih k (Nat.lt_succ_of_le hk_le) (by omega)]
+          rw [hsum]
+          have htable : ∀ m : Fin 28,
+              (∑ k ∈ Finset.range (m.1 + 1), Nat.choose m.1 k * bellSanityTable k) =
+                bellSanityTable (m.1 + 1) := by
+            native_decide
+          exact htable ⟨m, by omega⟩
+
+private lemma bell_twelve_sanity : Nat.bell 12 = 4213597 := by
+  rw [bellSanityTable_eq_bell 12 (by norm_num)]
+  rfl
+
+private lemma bell_thirteen_sanity : Nat.bell 13 = 27644437 := by
+  rw [bellSanityTable_eq_bell 13 (by norm_num)]
+  rfl
+
+private lemma bell_fourteen_sanity : Nat.bell 14 = 190899322 := by
+  rw [bellSanityTable_eq_bell 14 (by norm_num)]
+  rfl
+
+private lemma bell_fifteen_sanity : Nat.bell 15 = 1382958545 := by
+  rw [bellSanityTable_eq_bell 15 (by norm_num)]
+  rfl
+
+private lemma bell_sixteen_sanity : Nat.bell 16 = 10480142147 := by
+  rw [bellSanityTable_eq_bell 16 (by norm_num)]
+  rfl
+
+private lemma bell_seventeen_sanity : Nat.bell 17 = 82864869804 := by
+  rw [bellSanityTable_eq_bell 17 (by norm_num)]
+  rfl
+
+private lemma bell_eighteen_sanity : Nat.bell 18 = 682076806159 := by
+  rw [bellSanityTable_eq_bell 18 (by norm_num)]
+  rfl
+
+private lemma bell_nineteen_sanity : Nat.bell 19 = 5832742205057 := by
+  rw [bellSanityTable_eq_bell 19 (by norm_num)]
+  rfl
+
+private lemma bell_twenty_sanity : Nat.bell 20 = 51724158235372 := by
+  rw [bellSanityTable_eq_bell 20 (by norm_num)]
+  rfl
+
+private lemma bell_twenty_one_sanity : Nat.bell 21 = 474869816156751 := by
+  rw [bellSanityTable_eq_bell 21 (by norm_num)]
+  rfl
+
+private lemma bell_twenty_two_sanity : Nat.bell 22 = 4506715738447323 := by
+  rw [bellSanityTable_eq_bell 22 (by norm_num)]
+  rfl
+
+private lemma bell_twenty_three_sanity : Nat.bell 23 = 44152005855084346 := by
+  rw [bellSanityTable_eq_bell 23 (by norm_num)]
+  rfl
+
+private lemma bell_twenty_four_sanity : Nat.bell 24 = 445958869294805289 := by
+  rw [bellSanityTable_eq_bell 24 (by norm_num)]
+  rfl
+
+private lemma bell_twenty_five_sanity : Nat.bell 25 = 4638590332229999353 := by
+  rw [bellSanityTable_eq_bell 25 (by norm_num)]
+  rfl
+
+private lemma bell_twenty_six_sanity : Nat.bell 26 = 49631246523618756274 := by
+  rw [bellSanityTable_eq_bell 26 (by norm_num)]
+  rfl
+
+private lemma bell_twenty_seven_sanity : Nat.bell 27 = 545717047936059989389 := by
+  rw [bellSanityTable_eq_bell 27 (by norm_num)]
+  rfl
+
+private lemma bell_twenty_eight_sanity : Nat.bell 28 = 6160539404599934652455 := by
+  rw [bellSanityTable_eq_bell 28 (by norm_num)]
+  rfl
+
+private def bellQDecidable {n b : ℕ} (h : Nat.bell n = b) :
+    Decidable ((Nat.bell n : ℚ) = (b : ℚ)) :=
+  isTrue (by exact_mod_cast h)
+
+private instance bell_twelve_q_decidable :
+    Decidable ((Nat.bell 12 : ℚ) = (4213597 : ℚ)) :=
+  bellQDecidable bell_twelve_sanity
+
+private instance bell_thirteen_q_decidable :
+    Decidable ((Nat.bell 13 : ℚ) = (27644437 : ℚ)) :=
+  bellQDecidable bell_thirteen_sanity
+
+private instance bell_fourteen_q_decidable :
+    Decidable ((Nat.bell 14 : ℚ) = (190899322 : ℚ)) :=
+  bellQDecidable bell_fourteen_sanity
+
+private instance bell_fifteen_q_decidable :
+    Decidable ((Nat.bell 15 : ℚ) = (1382958545 : ℚ)) :=
+  bellQDecidable bell_fifteen_sanity
+
+private instance bell_sixteen_q_decidable :
+    Decidable ((Nat.bell 16 : ℚ) = (10480142147 : ℚ)) :=
+  bellQDecidable bell_sixteen_sanity
+
+private instance bell_seventeen_q_decidable :
+    Decidable ((Nat.bell 17 : ℚ) = (82864869804 : ℚ)) :=
+  bellQDecidable bell_seventeen_sanity
+
+private instance bell_eighteen_q_decidable :
+    Decidable ((Nat.bell 18 : ℚ) = (682076806159 : ℚ)) :=
+  bellQDecidable bell_eighteen_sanity
+
+private instance bell_nineteen_q_decidable :
+    Decidable ((Nat.bell 19 : ℚ) = (5832742205057 : ℚ)) :=
+  bellQDecidable bell_nineteen_sanity
+
+private instance bell_twenty_q_decidable :
+    Decidable ((Nat.bell 20 : ℚ) = (51724158235372 : ℚ)) :=
+  bellQDecidable bell_twenty_sanity
+
+private instance bell_twenty_one_q_decidable :
+    Decidable ((Nat.bell 21 : ℚ) = (474869816156751 : ℚ)) :=
+  bellQDecidable bell_twenty_one_sanity
+
+private instance bell_twenty_two_q_decidable :
+    Decidable ((Nat.bell 22 : ℚ) = (4506715738447323 : ℚ)) :=
+  bellQDecidable bell_twenty_two_sanity
+
+private instance bell_twenty_three_q_decidable :
+    Decidable ((Nat.bell 23 : ℚ) = (44152005855084346 : ℚ)) :=
+  bellQDecidable bell_twenty_three_sanity
+
+private instance bell_twenty_four_q_decidable :
+    Decidable ((Nat.bell 24 : ℚ) = (445958869294805289 : ℚ)) :=
+  bellQDecidable bell_twenty_four_sanity
+
+private instance bell_twenty_five_q_decidable :
+    Decidable ((Nat.bell 25 : ℚ) = (4638590332229999353 : ℚ)) :=
+  bellQDecidable bell_twenty_five_sanity
+
+private instance bell_twenty_six_q_decidable :
+    Decidable ((Nat.bell 26 : ℚ) = (49631246523618756274 : ℚ)) :=
+  bellQDecidable bell_twenty_six_sanity
+
+private instance bell_twenty_seven_q_decidable :
+    Decidable ((Nat.bell 27 : ℚ) = (545717047936059989389 : ℚ)) :=
+  bellQDecidable bell_twenty_seven_sanity
+
+private instance bell_twenty_eight_q_decidable :
+    Decidable ((Nat.bell 28 : ℚ) = (6160539404599934652455 : ℚ)) :=
+  bellQDecidable bell_twenty_eight_sanity
+
 /-! Bell sequence sanity dump: 1,1,2,5,15,52,203,877,4140,21147,115975,678570. -/
 example : labelSetCount posIntClass 11 = (678570 : ℚ) := by
   rw [labelSetCount_posIntClass_eq_bell]
@@ -967,5 +1176,20 @@ example : labelSetCount posIntClass 24 = (445958869294805289 : ℚ) := by
 
 set_option linter.style.nativeDecide false in
 example : labelSetCount posIntClass 25 = (4638590332229999353 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : labelSetCount posIntClass 26 = (49631246523618756274 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : labelSetCount posIntClass 27 = (545717047936059989389 : ℚ) := by
+  rw [labelSetCount_posIntClass_eq_bell]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : labelSetCount posIntClass 28 = (6160539404599934652455 : ℚ) := by
   rw [labelSetCount_posIntClass_eq_bell]
   native_decide

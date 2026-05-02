@@ -7,10 +7,27 @@ open scoped PowerSeries.WithPiTopology
 noncomputable def surjectionClass : CombinatorialClass :=
   labelSeq posIntClass posIntClass.count_zero
 
+private def surjectionStirlingSecondImpl (n k : ℕ) : ℕ :=
+  let width := n + 1
+  let initial := (1 :: List.replicate n 0).toArray
+  let step (row : Array ℕ) : Array ℕ :=
+    ((List.range width).map fun j =>
+      match j with
+      | 0 => 0
+      | j' + 1 => j * row.getD j 0 + row.getD j' 0).toArray
+  let rec loop : ℕ → Array ℕ → Array ℕ
+    | 0, row => row
+    | m + 1, row => loop m (step row)
+  (loop n initial).getD k 0
+
+@[implemented_by surjectionStirlingSecondImpl]
+private def surjectionStirlingSecond (n k : ℕ) : ℕ :=
+  Nat.stirlingSecond n k
+
 /-- The count of labelled surjections is the Fubini / ordered-Bell number. -/
 theorem surjectionClass_count_eq_fubini (n : ℕ) :
     surjectionClass.count n =
-      ∑ k ∈ Finset.range (n + 1), k.factorial * Nat.stirlingSecond n k := by
+      ∑ k ∈ Finset.range (n + 1), k.factorial * surjectionStirlingSecond n k := by
   exact labelSeq_posIntClass_count_eq_fubini n
 
 /-- The Fubini EGF satisfies `(2 - exp(z)) · F = 1`. -/
@@ -130,5 +147,20 @@ example : surjectionClass.count 22 = 2574844419803190384544203 := by
 
 set_option linter.style.nativeDecide false in
 example : surjectionClass.count 23 = 85438451336745709294580413 := by
+  rw [surjectionClass_count_eq_fubini]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : surjectionClass.count 24 = 2958279121074145472650648875 := by
+  rw [surjectionClass_count_eq_fubini]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : surjectionClass.count 25 = 106697365438475775825583498141 := by
+  rw [surjectionClass_count_eq_fubini]
+  native_decide
+
+set_option linter.style.nativeDecide false in
+example : surjectionClass.count 26 = 4002225759844168492486127539083 := by
   rw [surjectionClass_count_eq_fubini]
   native_decide
