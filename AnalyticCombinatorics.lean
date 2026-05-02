@@ -58,6 +58,7 @@ import AnalyticCombinatorics.PartA.Ch3.Moments
 import AnalyticCombinatorics.PartA.Ch3.LimitLaws
 import AnalyticCombinatorics.PartA.Ch3.PermutationStatistics
 import AnalyticCombinatorics.PartA.Ch3.ProbabilityGF
+import AnalyticCombinatorics.PartA.Ch3.CombinatoricsOnWords
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -71,6 +72,7 @@ import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.DigitalTrees
+import AnalyticCombinatorics.PartB.Ch5.ContextFreeGrammars
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
@@ -78,12 +80,15 @@ import AnalyticCombinatorics.PartB.Ch6.Asymptotics
 import AnalyticCombinatorics.PartB.Ch6.DeltaDomain
 import AnalyticCombinatorics.PartB.Ch6.TransferTheorems
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
+import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
+import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
 import AnalyticCombinatorics.PartB.Ch9.LargePowers
+import AnalyticCombinatorics.PartB.Ch9.RandomAllocations
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
