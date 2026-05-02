@@ -25,6 +25,7 @@ import AnalyticCombinatorics.PartA.Ch1.GeneralTrees
 import AnalyticCombinatorics.PartA.Ch1.Necklaces
 import AnalyticCombinatorics.PartA.Ch1.QAnalogs
 import AnalyticCombinatorics.PartA.Ch1.SymbolicTransfer
+import AnalyticCombinatorics.PartA.Ch1.CombinatorialIdentities
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
 import AnalyticCombinatorics.PartA.Ch2.Surjections
@@ -37,8 +38,11 @@ import AnalyticCombinatorics.PartA.Ch2.ExponentialFormula
 import AnalyticCombinatorics.PartA.Ch2.SetCycleOps
 import AnalyticCombinatorics.PartA.Ch2.Species
 import AnalyticCombinatorics.PartA.Ch2.ParkingFunctions
+import AnalyticCombinatorics.PartA.Ch2.AlternatingPerms
+import AnalyticCombinatorics.PartA.Ch2.RandomMappings
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
+import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
 import AnalyticCombinatorics.PartA.Ch3.Moments
 import AnalyticCombinatorics.PartA.Ch3.LimitLaws
 
