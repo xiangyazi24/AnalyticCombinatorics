@@ -101,6 +101,7 @@ import AnalyticCombinatorics.PartB.Ch4.GFTransforms
 import AnalyticCombinatorics.PartB.Ch4.StirlingApproximations
 import AnalyticCombinatorics.PartB.Ch4.TauberianTheorems
 import AnalyticCombinatorics.PartB.Ch4.MatrixMethods
+import AnalyticCombinatorics.PartB.Ch4.OrdinaryGFApplications
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
@@ -111,6 +112,7 @@ import AnalyticCombinatorics.PartB.Ch5.SpecialFunctions
 import AnalyticCombinatorics.PartB.Ch5.HypergeometricFunctions
 import AnalyticCombinatorics.PartB.Ch5.ResidueCalculus
 import AnalyticCombinatorics.PartB.Ch5.AnalyticNumberTheory2
+import AnalyticCombinatorics.PartB.Ch5.AnalyticNumberTheory3
 import AnalyticCombinatorics.PartB.Ch5.FiniteAutomata
 import AnalyticCombinatorics.PartB.Ch5.GFConvergence
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
@@ -125,6 +127,7 @@ import AnalyticCombinatorics.PartB.Ch6.AsymptoticMethods
 import AnalyticCombinatorics.PartB.Ch6.EulerMaclaurin
 import AnalyticCombinatorics.PartB.Ch6.CoefficientBounds
 import AnalyticCombinatorics.PartB.Ch6.Asymptotics2F1
+import AnalyticCombinatorics.PartB.Ch6.SingularityClassification
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
@@ -132,6 +135,7 @@ import AnalyticCombinatorics.PartB.Ch7.AnalyticInequalities
 import AnalyticCombinatorics.PartB.Ch7.AsymptoticSeries
 import AnalyticCombinatorics.PartB.Ch7.ExponentialGrowth
 import AnalyticCombinatorics.PartB.Ch7.SubexponentialGrowth
+import AnalyticCombinatorics.PartB.Ch7.MapAsymptotics
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
@@ -150,6 +154,7 @@ import AnalyticCombinatorics.PartB.Ch9.RandomPermutations
 import AnalyticCombinatorics.PartB.Ch9.PhaseTransitions
 import AnalyticCombinatorics.PartB.Ch9.RandomTreeStatistics
 import AnalyticCombinatorics.PartB.Ch9.LimitDistributions
+import AnalyticCombinatorics.PartB.Ch9.HashingAnalysis
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
