@@ -86,6 +86,7 @@ import AnalyticCombinatorics.PartA.Ch2.PermutationInversions
 import AnalyticCombinatorics.PartA.Ch2.ConnectedComponents
 import AnalyticCombinatorics.PartA.Ch2.TableauxPartitions
 import AnalyticCombinatorics.PartA.Ch2.PermutationDescents
+import AnalyticCombinatorics.PartA.Ch2.PartitionLattice
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -111,6 +112,7 @@ import AnalyticCombinatorics.PartA.Ch3.ProbabilityDistributions
 import AnalyticCombinatorics.PartA.Ch3.PatternAvoidanceAdvanced
 import AnalyticCombinatorics.PartA.Ch3.BoltzmannSampling
 import AnalyticCombinatorics.PartA.Ch3.QueueingCombinatorics
+import AnalyticCombinatorics.PartA.Ch3.TreeHeightDistribution
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -136,6 +138,7 @@ import AnalyticCombinatorics.PartB.Ch4.AsymptoticSeries
 import AnalyticCombinatorics.PartB.Ch4.ComplexVariables
 import AnalyticCombinatorics.PartB.Ch4.RationalFunctionDecomposition
 import AnalyticCombinatorics.PartB.Ch4.NumberTheoreticGF2
+import AnalyticCombinatorics.PartB.Ch4.SingularityAnalysisBasics
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
@@ -200,6 +203,7 @@ import AnalyticCombinatorics.PartB.Ch7.PolygonTriangulations
 import AnalyticCombinatorics.PartB.Ch7.AsymptoticExpansionSchemes
 import AnalyticCombinatorics.PartB.Ch7.SimpleTreeFamilies
 import AnalyticCombinatorics.PartB.Ch7.PolyaTreeEnumeration
+import AnalyticCombinatorics.PartB.Ch7.TreeHeightAsymptotics
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
@@ -220,6 +224,7 @@ import AnalyticCombinatorics.PartB.Ch8.MomentMethods
 import AnalyticCombinatorics.PartB.Ch8.ConcentrationInequalities
 import AnalyticCombinatorics.PartB.Ch8.ExponentialIntegrals
 import AnalyticCombinatorics.PartB.Ch8.GammaFunctionProperties
+import AnalyticCombinatorics.PartB.Ch8.PermutationStatisticsAsymptotics
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
