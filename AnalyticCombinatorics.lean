@@ -108,6 +108,7 @@ import AnalyticCombinatorics.PartB.Ch4.StirlingApproximations
 import AnalyticCombinatorics.PartB.Ch4.TauberianTheorems
 import AnalyticCombinatorics.PartB.Ch4.MatrixMethods
 import AnalyticCombinatorics.PartB.Ch4.OrdinaryGFApplications
+import AnalyticCombinatorics.PartB.Ch4.LinearRecurrences
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
@@ -144,6 +145,8 @@ import AnalyticCombinatorics.PartB.Ch7.AsymptoticSeries
 import AnalyticCombinatorics.PartB.Ch7.ExponentialGrowth
 import AnalyticCombinatorics.PartB.Ch7.SubexponentialGrowth
 import AnalyticCombinatorics.PartB.Ch7.MapAsymptotics
+import AnalyticCombinatorics.PartB.Ch7.PartitionEnumeration
+import AnalyticCombinatorics.PartB.Ch7.PermutationAsymptotics
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
@@ -152,6 +155,8 @@ import AnalyticCombinatorics.PartB.Ch8.AlgorithmicComplexity
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointExamples
 import AnalyticCombinatorics.PartB.Ch8.LaplaceMethod
 import AnalyticCombinatorics.PartB.Ch8.CombinatoricsBoundsB
+import AnalyticCombinatorics.PartB.Ch8.IntegerPartitionBounds
+import AnalyticCombinatorics.PartB.Ch8.CentralLimitSaddlePoint
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
