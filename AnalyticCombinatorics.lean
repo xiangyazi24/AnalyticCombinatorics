@@ -95,6 +95,7 @@ import AnalyticCombinatorics.PartA.Ch2.EGFApplications
 import AnalyticCombinatorics.PartA.Ch2.YoungTableaux
 import AnalyticCombinatorics.PartA.Ch2.FunctionalDigraphs
 import AnalyticCombinatorics.PartA.Ch2.PermutationFixedPoints
+import AnalyticCombinatorics.PartA.Ch2.SpeciesTheory
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -155,6 +156,7 @@ import AnalyticCombinatorics.PartB.Ch4.CoefficientExtractionMethods
 import AnalyticCombinatorics.PartB.Ch4.ExponentialGFCoefficients
 import AnalyticCombinatorics.PartB.Ch4.RadiusOfConvergence
 import AnalyticCombinatorics.PartB.Ch4.AlgebraicGF
+import AnalyticCombinatorics.PartB.Ch4.MeromorphicGF
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
@@ -208,6 +210,7 @@ import AnalyticCombinatorics.PartB.Ch6.SaddlePointCoefficients
 import AnalyticCombinatorics.PartB.Ch6.UniformAsymptotics
 import AnalyticCombinatorics.PartB.Ch6.SubexponentialSequences
 import AnalyticCombinatorics.PartB.Ch6.Asymptotics2F1Methods
+import AnalyticCombinatorics.PartB.Ch6.DiagonalCoefficients
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
@@ -286,6 +289,7 @@ import AnalyticCombinatorics.PartB.Ch9.ExtremalGraphCombinatorics
 import AnalyticCombinatorics.PartB.Ch9.AnalyticUrns
 import AnalyticCombinatorics.PartB.Ch9.StringCombinatorics
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphThresholds
+import AnalyticCombinatorics.PartB.Ch9.BirthdayParadoxVariants
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
