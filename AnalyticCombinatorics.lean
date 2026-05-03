@@ -79,6 +79,7 @@ import AnalyticCombinatorics.PartA.Ch2.CombinatoricsOnGraphs
 import AnalyticCombinatorics.PartA.Ch2.CodingTheory
 import AnalyticCombinatorics.PartA.Ch2.PermutationInversions
 import AnalyticCombinatorics.PartA.Ch2.ConnectedComponents
+import AnalyticCombinatorics.PartA.Ch2.TableauxPartitions
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -137,6 +138,7 @@ import AnalyticCombinatorics.PartB.Ch5.SeriesAcceleration
 import AnalyticCombinatorics.PartB.Ch5.PolynomialArithmetic
 import AnalyticCombinatorics.PartB.Ch5.BijectionPrinciples
 import AnalyticCombinatorics.PartB.Ch5.AutomataEnumeration
+import AnalyticCombinatorics.PartB.Ch5.OrdinaryDifferentialEquations
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
@@ -166,6 +168,8 @@ import AnalyticCombinatorics.PartB.Ch7.PartitionEnumeration
 import AnalyticCombinatorics.PartB.Ch7.PermutationAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.AlgebraicFunctions
 import AnalyticCombinatorics.PartB.Ch7.CombinatoricalSchemes
+import AnalyticCombinatorics.PartB.Ch7.ImplicitFunctions
+import AnalyticCombinatorics.PartB.Ch7.SmoothSchemes
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
@@ -192,6 +196,7 @@ import AnalyticCombinatorics.PartB.Ch9.LimitDistributions
 import AnalyticCombinatorics.PartB.Ch9.ProbabilisticMethod
 import AnalyticCombinatorics.PartB.Ch9.HashingAnalysis
 import AnalyticCombinatorics.PartB.Ch9.BranchingProcesses
+import AnalyticCombinatorics.PartB.Ch9.UrnsAndBalls
 import AnalyticCombinatorics.PartB.Ch9.RandomTrees
 
 -- ┌─────────────────────────────────────────┐
