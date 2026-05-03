@@ -64,9 +64,11 @@ import AnalyticCombinatorics.PartA.Ch2.PermutationGroups
 import AnalyticCombinatorics.PartA.Ch2.MapEnumeration
 import AnalyticCombinatorics.PartA.Ch2.NumberTheoreticGF
 import AnalyticCombinatorics.PartA.Ch2.ExponentialStructures
+import AnalyticCombinatorics.PartA.Ch2.OrderedStructures
 import AnalyticCombinatorics.PartA.Ch2.DesignTheory
 import AnalyticCombinatorics.PartA.Ch2.CombinatoricsBounds
 import AnalyticCombinatorics.PartA.Ch2.SymmetricFunctions
+import AnalyticCombinatorics.PartA.Ch2.LatinSquares
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -78,6 +80,7 @@ import AnalyticCombinatorics.PartA.Ch3.CombinatoricsOnWords
 import AnalyticCombinatorics.PartA.Ch3.CentralLimitTheorems
 import AnalyticCombinatorics.PartA.Ch3.LatticePathMethods
 import AnalyticCombinatorics.PartA.Ch3.PatternAvoidance
+import AnalyticCombinatorics.PartA.Ch3.PermutationPatterns
 import AnalyticCombinatorics.PartA.Ch3.CombOptimization
 import AnalyticCombinatorics.PartA.Ch3.WalksCounting
 
@@ -106,6 +109,7 @@ import AnalyticCombinatorics.PartB.Ch5.HypergeometricFunctions
 import AnalyticCombinatorics.PartB.Ch5.ResidueCalculus
 import AnalyticCombinatorics.PartB.Ch5.AnalyticNumberTheory2
 import AnalyticCombinatorics.PartB.Ch5.FiniteAutomata
+import AnalyticCombinatorics.PartB.Ch5.GFConvergence
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
@@ -117,6 +121,7 @@ import AnalyticCombinatorics.PartB.Ch6.SingularityTypes
 import AnalyticCombinatorics.PartB.Ch6.AsymptoticMethods
 import AnalyticCombinatorics.PartB.Ch6.EulerMaclaurin
 import AnalyticCombinatorics.PartB.Ch6.CoefficientBounds
+import AnalyticCombinatorics.PartB.Ch6.Asymptotics2F1
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
