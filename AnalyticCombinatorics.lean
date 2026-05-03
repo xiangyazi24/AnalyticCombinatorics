@@ -215,6 +215,7 @@ import AnalyticCombinatorics.PartB.Ch5.ContourIntegration
 import AnalyticCombinatorics.PartB.Ch5.MobiusInversion
 import AnalyticCombinatorics.PartB.Ch5.RiemannZeta
 import AnalyticCombinatorics.PartB.Ch5.PrimeNumberTheorem
+import AnalyticCombinatorics.PartB.Ch5.ContinuedFractions
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
@@ -340,6 +341,7 @@ import AnalyticCombinatorics.PartB.Ch9.DigitalTreeAnalysis
 import AnalyticCombinatorics.PartB.Ch9.HashTableAnalysis
 import AnalyticCombinatorics.PartB.Ch9.TrieAnalysis
 import AnalyticCombinatorics.PartB.Ch9.PermutationPatterns
+import AnalyticCombinatorics.PartB.Ch9.AnalyticDepoissonization
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
