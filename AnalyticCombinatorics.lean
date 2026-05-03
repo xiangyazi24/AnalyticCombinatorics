@@ -39,6 +39,7 @@ import AnalyticCombinatorics.PartA.Ch1.SymbolicMethodAdvanced
 import AnalyticCombinatorics.PartA.Ch1.OGFCoefficients
 import AnalyticCombinatorics.PartA.Ch1.SpeciesTheory
 import AnalyticCombinatorics.PartA.Ch1.InversionFormulas
+import AnalyticCombinatorics.PartA.Ch1.AnalyticInversion
 import AnalyticCombinatorics.PartA.Ch1.Polyominoes
 import AnalyticCombinatorics.PartA.Ch2.PermutationCycles
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
@@ -65,6 +66,7 @@ import AnalyticCombinatorics.PartA.Ch2.NumberTheoreticGF
 import AnalyticCombinatorics.PartA.Ch2.ExponentialStructures
 import AnalyticCombinatorics.PartA.Ch2.DesignTheory
 import AnalyticCombinatorics.PartA.Ch2.CombinatoricsBounds
+import AnalyticCombinatorics.PartA.Ch2.SymmetricFunctions
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -92,6 +94,7 @@ import AnalyticCombinatorics.PartB.Ch4.RecurrenceRelations
 import AnalyticCombinatorics.PartB.Ch4.GFTransforms
 import AnalyticCombinatorics.PartB.Ch4.StirlingApproximations
 import AnalyticCombinatorics.PartB.Ch4.TauberianTheorems
+import AnalyticCombinatorics.PartB.Ch4.MatrixMethods
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
@@ -113,6 +116,7 @@ import AnalyticCombinatorics.PartB.Ch6.PartitionAsymptotics
 import AnalyticCombinatorics.PartB.Ch6.SingularityTypes
 import AnalyticCombinatorics.PartB.Ch6.AsymptoticMethods
 import AnalyticCombinatorics.PartB.Ch6.EulerMaclaurin
+import AnalyticCombinatorics.PartB.Ch6.CoefficientBounds
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
@@ -134,6 +138,7 @@ import AnalyticCombinatorics.PartB.Ch9.PolyaEnumeration
 import AnalyticCombinatorics.PartB.Ch9.EntropyInformation
 import AnalyticCombinatorics.PartB.Ch9.RandomPermutations
 import AnalyticCombinatorics.PartB.Ch9.PhaseTransitions
+import AnalyticCombinatorics.PartB.Ch9.RandomTreeStatistics
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
