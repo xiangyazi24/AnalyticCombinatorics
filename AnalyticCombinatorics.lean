@@ -91,6 +91,7 @@ import AnalyticCombinatorics.PartA.Ch2.PermutationDescents
 import AnalyticCombinatorics.PartA.Ch2.PartitionLattice
 import AnalyticCombinatorics.PartA.Ch2.EGFApplications
 import AnalyticCombinatorics.PartA.Ch2.YoungTableaux
+import AnalyticCombinatorics.PartA.Ch2.FunctionalDigraphs
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -147,6 +148,7 @@ import AnalyticCombinatorics.PartB.Ch4.NumberTheoreticGF2
 import AnalyticCombinatorics.PartB.Ch4.SingularityAnalysisBasics
 import AnalyticCombinatorics.PartB.Ch4.CoefficientExtractionMethods
 import AnalyticCombinatorics.PartB.Ch4.ExponentialGFCoefficients
+import AnalyticCombinatorics.PartB.Ch4.RadiusOfConvergence
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
@@ -172,6 +174,7 @@ import AnalyticCombinatorics.PartB.Ch5.AnalyticContinuation
 import AnalyticCombinatorics.PartB.Ch5.SteepestDescent
 import AnalyticCombinatorics.PartB.Ch5.RiemannZetaValues
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticsOfSums
+import AnalyticCombinatorics.PartB.Ch5.GeneratingFunctionAnalyticity
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
@@ -243,6 +246,7 @@ import AnalyticCombinatorics.PartB.Ch8.GammaFunctionProperties
 import AnalyticCombinatorics.PartB.Ch8.PermutationStatisticsAsymptotics
 import AnalyticCombinatorics.PartB.Ch8.IntegerPartitionAsymptotics
 import AnalyticCombinatorics.PartB.Ch8.QueueingAsymptotics
+import AnalyticCombinatorics.PartB.Ch8.AsymptoticExpansionMethods
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
