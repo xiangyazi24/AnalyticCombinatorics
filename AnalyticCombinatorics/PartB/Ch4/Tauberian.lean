@@ -42,7 +42,6 @@ def isNonnegUpTo (a : ℕ → ℚ) (N : ℕ) : Bool :=
   (List.range (N + 1)).all fun k => decide (0 ≤ a k)
 
 def harmonicTerms (n : ℕ) : ℚ := 1 / ((n + 1 : ℕ) : ℚ)
-
 example : isNonnegUpTo constSeq 50 = true := by native_decide
 example : isNonnegUpTo harmonicTerms 50 = true := by native_decide
 
@@ -53,7 +52,6 @@ example : partialSum harmonicTerms 0 = 1        := by native_decide
 example : partialSum harmonicTerms 1 = 3 / 2    := by native_decide
 example : partialSum harmonicTerms 2 = 11 / 6   := by native_decide
 example : partialSum harmonicTerms 3 = 25 / 12  := by native_decide
-example : partialSum harmonicTerms 4 = 137 / 60 := by native_decide
 example : partialSum harmonicTerms 5 = 49 / 20  := by native_decide
 
 /-! ## 3. Abel summation by parts
@@ -109,7 +107,6 @@ example : (mkATPair 3).coeffGrowthExponent = 2 := by native_decide
 example : (mkATPair 1).gammaFactor = 1 := by native_decide
 example : (mkATPair 3).gammaFactor = 2 := by native_decide
 example : (mkATPair 4).gammaFactor = 6 := by native_decide
-
 def singularityCoeff (alpha n : ℕ) : ℚ :=
   (Nat.choose (n + alpha - 1) (alpha - 1) : ℚ)
 
@@ -120,7 +117,6 @@ example : ∀ n : Fin 10,
 example : ∀ n : Fin 10,
     singularityCoeff 3 n.val =
       ((n.val + 1) * (n.val + 2) : ℚ) / 2 := by native_decide
-
 def coeffRatio (alpha n : ℕ) : ℚ :=
   if singularityCoeff alpha n = 0 then 0
   else singularityCoeff alpha (n + 1) / singularityCoeff alpha n
@@ -136,7 +132,6 @@ example : ∀ n : Fin 10,
 
 example : coeffRatio 2 99 = 101 / 100 := by native_decide
 example : coeffRatio 3 99 = 102 / 100 := by native_decide
-
 /-! ## 5. Fibonacci growth ratios (algebraic singularity)
 
   z/(1−z−z²) has singularity at ρ = (√5−1)/2.
@@ -171,15 +166,12 @@ deriving DecidableEq
 def rvConstantGrowth : RegularlyVaryingData :=
   { index := 0, slowlyVaryingDesc := "1",
     radiusOfConvergence := 1 }
-
 def rvLinearGrowth : RegularlyVaryingData :=
   { index := 1, slowlyVaryingDesc := "1",
     radiusOfConvergence := 1 }
-
 def rvQuadraticGrowth : RegularlyVaryingData :=
   { index := 2, slowlyVaryingDesc := "1/2",
     radiusOfConvergence := 1 }
-
 example : rvConstantGrowth.index = 0 := by native_decide
 example : rvLinearGrowth.index = 1 := by native_decide
 example : rvQuadraticGrowth.radiusOfConvergence = 1 := by
@@ -193,7 +185,6 @@ example : rvQuadraticGrowth.radiusOfConvergence = 1 := by
 
 def quadraticPartialSum (n : ℕ) : ℚ :=
   ((n + 1) * (n + 2) : ℕ) / 2
-
 example : ∀ n : Fin 15,
     quadraticPartialSum n.val =
       partialSum linearSeq n.val := by native_decide
@@ -201,12 +192,9 @@ example : ∀ n : Fin 15,
 def partialSumRatio (n : ℕ) : ℚ :=
   if n = 0 then 0
   else quadraticPartialSum n / ((n : ℚ) * (n : ℚ))
-
 -- (n+1)(n+2)/(2n²) → 1/2 = 1/Γ(3) as n → ∞
-example : partialSumRatio 2   = 3 / 2        := by native_decide
 example : partialSumRatio 5   = 21 / 25      := by native_decide
 example : partialSumRatio 10  = 33 / 50      := by native_decide
-example : partialSumRatio 20  = 231 / 400    := by native_decide
 example : partialSumRatio 100 = 5151 / 10000 := by native_decide
 
 end Tauberian

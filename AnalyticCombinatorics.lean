@@ -64,6 +64,7 @@ import AnalyticCombinatorics.PartA.Ch1.WordCombinatorics
 import AnalyticCombinatorics.PartA.Ch1.PolyominoEnumeration
 import AnalyticCombinatorics.PartA.Ch1.ContextFreeGrammars
 import AnalyticCombinatorics.PartA.Ch1.OGFExamples
+import AnalyticCombinatorics.PartA.Ch1.RunLengthEncoding
 import AnalyticCombinatorics.PartA.Ch2.PermutationCycles
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
@@ -115,6 +116,7 @@ import AnalyticCombinatorics.PartA.Ch2.EulerianNumbers
 import AnalyticCombinatorics.PartA.Ch2.BellNumbers
 import AnalyticCombinatorics.PartA.Ch2.PermutationDecomposition
 import AnalyticCombinatorics.PartA.Ch2.ConnectedGraphs
+import AnalyticCombinatorics.PartA.Ch2.UrbanRenewal
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -191,6 +193,7 @@ import AnalyticCombinatorics.PartB.Ch4.ResidueComputation
 import AnalyticCombinatorics.PartB.Ch4.DominantSingularity
 import AnalyticCombinatorics.PartB.Ch4.ExponentialGrowthRates
 import AnalyticCombinatorics.PartB.Ch4.CoeffBoundsFromGF
+import AnalyticCombinatorics.PartB.Ch4.MeromCoeffExtraction
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
@@ -299,6 +302,8 @@ import AnalyticCombinatorics.PartB.Ch7.AlgebraicMapEnumeration
 import AnalyticCombinatorics.PartB.Ch7.PositionOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.SubcriticalSchemes
 import AnalyticCombinatorics.PartB.Ch7.SupercriticalSchemes
+import AnalyticCombinatorics.PartB.Ch7.UniversalityExponents
+import AnalyticCombinatorics.PartB.Ch7.IteratedFunctionSchemes
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
@@ -368,6 +373,7 @@ import AnalyticCombinatorics.PartB.Ch9.DigitalSearchTrees
 import AnalyticCombinatorics.PartB.Ch9.RadixSortAnalysis
 import AnalyticCombinatorics.PartB.Ch9.LeaderElection
 import AnalyticCombinatorics.PartB.Ch9.PatriciaTrieAnalysis
+import AnalyticCombinatorics.PartB.Ch9.SkipListAnalysis
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
