@@ -178,6 +178,7 @@ import AnalyticCombinatorics.PartB.Ch7.InverseFunctions
 import AnalyticCombinatorics.PartB.Ch7.ContextFreeSchemes
 import AnalyticCombinatorics.PartB.Ch7.NewtonPolygon
 import AnalyticCombinatorics.PartB.Ch7.PolygonTriangulations
+import AnalyticCombinatorics.PartB.Ch7.AsymptoticExpansionSchemes
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint

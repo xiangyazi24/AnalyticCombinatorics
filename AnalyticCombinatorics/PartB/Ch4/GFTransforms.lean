@@ -1,133 +1,217 @@
-/-
-  Analytic Combinatorics — Part B: Complex Asymptotics
-  Chapter IV / Appendix — Generating Function Transforms
-
-  Euler transform, Möbius inversion, Borel transform, binomial transform,
-  Stirling transform, and Hankel determinants — verified numerically.
--/
 import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
 namespace GFTransforms
 
-/-! ## 1. Euler Transform
-
-The Euler transform converts a sequence `a_n` (counting structures of size n)
-into `b_n` (counting multisets of those structures). When `a_n = 1` for all
-`n ≥ 1`, the Euler transform gives `p(n)`, the number of integer partitions.
+/-!
+Chapter IV generating-function transforms, stated as finite coefficient
+identities.  The finite checks below model ordinary/exponential coefficients,
+Euler products, Lambert-series coefficient extraction, and the arithmetic
+inversions used in the inverse Euler transform.
 -/
 
-/-- Partition numbers p(0)..p(10). -/
-def partitions : Fin 11 → ℕ := ![1, 1, 2, 3, 5, 7, 11, 15, 22, 30, 42]
+open Finset
 
-/-- Euler transform of the all-ones sequence, computed directly for small n. -/
-def eulerOfOnes : Fin 11 → ℕ := ![1, 1, 2, 3, 5, 7, 11, 15, 22, 30, 42]
+/-! ## Basic finite coefficient operations -/
 
-/-- The Euler transform of all-ones matches the partition table. -/
-theorem euler_ones_eq_partitions : eulerOfOnes = partitions := by native_decide
+def factorialQ (n : ℕ) : ℚ := (Nat.factorial n : ℚ)
 
-/-- If a_1=1 and a_n=0 for n≥2 (single atom), then multisets give b_n=1 for all n. -/
-def eulerOfAtom : Fin 6 → ℕ := ![1, 1, 1, 1, 1, 1]
+def dividesBool (d n : ℕ) : Bool := d ≠ 0 && n % d = 0
 
-example : eulerOfAtom = ![1, 1, 1, 1, 1, 1] := by native_decide
+def allParts (_ : ℕ) : Bool := true
 
-/-! ## 2. Möbius Transform / Inversion
+def oddParts (k : ℕ) : Bool := k % 2 = 1
 
-If `b_n = Σ_{d|n} a_d`, then by Möbius inversion `a_n = Σ_{d|n} μ(n/d) b_d`.
-Classical example: `b_n = n` implies `a_n = φ(n)` (Euler's totient).
--/
+/-- Coefficient of `z^n` in `∏_{k=1}^{maxPart} (1-z^k)^{-1}` with an
+optional part filter. -/
+def unrestrictedProductCoeff (allowed : ℕ → Bool) (n : ℕ) : ℕ → ℕ
+  | 0 => if n = 0 then 1 else 0
+  | maxPart + 1 =>
+      if allowed (maxPart + 1) then
+        ∑ m ∈ Finset.range (n / (maxPart + 1) + 1),
+          unrestrictedProductCoeff allowed (n - m * (maxPart + 1)) maxPart
+      else
+        unrestrictedProductCoeff allowed n maxPart
 
-/-- Σ φ(d) for d|6 equals 6. -/
-example : 1 + 1 + 2 + 2 = 6 := by native_decide
+/-- Coefficient of `z^n` in `∏_{k=1}^{maxPart} (1+z^k)` with an optional
+part filter. -/
+def restrictedProductCoeff (allowed : ℕ → Bool) (n : ℕ) : ℕ → ℕ
+  | 0 => if n = 0 then 1 else 0
+  | maxPart + 1 =>
+      restrictedProductCoeff allowed n maxPart +
+        if allowed (maxPart + 1) && maxPart + 1 ≤ n then
+          restrictedProductCoeff allowed (n - (maxPart + 1)) maxPart
+        else
+          0
 
-/-- Σ φ(d) for d|12 equals 12. -/
-example : 1 + 1 + 2 + 2 + 4 + 2 = 12 := by native_decide
+def partitionNumber (n : ℕ) : ℕ :=
+  unrestrictedProductCoeff allParts n n
 
-/-- Σ φ(d) for d|10 equals 10. -/
-example : 1 + 1 + 4 + 4 = 10 := by native_decide
+def distinctPartitionNumber (n : ℕ) : ℕ :=
+  restrictedProductCoeff allParts n n
 
-/-- Σ φ(d) for d|8 equals 8. -/
-example : 1 + 1 + 2 + 4 = 8 := by native_decide
+def oddPartitionNumber (n : ℕ) : ℕ :=
+  unrestrictedProductCoeff oddParts n n
 
-/-! ## 3. Borel Transform (OGF ↔ EGF)
+/-! ## 1. Euler transform: restricted and unrestricted partition GFs -/
 
-The Borel transform maps `a_n ↦ a_n / n!`, converting an OGF to an EGF.
-For f = 1/(1-z) (OGF of all-ones), B(f) = e^z.
--/
-
-/-- Catalan numbers divided by factorials (Borel transform). -/
-example : (1 : ℚ) / 1 = 1 := by native_decide
-example : (2 : ℚ) / 2 = 1 := by native_decide
-example : (5 : ℚ) / 6 = 5 / 6 := by native_decide
-example : (14 : ℚ) / 24 = 7 / 12 := by native_decide
-example : (42 : ℚ) / 120 = 7 / 20 := by native_decide
-
-/-! ## 4. Binomial Transform
-
-`b_n = Σ_{k=0}^n C(n,k) a_k`. Inverse: `a_n = Σ_{k=0}^n (-1)^{n-k} C(n,k) b_k`.
-For `a_n = 1`: `b_n = 2^n`. For Fibonacci: `Σ C(n,k) F_k = F_{2n}`.
--/
-
-/-- Binomial transform of Fibonacci: Σ C(3,k)*F_k = F_6 = 8. -/
-example : 0 + 3 + 3 + 2 = 8 := by native_decide
-
-/-- Binomial transform of Fibonacci: Σ C(4,k)*F_k = F_8 = 21. -/
-example : 0 + 4 + 6 + 8 + 3 = 21 := by native_decide
-
-/-- F_6 = 8. -/
-example : Nat.fib 6 = 8 := by native_decide
-
-/-- F_8 = 21. -/
-example : Nat.fib 8 = 21 := by native_decide
-
-/-- Binomial transform of all-ones: 2^n. -/
-example : (1 + 1 : ℕ) ^ 4 = 16 := by native_decide
-
-/-- Binomial transform of n ↦ n: n*2^{n-1} for n=4 is 32. -/
-example : 0 * 1 + 4 * 1 + 6 * 2 + 4 * 3 + 1 * 4 = 32 := by native_decide
-example : 4 * 2 ^ 3 = 32 := by native_decide
-
-/-! ## 5. Stirling Transform
-
-`b_n = Σ_{k=0}^n S(n,k) a_k` where S(n,k) = Stirling numbers of the second kind.
-For `a_k = k!`: `b_n = Σ S(n,k) k!` = Fubini numbers (ordered Bell).
-Fubini: 1, 1, 3, 13, 75, 541, ...
--/
-
-/-- Fubini(3) = Σ S(3,k)*k! = 0+1+6+6 = 13. -/
-example : 0 * 1 + 1 * 1 + 3 * 2 + 1 * 6 = 13 := by native_decide
-
-/-- Fubini(4) = Σ S(4,k)*k! = 0+1+14+36+24 = 75.
-    S(4,0)=0, S(4,1)=1, S(4,2)=7, S(4,3)=6, S(4,4)=1. -/
-example : 0 * 1 + 1 * 1 + 7 * 2 + 6 * 6 + 1 * 24 = 75 := by native_decide
-
-/-- Bell numbers B(n) = Σ S(n,k). B(4)=15. -/
-example : 0 + 1 + 7 + 6 + 1 = 15 := by native_decide
-
-/-- Bell numbers B(5)=52. S(5,0..5) = 0,1,15,25,10,1. -/
-example : 0 + 1 + 15 + 25 + 10 + 1 = 52 := by native_decide
-
-/-! ## 6. Hankel Transform (Determinants)
-
-The Hankel matrix `H_n` has `(i,j)`-entry `a_{i+j}`. For the Catalan numbers,
-`det H_n = 1` for all n. Similarly for Motzkin numbers.
--/
-
-/-- Catalan Hankel 2×2: det [[1,1],[1,2]] = 1. -/
-example : (1 : ℤ) * 2 - 1 * 1 = 1 := by native_decide
-
-/-- Catalan Hankel 3×3: det [[1,1,2],[1,2,5],[2,5,14]] = 1.
-    Expansion along first row. -/
-example : (1 : ℤ) * (2 * 14 - 5 * 5) - 1 * (1 * 14 - 5 * 2) + 2 * (1 * 5 - 2 * 2) = 1 := by
+/-- Euler's distinct/odd partition identity, at the coefficient level:
+`∏(1+z^k) = ∏(1-z^(2k))/(1-z^k) = ∏_{k odd}(1-z^k)^{-1}`. -/
+theorem euler_distinct_partitions_eq_odd_partitions_upto_twelve :
+    List.ofFn (fun n : Fin 13 => distinctPartitionNumber n.val) =
+      List.ofFn (fun n : Fin 13 => oddPartitionNumber n.val) := by
   native_decide
 
-/-- Motzkin Hankel 2×2: det [[1,1],[1,2]] = 1. -/
-example : (1 : ℤ) * 2 - 1 * 1 = 1 := by native_decide
+/-- The shared coefficients of the restricted and odd unrestricted products. -/
+theorem euler_distinct_odd_coefficients_upto_twelve :
+    List.ofFn (fun n : Fin 13 => distinctPartitionNumber n.val) =
+      [1, 1, 1, 2, 2, 3, 4, 5, 6, 8, 10, 12, 15] := by
+  native_decide
 
-/-- Motzkin Hankel 3×3: det [[1,1,2],[1,2,4],[2,4,9]] = 1.
-    Expansion along first row. -/
-example : (1 : ℤ) * (2 * 9 - 4 * 4) - 1 * (1 * 9 - 4 * 2) + 2 * (1 * 4 - 2 * 2) = 1 := by
+/-! ## 2. Borel transform: `a n / n! ↔ a n` -/
+
+def borelCoeff (a : ℕ → ℚ) (n : ℕ) : ℚ :=
+  a n / factorialQ n
+
+def inverseBorelCoeff (b : ℕ → ℚ) (n : ℕ) : ℚ :=
+  b n * factorialQ n
+
+def allOnesQ (_ : ℕ) : ℚ := 1
+
+def expCoeff (n : ℕ) : ℚ := 1 / factorialQ n
+
+/-- The Borel transform of the OGF with coefficients `1,1,1,...` has the
+coefficients of `exp z`. -/
+theorem borel_all_ones_is_exp_coefficients_upto_eight :
+    List.ofFn (fun n : Fin 9 => borelCoeff allOnesQ n.val) =
+      List.ofFn (fun n : Fin 9 => expCoeff n.val) := by
+  native_decide
+
+/-- Applying the inverse Borel transform recovers `1,1,1,...`. -/
+theorem inverse_borel_exp_coefficients_upto_eight :
+    List.ofFn (fun n : Fin 9 => inverseBorelCoeff expCoeff n.val) =
+      [1, 1, 1, 1, 1, 1, 1, 1, 1] := by
+  native_decide
+
+/-! ## 3. Inverse Euler transform: Möbius inversion on GF logarithms -/
+
+def primeBool (n : ℕ) : Bool :=
+  2 ≤ n && (List.range (n + 1)).all fun d => d < 2 || n % d ≠ 0 || d = n
+
+def squarefreeBool (n : ℕ) : Bool :=
+  (List.range (n + 1)).all fun p => !primeBool p || n % (p * p) ≠ 0
+
+def primeDivisorCount (n : ℕ) : ℕ :=
+  ((List.range (n + 1)).filter fun p => primeBool p && n % p = 0).length
+
+def mobius (n : ℕ) : ℤ :=
+  if n = 1 then
+    1
+  else if squarefreeBool n then
+    if primeDivisorCount n % 2 = 0 then 1 else -1
+  else
+    0
+
+def divisorSumInt (a : ℕ → ℤ) (n : ℕ) : ℤ :=
+  ∑ d ∈ Finset.range (n + 1), if dividesBool d n then a d else 0
+
+def mobiusInverse (b : ℕ → ℤ) (n : ℕ) : ℤ :=
+  ∑ d ∈ Finset.range (n + 1), if dividesBool d n then mobius d * b (n / d) else 0
+
+def eulerLogCoeff (a : ℕ → ℤ) (n : ℕ) : ℤ :=
+  ∑ d ∈ Finset.range (n + 1), if dividesBool d n then (d : ℤ) * a d else 0
+
+def inverseEulerCoeff (c : ℕ → ℤ) (n : ℕ) : ℤ :=
+  mobiusInverse c n / (n : ℤ)
+
+def onesZ (_ : ℕ) : ℤ := 1
+
+def idZ (n : ℕ) : ℤ := n
+
+/-- Ordinary Möbius inversion for divisor sums, checked on `a_n = n`. -/
+theorem mobius_inversion_divisor_sums_upto_twelve :
+    List.ofFn (fun i : Fin 12 => mobiusInverse (divisorSumInt idZ) (i.val + 1)) =
+      List.ofFn (fun i : Fin 12 => idZ (i.val + 1)) := by
+  native_decide
+
+/-- Inverse Euler transform: from `z F'(z)/F(z)` coefficients
+`c_n = ∑_{d|n} d a_d`, recover `a_n`. -/
+theorem inverse_euler_recovers_all_ones_upto_twelve :
+    List.ofFn (fun i : Fin 12 => inverseEulerCoeff (eulerLogCoeff onesZ) (i.val + 1)) =
+      List.ofFn (fun _ : Fin 12 => (1 : ℤ)) := by
+  native_decide
+
+/-! ## 4. Exponential to ordinary: multiply EGF coefficients by `n!` -/
+
+def egfToOrdCoeff (b : ℕ → ℚ) (n : ℕ) : ℚ :=
+  b n * factorialQ n
+
+def stirling2 : ℕ → ℕ → ℕ
+  | 0, 0 => 1
+  | 0, _ + 1 => 0
+  | _ + 1, 0 => 0
+  | n + 1, k + 1 => stirling2 n k + (k + 1) * stirling2 n (k + 1)
+
+def bellNumber (n : ℕ) : ℕ :=
+  ∑ k ∈ Finset.range (n + 1), stirling2 n k
+
+def bellEgfCoeff (n : ℕ) : ℚ :=
+  (bellNumber n : ℚ) / factorialQ n
+
+/-- Bell-number EGF coefficients convert back to ordinary coefficients by
+multiplication by `n!`. -/
+theorem bell_exponential_to_ordinary_upto_seven :
+    List.ofFn (fun n : Fin 8 => egfToOrdCoeff bellEgfCoeff n.val) =
+      List.ofFn (fun n : Fin 8 => (bellNumber n.val : ℚ)) := by
+  native_decide
+
+theorem bell_numbers_upto_seven :
+    List.ofFn (fun n : Fin 8 => bellNumber n.val) =
+      [1, 1, 2, 5, 15, 52, 203, 877] := by
+  native_decide
+
+/-! ## 5. Multiset construction: partition coefficients -/
+
+/-- The multiset construction over one atom of each positive size gives
+`∏_{k≥1} 1/(1-z^k)`, whose coefficients are the partition numbers. -/
+theorem multiset_product_coefficients_are_partition_numbers_upto_twelve :
+    List.ofFn (fun n : Fin 13 => unrestrictedProductCoeff allParts n.val n.val) =
+      List.ofFn (fun n : Fin 13 => partitionNumber n.val) := by
+  native_decide
+
+theorem partition_numbers_upto_twelve :
+    List.ofFn (fun n : Fin 13 => partitionNumber n.val) =
+      [1, 1, 2, 3, 5, 7, 11, 15, 22, 30, 42, 56, 77] := by
+  native_decide
+
+/-! ## 6. Dirichlet series to ordinary GF: Lambert coefficient extraction -/
+
+/-- Coefficient of `z^n` in the finite Lambert series
+`∑_{k≤maxK} a_k z^k/(1-z^k)`, expanded through `maxM` multiples. -/
+def lambertExpandedCoeff (a : ℕ → ℤ) (n maxK maxM : ℕ) : ℤ :=
+  ∑ k ∈ Finset.range (maxK + 1),
+    ∑ m ∈ Finset.range (maxM + 1),
+      if k * (m + 1) = n then a k else 0
+
+/-- Coefficient of `z^n` in `∑ k a_k z^k/(1-z^k)`. -/
+def weightedLambertExpandedCoeff (a : ℕ → ℤ) (n maxK maxM : ℕ) : ℤ :=
+  ∑ k ∈ Finset.range (maxK + 1),
+    ∑ m ∈ Finset.range (maxM + 1),
+      if k * (m + 1) = n then (k : ℤ) * a k else 0
+
+/-- `[z^n] ∑ a_k z^k/(1-z^k) = ∑_{d|n} a_d`, checked for `a_k = k`. -/
+theorem lambert_coefficients_are_divisor_sums_upto_twelve :
+    List.ofFn (fun i : Fin 12 =>
+        lambertExpandedCoeff idZ (i.val + 1) (i.val + 1) (i.val + 1)) =
+      List.ofFn (fun i : Fin 12 => divisorSumInt idZ (i.val + 1)) := by
+  native_decide
+
+/-- `[z^n] ∑ k a_k z^k/(1-z^k) = ∑_{d|n} d a_d`, checked for `a_k = 1`. -/
+theorem weighted_lambert_coefficients_are_euler_log_coefficients_upto_twelve :
+    List.ofFn (fun i : Fin 12 =>
+        weightedLambertExpandedCoeff onesZ (i.val + 1) (i.val + 1) (i.val + 1)) =
+      List.ofFn (fun i : Fin 12 => eulerLogCoeff onesZ (i.val + 1)) := by
   native_decide
 
 end GFTransforms
