@@ -130,6 +130,7 @@ import AnalyticCombinatorics.PartA.Ch3.SymbolicMethodIII
 import AnalyticCombinatorics.PartA.Ch3.AnalyticDepoissonization
 import AnalyticCombinatorics.PartA.Ch3.CumulantMethods
 import AnalyticCombinatorics.PartA.Ch3.AsymptoticTransfers
+import AnalyticCombinatorics.PartA.Ch3.ConcentrationInequalities
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -162,6 +163,7 @@ import AnalyticCombinatorics.PartB.Ch4.RadiusOfConvergence
 import AnalyticCombinatorics.PartB.Ch4.AlgebraicGF
 import AnalyticCombinatorics.PartB.Ch4.MeromorphicGF
 import AnalyticCombinatorics.PartB.Ch4.TransferTheoremsII
+import AnalyticCombinatorics.PartB.Ch4.PeriodicCoefficients
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
@@ -219,6 +221,7 @@ import AnalyticCombinatorics.PartB.Ch6.SubexponentialSequences
 import AnalyticCombinatorics.PartB.Ch6.Asymptotics2F1Methods
 import AnalyticCombinatorics.PartB.Ch6.DiagonalCoefficients
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularities
+import AnalyticCombinatorics.PartB.Ch6.CoefficientAsymptoticsII
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
@@ -303,6 +306,7 @@ import AnalyticCombinatorics.PartB.Ch9.StringCombinatorics
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphThresholds
 import AnalyticCombinatorics.PartB.Ch9.BirthdayParadoxVariants
 import AnalyticCombinatorics.PartB.Ch9.SearchTreeAnalysis
+import AnalyticCombinatorics.PartB.Ch9.QueueingNetworks
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
