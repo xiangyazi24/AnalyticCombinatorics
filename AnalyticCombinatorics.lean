@@ -168,6 +168,7 @@ import AnalyticCombinatorics.PartB.Ch4.AlgebraicGF
 import AnalyticCombinatorics.PartB.Ch4.MeromorphicGF
 import AnalyticCombinatorics.PartB.Ch4.TransferTheoremsII
 import AnalyticCombinatorics.PartB.Ch4.PeriodicCoefficients
+import AnalyticCombinatorics.PartB.Ch4.SupAperiodicGF
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
@@ -198,6 +199,7 @@ import AnalyticCombinatorics.PartB.Ch5.SingularInversion
 import AnalyticCombinatorics.PartB.Ch5.DirichletSeries
 import AnalyticCombinatorics.PartB.Ch5.EulerMaclaurin
 import AnalyticCombinatorics.PartB.Ch5.AnalyticNumberTheory
+import AnalyticCombinatorics.PartB.Ch5.ContourIntegration
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
@@ -288,6 +290,7 @@ import AnalyticCombinatorics.PartB.Ch8.ExtremeValueDistributions
 import AnalyticCombinatorics.PartB.Ch8.PoissonApproximation
 import AnalyticCombinatorics.PartB.Ch8.StirlingSaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.DistributionApproximation
+import AnalyticCombinatorics.PartB.Ch8.ExponentialTailBounds
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
