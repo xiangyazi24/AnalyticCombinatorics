@@ -73,6 +73,7 @@ import AnalyticCombinatorics.PartA.Ch2.SymmetricFunctions
 import AnalyticCombinatorics.PartA.Ch2.LatinSquares
 import AnalyticCombinatorics.PartA.Ch2.HarmonicNumbers
 import AnalyticCombinatorics.PartA.Ch2.CombinatoricsOnGraphs
+import AnalyticCombinatorics.PartA.Ch2.CodingTheory
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -89,10 +90,12 @@ import AnalyticCombinatorics.PartA.Ch3.CombOptimization
 import AnalyticCombinatorics.PartA.Ch3.WalksCounting
 import AnalyticCombinatorics.PartA.Ch3.RecurrenceAnalysis
 import AnalyticCombinatorics.PartA.Ch3.SpecialSequences
+import AnalyticCombinatorics.PartA.Ch3.DigitalCombinatorics
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
 -- └─────────────────────────────────────────┘
+import AnalyticCombinatorics.PartB.Ch4.GeneratingFunctionIdentities
 import AnalyticCombinatorics.PartB.Ch4.RationalGF
 import AnalyticCombinatorics.PartB.Ch4.MeromorphicCoeff
 import AnalyticCombinatorics.PartB.Ch4.FormalPowerSeries
@@ -132,6 +135,7 @@ import AnalyticCombinatorics.PartB.Ch6.EulerMaclaurin
 import AnalyticCombinatorics.PartB.Ch6.CoefficientBounds
 import AnalyticCombinatorics.PartB.Ch6.Asymptotics2F1
 import AnalyticCombinatorics.PartB.Ch6.SingularityClassification
+import AnalyticCombinatorics.PartB.Ch6.AsymptoticTransfer
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
@@ -159,6 +163,7 @@ import AnalyticCombinatorics.PartB.Ch9.RandomPermutations
 import AnalyticCombinatorics.PartB.Ch9.PhaseTransitions
 import AnalyticCombinatorics.PartB.Ch9.RandomTreeStatistics
 import AnalyticCombinatorics.PartB.Ch9.LimitDistributions
+import AnalyticCombinatorics.PartB.Ch9.ProbabilisticMethod
 import AnalyticCombinatorics.PartB.Ch9.HashingAnalysis
 
 -- ┌─────────────────────────────────────────┐
