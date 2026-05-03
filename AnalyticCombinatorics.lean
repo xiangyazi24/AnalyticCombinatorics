@@ -57,6 +57,7 @@ import AnalyticCombinatorics.PartA.Ch1.GFClosure
 import AnalyticCombinatorics.PartA.Ch1.PartitionIdentities
 import AnalyticCombinatorics.PartA.Ch1.SymmetricFunctions
 import AnalyticCombinatorics.PartA.Ch1.WordCombinatorics
+import AnalyticCombinatorics.PartA.Ch1.PolyominoEnumeration
 import AnalyticCombinatorics.PartA.Ch2.PermutationCycles
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
@@ -133,6 +134,7 @@ import AnalyticCombinatorics.PartA.Ch3.AnalyticDepoissonization
 import AnalyticCombinatorics.PartA.Ch3.CumulantMethods
 import AnalyticCombinatorics.PartA.Ch3.AsymptoticTransfers
 import AnalyticCombinatorics.PartA.Ch3.ConcentrationInequalities
+import AnalyticCombinatorics.PartA.Ch3.GaussianLimitLaws
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -225,6 +227,7 @@ import AnalyticCombinatorics.PartB.Ch6.Asymptotics2F1Methods
 import AnalyticCombinatorics.PartB.Ch6.DiagonalCoefficients
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularities
 import AnalyticCombinatorics.PartB.Ch6.CoefficientAsymptoticsII
+import AnalyticCombinatorics.PartB.Ch6.MultiplicativeFunctions
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
@@ -312,6 +315,7 @@ import AnalyticCombinatorics.PartB.Ch9.RandomGraphThresholds
 import AnalyticCombinatorics.PartB.Ch9.BirthdayParadoxVariants
 import AnalyticCombinatorics.PartB.Ch9.SearchTreeAnalysis
 import AnalyticCombinatorics.PartB.Ch9.QueueingNetworks
+import AnalyticCombinatorics.PartB.Ch9.DigitalTreeAnalysis
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
