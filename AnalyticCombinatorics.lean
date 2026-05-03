@@ -50,6 +50,7 @@ import AnalyticCombinatorics.PartA.Ch1.BinomialTransforms
 import AnalyticCombinatorics.PartA.Ch1.Surjections2
 import AnalyticCombinatorics.PartA.Ch1.MotzkinPaths
 import AnalyticCombinatorics.PartA.Ch1.PlaneTreeEnumeration
+import AnalyticCombinatorics.PartA.Ch1.SuccessionRules
 import AnalyticCombinatorics.PartA.Ch1.FibonacciIdentities
 import AnalyticCombinatorics.PartA.Ch1.DerangementVariants
 import AnalyticCombinatorics.PartA.Ch1.BinaryTreeShapes
