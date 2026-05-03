@@ -120,7 +120,6 @@ import AnalyticCombinatorics.PartA.Ch3.CombinatoricsOnWords
 import AnalyticCombinatorics.PartA.Ch3.CentralLimitTheorems
 import AnalyticCombinatorics.PartA.Ch3.LatticePathMethods
 import AnalyticCombinatorics.PartA.Ch3.PatternAvoidance
-import AnalyticCombinatorics.PartA.Ch3.PermutationPatterns
 import AnalyticCombinatorics.PartA.Ch3.CombOptimization
 import AnalyticCombinatorics.PartA.Ch3.WalksCounting
 import AnalyticCombinatorics.PartA.Ch3.RecurrenceAnalysis
@@ -143,6 +142,7 @@ import AnalyticCombinatorics.PartA.Ch3.AsymptoticTransfers
 import AnalyticCombinatorics.PartA.Ch3.ConcentrationInequalities
 import AnalyticCombinatorics.PartA.Ch3.GaussianLimitLaws
 import AnalyticCombinatorics.PartA.Ch3.MultivarGF
+import AnalyticCombinatorics.PartA.Ch3.LimitDistributions
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -246,6 +246,7 @@ import AnalyticCombinatorics.PartB.Ch6.MultiplicativeFunctions
 import AnalyticCombinatorics.PartB.Ch6.InversionFormulas
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysisIII
 import AnalyticCombinatorics.PartB.Ch6.HadamardProduct
+import AnalyticCombinatorics.PartB.Ch6.SingularityExponents
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
@@ -316,7 +317,6 @@ import AnalyticCombinatorics.PartB.Ch9.EntropyInformation
 import AnalyticCombinatorics.PartB.Ch9.RandomPermutations
 import AnalyticCombinatorics.PartB.Ch9.PhaseTransitions
 import AnalyticCombinatorics.PartB.Ch9.RandomTreeStatistics
-import AnalyticCombinatorics.PartB.Ch9.LimitDistributions
 import AnalyticCombinatorics.PartB.Ch9.ProbabilisticMethod
 import AnalyticCombinatorics.PartB.Ch9.HashingAnalysis
 import AnalyticCombinatorics.PartB.Ch9.BranchingProcesses
@@ -336,6 +336,7 @@ import AnalyticCombinatorics.PartB.Ch9.QueueingNetworks
 import AnalyticCombinatorics.PartB.Ch9.DigitalTreeAnalysis
 import AnalyticCombinatorics.PartB.Ch9.HashTableAnalysis
 import AnalyticCombinatorics.PartB.Ch9.TrieAnalysis
+import AnalyticCombinatorics.PartB.Ch9.PermutationPatterns
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
