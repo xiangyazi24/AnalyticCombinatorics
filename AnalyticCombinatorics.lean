@@ -43,6 +43,7 @@ import AnalyticCombinatorics.PartA.Ch1.AnalyticInversion
 import AnalyticCombinatorics.PartA.Ch1.Polyominoes
 import AnalyticCombinatorics.PartA.Ch1.PermutationEnumeration
 import AnalyticCombinatorics.PartA.Ch1.EnumerativeGeometry
+import AnalyticCombinatorics.PartA.Ch1.SetPartitions
 import AnalyticCombinatorics.PartA.Ch2.PermutationCycles
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
@@ -91,6 +92,7 @@ import AnalyticCombinatorics.PartA.Ch3.WalksCounting
 import AnalyticCombinatorics.PartA.Ch3.RecurrenceAnalysis
 import AnalyticCombinatorics.PartA.Ch3.SpecialSequences
 import AnalyticCombinatorics.PartA.Ch3.DigitalCombinatorics
+import AnalyticCombinatorics.PartA.Ch3.TreeStatistics
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -123,6 +125,7 @@ import AnalyticCombinatorics.PartB.Ch5.AnalyticNumberTheory3
 import AnalyticCombinatorics.PartB.Ch5.FiniteAutomata
 import AnalyticCombinatorics.PartB.Ch5.GFConvergence
 import AnalyticCombinatorics.PartB.Ch5.SeriesAcceleration
+import AnalyticCombinatorics.PartB.Ch5.PolynomialArithmetic
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
@@ -137,6 +140,7 @@ import AnalyticCombinatorics.PartB.Ch6.CoefficientBounds
 import AnalyticCombinatorics.PartB.Ch6.Asymptotics2F1
 import AnalyticCombinatorics.PartB.Ch6.SingularityClassification
 import AnalyticCombinatorics.PartB.Ch6.AsymptoticTransfer
+import AnalyticCombinatorics.PartB.Ch6.LogarithmicSingularities
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
@@ -170,6 +174,7 @@ import AnalyticCombinatorics.PartB.Ch9.RandomTreeStatistics
 import AnalyticCombinatorics.PartB.Ch9.LimitDistributions
 import AnalyticCombinatorics.PartB.Ch9.ProbabilisticMethod
 import AnalyticCombinatorics.PartB.Ch9.HashingAnalysis
+import AnalyticCombinatorics.PartB.Ch9.BranchingProcesses
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
