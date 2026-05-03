@@ -151,6 +151,7 @@ import AnalyticCombinatorics.PartA.Ch3.MultivarGF
 import AnalyticCombinatorics.PartA.Ch3.LimitDistributions
 import AnalyticCombinatorics.PartA.Ch3.CumulantMethods
 import AnalyticCombinatorics.PartA.Ch3.LargeDeviationsGF
+import AnalyticCombinatorics.PartA.Ch3.QuasiPowerTheorem
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
