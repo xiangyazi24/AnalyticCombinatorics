@@ -1,144 +1,206 @@
-/-
-  Analytic Combinatorics — Part B: Complex Asymptotics
-  Chapter VI/VIII — Euler-Maclaurin summation, Bernoulli numbers, zeta partial sums.
--/
 import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
 namespace EulerMaclaurin
 
-/-! ## Bernoulli numbers B_0 through B_10 (as rationals) -/
+/-!
+Finite, decidable Euler-Maclaurin and Faulhaber certificates.
 
-/-- The first 11 Bernoulli numbers: B_0, B_1, ..., B_10. -/
-def bernoulliTable : Fin 11 → ℚ :=
-  ![(1 : ℚ), -1/2, 1/6, 0, -1/30, 0, 1/42, 0, -1/30, 0, 5/66]
+All statements below are closed numerical checks, or finite universal checks
+over `Fin m`, so that `native_decide` can verify them directly.
+-/
 
--- Spot-checks on individual values
-theorem bernoulliTable_zero : bernoulliTable 0 = 1 := by native_decide
-theorem bernoulliTable_one : bernoulliTable 1 = -1/2 := by native_decide
-theorem bernoulliTable_two : bernoulliTable 2 = 1/6 := by native_decide
-theorem bernoulliTable_three : bernoulliTable 3 = 0 := by native_decide
-theorem bernoulliTable_four : bernoulliTable 4 = -1/30 := by native_decide
-theorem bernoulliTable_five : bernoulliTable 5 = 0 := by native_decide
-theorem bernoulliTable_six : bernoulliTable 6 = 1/42 := by native_decide
-theorem bernoulliTable_ten : bernoulliTable 10 = 5/66 := by native_decide
+/-! ## Bernoulli numbers, stored as natural numerator/denominator data -/
 
-/-! ## Partial sums of Bernoulli numbers -/
+/-- Numerators of the Bernoulli values used in this file. -/
+def bernoulliNumerator : ℕ → ℕ
+  | 0 => 1
+  | 1 => 1
+  | 2 => 1
+  | 4 => 1
+  | 6 => 1
+  | 8 => 1
+  | 10 => 5
+  | _ => 0
 
-/-- B_0 + B_1 + B_2 = 1 - 1/2 + 1/6 = 2/3 -/
-theorem bernoulli_sum_012 :
-    bernoulliTable 0 + bernoulliTable 1 + bernoulliTable 2 = 2/3 := by native_decide
+/-- Denominators of the Bernoulli values used in this file. -/
+def bernoulliDenominator : ℕ → ℕ
+  | 0 => 1
+  | 1 => 2
+  | 2 => 6
+  | 4 => 30
+  | 6 => 42
+  | 8 => 30
+  | 10 => 66
+  | _ => 1
 
-/-! ## Bernoulli recurrence identity: Σ_{k=0}^{n} C(n+1,k) * B_k = 0 for n ≥ 1 -/
+/-- Sign bit for the Bernoulli values used in this file. -/
+def bernoulliNegative : ℕ → Bool
+  | 1 => true
+  | 4 => true
+  | 8 => true
+  | _ => false
 
-/-- For n=1: C(2,0)*B_0 + C(2,1)*B_1 = 1 + 2*(-1/2) = 0 -/
-theorem bernoulli_recurrence_n1 :
-    (Nat.choose 2 0 : ℚ) * bernoulliTable 0 +
-    (Nat.choose 2 1 : ℚ) * bernoulliTable 1 = 0 := by native_decide
+/-- The same Bernoulli data, interpreted as rational numbers. -/
+def bernoulliRat (n : ℕ) : ℚ :=
+  let q := (bernoulliNumerator n : ℚ) / (bernoulliDenominator n : ℚ)
+  if bernoulliNegative n then -q else q
 
-/-- For n=2: C(3,0)*B_0 + C(3,1)*B_1 + C(3,2)*B_2 = 1 - 3/2 + 3/6 = 0 -/
-theorem bernoulli_recurrence_n2 :
-    (Nat.choose 3 0 : ℚ) * bernoulliTable 0 +
-    (Nat.choose 3 1 : ℚ) * bernoulliTable 1 +
-    (Nat.choose 3 2 : ℚ) * bernoulliTable 2 = 0 := by native_decide
+theorem bernoulli_B0_parts :
+    bernoulliNumerator 0 = 1 ∧ bernoulliDenominator 0 = 1 ∧
+      bernoulliNegative 0 = false := by native_decide
 
-/-- For n=3: C(4,0)*B_0 + C(4,1)*B_1 + C(4,2)*B_2 + C(4,3)*B_3 = 1 - 2 + 1 + 0 = 0 -/
-theorem bernoulli_recurrence_n3 :
-    (Nat.choose 4 0 : ℚ) * bernoulliTable 0 +
-    (Nat.choose 4 1 : ℚ) * bernoulliTable 1 +
-    (Nat.choose 4 2 : ℚ) * bernoulliTable 2 +
-    (Nat.choose 4 3 : ℚ) * bernoulliTable 3 = 0 := by native_decide
+theorem bernoulli_B1_parts :
+    bernoulliNumerator 1 = 1 ∧ bernoulliDenominator 1 = 2 ∧
+      bernoulliNegative 1 = true := by native_decide
 
-/-! ## Power sums S_k(n) = Σ_{i=1}^{n} i^k -/
+theorem bernoulli_B2_parts :
+    bernoulliNumerator 2 = 1 ∧ bernoulliDenominator 2 = 6 ∧
+      bernoulliNegative 2 = false := by native_decide
 
-/-- S_k(n) = Σ_{i=1}^{n} i^k, computed as Σ_{i ∈ range n} (i+1)^k. -/
-def powerSum (k n : ℕ) : ℕ := ∑ i ∈ Finset.range n, (i + 1) ^ k
+theorem bernoulli_B4_parts :
+    bernoulliNumerator 4 = 1 ∧ bernoulliDenominator 4 = 30 ∧
+      bernoulliNegative 4 = true := by native_decide
 
--- S_1(10) = 1+2+...+10 = 55
-theorem powerSum_1_10 : powerSum 1 10 = 55 := by native_decide
+theorem bernoulli_B6_parts :
+    bernoulliNumerator 6 = 1 ∧ bernoulliDenominator 6 = 42 ∧
+      bernoulliNegative 6 = false := by native_decide
 
--- S_2(10) = 1^2+2^2+...+10^2 = 385
-theorem powerSum_2_10 : powerSum 2 10 = 385 := by native_decide
+theorem bernoulli_B0_value : bernoulliRat 0 = 1 := by native_decide
+theorem bernoulli_B1_value : bernoulliRat 1 = -1 / 2 := by native_decide
+theorem bernoulli_B2_value : bernoulliRat 2 = 1 / 6 := by native_decide
+theorem bernoulli_B4_value : bernoulliRat 4 = -1 / 30 := by native_decide
+theorem bernoulli_B6_value : bernoulliRat 6 = 1 / 42 := by native_decide
 
--- S_3(10) = 1^3+2^3+...+10^3 = 3025 = 55^2
-theorem powerSum_3_10 : powerSum 3 10 = 3025 := by native_decide
+/-! ## Power sums and Faulhaber identities -/
 
-theorem powerSum_3_10_eq_sq : powerSum 3 10 = (powerSum 1 10) ^ 2 := by native_decide
+/-- `powerSum p n = Σ_{k=1}^n k^p`. -/
+def powerSum (p n : ℕ) : ℕ :=
+  ∑ k ∈ Finset.range n, (k + 1) ^ p
 
-/-! ## Nicomachus theorem: S_3(n) = (S_1(n))^2 for small n -/
+theorem power_sum_linear_formula_checked :
+    ∀ n : Fin 101,
+      2 * powerSum 1 n.val = n.val * (n.val + 1) := by native_decide
 
-theorem nicomachus_1 : powerSum 3 1 = (powerSum 1 1) ^ 2 := by native_decide
-theorem nicomachus_2 : powerSum 3 2 = (powerSum 1 2) ^ 2 := by native_decide
-theorem nicomachus_3 : powerSum 3 3 = (powerSum 1 3) ^ 2 := by native_decide
-theorem nicomachus_4 : powerSum 3 4 = (powerSum 1 4) ^ 2 := by native_decide
-theorem nicomachus_5 : powerSum 3 5 = (powerSum 1 5) ^ 2 := by native_decide
-theorem nicomachus_6 : powerSum 3 6 = (powerSum 1 6) ^ 2 := by native_decide
-theorem nicomachus_7 : powerSum 3 7 = (powerSum 1 7) ^ 2 := by native_decide
-theorem nicomachus_8 : powerSum 3 8 = (powerSum 1 8) ^ 2 := by native_decide
+theorem power_sum_square_formula_checked :
+    ∀ n : Fin 101,
+      6 * powerSum 2 n.val = n.val * (n.val + 1) * (2 * n.val + 1) := by
+  native_decide
 
-/-! ## Partial sums of ζ(2) = Σ_{k=1}^∞ 1/k² -/
+theorem power_sum_cubic_faulhaber_checked :
+    ∀ n : Fin 101,
+      powerSum 3 n.val = (powerSum 1 n.val) ^ 2 := by native_decide
 
-/-- Rational partial sums of ζ(2): Σ_{k=1}^{n} 1/k². -/
-def zetaPartial2 (n : ℕ) : ℚ :=
-  ∑ k ∈ Finset.range n, 1 / ((k + 1 : ℚ)) ^ 2
+theorem power_sum_linear_n10 :
+    powerSum 1 10 = 10 * (10 + 1) / 2 := by native_decide
 
--- zetaPartial2 1 = 1
-theorem zetaPartial2_1 : zetaPartial2 1 = 1 := by native_decide
+theorem power_sum_square_n10 :
+    powerSum 2 10 = 10 * (10 + 1) * (2 * 10 + 1) / 6 := by native_decide
 
--- zetaPartial2 2 = 1 + 1/4 = 5/4
-theorem zetaPartial2_2 : zetaPartial2 2 = 5/4 := by native_decide
+theorem faulhaber_cubic_n10 :
+    powerSum 3 10 = (powerSum 1 10) ^ 2 := by native_decide
 
--- zetaPartial2 3 = 1 + 1/4 + 1/9 = 49/36
-theorem zetaPartial2_3 : zetaPartial2 3 = 49/36 := by native_decide
+/-! ## Harmonic number bounds by rational logarithm certificates -/
 
--- zetaPartial2 4 = 1 + 1/4 + 1/9 + 1/16 = 205/144
-theorem zetaPartial2_4 : zetaPartial2 4 = 205/144 := by native_decide
+/-- `harmonicRat n = H_n = Σ_{k=1}^n 1/k`, as a rational number. -/
+def harmonicRat (n : ℕ) : ℚ :=
+  ∑ k ∈ Finset.range n, 1 / ((k + 1 : ℕ) : ℚ)
 
--- zetaPartial2 5 = 1 + 1/4 + 1/9 + 1/16 + 1/25 = 5269/3600
-theorem zetaPartial2_5 : zetaPartial2 5 = 5269/3600 := by native_decide
+/--
+Lower decimal certificates for `log n`, scaled by 100.
+These are used only for decidable rational checks on `n = 1, ..., 10`.
+-/
+def logLowerHundred : ℕ → ℕ
+  | 1 => 0
+  | 2 => 69
+  | 3 => 109
+  | 4 => 138
+  | 5 => 160
+  | 6 => 179
+  | 7 => 194
+  | 8 => 207
+  | 9 => 219
+  | 10 => 230
+  | _ => 0
 
-/-! ## Euler-Maclaurin: bounding the partial sums (ζ(2) = π²/6 < 2) -/
+/--
+Upper decimal certificates for `log n`, scaled by 100.
+For each checked `n`, `log n` lies below this rational certificate.
+-/
+def logUpperHundred : ℕ → ℕ
+  | 1 => 0
+  | 2 => 70
+  | 3 => 110
+  | 4 => 139
+  | 5 => 161
+  | 6 => 180
+  | 7 => 195
+  | 8 => 208
+  | 9 => 220
+  | 10 => 231
+  | _ => 0
 
--- zetaPartial2 5 ≈ 1.4636, which is already > 1 and < 2
-example : zetaPartial2 5 > 1 := by native_decide
+def logLowerRat (n : ℕ) : ℚ := (logLowerHundred n : ℚ) / 100
+def logUpperRat (n : ℕ) : ℚ := (logUpperHundred n : ℚ) / 100
 
-example : zetaPartial2 5 < 2 := by native_decide
+theorem harmonic_log_bounds_small_checked :
+    ∀ n : Fin 10,
+      logUpperRat (n.val + 1) <= harmonicRat (n.val + 1) ∧
+        harmonicRat (n.val + 1) <= logLowerRat (n.val + 1) + 1 := by
+  native_decide
 
--- At n=10, ζ₁₀ ≈ 1.5498, which exceeds 3/2 and is still below 2
-example : zetaPartial2 10 > 3/2 := by native_decide
+theorem harmonic_values_small_checked :
+    harmonicRat 1 = 1 ∧ harmonicRat 2 = 3 / 2 ∧ harmonicRat 3 = 11 / 6 ∧
+      harmonicRat 4 = 25 / 12 ∧ harmonicRat 5 = 137 / 60 := by
+  native_decide
 
-example : zetaPartial2 10 < 2 := by native_decide
+/-! ## Euler-Maclaurin polynomial exactness checks -/
 
-/-! ## Faulhaber's formula: sum of fourth powers -/
+theorem euler_maclaurin_constant_remainder_zero_checked :
+    ∀ n : Fin 101,
+      (∑ _ ∈ Finset.range n.val, (7 : ℕ)) = 7 * n.val := by native_decide
 
-/-- Sum of fourth powers: Σ_{i=1}^{n} i^4. -/
-def sumFourthPow (n : ℕ) : ℕ := ∑ i ∈ Finset.range n, (i + 1) ^ 4
+theorem euler_maclaurin_linear_remainder_zero_checked :
+    ∀ n : Fin 101,
+      2 * powerSum 1 n.val = n.val * (n.val + 1) := by native_decide
 
--- sumFourthPow 1 = 1
-theorem sumFourthPow_1 : sumFourthPow 1 = 1 := by native_decide
+theorem euler_maclaurin_quadratic_remainder_zero_checked :
+    ∀ n : Fin 101,
+      6 * powerSum 2 n.val = n.val * (n.val + 1) * (2 * n.val + 1) := by
+  native_decide
 
--- sumFourthPow 2 = 1 + 16 = 17
-theorem sumFourthPow_2 : sumFourthPow 2 = 17 := by native_decide
+theorem euler_maclaurin_cubic_remainder_zero_checked :
+    ∀ n : Fin 101,
+      4 * powerSum 3 n.val = n.val ^ 2 * (n.val + 1) ^ 2 := by
+  native_decide
 
--- sumFourthPow 3 = 1 + 16 + 81 = 98
-theorem sumFourthPow_3 : sumFourthPow 3 = 98 := by native_decide
+/-! ## Tangent numbers and their Bernoulli relation -/
 
--- sumFourthPow 4 = 1 + 16 + 81 + 256 = 354
-theorem sumFourthPow_4 : sumFourthPow 4 = 354 := by native_decide
+/-- Tangent numbers `1, 2, 16, 272, 7936`. -/
+def tangentNumber : Fin 5 → ℕ :=
+  ![1, 2, 16, 272, 7936]
 
--- sumFourthPow 5 = 1 + 16 + 81 + 256 + 625 = 979
-theorem sumFourthPow_5 : sumFourthPow 5 = 979 := by native_decide
+theorem tangent_numbers_table :
+    tangentNumber 0 = 1 ∧ tangentNumber 1 = 2 ∧ tangentNumber 2 = 16 ∧
+      tangentNumber 3 = 272 ∧ tangentNumber 4 = 7936 := by
+  native_decide
 
-/-! ## Connection: powerSum via Finset.range agrees with direct sum -/
+theorem bernoulli_abs_even_extra_values_for_tangent :
+    bernoulliNumerator 8 = 1 ∧ bernoulliDenominator 8 = 30 ∧
+      bernoulliNegative 8 = true ∧ bernoulliNumerator 10 = 5 ∧
+        bernoulliDenominator 10 = 66 ∧ bernoulliNegative 10 = false := by
+  native_decide
 
--- Cross-check: powerSum 4 5 = sumFourthPow 5
-theorem powerSum_4_5_eq_sumFourthPow_5 : powerSum 4 5 = sumFourthPow 5 := by native_decide
-
--- Gauss formula: S_1(n) = n*(n+1)/2. Check n=1..10 inline.
-theorem gauss_formula_10 : powerSum 1 10 * 2 = 10 * 11 := by native_decide
-
--- S_2(n) = n*(n+1)*(2n+1)/6. Check n=10.
-theorem square_sum_formula_10 : powerSum 2 10 * 6 = 10 * 11 * 21 := by native_decide
+/--
+Cross-multiplied tangent/Bernoulli identity
+`T_m = 2^(2m) * (2^(2m)-1) * |B_(2m)| / (2m)` for `m = 1, ..., 5`.
+-/
+theorem tangent_bernoulli_relation_checked :
+    ∀ j : Fin 5,
+      let m := j.val + 1
+      2 ^ (2 * m) * (2 ^ (2 * m) - 1) * bernoulliNumerator (2 * m) =
+        tangentNumber j * (2 * m) * bernoulliDenominator (2 * m) := by
+  native_decide
 
 end EulerMaclaurin
