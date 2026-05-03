@@ -46,6 +46,7 @@ import AnalyticCombinatorics.PartA.Ch1.EnumerativeGeometry
 import AnalyticCombinatorics.PartA.Ch1.SetPartitions
 import AnalyticCombinatorics.PartA.Ch1.SurjectionsStirling
 import AnalyticCombinatorics.PartA.Ch1.GraphTheory
+import AnalyticCombinatorics.PartA.Ch1.BinomialTransforms
 import AnalyticCombinatorics.PartA.Ch2.PermutationCycles
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
@@ -101,6 +102,7 @@ import AnalyticCombinatorics.PartA.Ch3.TreeStatistics
 import AnalyticCombinatorics.PartA.Ch3.AsymptoticNotation
 import AnalyticCombinatorics.PartA.Ch3.GeneratingFunctionOps
 import AnalyticCombinatorics.PartA.Ch3.AnalyticMethods
+import AnalyticCombinatorics.PartA.Ch3.ProbabilityDistributions
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -121,6 +123,7 @@ import AnalyticCombinatorics.PartB.Ch4.OrdinaryGFApplications
 import AnalyticCombinatorics.PartB.Ch4.LinearRecurrences
 import AnalyticCombinatorics.PartB.Ch4.CauchyIntegral
 import AnalyticCombinatorics.PartB.Ch4.ExponentialGrowth
+import AnalyticCombinatorics.PartB.Ch4.PartialFractions
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
@@ -156,6 +159,7 @@ import AnalyticCombinatorics.PartB.Ch6.AsymptoticTransfer
 import AnalyticCombinatorics.PartB.Ch6.LogarithmicSingularities
 import AnalyticCombinatorics.PartB.Ch6.AnalyticInversion
 import AnalyticCombinatorics.PartB.Ch6.CatalanAsymptotics2
+import AnalyticCombinatorics.PartB.Ch6.GrowthRateClassification
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
@@ -182,6 +186,7 @@ import AnalyticCombinatorics.PartB.Ch8.IntegerPartitionBounds
 import AnalyticCombinatorics.PartB.Ch8.CentralLimitSaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.GaussianApproximation
 import AnalyticCombinatorics.PartB.Ch8.PermutationSaddlePoint
+import AnalyticCombinatorics.PartB.Ch8.AsymptoticEnumeration2
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
