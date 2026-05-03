@@ -104,6 +104,7 @@ import AnalyticCombinatorics.PartA.Ch2.PermutationGroups
 import AnalyticCombinatorics.PartA.Ch2.ConnectedStructures
 import AnalyticCombinatorics.PartA.Ch2.LabelledStructures
 import AnalyticCombinatorics.PartA.Ch2.SetPartitionStatistics
+import AnalyticCombinatorics.PartA.Ch2.DerangementVariants
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
