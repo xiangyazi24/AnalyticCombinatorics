@@ -280,6 +280,7 @@ import AnalyticCombinatorics.PartB.Ch9.ProbabilisticCounting
 import AnalyticCombinatorics.PartB.Ch9.ExtremalGraphCombinatorics
 import AnalyticCombinatorics.PartB.Ch9.AnalyticUrns
 import AnalyticCombinatorics.PartB.Ch9.StringCombinatorics
+import AnalyticCombinatorics.PartB.Ch9.RandomGraphThresholds
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
