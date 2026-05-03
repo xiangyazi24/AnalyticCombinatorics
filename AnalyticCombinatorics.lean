@@ -172,6 +172,7 @@ import AnalyticCombinatorics.PartB.Ch4.MeromorphicGF
 import AnalyticCombinatorics.PartB.Ch4.TransferTheoremsII
 import AnalyticCombinatorics.PartB.Ch4.PeriodicCoefficients
 import AnalyticCombinatorics.PartB.Ch4.SupAperiodicGF
+import AnalyticCombinatorics.PartB.Ch4.Tauberian
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
