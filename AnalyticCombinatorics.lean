@@ -256,6 +256,7 @@ import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysisIII
 import AnalyticCombinatorics.PartB.Ch6.HadamardProduct
 import AnalyticCombinatorics.PartB.Ch6.SingularityExponents
 import AnalyticCombinatorics.PartB.Ch6.SaddlePointMethod
+import AnalyticCombinatorics.PartB.Ch6.MultipleSingularities
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
