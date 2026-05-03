@@ -105,6 +105,7 @@ import AnalyticCombinatorics.PartA.Ch3.GeneratingFunctionOps
 import AnalyticCombinatorics.PartA.Ch3.AnalyticMethods
 import AnalyticCombinatorics.PartA.Ch3.ProbabilityDistributions
 import AnalyticCombinatorics.PartA.Ch3.PatternAvoidanceAdvanced
+import AnalyticCombinatorics.PartA.Ch3.BoltzmannSampling
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -127,6 +128,8 @@ import AnalyticCombinatorics.PartB.Ch4.CauchyIntegral
 import AnalyticCombinatorics.PartB.Ch4.ExponentialGrowth
 import AnalyticCombinatorics.PartB.Ch4.PartialFractions
 import AnalyticCombinatorics.PartB.Ch4.AsymptoticSeries
+import AnalyticCombinatorics.PartB.Ch4.ComplexVariables
+import AnalyticCombinatorics.PartB.Ch4.RationalFunctionDecomposition
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
@@ -203,6 +206,8 @@ import AnalyticCombinatorics.PartB.Ch8.StirlingApproximation
 import AnalyticCombinatorics.PartB.Ch8.LargeDeviations
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointPartitions
 import AnalyticCombinatorics.PartB.Ch8.MomentMethods
+import AnalyticCombinatorics.PartB.Ch8.ConcentrationInequalities
+import AnalyticCombinatorics.PartB.Ch8.ExponentialIntegrals
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
