@@ -52,6 +52,7 @@ import AnalyticCombinatorics.PartA.Ch1.MotzkinPaths
 import AnalyticCombinatorics.PartA.Ch1.PlaneTreeEnumeration
 import AnalyticCombinatorics.PartA.Ch1.SuccessionRules
 import AnalyticCombinatorics.PartA.Ch1.NaryTreeCounting
+import AnalyticCombinatorics.PartA.Ch1.DissectionEnumeration
 import AnalyticCombinatorics.PartA.Ch1.FibonacciIdentities
 import AnalyticCombinatorics.PartA.Ch1.DerangementVariants
 import AnalyticCombinatorics.PartA.Ch1.BinaryTreeShapes
@@ -109,6 +110,7 @@ import AnalyticCombinatorics.PartA.Ch2.LabelledStructures
 import AnalyticCombinatorics.PartA.Ch2.SetPartitionStatistics
 import AnalyticCombinatorics.PartA.Ch2.DerangementVariants
 import AnalyticCombinatorics.PartA.Ch2.InvolutionStatistics
+import AnalyticCombinatorics.PartA.Ch2.EulerianNumbers
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -307,6 +309,7 @@ import AnalyticCombinatorics.PartB.Ch8.PoissonApproximation
 import AnalyticCombinatorics.PartB.Ch8.StirlingSaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.DistributionApproximation
 import AnalyticCombinatorics.PartB.Ch8.ExponentialTailBounds
+import AnalyticCombinatorics.PartB.Ch8.PartitionAsymptotics
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
