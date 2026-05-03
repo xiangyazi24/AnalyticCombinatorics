@@ -41,6 +41,7 @@ import AnalyticCombinatorics.PartA.Ch1.SpeciesTheory
 import AnalyticCombinatorics.PartA.Ch1.InversionFormulas
 import AnalyticCombinatorics.PartA.Ch1.AnalyticInversion
 import AnalyticCombinatorics.PartA.Ch1.Polyominoes
+import AnalyticCombinatorics.PartA.Ch1.PermutationEnumeration
 import AnalyticCombinatorics.PartA.Ch2.PermutationCycles
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
@@ -84,6 +85,7 @@ import AnalyticCombinatorics.PartA.Ch3.PatternAvoidance
 import AnalyticCombinatorics.PartA.Ch3.PermutationPatterns
 import AnalyticCombinatorics.PartA.Ch3.CombOptimization
 import AnalyticCombinatorics.PartA.Ch3.WalksCounting
+import AnalyticCombinatorics.PartA.Ch3.RecurrenceAnalysis
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -129,12 +131,14 @@ import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
 import AnalyticCombinatorics.PartB.Ch7.AnalyticInequalities
 import AnalyticCombinatorics.PartB.Ch7.AsymptoticSeries
 import AnalyticCombinatorics.PartB.Ch7.ExponentialGrowth
+import AnalyticCombinatorics.PartB.Ch7.SubexponentialGrowth
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.QueueTheory
 import AnalyticCombinatorics.PartB.Ch8.AlgorithmicComplexity
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointExamples
+import AnalyticCombinatorics.PartB.Ch8.LaplaceMethod
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
@@ -145,6 +149,7 @@ import AnalyticCombinatorics.PartB.Ch9.EntropyInformation
 import AnalyticCombinatorics.PartB.Ch9.RandomPermutations
 import AnalyticCombinatorics.PartB.Ch9.PhaseTransitions
 import AnalyticCombinatorics.PartB.Ch9.RandomTreeStatistics
+import AnalyticCombinatorics.PartB.Ch9.LimitDistributions
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
