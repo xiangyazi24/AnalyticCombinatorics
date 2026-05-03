@@ -44,6 +44,7 @@ import AnalyticCombinatorics.PartA.Ch1.Polyominoes
 import AnalyticCombinatorics.PartA.Ch1.PermutationEnumeration
 import AnalyticCombinatorics.PartA.Ch1.EnumerativeGeometry
 import AnalyticCombinatorics.PartA.Ch1.SetPartitions
+import AnalyticCombinatorics.PartA.Ch1.SurjectionsStirling
 import AnalyticCombinatorics.PartA.Ch2.PermutationCycles
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
@@ -76,6 +77,7 @@ import AnalyticCombinatorics.PartA.Ch2.HarmonicNumbers
 import AnalyticCombinatorics.PartA.Ch2.CombinatoricsOnGraphs
 import AnalyticCombinatorics.PartA.Ch2.CodingTheory
 import AnalyticCombinatorics.PartA.Ch2.PermutationInversions
+import AnalyticCombinatorics.PartA.Ch2.ConnectedComponents
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -115,6 +117,7 @@ import AnalyticCombinatorics.PartB.Ch4.MatrixMethods
 import AnalyticCombinatorics.PartB.Ch4.OrdinaryGFApplications
 import AnalyticCombinatorics.PartB.Ch4.LinearRecurrences
 import AnalyticCombinatorics.PartB.Ch4.CauchyIntegral
+import AnalyticCombinatorics.PartB.Ch4.ExponentialGrowth
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
@@ -131,6 +134,7 @@ import AnalyticCombinatorics.PartB.Ch5.GFConvergence
 import AnalyticCombinatorics.PartB.Ch5.SeriesAcceleration
 import AnalyticCombinatorics.PartB.Ch5.PolynomialArithmetic
 import AnalyticCombinatorics.PartB.Ch5.BijectionPrinciples
+import AnalyticCombinatorics.PartB.Ch5.AutomataEnumeration
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
