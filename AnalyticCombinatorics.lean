@@ -364,6 +364,7 @@ import AnalyticCombinatorics.PartB.Ch9.RandomAllocationSchemes
 import AnalyticCombinatorics.PartB.Ch9.DigitalSearchTrees
 import AnalyticCombinatorics.PartB.Ch9.RadixSortAnalysis
 import AnalyticCombinatorics.PartB.Ch9.LeaderElection
+import AnalyticCombinatorics.PartB.Ch9.PatriciaTrieAnalysis
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
