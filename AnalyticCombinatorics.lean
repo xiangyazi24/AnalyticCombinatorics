@@ -51,6 +51,7 @@ import AnalyticCombinatorics.PartA.Ch1.Surjections2
 import AnalyticCombinatorics.PartA.Ch1.MotzkinPaths
 import AnalyticCombinatorics.PartA.Ch1.PlaneTreeEnumeration
 import AnalyticCombinatorics.PartA.Ch1.SuccessionRules
+import AnalyticCombinatorics.PartA.Ch1.NaryTreeCounting
 import AnalyticCombinatorics.PartA.Ch1.FibonacciIdentities
 import AnalyticCombinatorics.PartA.Ch1.DerangementVariants
 import AnalyticCombinatorics.PartA.Ch1.BinaryTreeShapes
@@ -177,6 +178,7 @@ import AnalyticCombinatorics.PartB.Ch4.TransferTheoremsII
 import AnalyticCombinatorics.PartB.Ch4.PeriodicCoefficients
 import AnalyticCombinatorics.PartB.Ch4.SupAperiodicGF
 import AnalyticCombinatorics.PartB.Ch4.Tauberian
+import AnalyticCombinatorics.PartB.Ch4.ResidueComputation
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
