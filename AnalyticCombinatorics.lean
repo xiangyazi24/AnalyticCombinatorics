@@ -150,6 +150,7 @@ import AnalyticCombinatorics.PartA.Ch3.GaussianLimitLaws
 import AnalyticCombinatorics.PartA.Ch3.MultivarGF
 import AnalyticCombinatorics.PartA.Ch3.LimitDistributions
 import AnalyticCombinatorics.PartA.Ch3.CumulantMethods
+import AnalyticCombinatorics.PartA.Ch3.LargeDeviationsGF
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -225,6 +226,7 @@ import AnalyticCombinatorics.PartB.Ch5.RiemannZeta
 import AnalyticCombinatorics.PartB.Ch5.PrimeNumberTheorem
 import AnalyticCombinatorics.PartB.Ch5.ContinuedFractions
 import AnalyticCombinatorics.PartB.Ch5.ZetaFunctionMethods
+import AnalyticCombinatorics.PartB.Ch5.ArithmeticFunctionsGF
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
