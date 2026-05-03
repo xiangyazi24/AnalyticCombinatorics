@@ -54,6 +54,7 @@ import AnalyticCombinatorics.PartA.Ch1.DerangementVariants
 import AnalyticCombinatorics.PartA.Ch1.BinaryTreeShapes
 import AnalyticCombinatorics.PartA.Ch1.PermutationCycleIndex
 import AnalyticCombinatorics.PartA.Ch1.GFClosure
+import AnalyticCombinatorics.PartA.Ch1.PartitionIdentities
 import AnalyticCombinatorics.PartA.Ch2.PermutationCycles
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
