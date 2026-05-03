@@ -48,6 +48,8 @@ import AnalyticCombinatorics.PartA.Ch1.SurjectionsStirling
 import AnalyticCombinatorics.PartA.Ch1.GraphTheory
 import AnalyticCombinatorics.PartA.Ch1.BinomialTransforms
 import AnalyticCombinatorics.PartA.Ch1.Surjections2
+import AnalyticCombinatorics.PartA.Ch1.MotzkinPaths
+import AnalyticCombinatorics.PartA.Ch1.FibonacciIdentities
 import AnalyticCombinatorics.PartA.Ch2.PermutationCycles
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
@@ -107,6 +109,7 @@ import AnalyticCombinatorics.PartA.Ch3.AnalyticMethods
 import AnalyticCombinatorics.PartA.Ch3.ProbabilityDistributions
 import AnalyticCombinatorics.PartA.Ch3.PatternAvoidanceAdvanced
 import AnalyticCombinatorics.PartA.Ch3.BoltzmannSampling
+import AnalyticCombinatorics.PartA.Ch3.QueueingCombinatorics
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -131,6 +134,7 @@ import AnalyticCombinatorics.PartB.Ch4.PartialFractions
 import AnalyticCombinatorics.PartB.Ch4.AsymptoticSeries
 import AnalyticCombinatorics.PartB.Ch4.ComplexVariables
 import AnalyticCombinatorics.PartB.Ch4.RationalFunctionDecomposition
+import AnalyticCombinatorics.PartB.Ch4.NumberTheoreticGF2
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
