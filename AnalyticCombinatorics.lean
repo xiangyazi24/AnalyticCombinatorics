@@ -102,6 +102,7 @@ import AnalyticCombinatorics.PartA.Ch2.SpeciesTheory
 import AnalyticCombinatorics.PartA.Ch2.ExponentialStructures
 import AnalyticCombinatorics.PartA.Ch2.PermutationGroups
 import AnalyticCombinatorics.PartA.Ch2.ConnectedStructures
+import AnalyticCombinatorics.PartA.Ch2.LabelledStructures
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -135,6 +136,7 @@ import AnalyticCombinatorics.PartA.Ch3.CumulantMethods
 import AnalyticCombinatorics.PartA.Ch3.AsymptoticTransfers
 import AnalyticCombinatorics.PartA.Ch3.ConcentrationInequalities
 import AnalyticCombinatorics.PartA.Ch3.GaussianLimitLaws
+import AnalyticCombinatorics.PartA.Ch3.MultivarGF
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
