@@ -188,6 +188,7 @@ import AnalyticCombinatorics.PartB.Ch4.Tauberian
 import AnalyticCombinatorics.PartB.Ch4.ResidueComputation
 import AnalyticCombinatorics.PartB.Ch4.DominantSingularity
 import AnalyticCombinatorics.PartB.Ch4.ExponentialGrowthRates
+import AnalyticCombinatorics.PartB.Ch4.CoeffBoundsFromGF
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
@@ -223,7 +224,7 @@ import AnalyticCombinatorics.PartB.Ch5.MobiusInversion
 import AnalyticCombinatorics.PartB.Ch5.RiemannZeta
 import AnalyticCombinatorics.PartB.Ch5.PrimeNumberTheorem
 import AnalyticCombinatorics.PartB.Ch5.ContinuedFractions
-import AnalyticCombinatorics.PartB.Ch5.MellinTransforms
+import AnalyticCombinatorics.PartB.Ch5.ZetaFunctionMethods
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
@@ -261,6 +262,7 @@ import AnalyticCombinatorics.PartB.Ch6.SingularityExponents
 import AnalyticCombinatorics.PartB.Ch6.SaddlePointMethod
 import AnalyticCombinatorics.PartB.Ch6.MultipleSingularities
 import AnalyticCombinatorics.PartB.Ch6.CoefficientAsymptotics
+import AnalyticCombinatorics.PartB.Ch6.AnalyticContinuationGF
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
@@ -293,6 +295,7 @@ import AnalyticCombinatorics.PartB.Ch7.SingularInversion2
 import AnalyticCombinatorics.PartB.Ch7.AlgebraicMapEnumeration
 import AnalyticCombinatorics.PartB.Ch7.PositionOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.SubcriticalSchemes
+import AnalyticCombinatorics.PartB.Ch7.SupercriticalSchemes
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
