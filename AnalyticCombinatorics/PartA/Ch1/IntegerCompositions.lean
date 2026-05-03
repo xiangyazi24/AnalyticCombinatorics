@@ -47,6 +47,36 @@ theorem totalCompositions_4 : totalCompositions 4 = 8 := by native_decide
 
 theorem totalCompositions_5 : totalCompositions 5 = 16 := by native_decide
 
+/-! ### Sum verification: totalCompositions n = Σ_k compositionCount n k -/
+
+/-- Sum of compositionCount n k over k = 0 .. n. -/
+def sumCompositionCount (n : ℕ) : ℕ :=
+  (Finset.range (n + 1)).sum (compositionCount n)
+
+theorem totalCompositions_eq_sum_1 :
+    totalCompositions 1 = sumCompositionCount 1 := by native_decide
+
+theorem totalCompositions_eq_sum_2 :
+    totalCompositions 2 = sumCompositionCount 2 := by native_decide
+
+theorem totalCompositions_eq_sum_3 :
+    totalCompositions 3 = sumCompositionCount 3 := by native_decide
+
+theorem totalCompositions_eq_sum_4 :
+    totalCompositions 4 = sumCompositionCount 4 := by native_decide
+
+theorem totalCompositions_eq_sum_5 :
+    totalCompositions 5 = sumCompositionCount 5 := by native_decide
+
+theorem totalCompositions_eq_sum_6 :
+    totalCompositions 6 = sumCompositionCount 6 := by native_decide
+
+theorem totalCompositions_eq_sum_7 :
+    totalCompositions 7 = sumCompositionCount 7 := by native_decide
+
+theorem totalCompositions_eq_sum_8 :
+    totalCompositions 8 = sumCompositionCount 8 := by native_decide
+
 /-! ## Tiling count (compositions into parts 1 and 2) -/
 
 /-- The number of ways to tile a 1×n strip with tiles of length 1 and 2.
@@ -117,5 +147,29 @@ theorem compositionsGe2_5 : compositionsGe2 5 = 3 := by native_decide
 theorem compositionsGe2_6 : compositionsGe2 6 = 5 := by native_decide
 
 theorem compositionsGe2_7 : compositionsGe2 7 = 8 := by native_decide
+
+/-! ## Self-conjugate partitions table -/
+
+/-- The number of self-conjugate partitions of n, stored as a finite table for n = 0..15.
+    Values: 1,1,0,1,1,1,1,1,2,2,2,2,3,3,3,4 -/
+def selfConjugateTable : Fin 16 → ℕ :=
+  ![1, 1, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4]
+
+theorem selfConjugate_0 : selfConjugateTable 0 = 1 := by native_decide
+theorem selfConjugate_1 : selfConjugateTable 1 = 1 := by native_decide
+theorem selfConjugate_2 : selfConjugateTable 2 = 0 := by native_decide
+theorem selfConjugate_3 : selfConjugateTable 3 = 1 := by native_decide
+theorem selfConjugate_4 : selfConjugateTable 4 = 1 := by native_decide
+theorem selfConjugate_5 : selfConjugateTable 5 = 1 := by native_decide
+theorem selfConjugate_6 : selfConjugateTable 6 = 1 := by native_decide
+theorem selfConjugate_7 : selfConjugateTable 7 = 1 := by native_decide
+theorem selfConjugate_8 : selfConjugateTable 8 = 2 := by native_decide
+theorem selfConjugate_9 : selfConjugateTable 9 = 2 := by native_decide
+theorem selfConjugate_10 : selfConjugateTable 10 = 2 := by native_decide
+theorem selfConjugate_11 : selfConjugateTable 11 = 2 := by native_decide
+theorem selfConjugate_12 : selfConjugateTable 12 = 3 := by native_decide
+theorem selfConjugate_13 : selfConjugateTable 13 = 3 := by native_decide
+theorem selfConjugate_14 : selfConjugateTable 14 = 3 := by native_decide
+theorem selfConjugate_15 : selfConjugateTable 15 = 4 := by native_decide
 
 end IntegerCompositions

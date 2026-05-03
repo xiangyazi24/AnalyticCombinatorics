@@ -69,6 +69,7 @@ import AnalyticCombinatorics.PartA.Ch2.DesignTheory
 import AnalyticCombinatorics.PartA.Ch2.CombinatoricsBounds
 import AnalyticCombinatorics.PartA.Ch2.SymmetricFunctions
 import AnalyticCombinatorics.PartA.Ch2.LatinSquares
+import AnalyticCombinatorics.PartA.Ch2.HarmonicNumbers
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
