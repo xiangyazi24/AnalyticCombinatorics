@@ -253,7 +253,6 @@ import AnalyticCombinatorics.PartB.Ch7.ImplicitFunctions
 import AnalyticCombinatorics.PartB.Ch7.SmoothSchemes
 import AnalyticCombinatorics.PartB.Ch7.InverseFunctions
 import AnalyticCombinatorics.PartB.Ch7.ContextFreeSchemes
-import AnalyticCombinatorics.PartB.Ch7.NewtonPolygon
 import AnalyticCombinatorics.PartB.Ch7.PolygonTriangulations
 import AnalyticCombinatorics.PartB.Ch7.AsymptoticExpansionSchemes
 import AnalyticCombinatorics.PartB.Ch7.SimpleTreeFamilies
@@ -326,6 +325,7 @@ import AnalyticCombinatorics.PartB.Ch9.BirthdayParadoxVariants
 import AnalyticCombinatorics.PartB.Ch9.SearchTreeAnalysis
 import AnalyticCombinatorics.PartB.Ch9.QueueingNetworks
 import AnalyticCombinatorics.PartB.Ch9.DigitalTreeAnalysis
+import AnalyticCombinatorics.PartB.Ch9.HashTableAnalysis
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
