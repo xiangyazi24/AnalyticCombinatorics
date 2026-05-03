@@ -38,7 +38,7 @@ def linearOrderSpeciesCount (n : ℕ) : ℕ :=
 
 /-- The species of set partitions: Bell numbers. -/
 def partitionSpeciesCount (n : ℕ) : ℕ :=
-  bellCount n
+  BellNumbers.bell n
 
 /-- Sum of species counting sequences. -/
 def speciesSum (F G : ℕ → ℕ) (n : ℕ) : ℕ :=
@@ -77,8 +77,8 @@ theorem linearOrderSpeciesCount_eq_factorial (n : ℕ) :
     linearOrderSpeciesCount n = n.factorial := by
   rfl
 
-theorem partitionSpeciesCount_eq_bellCount (n : ℕ) :
-    partitionSpeciesCount n = bellCount n := by
+theorem partitionSpeciesCount_eq_BellNumbers.bell (n : ℕ) :
+    partitionSpeciesCount n = BellNumbers.bell n := by
   rfl
 
 theorem speciesSum_apply (F G : ℕ → ℕ) (n : ℕ) :

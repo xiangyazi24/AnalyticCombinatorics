@@ -63,30 +63,30 @@ def bellPrefactoredCount (n : ℕ) : ℚ :=
   (n.factorial : ℚ) * bellEgfCoeff n
 
 /-- Bell numbers from `BellNumbers.lean`, extended by direct computation to `n = 8`. -/
-theorem bellCount_values_0_8 :
-    bellCount 0 = 1 ∧
-    bellCount 1 = 1 ∧
-    bellCount 2 = 2 ∧
-    bellCount 3 = 5 ∧
-    bellCount 4 = 15 ∧
-    bellCount 5 = 52 ∧
-    bellCount 6 = 203 ∧
-    bellCount 7 = 877 ∧
-    bellCount 8 = 4140 := by
+theorem BellNumbers.bell_values_0_8 :
+    BellNumbers.bell 0 = 1 ∧
+    BellNumbers.bell 1 = 1 ∧
+    BellNumbers.bell 2 = 2 ∧
+    BellNumbers.bell 3 = 5 ∧
+    BellNumbers.bell 4 = 15 ∧
+    BellNumbers.bell 5 = 52 ∧
+    BellNumbers.bell 6 = 203 ∧
+    BellNumbers.bell 7 = 877 ∧
+    BellNumbers.bell 8 = 4140 := by
   native_decide
 
 /-- The first Bell EGF coefficients satisfy
 `B_n = n! [z^n] exp(exp z - 1)` for `n = 0, ..., 8`. -/
 theorem bellEgfCoeff_prefactored_samples :
-    bellPrefactoredCount 0 = (bellCount 0 : ℚ) ∧
-    bellPrefactoredCount 1 = (bellCount 1 : ℚ) ∧
-    bellPrefactoredCount 2 = (bellCount 2 : ℚ) ∧
-    bellPrefactoredCount 3 = (bellCount 3 : ℚ) ∧
-    bellPrefactoredCount 4 = (bellCount 4 : ℚ) ∧
-    bellPrefactoredCount 5 = (bellCount 5 : ℚ) ∧
-    bellPrefactoredCount 6 = (bellCount 6 : ℚ) ∧
-    bellPrefactoredCount 7 = (bellCount 7 : ℚ) ∧
-    bellPrefactoredCount 8 = (bellCount 8 : ℚ) := by
+    bellPrefactoredCount 0 = (BellNumbers.bell 0 : ℚ) ∧
+    bellPrefactoredCount 1 = (BellNumbers.bell 1 : ℚ) ∧
+    bellPrefactoredCount 2 = (BellNumbers.bell 2 : ℚ) ∧
+    bellPrefactoredCount 3 = (BellNumbers.bell 3 : ℚ) ∧
+    bellPrefactoredCount 4 = (BellNumbers.bell 4 : ℚ) ∧
+    bellPrefactoredCount 5 = (BellNumbers.bell 5 : ℚ) ∧
+    bellPrefactoredCount 6 = (BellNumbers.bell 6 : ℚ) ∧
+    bellPrefactoredCount 7 = (BellNumbers.bell 7 : ℚ) ∧
+    bellPrefactoredCount 8 = (BellNumbers.bell 8 : ℚ) := by
   native_decide
 
 /-! ## Integer partitions and Euler's product -/

@@ -111,6 +111,7 @@ import AnalyticCombinatorics.PartA.Ch2.SetPartitionStatistics
 import AnalyticCombinatorics.PartA.Ch2.DerangementVariants
 import AnalyticCombinatorics.PartA.Ch2.InvolutionStatistics
 import AnalyticCombinatorics.PartA.Ch2.EulerianNumbers
+import AnalyticCombinatorics.PartA.Ch2.BellNumbers
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -216,6 +217,7 @@ import AnalyticCombinatorics.PartB.Ch5.MobiusInversion
 import AnalyticCombinatorics.PartB.Ch5.RiemannZeta
 import AnalyticCombinatorics.PartB.Ch5.PrimeNumberTheorem
 import AnalyticCombinatorics.PartB.Ch5.ContinuedFractions
+import AnalyticCombinatorics.PartB.Ch5.DirichletSeries
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
@@ -279,6 +281,7 @@ import AnalyticCombinatorics.PartB.Ch7.ImplicitFunctionCoefficients
 import AnalyticCombinatorics.PartB.Ch7.CriticalExponents
 import AnalyticCombinatorics.PartB.Ch7.SchroederPaths
 import AnalyticCombinatorics.PartB.Ch7.SingularInversion2
+import AnalyticCombinatorics.PartB.Ch7.AlgebraicMapEnumeration
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
@@ -311,6 +314,7 @@ import AnalyticCombinatorics.PartB.Ch8.StirlingSaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.DistributionApproximation
 import AnalyticCombinatorics.PartB.Ch8.ExponentialTailBounds
 import AnalyticCombinatorics.PartB.Ch8.PartitionAsymptotics
+import AnalyticCombinatorics.PartB.Ch8.WatsonLemma
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
@@ -342,6 +346,7 @@ import AnalyticCombinatorics.PartB.Ch9.HashTableAnalysis
 import AnalyticCombinatorics.PartB.Ch9.TrieAnalysis
 import AnalyticCombinatorics.PartB.Ch9.PermutationPatterns
 import AnalyticCombinatorics.PartB.Ch9.AnalyticDepoissonization
+import AnalyticCombinatorics.PartB.Ch9.RandomAllocationSchemes
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
