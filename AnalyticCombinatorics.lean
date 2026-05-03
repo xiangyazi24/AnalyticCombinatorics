@@ -124,6 +124,7 @@ import AnalyticCombinatorics.PartA.Ch3.TreeHeightDistribution
 import AnalyticCombinatorics.PartA.Ch3.MomentGeneratingFunctions
 import AnalyticCombinatorics.PartA.Ch3.SymbolicMethodIII
 import AnalyticCombinatorics.PartA.Ch3.AnalyticDepoissonization
+import AnalyticCombinatorics.PartA.Ch3.CumulantMethods
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -232,6 +233,8 @@ import AnalyticCombinatorics.PartB.Ch7.TreeHeightAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.FunctionalGraphs
 import AnalyticCombinatorics.PartB.Ch7.AnalyticInversionApplications
 import AnalyticCombinatorics.PartB.Ch7.RecursiveTreeStructures
+import AnalyticCombinatorics.PartB.Ch7.PowerSeriesComposition
+import AnalyticCombinatorics.PartB.Ch7.ImplicitFunctionCoefficients
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
@@ -257,6 +260,8 @@ import AnalyticCombinatorics.PartB.Ch8.IntegerPartitionAsymptotics
 import AnalyticCombinatorics.PartB.Ch8.QueueingAsymptotics
 import AnalyticCombinatorics.PartB.Ch8.AsymptoticExpansionMethods
 import AnalyticCombinatorics.PartB.Ch8.CombinatoricsBoundsC
+import AnalyticCombinatorics.PartB.Ch8.MellinTransformAsymptotics
+import AnalyticCombinatorics.PartB.Ch8.ExtremeValueDistributions
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
