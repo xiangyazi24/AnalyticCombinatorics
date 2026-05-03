@@ -63,6 +63,7 @@ import AnalyticCombinatorics.PartA.Ch1.SymmetricFunctions
 import AnalyticCombinatorics.PartA.Ch1.WordCombinatorics
 import AnalyticCombinatorics.PartA.Ch1.PolyominoEnumeration
 import AnalyticCombinatorics.PartA.Ch1.ContextFreeGrammars
+import AnalyticCombinatorics.PartA.Ch1.OGFExamples
 import AnalyticCombinatorics.PartA.Ch2.PermutationCycles
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
@@ -113,6 +114,7 @@ import AnalyticCombinatorics.PartA.Ch2.InvolutionStatistics
 import AnalyticCombinatorics.PartA.Ch2.EulerianNumbers
 import AnalyticCombinatorics.PartA.Ch2.BellNumbers
 import AnalyticCombinatorics.PartA.Ch2.PermutationDecomposition
+import AnalyticCombinatorics.PartA.Ch2.ConnectedGraphs
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -358,6 +360,7 @@ import AnalyticCombinatorics.PartB.Ch9.AnalyticDepoissonization
 import AnalyticCombinatorics.PartB.Ch9.RandomAllocationSchemes
 import AnalyticCombinatorics.PartB.Ch9.DigitalSearchTrees
 import AnalyticCombinatorics.PartB.Ch9.RadixSortAnalysis
+import AnalyticCombinatorics.PartB.Ch9.LeaderElection
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
