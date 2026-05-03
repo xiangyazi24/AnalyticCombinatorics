@@ -94,6 +94,8 @@ import AnalyticCombinatorics.PartA.Ch3.RecurrenceAnalysis
 import AnalyticCombinatorics.PartA.Ch3.SpecialSequences
 import AnalyticCombinatorics.PartA.Ch3.DigitalCombinatorics
 import AnalyticCombinatorics.PartA.Ch3.TreeStatistics
+import AnalyticCombinatorics.PartA.Ch3.AsymptoticNotation
+import AnalyticCombinatorics.PartA.Ch3.GeneratingFunctionOps
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -112,6 +114,7 @@ import AnalyticCombinatorics.PartB.Ch4.TauberianTheorems
 import AnalyticCombinatorics.PartB.Ch4.MatrixMethods
 import AnalyticCombinatorics.PartB.Ch4.OrdinaryGFApplications
 import AnalyticCombinatorics.PartB.Ch4.LinearRecurrences
+import AnalyticCombinatorics.PartB.Ch4.CauchyIntegral
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
@@ -143,6 +146,7 @@ import AnalyticCombinatorics.PartB.Ch6.Asymptotics2F1
 import AnalyticCombinatorics.PartB.Ch6.SingularityClassification
 import AnalyticCombinatorics.PartB.Ch6.AsymptoticTransfer
 import AnalyticCombinatorics.PartB.Ch6.LogarithmicSingularities
+import AnalyticCombinatorics.PartB.Ch6.AnalyticInversion
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
@@ -180,6 +184,7 @@ import AnalyticCombinatorics.PartB.Ch9.LimitDistributions
 import AnalyticCombinatorics.PartB.Ch9.ProbabilisticMethod
 import AnalyticCombinatorics.PartB.Ch9.HashingAnalysis
 import AnalyticCombinatorics.PartB.Ch9.BranchingProcesses
+import AnalyticCombinatorics.PartB.Ch9.RandomTrees
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
