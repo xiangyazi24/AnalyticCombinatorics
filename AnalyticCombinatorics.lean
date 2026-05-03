@@ -89,6 +89,7 @@ import AnalyticCombinatorics.PartA.Ch2.TableauxPartitions
 import AnalyticCombinatorics.PartA.Ch2.PermutationDescents
 import AnalyticCombinatorics.PartA.Ch2.PartitionLattice
 import AnalyticCombinatorics.PartA.Ch2.EGFApplications
+import AnalyticCombinatorics.PartA.Ch2.YoungTableaux
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -143,6 +144,7 @@ import AnalyticCombinatorics.PartB.Ch4.RationalFunctionDecomposition
 import AnalyticCombinatorics.PartB.Ch4.NumberTheoreticGF2
 import AnalyticCombinatorics.PartB.Ch4.SingularityAnalysisBasics
 import AnalyticCombinatorics.PartB.Ch4.CoefficientExtractionMethods
+import AnalyticCombinatorics.PartB.Ch4.ExponentialGFCoefficients
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
@@ -188,6 +190,7 @@ import AnalyticCombinatorics.PartB.Ch6.GrowthRateClassification
 import AnalyticCombinatorics.PartB.Ch6.TransferApplications
 import AnalyticCombinatorics.PartB.Ch6.CoefficientTransferTheorems
 import AnalyticCombinatorics.PartB.Ch6.MultiplicativeArithmetic
+import AnalyticCombinatorics.PartB.Ch6.AlgebraicFunctionCoefficients
 import AnalyticCombinatorics.PartB.Ch6.Asymptotics2F1Methods
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
@@ -234,6 +237,7 @@ import AnalyticCombinatorics.PartB.Ch8.ExponentialIntegrals
 import AnalyticCombinatorics.PartB.Ch8.GammaFunctionProperties
 import AnalyticCombinatorics.PartB.Ch8.PermutationStatisticsAsymptotics
 import AnalyticCombinatorics.PartB.Ch8.IntegerPartitionAsymptotics
+import AnalyticCombinatorics.PartB.Ch8.QueueingAsymptotics
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
@@ -255,6 +259,7 @@ import AnalyticCombinatorics.PartB.Ch9.CouponCollector
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphProperties
 import AnalyticCombinatorics.PartB.Ch9.ProbabilisticCounting
 import AnalyticCombinatorics.PartB.Ch9.ExtremalGraphCombinatorics
+import AnalyticCombinatorics.PartB.Ch9.AnalyticUrns
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
