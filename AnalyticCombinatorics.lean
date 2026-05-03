@@ -49,6 +49,7 @@ import AnalyticCombinatorics.PartA.Ch1.GraphTheory
 import AnalyticCombinatorics.PartA.Ch1.BinomialTransforms
 import AnalyticCombinatorics.PartA.Ch1.Surjections2
 import AnalyticCombinatorics.PartA.Ch1.MotzkinPaths
+import AnalyticCombinatorics.PartA.Ch1.PlaneTreeEnumeration
 import AnalyticCombinatorics.PartA.Ch1.FibonacciIdentities
 import AnalyticCombinatorics.PartA.Ch1.DerangementVariants
 import AnalyticCombinatorics.PartA.Ch1.BinaryTreeShapes
@@ -331,6 +332,7 @@ import AnalyticCombinatorics.PartB.Ch9.SearchTreeAnalysis
 import AnalyticCombinatorics.PartB.Ch9.QueueingNetworks
 import AnalyticCombinatorics.PartB.Ch9.DigitalTreeAnalysis
 import AnalyticCombinatorics.PartB.Ch9.HashTableAnalysis
+import AnalyticCombinatorics.PartB.Ch9.TrieAnalysis
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
