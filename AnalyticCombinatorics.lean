@@ -39,6 +39,7 @@ import AnalyticCombinatorics.PartA.Ch1.SymbolicMethodAdvanced
 import AnalyticCombinatorics.PartA.Ch1.OGFCoefficients
 import AnalyticCombinatorics.PartA.Ch1.SpeciesTheory
 import AnalyticCombinatorics.PartA.Ch1.InversionFormulas
+import AnalyticCombinatorics.PartA.Ch1.Polyominoes
 import AnalyticCombinatorics.PartA.Ch2.PermutationCycles
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
@@ -63,6 +64,7 @@ import AnalyticCombinatorics.PartA.Ch2.MapEnumeration
 import AnalyticCombinatorics.PartA.Ch2.NumberTheoreticGF
 import AnalyticCombinatorics.PartA.Ch2.ExponentialStructures
 import AnalyticCombinatorics.PartA.Ch2.DesignTheory
+import AnalyticCombinatorics.PartA.Ch2.CombinatoricsBounds
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -100,6 +102,7 @@ import AnalyticCombinatorics.PartB.Ch5.SpecialFunctions
 import AnalyticCombinatorics.PartB.Ch5.HypergeometricFunctions
 import AnalyticCombinatorics.PartB.Ch5.ResidueCalculus
 import AnalyticCombinatorics.PartB.Ch5.AnalyticNumberTheory2
+import AnalyticCombinatorics.PartB.Ch5.FiniteAutomata
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
@@ -115,11 +118,13 @@ import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
 import AnalyticCombinatorics.PartB.Ch7.AnalyticInequalities
 import AnalyticCombinatorics.PartB.Ch7.AsymptoticSeries
+import AnalyticCombinatorics.PartB.Ch7.ExponentialGrowth
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.QueueTheory
 import AnalyticCombinatorics.PartB.Ch8.AlgorithmicComplexity
+import AnalyticCombinatorics.PartB.Ch8.SaddlePointExamples
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
