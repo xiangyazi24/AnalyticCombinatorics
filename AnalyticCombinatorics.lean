@@ -56,6 +56,7 @@ import AnalyticCombinatorics.PartA.Ch1.PermutationCycleIndex
 import AnalyticCombinatorics.PartA.Ch1.GFClosure
 import AnalyticCombinatorics.PartA.Ch1.PartitionIdentities
 import AnalyticCombinatorics.PartA.Ch1.SymmetricFunctions
+import AnalyticCombinatorics.PartA.Ch1.WordCombinatorics
 import AnalyticCombinatorics.PartA.Ch2.PermutationCycles
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
@@ -99,6 +100,7 @@ import AnalyticCombinatorics.PartA.Ch2.PermutationFixedPoints
 import AnalyticCombinatorics.PartA.Ch2.SpeciesTheory
 import AnalyticCombinatorics.PartA.Ch2.ExponentialStructures
 import AnalyticCombinatorics.PartA.Ch2.PermutationGroups
+import AnalyticCombinatorics.PartA.Ch2.ConnectedStructures
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -193,6 +195,7 @@ import AnalyticCombinatorics.PartB.Ch5.GeneratingFunctionAnalyticity
 import AnalyticCombinatorics.PartB.Ch5.SingularInversion
 import AnalyticCombinatorics.PartB.Ch5.DirichletSeries
 import AnalyticCombinatorics.PartB.Ch5.EulerMaclaurin
+import AnalyticCombinatorics.PartB.Ch5.AnalyticNumberTheory
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
@@ -251,6 +254,7 @@ import AnalyticCombinatorics.PartB.Ch7.PowerSeriesComposition
 import AnalyticCombinatorics.PartB.Ch7.ImplicitFunctionCoefficients
 import AnalyticCombinatorics.PartB.Ch7.CriticalExponents
 import AnalyticCombinatorics.PartB.Ch7.SchroederPaths
+import AnalyticCombinatorics.PartB.Ch7.SingularInversion2
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
@@ -280,6 +284,7 @@ import AnalyticCombinatorics.PartB.Ch8.MellinTransformAsymptotics
 import AnalyticCombinatorics.PartB.Ch8.ExtremeValueDistributions
 import AnalyticCombinatorics.PartB.Ch8.PoissonApproximation
 import AnalyticCombinatorics.PartB.Ch8.StirlingSaddlePoint
+import AnalyticCombinatorics.PartB.Ch8.DistributionApproximation
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
