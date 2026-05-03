@@ -52,6 +52,7 @@ import AnalyticCombinatorics.PartA.Ch1.MotzkinPaths
 import AnalyticCombinatorics.PartA.Ch1.FibonacciIdentities
 import AnalyticCombinatorics.PartA.Ch1.DerangementVariants
 import AnalyticCombinatorics.PartA.Ch1.BinaryTreeShapes
+import AnalyticCombinatorics.PartA.Ch1.PermutationCycleIndex
 import AnalyticCombinatorics.PartA.Ch2.PermutationCycles
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
@@ -117,6 +118,7 @@ import AnalyticCombinatorics.PartA.Ch3.BoltzmannSampling
 import AnalyticCombinatorics.PartA.Ch3.QueueingCombinatorics
 import AnalyticCombinatorics.PartA.Ch3.TreeHeightDistribution
 import AnalyticCombinatorics.PartA.Ch3.MomentGeneratingFunctions
+import AnalyticCombinatorics.PartA.Ch3.SymbolicMethodIII
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -169,6 +171,7 @@ import AnalyticCombinatorics.PartB.Ch5.DFactorial
 import AnalyticCombinatorics.PartB.Ch5.AnalyticContinuation
 import AnalyticCombinatorics.PartB.Ch5.SteepestDescent
 import AnalyticCombinatorics.PartB.Ch5.RiemannZetaValues
+import AnalyticCombinatorics.PartB.Ch5.AsymptoticsOfSums
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
@@ -191,6 +194,7 @@ import AnalyticCombinatorics.PartB.Ch6.TransferApplications
 import AnalyticCombinatorics.PartB.Ch6.CoefficientTransferTheorems
 import AnalyticCombinatorics.PartB.Ch6.MultiplicativeArithmetic
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicFunctionCoefficients
+import AnalyticCombinatorics.PartB.Ch6.SaddlePointCoefficients
 import AnalyticCombinatorics.PartB.Ch6.Asymptotics2F1Methods
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
@@ -215,6 +219,7 @@ import AnalyticCombinatorics.PartB.Ch7.SimpleTreeFamilies
 import AnalyticCombinatorics.PartB.Ch7.PolyaTreeEnumeration
 import AnalyticCombinatorics.PartB.Ch7.TreeHeightAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.FunctionalGraphs
+import AnalyticCombinatorics.PartB.Ch7.AnalyticInversionApplications
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
