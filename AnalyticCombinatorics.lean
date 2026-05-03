@@ -75,6 +75,7 @@ import AnalyticCombinatorics.PartA.Ch2.LatinSquares
 import AnalyticCombinatorics.PartA.Ch2.HarmonicNumbers
 import AnalyticCombinatorics.PartA.Ch2.CombinatoricsOnGraphs
 import AnalyticCombinatorics.PartA.Ch2.CodingTheory
+import AnalyticCombinatorics.PartA.Ch2.PermutationInversions
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -126,6 +127,7 @@ import AnalyticCombinatorics.PartB.Ch5.FiniteAutomata
 import AnalyticCombinatorics.PartB.Ch5.GFConvergence
 import AnalyticCombinatorics.PartB.Ch5.SeriesAcceleration
 import AnalyticCombinatorics.PartB.Ch5.PolynomialArithmetic
+import AnalyticCombinatorics.PartB.Ch5.BijectionPrinciples
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
@@ -151,6 +153,8 @@ import AnalyticCombinatorics.PartB.Ch7.SubexponentialGrowth
 import AnalyticCombinatorics.PartB.Ch7.MapAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.PartitionEnumeration
 import AnalyticCombinatorics.PartB.Ch7.PermutationAsymptotics
+import AnalyticCombinatorics.PartB.Ch7.AlgebraicFunctions
+import AnalyticCombinatorics.PartB.Ch7.CombinatoricalSchemes
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
@@ -161,6 +165,7 @@ import AnalyticCombinatorics.PartB.Ch8.LaplaceMethod
 import AnalyticCombinatorics.PartB.Ch8.CombinatoricsBoundsB
 import AnalyticCombinatorics.PartB.Ch8.IntegerPartitionBounds
 import AnalyticCombinatorics.PartB.Ch8.CentralLimitSaddlePoint
+import AnalyticCombinatorics.PartB.Ch8.GaussianApproximation
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
