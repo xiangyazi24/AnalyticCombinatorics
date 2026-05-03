@@ -62,6 +62,7 @@ import AnalyticCombinatorics.PartA.Ch1.PartitionIdentities
 import AnalyticCombinatorics.PartA.Ch1.SymmetricFunctions
 import AnalyticCombinatorics.PartA.Ch1.WordCombinatorics
 import AnalyticCombinatorics.PartA.Ch1.PolyominoEnumeration
+import AnalyticCombinatorics.PartA.Ch1.ContextFreeGrammars
 import AnalyticCombinatorics.PartA.Ch2.PermutationCycles
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
@@ -146,6 +147,7 @@ import AnalyticCombinatorics.PartA.Ch3.ConcentrationInequalities
 import AnalyticCombinatorics.PartA.Ch3.GaussianLimitLaws
 import AnalyticCombinatorics.PartA.Ch3.MultivarGF
 import AnalyticCombinatorics.PartA.Ch3.LimitDistributions
+import AnalyticCombinatorics.PartA.Ch3.CumulantMethods
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -218,7 +220,7 @@ import AnalyticCombinatorics.PartB.Ch5.MobiusInversion
 import AnalyticCombinatorics.PartB.Ch5.RiemannZeta
 import AnalyticCombinatorics.PartB.Ch5.PrimeNumberTheorem
 import AnalyticCombinatorics.PartB.Ch5.ContinuedFractions
-import AnalyticCombinatorics.PartB.Ch5.DirichletSeries
+import AnalyticCombinatorics.PartB.Ch5.MellinTransforms
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
@@ -253,6 +255,7 @@ import AnalyticCombinatorics.PartB.Ch6.InversionFormulas
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysisIII
 import AnalyticCombinatorics.PartB.Ch6.HadamardProduct
 import AnalyticCombinatorics.PartB.Ch6.SingularityExponents
+import AnalyticCombinatorics.PartB.Ch6.SaddlePointMethod
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
