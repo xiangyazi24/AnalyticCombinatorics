@@ -68,7 +68,6 @@ import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
 import AnalyticCombinatorics.PartA.Ch2.Surjections
 import AnalyticCombinatorics.PartA.Ch2.Derangements
-import AnalyticCombinatorics.PartA.Ch2.BellNumbers
 import AnalyticCombinatorics.PartA.Ch2.Involutions
 import AnalyticCombinatorics.PartA.Ch2.CycleIndex
 import AnalyticCombinatorics.PartA.Ch2.RestrictedPerms
@@ -113,6 +112,7 @@ import AnalyticCombinatorics.PartA.Ch2.DerangementVariants
 import AnalyticCombinatorics.PartA.Ch2.InvolutionStatistics
 import AnalyticCombinatorics.PartA.Ch2.EulerianNumbers
 import AnalyticCombinatorics.PartA.Ch2.BellNumbers
+import AnalyticCombinatorics.PartA.Ch2.PermutationDecomposition
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -185,6 +185,7 @@ import AnalyticCombinatorics.PartB.Ch4.SupAperiodicGF
 import AnalyticCombinatorics.PartB.Ch4.Tauberian
 import AnalyticCombinatorics.PartB.Ch4.ResidueComputation
 import AnalyticCombinatorics.PartB.Ch4.DominantSingularity
+import AnalyticCombinatorics.PartB.Ch4.ExponentialGrowthRates
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
@@ -257,6 +258,7 @@ import AnalyticCombinatorics.PartB.Ch6.HadamardProduct
 import AnalyticCombinatorics.PartB.Ch6.SingularityExponents
 import AnalyticCombinatorics.PartB.Ch6.SaddlePointMethod
 import AnalyticCombinatorics.PartB.Ch6.MultipleSingularities
+import AnalyticCombinatorics.PartB.Ch6.CoefficientAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
@@ -288,6 +290,7 @@ import AnalyticCombinatorics.PartB.Ch7.SchroederPaths
 import AnalyticCombinatorics.PartB.Ch7.SingularInversion2
 import AnalyticCombinatorics.PartB.Ch7.AlgebraicMapEnumeration
 import AnalyticCombinatorics.PartB.Ch7.PositionOfSingularity
+import AnalyticCombinatorics.PartB.Ch7.SubcriticalSchemes
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
@@ -354,6 +357,7 @@ import AnalyticCombinatorics.PartB.Ch9.PermutationPatterns
 import AnalyticCombinatorics.PartB.Ch9.AnalyticDepoissonization
 import AnalyticCombinatorics.PartB.Ch9.RandomAllocationSchemes
 import AnalyticCombinatorics.PartB.Ch9.DigitalSearchTrees
+import AnalyticCombinatorics.PartB.Ch9.RadixSortAnalysis
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
