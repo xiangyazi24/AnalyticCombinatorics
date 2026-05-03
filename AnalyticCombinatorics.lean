@@ -206,6 +206,8 @@ import AnalyticCombinatorics.PartB.Ch5.EulerMaclaurin
 import AnalyticCombinatorics.PartB.Ch5.AnalyticNumberTheory
 import AnalyticCombinatorics.PartB.Ch5.ContourIntegration
 import AnalyticCombinatorics.PartB.Ch5.MobiusInversion
+import AnalyticCombinatorics.PartB.Ch5.RiemannZeta
+import AnalyticCombinatorics.PartB.Ch5.PrimeNumberTheorem
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
@@ -238,6 +240,7 @@ import AnalyticCombinatorics.PartB.Ch6.CoefficientAsymptoticsII
 import AnalyticCombinatorics.PartB.Ch6.MultiplicativeFunctions
 import AnalyticCombinatorics.PartB.Ch6.InversionFormulas
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysisIII
+import AnalyticCombinatorics.PartB.Ch6.HadamardProduct
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
