@@ -126,6 +126,7 @@ import AnalyticCombinatorics.PartA.Ch3.MomentGeneratingFunctions
 import AnalyticCombinatorics.PartA.Ch3.SymbolicMethodIII
 import AnalyticCombinatorics.PartA.Ch3.AnalyticDepoissonization
 import AnalyticCombinatorics.PartA.Ch3.CumulantMethods
+import AnalyticCombinatorics.PartA.Ch3.AsymptoticTransfers
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -184,6 +185,7 @@ import AnalyticCombinatorics.PartB.Ch5.RiemannZetaValues
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticsOfSums
 import AnalyticCombinatorics.PartB.Ch5.GeneratingFunctionAnalyticity
 import AnalyticCombinatorics.PartB.Ch5.SingularInversion
+import AnalyticCombinatorics.PartB.Ch5.DirichletSeries
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
@@ -238,6 +240,7 @@ import AnalyticCombinatorics.PartB.Ch7.AnalyticInversionApplications
 import AnalyticCombinatorics.PartB.Ch7.RecursiveTreeStructures
 import AnalyticCombinatorics.PartB.Ch7.PowerSeriesComposition
 import AnalyticCombinatorics.PartB.Ch7.ImplicitFunctionCoefficients
+import AnalyticCombinatorics.PartB.Ch7.CriticalExponents
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
@@ -265,6 +268,7 @@ import AnalyticCombinatorics.PartB.Ch8.AsymptoticExpansionMethods
 import AnalyticCombinatorics.PartB.Ch8.CombinatoricsBoundsC
 import AnalyticCombinatorics.PartB.Ch8.MellinTransformAsymptotics
 import AnalyticCombinatorics.PartB.Ch8.ExtremeValueDistributions
+import AnalyticCombinatorics.PartB.Ch8.PoissonApproximation
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
