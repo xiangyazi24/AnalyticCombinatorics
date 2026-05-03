@@ -1,188 +1,249 @@
-/-
-  Analytic Combinatorics — Part B
-  Chapter IX — Discrete probability distributions and limit law numerics.
-
-  Numerical checks for:
-  - Binomial distribution moments (p = 1/2 case)
-  - Poisson approximation numerics
-  - Stirling numbers and random permutation cycle counts
-  - Variance of cycle count
-  - Birthday problem
-  - Coupon collector expected values
--/
 import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-open Finset Nat
-
 namespace LimitDistributions
 
--- ============================================================================
--- § 1. Binomial distribution (p = 1/2)
--- ============================================================================
+open Finset
 
-/-- PMF of Bin(n, 1/2): P(X = k) = C(n,k) / 2^n. -/
-def binomialPMF (n : ℕ) (k : ℕ) : ℚ := (Nat.choose n k : ℚ) / (2 ^ n : ℚ)
+/-!
+Finite, decidable checks for limit-distribution identities from Chapter IX of
+Flajolet and Sedgewick.  The statements deliberately stay in `ℕ` and `ℚ`, so
+each proof is a computation discharged by `native_decide`.
+-/
 
-/-- The PMF sums to 1 for n = 4. -/
-example : ∑ k ∈ Finset.range 5, binomialPMF 4 k = 1 := by native_decide
+/-! ## Poisson moments and Bell polynomials -/
 
-/-- The PMF sums to 1 for n = 5. -/
-example : ∑ k ∈ Finset.range 6, binomialPMF 5 k = 1 := by native_decide
+/-- Stirling numbers of the second kind. -/
+def stirling2 : ℕ → ℕ → ℕ
+  | 0, 0 => 1
+  | 0, _ + 1 => 0
+  | _ + 1, 0 => 0
+  | n + 1, k + 1 => (k + 1) * stirling2 n (k + 1) + stirling2 n k
 
-/-- The PMF sums to 1 for n = 6. -/
-example : ∑ k ∈ Finset.range 7, binomialPMF 6 k = 1 := by native_decide
+/-- Complete Bell polynomial `B_k(λ) = ∑_j S(k,j) λ^j`. -/
+def bellPolynomial (k : ℕ) (lambda : ℚ) : ℚ :=
+  ∑ j ∈ Finset.range (k + 1), (stirling2 k j : ℚ) * lambda ^ j
 
-/-- The PMF sums to 1 for n = 8. -/
-example : ∑ k ∈ Finset.range 9, binomialPMF 8 k = 1 := by native_decide
+/--
+Raw moments of a Poisson variable are represented by the Bell polynomial:
+`E[X^k] = B_k(λ)`.
+-/
+def poissonRawMoment (lambda : ℚ) (k : ℕ) : ℚ := bellPolynomial k lambda
 
-/-- E[X] = n/2 for Bin(n, 1/2): verified for n = 4. -/
-example : ∑ k ∈ Finset.range 5, (k : ℚ) * binomialPMF 4 k = 4 / 2 := by native_decide
+theorem poisson_moment_zero_lambda_two : poissonRawMoment 2 0 = 1 := by native_decide
 
-/-- E[X] = n/2 for Bin(n, 1/2): verified for n = 6. -/
-example : ∑ k ∈ Finset.range 7, (k : ℚ) * binomialPMF 6 k = 6 / 2 := by native_decide
+theorem poisson_moment_one_lambda_two : poissonRawMoment 2 1 = 2 := by native_decide
 
-/-- E[X] = n/2 for Bin(n, 1/2): verified for n = 8. -/
-example : ∑ k ∈ Finset.range 9, (k : ℚ) * binomialPMF 8 k = 8 / 2 := by native_decide
+theorem poisson_moment_two_lambda_two : poissonRawMoment 2 2 = 6 := by native_decide
 
-/-- E[X] = 5, Var[X] = 5/2 for Bin(10, 1/2).
-    E[X²] = Σ k² * C(10,k)/2^10. Var = E[X²] - (E[X])². -/
-example : ∑ k ∈ Finset.range 11, (k : ℚ) * binomialPMF 10 k = 5 := by native_decide
+theorem poisson_moment_three_lambda_two : poissonRawMoment 2 3 = 22 := by native_decide
 
-example : ∑ k ∈ Finset.range 11, (k : ℚ) ^ 2 * binomialPMF 10 k - 5 ^ 2 = 5 / 2 := by
+theorem poisson_moment_four_lambda_two : poissonRawMoment 2 4 = 94 := by native_decide
+
+theorem poisson_moment_five_lambda_two : poissonRawMoment 2 5 = 454 := by native_decide
+
+theorem poisson_moment_three_lambda_three_halves :
+    poissonRawMoment (3 / 2) 3 = 93 / 8 := by
   native_decide
 
--- ============================================================================
--- § 2. Poisson approximation to binomial
--- ============================================================================
+theorem poisson_bell_polynomial_connection_lambda_three :
+    poissonRawMoment 3 4 = bellPolynomial 4 3 := by
+  native_decide
 
-/-- (9/10)^10 ≈ 0.3487: a finite approximation to e^{-1}.
-    We verify 0.348 < (9/10)^10 < 0.349. -/
-example : (348 : ℤ) * 10 ^ 10 ≤ 1000 * 9 ^ 10 := by native_decide
+theorem bell_polynomial_lambda_three_order_four :
+    bellPolynomial 4 3 = 309 := by
+  native_decide
 
-example : (1000 : ℤ) * 9 ^ 10 ≤ 349 * 10 ^ 10 := by native_decide
+/-! ## Standard normal even moments -/
 
-/-- Equivalently in ℚ: 348/1000 < (9/10)^10 < 349/1000. -/
-example : (348 : ℚ) / 1000 < (9 / 10) ^ 10 := by native_decide
+/-- The standard normal even moment `(2k)! / (2^k k!)`. -/
+def standardNormalEvenMoment (k : ℕ) : ℚ :=
+  (Nat.factorial (2 * k) : ℚ) / ((2 : ℚ) ^ k * (Nat.factorial k : ℚ))
 
-example : (9 / 10 : ℚ) ^ 10 < 349 / 1000 := by native_decide
+/-- Product `1 * 3 * ... * (2k - 1)`, with value `1` at `k = 0`. -/
+def oddDoubleFactorial : ℕ → ℕ
+  | 0 => 1
+  | k + 1 => (2 * k + 1) * oddDoubleFactorial k
 
-/-- For Bin(n, p) with n = 10, p = 1/10:
-    P(X = 0) = (9/10)^10 = 9^10 / 10^10. -/
-def poissonApproxP0 : ℚ := (9 : ℚ) ^ 10 / (10 : ℚ) ^ 10
+theorem normal_even_moment_zero : standardNormalEvenMoment 0 = 1 := by native_decide
 
-example : poissonApproxP0 = 3486784401 / 10000000000 := by native_decide
+theorem normal_even_moment_two : standardNormalEvenMoment 1 = 1 := by native_decide
 
-/-- Poisson approximation: e^{-1} ≈ 0.3679. The exact value 9^10/10^10 ≈ 0.3487
-    is about 5% off, reflecting n = 10 is not yet "large n, small p". -/
-example : 3486784401 * 1000 < 3679 * (10000000000 : ℕ) := by native_decide
+theorem normal_even_moment_four : standardNormalEvenMoment 2 = 3 := by native_decide
 
--- ============================================================================
--- § 3. Stirling numbers and random permutation cycles
--- ============================================================================
+theorem normal_even_moment_six : standardNormalEvenMoment 3 = 15 := by native_decide
 
-/-- The n-th harmonic number H_n = Σ_{k=1}^n 1/k. -/
-def harmonicQ (n : ℕ) : ℚ := ∑ k ∈ Finset.range n, 1 / ((k + 1) : ℚ)
+theorem normal_even_moment_eight : standardNormalEvenMoment 4 = 105 := by native_decide
 
-/-- H_4 = 1 + 1/2 + 1/3 + 1/4 = 25/12. -/
-example : harmonicQ 4 = 25 / 12 := by native_decide
+theorem normal_even_moment_ten : standardNormalEvenMoment 5 = 945 := by native_decide
 
-/-- H_6 = 1 + 1/2 + 1/3 + 1/4 + 1/5 + 1/6 = 49/20. -/
-example : harmonicQ 6 = 49 / 20 := by native_decide
+theorem normal_even_moment_twelve : standardNormalEvenMoment 6 = 10395 := by native_decide
 
-/-- H_1 = 1. -/
-example : harmonicQ 1 = 1 := by native_decide
+theorem normal_even_moment_matches_double_factorial_6 :
+    standardNormalEvenMoment 6 = oddDoubleFactorial 6 := by
+  native_decide
 
-/-- H_2 = 3/2. -/
-example : harmonicQ 2 = 3 / 2 := by native_decide
+/-! ## Rayleigh distribution numerical checks -/
 
-/-- H_3 = 11/6. -/
-example : harmonicQ 3 = 11 / 6 := by native_decide
+/-- Rayleigh log-density score for scale `1`: derivative of `log x - x^2/2`. -/
+def rayleighStandardScore (x : ℚ) : ℚ := 1 / x - x
 
-/-- The expected number of cycles of a uniformly random permutation of [n]
-    equals H_n. Verified for n = 4: E[cycles] = 25/12. -/
-example : harmonicQ 4 = 25 / 12 := by native_decide
+/-- Rayleigh mode for scale `sigma`, checked numerically below. -/
+def rayleighMode (sigma : ℚ) : ℚ := sigma
 
--- ============================================================================
--- § 4. Variance of cycle count
--- ============================================================================
+/-- Five-decimal rational approximation of `sqrt(pi / 2)`. -/
+def rayleighMeanApprox : ℚ := 125331 / 100000
 
-/-- H_n^{(2)} = Σ_{k=1}^n 1/k². -/
-def harmonicSq (n : ℕ) : ℚ := ∑ k ∈ Finset.range n, 1 / ((k + 1) : ℚ) ^ 2
+/-- Six-decimal rational approximation of `pi`. -/
+def piApprox : ℚ := 3141593 / 1000000
 
-/-- H_4^{(2)} = 1 + 1/4 + 1/9 + 1/16 = 205/144. -/
-example : harmonicSq 4 = 205 / 144 := by native_decide
+theorem rayleigh_standard_mode_value : rayleighMode 1 = 1 := by native_decide
 
-/-- H_6^{(2)} = 1 + 1/4 + 1/9 + 1/16 + 1/25 + 1/36 = 5369/3600. -/
-example : harmonicSq 6 = 5369 / 3600 := by native_decide
+theorem rayleigh_score_zero_at_mode : rayleighStandardScore 1 = 0 := by native_decide
 
-/-- Var[cycles in S_n] = H_n - H_n^{(2)}.
-    For n = 4: Var = 25/12 - 205/144 = 300/144 - 205/144 = 95/144. -/
-example : harmonicQ 4 - harmonicSq 4 = 95 / 144 := by native_decide
+theorem rayleigh_score_positive_left_of_mode : rayleighStandardScore (1 / 2) > 0 := by
+  native_decide
 
-/-- Var[cycles in S_6] = 49/20 - 5369/3600 = 8820/3600 - 5369/3600 = 3451/3600. -/
-example : harmonicQ 6 - harmonicSq 6 = 3451 / 3600 := by native_decide
+theorem rayleigh_score_negative_right_of_mode : rayleighStandardScore 2 < 0 := by
+  native_decide
 
-/-- Variance is positive for all n ≥ 2 (H_n > H_n^{(2)} since H_n^{(2)} < π²/6 < 2 < H_n
-    for large n, but we verify directly for small n). -/
-example : harmonicQ 4 > harmonicSq 4 := by native_decide
-example : harmonicQ 6 > harmonicSq 6 := by native_decide
+theorem rayleigh_mean_square_lower_check :
+    (125330 / 100000 : ℚ) ^ 2 < piApprox / 2 := by
+  native_decide
 
--- ============================================================================
--- § 5. Birthday problem
--- ============================================================================
+theorem rayleigh_mean_square_upper_check :
+    piApprox / 2 < (125332 / 100000 : ℚ) ^ 2 := by
+  native_decide
 
-/-- Number of ways to choose n items from [m] with no repetition:
-    m * (m-1) * ... * (m-n+1) = falling factorial. -/
-def noCollisionNum (m n : ℕ) : ℕ := ∏ i ∈ Finset.range n, (m - i)
+theorem rayleigh_mean_approx_between_checks :
+    125330 / 100000 < rayleighMeanApprox ∧ rayleighMeanApprox < 125332 / 100000 := by
+  native_decide
 
-/-- For m = 10, n = 4: 10 * 9 * 8 * 7 = 5040. -/
-example : noCollisionNum 10 4 = 5040 := by native_decide
+/-! ## Gumbel distribution and Euler's constant -/
 
-/-- Denominator: 10^4 = 10000. -/
-example : (10 : ℕ) ^ 4 = 10000 := by native_decide
+/-- Rational harmonic number `H_n`. -/
+def harmonicQ (n : ℕ) : ℚ :=
+  ∑ k ∈ Finset.range n, 1 / ((k + 1 : ℕ) : ℚ)
 
-/-- P(no collision) = 5040/10000 = 63/125. -/
-example : (noCollisionNum 10 4 : ℚ) / (10 : ℚ) ^ 4 = 63 / 125 := by native_decide
+/-- Six-decimal rational approximation of the Euler-Mascheroni constant. -/
+def eulerMascheroniApprox : ℚ := 577216 / 1000000
 
-/-- P(collision) for m=10, n=4 is 1 - 63/125 = 62/125 < 1/2. -/
-example : (1 : ℚ) - (noCollisionNum 10 4 : ℚ) / (10 : ℚ) ^ 4 = 62 / 125 := by native_decide
+/-- Standard Gumbel mean, represented by the same Euler-Mascheroni approximation. -/
+def standardGumbelMeanApprox : ℚ := eulerMascheroniApprox
 
-/-- For m = 365, n = 23: birthday paradox — P(collision) > 1/2.
-    Equivalently: 2 * noCollisionNum 365 23 < 365^23. -/
-example : 2 * noCollisionNum 365 23 < 365 ^ 23 := by native_decide
+/-- Six-decimal rational approximation of `log 10`. -/
+def logTenApprox : ℚ := 2302585 / 1000000
 
-/-- For m = 10, n = 5: P(no collision) = 10*9*8*7*6 / 10^5 = 30240/100000 < 1/2. -/
-example : noCollisionNum 10 5 = 30240 := by native_decide
+/-- First Euler-Maclaurin correction to `H_10 - log 10`. -/
+def eulerMascheroniFromH10 : ℚ := harmonicQ 10 - logTenApprox - 1 / 20
 
-example : 2 * noCollisionNum 10 5 < (10 : ℕ) ^ 5 := by native_decide
+theorem gumbel_mean_euler_mascheroni :
+    standardGumbelMeanApprox = eulerMascheroniApprox := by
+  native_decide
 
--- ============================================================================
--- § 6. Coupon collector
--- ============================================================================
+theorem harmonic_ten_value : harmonicQ 10 = 7381 / 2520 := by native_decide
 
-/-- Expected number of draws to collect all n coupons = n * H_n. -/
-def couponCollector (n : ℕ) : ℚ := n * harmonicQ n
+theorem euler_mascheroni_h10_lower :
+    eulerMascheroniApprox - 1 / 1000 < eulerMascheroniFromH10 := by
+  native_decide
 
-/-- For n = 4: expected draws = 4 * 25/12 = 25/3. -/
-example : couponCollector 4 = 25 / 3 := by native_decide
+theorem euler_mascheroni_h10_upper :
+    eulerMascheroniFromH10 < eulerMascheroniApprox + 1 / 1000 := by
+  native_decide
 
-/-- For n = 6: expected draws = 6 * 49/20 = 147/10. -/
-example : couponCollector 6 = 147 / 10 := by native_decide
+theorem centered_gumbel_mean_check :
+    standardGumbelMeanApprox - eulerMascheroniApprox = 0 := by
+  native_decide
 
-/-- Equivalently using explicit multiplication. -/
-example : 4 * harmonicQ 4 = 25 / 3 := by native_decide
+/-! ## Geometric distribution moments and generating coefficients -/
 
-example : 6 * harmonicQ 6 = 147 / 10 := by native_decide
+/-- Coefficient of `z^n` in the geometric probability generating function. -/
+def geometricPGFCoeff (p q : ℚ) (n : ℕ) : ℚ := p * q ^ n
 
-/-- For n = 2: expected draws = 2 * 3/2 = 3. -/
-example : couponCollector 2 = 3 := by native_decide
+/-- Partial mass `∑_{n<N} p q^n`. -/
+def geometricPartialMass (p q : ℚ) (N : ℕ) : ℚ :=
+  ∑ n ∈ Finset.range N, geometricPGFCoeff p q n
 
-/-- For n = 3: expected draws = 3 * 11/6 = 11/2. -/
-example : couponCollector 3 = 11 / 2 := by native_decide
+/-- First raw moment of the geometric law on `0,1,2,...`. -/
+def geometricMean (p q : ℚ) : ℚ := q / p
 
-/-- Coupon collector grows: E_6 > E_4. -/
-example : couponCollector 6 > couponCollector 4 := by native_decide
+/-- Second raw moment of the geometric law on `0,1,2,...`. -/
+def geometricSecondMoment (p q : ℚ) : ℚ := q * (1 + q) / p ^ 2
+
+/-- Third raw moment of the geometric law on `0,1,2,...`. -/
+def geometricThirdMoment (p q : ℚ) : ℚ := q * (1 + 4 * q + q ^ 2) / p ^ 3
+
+theorem geometric_coeff_zero_one_third :
+    geometricPGFCoeff (1 / 3) (2 / 3) 0 = 1 / 3 := by
+  native_decide
+
+theorem geometric_coeff_one_one_third :
+    geometricPGFCoeff (1 / 3) (2 / 3) 1 = 2 / 9 := by
+  native_decide
+
+theorem geometric_coeff_four_one_third :
+    geometricPGFCoeff (1 / 3) (2 / 3) 4 = 16 / 243 := by
+  native_decide
+
+theorem geometric_coeff_ratio_check :
+    geometricPGFCoeff (1 / 3) (2 / 3) 5 =
+      (2 / 3) * geometricPGFCoeff (1 / 3) (2 / 3) 4 := by
+  native_decide
+
+theorem geometric_partial_mass_four :
+    geometricPartialMass (1 / 3) (2 / 3) 4 = 65 / 81 := by
+  native_decide
+
+theorem geometric_mean_one_third : geometricMean (1 / 3) (2 / 3) = 2 := by
+  native_decide
+
+theorem geometric_second_moment_one_third :
+    geometricSecondMoment (1 / 3) (2 / 3) = 10 := by
+  native_decide
+
+theorem geometric_third_moment_one_third :
+    geometricThirdMoment (1 / 3) (2 / 3) = 74 := by
+  native_decide
+
+/-! ## Exponential distribution discrete approximation identities -/
+
+/-- Geometric mass for an exponential approximation with rate `lambda` and mesh `h`. -/
+def exponentialDiscreteMass (lambda h : ℚ) (n : ℕ) : ℚ :=
+  (lambda * h) * (1 - lambda * h) ^ n
+
+/-- Discrete survival function for the same geometric approximation. -/
+def exponentialDiscreteSurvival (lambda h : ℚ) (n : ℕ) : ℚ :=
+  (1 - lambda * h) ^ n
+
+/-- The right-endpoint mesh mean `h / (lambda h)`, equal to `1 / lambda`. -/
+def exponentialDiscreteRightMean (lambda h : ℚ) : ℚ := h / (lambda * h)
+
+theorem exponential_discrete_first_mass :
+    exponentialDiscreteMass 1 (1 / 10) 0 = 1 / 10 := by
+  native_decide
+
+theorem exponential_discrete_fifth_survival :
+    exponentialDiscreteSurvival 1 (1 / 10) 5 = 59049 / 100000 := by
+  native_decide
+
+theorem exponential_discrete_partial_mass_identity :
+    (∑ n ∈ Finset.range 6, exponentialDiscreteMass 1 (1 / 10) n) =
+      1 - exponentialDiscreteSurvival 1 (1 / 10) 6 := by
+  native_decide
+
+theorem exponential_discrete_memoryless_check :
+    exponentialDiscreteSurvival 1 (1 / 10) (3 + 4) =
+      exponentialDiscreteSurvival 1 (1 / 10) 3 *
+        exponentialDiscreteSurvival 1 (1 / 10) 4 := by
+  native_decide
+
+theorem exponential_discrete_right_mean_rate_one :
+    exponentialDiscreteRightMean 1 (1 / 10) = 1 := by
+  native_decide
+
+theorem exponential_discrete_right_mean_rate_two :
+    exponentialDiscreteRightMean 2 (1 / 10) = 1 / 2 := by
+  native_decide
 
 end LimitDistributions

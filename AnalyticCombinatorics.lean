@@ -187,6 +187,8 @@ import AnalyticCombinatorics.PartB.Ch8.CentralLimitSaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.GaussianApproximation
 import AnalyticCombinatorics.PartB.Ch8.PermutationSaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.AsymptoticEnumeration2
+import AnalyticCombinatorics.PartB.Ch8.StirlingApproximation
+import AnalyticCombinatorics.PartB.Ch8.LargeDeviations
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
