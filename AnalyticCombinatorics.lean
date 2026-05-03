@@ -230,6 +230,8 @@ import AnalyticCombinatorics.PartB.Ch6.DiagonalCoefficients
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularities
 import AnalyticCombinatorics.PartB.Ch6.CoefficientAsymptoticsII
 import AnalyticCombinatorics.PartB.Ch6.MultiplicativeFunctions
+import AnalyticCombinatorics.PartB.Ch6.InversionFormulas
+import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysisIII
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
