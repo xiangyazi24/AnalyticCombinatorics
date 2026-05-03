@@ -42,6 +42,7 @@ import AnalyticCombinatorics.PartA.Ch1.InversionFormulas
 import AnalyticCombinatorics.PartA.Ch1.AnalyticInversion
 import AnalyticCombinatorics.PartA.Ch1.Polyominoes
 import AnalyticCombinatorics.PartA.Ch1.PermutationEnumeration
+import AnalyticCombinatorics.PartA.Ch1.EnumerativeGeometry
 import AnalyticCombinatorics.PartA.Ch2.PermutationCycles
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
@@ -71,6 +72,7 @@ import AnalyticCombinatorics.PartA.Ch2.CombinatoricsBounds
 import AnalyticCombinatorics.PartA.Ch2.SymmetricFunctions
 import AnalyticCombinatorics.PartA.Ch2.LatinSquares
 import AnalyticCombinatorics.PartA.Ch2.HarmonicNumbers
+import AnalyticCombinatorics.PartA.Ch2.CombinatoricsOnGraphs
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -86,6 +88,7 @@ import AnalyticCombinatorics.PartA.Ch3.PermutationPatterns
 import AnalyticCombinatorics.PartA.Ch3.CombOptimization
 import AnalyticCombinatorics.PartA.Ch3.WalksCounting
 import AnalyticCombinatorics.PartA.Ch3.RecurrenceAnalysis
+import AnalyticCombinatorics.PartA.Ch3.SpecialSequences
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -115,6 +118,7 @@ import AnalyticCombinatorics.PartB.Ch5.AnalyticNumberTheory2
 import AnalyticCombinatorics.PartB.Ch5.AnalyticNumberTheory3
 import AnalyticCombinatorics.PartB.Ch5.FiniteAutomata
 import AnalyticCombinatorics.PartB.Ch5.GFConvergence
+import AnalyticCombinatorics.PartB.Ch5.SeriesAcceleration
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
@@ -143,6 +147,7 @@ import AnalyticCombinatorics.PartB.Ch8.QueueTheory
 import AnalyticCombinatorics.PartB.Ch8.AlgorithmicComplexity
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointExamples
 import AnalyticCombinatorics.PartB.Ch8.LaplaceMethod
+import AnalyticCombinatorics.PartB.Ch8.CombinatoricsBoundsB
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
