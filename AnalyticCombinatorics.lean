@@ -47,6 +47,7 @@ import AnalyticCombinatorics.PartA.Ch1.SetPartitions
 import AnalyticCombinatorics.PartA.Ch1.SurjectionsStirling
 import AnalyticCombinatorics.PartA.Ch1.GraphTheory
 import AnalyticCombinatorics.PartA.Ch1.BinomialTransforms
+import AnalyticCombinatorics.PartA.Ch1.Surjections2
 import AnalyticCombinatorics.PartA.Ch2.PermutationCycles
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
@@ -103,6 +104,7 @@ import AnalyticCombinatorics.PartA.Ch3.AsymptoticNotation
 import AnalyticCombinatorics.PartA.Ch3.GeneratingFunctionOps
 import AnalyticCombinatorics.PartA.Ch3.AnalyticMethods
 import AnalyticCombinatorics.PartA.Ch3.ProbabilityDistributions
+import AnalyticCombinatorics.PartA.Ch3.PatternAvoidanceAdvanced
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -124,6 +126,7 @@ import AnalyticCombinatorics.PartB.Ch4.LinearRecurrences
 import AnalyticCombinatorics.PartB.Ch4.CauchyIntegral
 import AnalyticCombinatorics.PartB.Ch4.ExponentialGrowth
 import AnalyticCombinatorics.PartB.Ch4.PartialFractions
+import AnalyticCombinatorics.PartB.Ch4.AsymptoticSeries
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
@@ -179,6 +182,7 @@ import AnalyticCombinatorics.PartB.Ch7.ContextFreeSchemes
 import AnalyticCombinatorics.PartB.Ch7.NewtonPolygon
 import AnalyticCombinatorics.PartB.Ch7.PolygonTriangulations
 import AnalyticCombinatorics.PartB.Ch7.AsymptoticExpansionSchemes
+import AnalyticCombinatorics.PartB.Ch7.SimpleTreeFamilies
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
@@ -210,6 +214,7 @@ import AnalyticCombinatorics.PartB.Ch9.HashingAnalysis
 import AnalyticCombinatorics.PartB.Ch9.BranchingProcesses
 import AnalyticCombinatorics.PartB.Ch9.UrnsAndBalls
 import AnalyticCombinatorics.PartB.Ch9.RandomTrees
+import AnalyticCombinatorics.PartB.Ch9.RandomPermutationCycles
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
