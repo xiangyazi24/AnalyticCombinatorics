@@ -38,6 +38,7 @@ import AnalyticCombinatorics.PartA.Ch1.ContinuedFractions
 import AnalyticCombinatorics.PartA.Ch1.SymbolicMethodAdvanced
 import AnalyticCombinatorics.PartA.Ch1.OGFCoefficients
 import AnalyticCombinatorics.PartA.Ch1.SpeciesTheory
+import AnalyticCombinatorics.PartA.Ch1.InversionFormulas
 import AnalyticCombinatorics.PartA.Ch2.PermutationCycles
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
@@ -74,6 +75,7 @@ import AnalyticCombinatorics.PartA.Ch3.CentralLimitTheorems
 import AnalyticCombinatorics.PartA.Ch3.LatticePathMethods
 import AnalyticCombinatorics.PartA.Ch3.PatternAvoidance
 import AnalyticCombinatorics.PartA.Ch3.CombOptimization
+import AnalyticCombinatorics.PartA.Ch3.WalksCounting
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -87,9 +89,11 @@ import AnalyticCombinatorics.PartB.Ch4.AsymptoticExpansions
 import AnalyticCombinatorics.PartB.Ch4.RecurrenceRelations
 import AnalyticCombinatorics.PartB.Ch4.GFTransforms
 import AnalyticCombinatorics.PartB.Ch4.StirlingApproximations
+import AnalyticCombinatorics.PartB.Ch4.TauberianTheorems
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
+import AnalyticCombinatorics.PartB.Ch5.DigitalAnalysis
 import AnalyticCombinatorics.PartB.Ch5.DigitalTrees
 import AnalyticCombinatorics.PartB.Ch5.ContextFreeGrammars
 import AnalyticCombinatorics.PartB.Ch5.SpecialFunctions
@@ -110,6 +114,7 @@ import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
 import AnalyticCombinatorics.PartB.Ch7.AnalyticInequalities
+import AnalyticCombinatorics.PartB.Ch7.AsymptoticSeries
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
