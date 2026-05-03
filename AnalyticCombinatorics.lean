@@ -50,6 +50,7 @@ import AnalyticCombinatorics.PartA.Ch1.BinomialTransforms
 import AnalyticCombinatorics.PartA.Ch1.Surjections2
 import AnalyticCombinatorics.PartA.Ch1.MotzkinPaths
 import AnalyticCombinatorics.PartA.Ch1.FibonacciIdentities
+import AnalyticCombinatorics.PartA.Ch1.DerangementVariants
 import AnalyticCombinatorics.PartA.Ch2.PermutationCycles
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
@@ -156,6 +157,7 @@ import AnalyticCombinatorics.PartB.Ch5.OrdinaryDifferentialEquations
 import AnalyticCombinatorics.PartB.Ch5.MellinTransforms
 import AnalyticCombinatorics.PartB.Ch5.FunctionalEquations2
 import AnalyticCombinatorics.PartB.Ch5.DFactorial
+import AnalyticCombinatorics.PartB.Ch5.AnalyticContinuation
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
@@ -175,6 +177,7 @@ import AnalyticCombinatorics.PartB.Ch6.AnalyticInversion
 import AnalyticCombinatorics.PartB.Ch6.CatalanAsymptotics2
 import AnalyticCombinatorics.PartB.Ch6.GrowthRateClassification
 import AnalyticCombinatorics.PartB.Ch6.TransferApplications
+import AnalyticCombinatorics.PartB.Ch6.CoefficientTransferTheorems
 import AnalyticCombinatorics.PartB.Ch6.Asymptotics2F1Methods
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
@@ -216,6 +219,7 @@ import AnalyticCombinatorics.PartB.Ch8.SaddlePointPartitions
 import AnalyticCombinatorics.PartB.Ch8.MomentMethods
 import AnalyticCombinatorics.PartB.Ch8.ConcentrationInequalities
 import AnalyticCombinatorics.PartB.Ch8.ExponentialIntegrals
+import AnalyticCombinatorics.PartB.Ch8.GammaFunctionProperties
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
@@ -235,6 +239,7 @@ import AnalyticCombinatorics.PartB.Ch9.RandomTrees
 import AnalyticCombinatorics.PartB.Ch9.RandomPermutationCycles
 import AnalyticCombinatorics.PartB.Ch9.CouponCollector
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphProperties
+import AnalyticCombinatorics.PartB.Ch9.ProbabilisticCounting
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
