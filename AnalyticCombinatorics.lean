@@ -103,6 +103,7 @@ import AnalyticCombinatorics.PartA.Ch2.ExponentialStructures
 import AnalyticCombinatorics.PartA.Ch2.PermutationGroups
 import AnalyticCombinatorics.PartA.Ch2.ConnectedStructures
 import AnalyticCombinatorics.PartA.Ch2.LabelledStructures
+import AnalyticCombinatorics.PartA.Ch2.SetPartitionStatistics
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -202,6 +203,7 @@ import AnalyticCombinatorics.PartB.Ch5.DirichletSeries
 import AnalyticCombinatorics.PartB.Ch5.EulerMaclaurin
 import AnalyticCombinatorics.PartB.Ch5.AnalyticNumberTheory
 import AnalyticCombinatorics.PartB.Ch5.ContourIntegration
+import AnalyticCombinatorics.PartB.Ch5.MobiusInversion
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
