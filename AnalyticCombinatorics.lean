@@ -145,6 +145,8 @@ import AnalyticCombinatorics.PartB.Ch5.PolynomialArithmetic
 import AnalyticCombinatorics.PartB.Ch5.BijectionPrinciples
 import AnalyticCombinatorics.PartB.Ch5.AutomataEnumeration
 import AnalyticCombinatorics.PartB.Ch5.OrdinaryDifferentialEquations
+import AnalyticCombinatorics.PartB.Ch5.MellinTransforms
+import AnalyticCombinatorics.PartB.Ch5.FunctionalEquations2
 import AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 import AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 import AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularity
@@ -163,6 +165,7 @@ import AnalyticCombinatorics.PartB.Ch6.LogarithmicSingularities
 import AnalyticCombinatorics.PartB.Ch6.AnalyticInversion
 import AnalyticCombinatorics.PartB.Ch6.CatalanAsymptotics2
 import AnalyticCombinatorics.PartB.Ch6.GrowthRateClassification
+import AnalyticCombinatorics.PartB.Ch6.TransferApplications
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
@@ -198,6 +201,8 @@ import AnalyticCombinatorics.PartB.Ch8.PermutationSaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.AsymptoticEnumeration2
 import AnalyticCombinatorics.PartB.Ch8.StirlingApproximation
 import AnalyticCombinatorics.PartB.Ch8.LargeDeviations
+import AnalyticCombinatorics.PartB.Ch8.SaddlePointPartitions
+import AnalyticCombinatorics.PartB.Ch8.MomentMethods
 import AnalyticCombinatorics.PartB.Ch9.RandomStructures
 import AnalyticCombinatorics.PartB.Ch9.RandomGraphs
 import AnalyticCombinatorics.PartB.Ch9.Depoissonization
@@ -215,6 +220,7 @@ import AnalyticCombinatorics.PartB.Ch9.BranchingProcesses
 import AnalyticCombinatorics.PartB.Ch9.UrnsAndBalls
 import AnalyticCombinatorics.PartB.Ch9.RandomTrees
 import AnalyticCombinatorics.PartB.Ch9.RandomPermutationCycles
+import AnalyticCombinatorics.PartB.Ch9.CouponCollector
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
