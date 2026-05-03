@@ -182,6 +182,7 @@ import AnalyticCombinatorics.PartB.Ch4.PeriodicCoefficients
 import AnalyticCombinatorics.PartB.Ch4.SupAperiodicGF
 import AnalyticCombinatorics.PartB.Ch4.Tauberian
 import AnalyticCombinatorics.PartB.Ch4.ResidueComputation
+import AnalyticCombinatorics.PartB.Ch4.DominantSingularity
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
@@ -282,6 +283,7 @@ import AnalyticCombinatorics.PartB.Ch7.CriticalExponents
 import AnalyticCombinatorics.PartB.Ch7.SchroederPaths
 import AnalyticCombinatorics.PartB.Ch7.SingularInversion2
 import AnalyticCombinatorics.PartB.Ch7.AlgebraicMapEnumeration
+import AnalyticCombinatorics.PartB.Ch7.PositionOfSingularity
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
@@ -347,6 +349,7 @@ import AnalyticCombinatorics.PartB.Ch9.TrieAnalysis
 import AnalyticCombinatorics.PartB.Ch9.PermutationPatterns
 import AnalyticCombinatorics.PartB.Ch9.AnalyticDepoissonization
 import AnalyticCombinatorics.PartB.Ch9.RandomAllocationSchemes
+import AnalyticCombinatorics.PartB.Ch9.DigitalSearchTrees
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
