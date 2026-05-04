@@ -65,6 +65,7 @@ import AnalyticCombinatorics.PartA.Ch1.PolyominoEnumeration
 import AnalyticCombinatorics.PartA.Ch1.ContextFreeGrammars
 import AnalyticCombinatorics.PartA.Ch1.OGFExamples
 import AnalyticCombinatorics.PartA.Ch1.RunLengthEncoding
+import AnalyticCombinatorics.PartA.Ch1.ChordDiagrams
 import AnalyticCombinatorics.PartA.Ch2.PermutationCycles
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
@@ -304,6 +305,7 @@ import AnalyticCombinatorics.PartB.Ch7.SubcriticalSchemes
 import AnalyticCombinatorics.PartB.Ch7.SupercriticalSchemes
 import AnalyticCombinatorics.PartB.Ch7.UniversalityExponents
 import AnalyticCombinatorics.PartB.Ch7.IteratedFunctionSchemes
+import AnalyticCombinatorics.PartB.Ch7.PolylogarithmGF
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
