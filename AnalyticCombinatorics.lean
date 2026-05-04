@@ -119,6 +119,7 @@ import AnalyticCombinatorics.PartA.Ch2.BellNumbers
 import AnalyticCombinatorics.PartA.Ch2.PermutationDecomposition
 import AnalyticCombinatorics.PartA.Ch2.ConnectedGraphs
 import AnalyticCombinatorics.PartA.Ch2.UrbanRenewal
+import AnalyticCombinatorics.PartA.Ch2.RookPolynomials
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
