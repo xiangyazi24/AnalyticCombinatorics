@@ -144,7 +144,7 @@ def compositions : ℕ → List (List ℕ)
   | n + 1 => (List.range (n + 1)).flatMap fun k =>
       (compositions (n - k)).map fun rest => (k + 1) :: rest
 termination_by n => n
-decreasing_by omega
+decreasing_by simp_wf
 
 theorem compositions_count :
     (compositions 0).length = 1 ∧
@@ -161,8 +161,7 @@ def carlitzCount (n : ℕ) : ℕ :=
 theorem carlitz_values :
     carlitzCount 0 = 1 ∧ carlitzCount 1 = 1 ∧ carlitzCount 2 = 1 ∧
     carlitzCount 3 = 3 ∧ carlitzCount 4 = 4 ∧ carlitzCount 5 = 7 ∧
-    carlitzCount 6 = 13 ∧ carlitzCount 7 = 22 := by
-  sorry
+    carlitzCount 6 = 14 ∧ carlitzCount 7 = 23 := by native_decide
 
 theorem carlitz_monotone :
     carlitzCount 4 > carlitzCount 3 ∧
