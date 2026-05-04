@@ -388,6 +388,21 @@ import AnalyticCombinatorics.PartB.Ch9.LeaderElection
 import AnalyticCombinatorics.PartB.Ch9.PatriciaTrieAnalysis
 import AnalyticCombinatorics.PartB.Ch9.SkipListAnalysis
 import AnalyticCombinatorics.PartB.Ch9.BrownianExcursion
+import AnalyticCombinatorics.PartB.Ch9.UniversalLimitSchemas
+
+-- ┌─────────────────────────────────────────┐
+-- │  Appendices                             │
+-- └─────────────────────────────────────────┘
+import AnalyticCombinatorics.AppA.UsefulMath
+import AnalyticCombinatorics.AppB.ComplexAnalysisFoundations
+import AnalyticCombinatorics.AppC.TauberianUniversalLaws
+
+-- ┌─────────────────────────────────────────┐
+-- │  Asymptotics                            │
+-- └─────────────────────────────────────────┘
+import AnalyticCombinatorics.Asymptotics.Basic
+import AnalyticCombinatorics.Asymptotics.GrowthScales
+import AnalyticCombinatorics.Asymptotics.TransferSchemas
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
