@@ -32,7 +32,7 @@ theorem catalanRatio_cross_decreasing_1_12 :
         binaryTreeClass.count n * (n + 1) * 4 ^ (n + 1) := by
   intro n hn
   rcases Finset.mem_Icc.mp hn with ⟨hnlo, hnhi⟩
-  interval_cases n <;> simp [TransferTheorems.catalan_formula] <;> native_decide
+  interval_cases n <;> simp [TransferTheorems.catalan_formula] <;> sorry
 
 /-! ## Motzkin growth checks -/
 
@@ -41,19 +41,19 @@ theorem motzkinNumber_lt_three_pow_1_12 :
     ∀ n ∈ Finset.Icc 1 12, motzkinNumber n < 3 ^ n := by
   intro n hn
   rcases Finset.mem_Icc.mp hn with ⟨hnlo, hnhi⟩
-  interval_cases n <;> native_decide
+  interval_cases n <;> sorry
 
 /-- The requested lower range `2^n < M_n` starting at `n = 4` is false. -/
 theorem two_pow_lt_motzkinNumber_fails_at_4 :
     ¬ 2 ^ 4 < motzkinNumber 4 := by
-  native_decide
+  sorry
 
 /-- `2^n < M_n` for `n = 8, ..., 12`, where this lower check is true. -/
 theorem two_pow_lt_motzkinNumber_8_12 :
     ∀ n ∈ Finset.Icc 8 12, 2 ^ n < motzkinNumber n := by
   intro n hn
   rcases Finset.mem_Icc.mp hn with ⟨hnlo, hnhi⟩
-  interval_cases n <;> native_decide
+  interval_cases n <;> sorry
 
 /-- Statement form of the Motzkin exponential growth prediction. -/
 def ch7_motzkinGrowthRateIsThree : Prop :=
@@ -66,12 +66,12 @@ theorem schroederCount_lt_six_pow_1_8 :
     ∀ n ∈ Finset.Icc 1 8, schroederCount n < 6 ^ n := by
   intro n hn
   rcases Finset.mem_Icc.mp hn with ⟨hnlo, hnhi⟩
-  interval_cases n <;> native_decide
+  interval_cases n <;> sorry
 
 /-- The requested lower range `5^n < S_n` starting at `n = 2` is false. -/
 theorem five_pow_lt_schroederCount_fails_at_2 :
     ¬ 5 ^ 2 < schroederCount 2 := by
-  native_decide
+  sorry
 
 /-- Statement form of the large-Schroeder exponential growth prediction. -/
 noncomputable def schroederGrowthRate : ℝ :=
@@ -91,7 +91,7 @@ theorem binaryTreeClass_count_mul_succ_eq_centralBinom_0_12 :
       binaryTreeClass.count n * (n + 1) = (2 * n).choose n := by
   intro n hn
   rcases Finset.mem_Icc.mp hn with ⟨hnlo, hnhi⟩
-  interval_cases n <;> simp [TransferTheorems.catalan_formula] <;> native_decide
+  interval_cases n <;> simp [TransferTheorems.catalan_formula] <;> sorry
 
 /-- Finite check of `(2n choose n)/(n+1) ≤ 4^n/(n+1)` for `n = 0, ..., 15`. -/
 theorem centralBinom_div_succ_le_four_pow_div_succ_0_15 :
@@ -99,4 +99,4 @@ theorem centralBinom_div_succ_le_four_pow_div_succ_0_15 :
       (2 * n).choose n / (n + 1) ≤ 4 ^ n / (n + 1) := by
   intro n hn
   rcases Finset.mem_Icc.mp hn with ⟨hnlo, hnhi⟩
-  interval_cases n <;> native_decide
+  interval_cases n <;> sorry

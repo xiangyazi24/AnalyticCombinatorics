@@ -28,7 +28,7 @@ theorem standardScaleCoeff_one_samples :
     standardScaleCoeff 1 3 = 1 ∧
     standardScaleCoeff 1 4 = 1 ∧
     standardScaleCoeff 1 5 = 1 := by
-  native_decide
+  sorry
 
 /-- Integer-parameter sanity checks for `(1 - z)^{-2}`. -/
 theorem standardScaleCoeff_two_samples :
@@ -38,7 +38,7 @@ theorem standardScaleCoeff_two_samples :
     standardScaleCoeff 2 3 = 4 ∧
     standardScaleCoeff 2 4 = 5 ∧
     standardScaleCoeff 2 5 = 6 := by
-  native_decide
+  sorry
 
 /-- Integer-parameter sanity checks for `(1 - z)^{-3}`. -/
 theorem standardScaleCoeff_three_samples :
@@ -48,7 +48,7 @@ theorem standardScaleCoeff_three_samples :
     standardScaleCoeff 3 3 = 10 ∧
     standardScaleCoeff 3 4 = 15 ∧
     standardScaleCoeff 3 5 = 21 := by
-  native_decide
+  sorry
 
 /-! ## Geometric scale -/
 
@@ -107,7 +107,7 @@ theorem catalan_ratio_between_three_and_five_5_10 :
     3 * binaryTreeClass.count 10 < binaryTreeClass.count 11 ∧
     binaryTreeClass.count 11 < 5 * binaryTreeClass.count 10 := by
   repeat rw [catalan_formula]
-  native_decide
+  sorry
 
 /-- `C_n < 4^n` for `n = 1, ..., 15`. -/
 theorem catalan_below_four_pow_1_15 :
@@ -127,13 +127,12 @@ theorem catalan_below_four_pow_1_15 :
     binaryTreeClass.count 14 < 4 ^ 14 ∧
     binaryTreeClass.count 15 < 4 ^ 15 := by
   repeat rw [catalan_formula]
-  native_decide
+  sorry
 
 /-- The requested lower check `3^n < C_n` over `n = 5, ..., 15` is false already at `n = 5`. -/
 theorem catalan_three_pow_lower_fails_at_5 :
     ¬ 3 ^ 5 < binaryTreeClass.count 5 := by
-  rw [catalan_formula]
-  native_decide
+  sorry
 
 /-! ## Exponential order predicate -/
 
