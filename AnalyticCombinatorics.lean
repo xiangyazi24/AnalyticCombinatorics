@@ -156,6 +156,7 @@ import AnalyticCombinatorics.PartA.Ch3.LimitDistributions
 import AnalyticCombinatorics.PartA.Ch3.CumulantMethods
 import AnalyticCombinatorics.PartA.Ch3.LargeDeviationsGF
 import AnalyticCombinatorics.PartA.Ch3.QuasiPowerTheorem
+import AnalyticCombinatorics.PartA.Ch3.InversionPolynomials
 
 -- ┌─────────────────────────────────────────┐
 -- │  Part B: Complex Asymptotics            │
@@ -272,6 +273,7 @@ import AnalyticCombinatorics.PartB.Ch6.SaddlePointMethod
 import AnalyticCombinatorics.PartB.Ch6.MultipleSingularities
 import AnalyticCombinatorics.PartB.Ch6.CoefficientAsymptotics
 import AnalyticCombinatorics.PartB.Ch6.AnalyticContinuationGF
+import AnalyticCombinatorics.PartB.Ch6.CauchyIntegralMethod
 import AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 import AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 import AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
