@@ -67,6 +67,7 @@ import AnalyticCombinatorics.PartA.Ch1.OGFExamples
 import AnalyticCombinatorics.PartA.Ch1.RunLengthEncoding
 import AnalyticCombinatorics.PartA.Ch1.ChordDiagrams
 import AnalyticCombinatorics.PartA.Ch1.BallotSequences
+import AnalyticCombinatorics.PartA.Ch1.ContextFreeEnumeration
 import AnalyticCombinatorics.PartA.Ch2.PermutationCycles
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
@@ -120,6 +121,7 @@ import AnalyticCombinatorics.PartA.Ch2.PermutationDecomposition
 import AnalyticCombinatorics.PartA.Ch2.ConnectedGraphs
 import AnalyticCombinatorics.PartA.Ch2.UrbanRenewal
 import AnalyticCombinatorics.PartA.Ch2.RookPolynomials
+import AnalyticCombinatorics.PartA.Ch2.ConnectedGraphCounting
 import AnalyticCombinatorics.PartA.Ch3.Parameters
 import AnalyticCombinatorics.PartA.Ch3.MultivariateGF
 import AnalyticCombinatorics.PartA.Ch3.PermutationRuns
@@ -311,6 +313,7 @@ import AnalyticCombinatorics.PartB.Ch7.SupercriticalSchemes
 import AnalyticCombinatorics.PartB.Ch7.UniversalityExponents
 import AnalyticCombinatorics.PartB.Ch7.IteratedFunctionSchemes
 import AnalyticCombinatorics.PartB.Ch7.PolylogarithmGF
+import AnalyticCombinatorics.PartB.Ch7.AlgebraicFunctionSingularities
 import AnalyticCombinatorics.PartB.Ch8.SaddlePoint
 import AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 import AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
@@ -381,6 +384,7 @@ import AnalyticCombinatorics.PartB.Ch9.RadixSortAnalysis
 import AnalyticCombinatorics.PartB.Ch9.LeaderElection
 import AnalyticCombinatorics.PartB.Ch9.PatriciaTrieAnalysis
 import AnalyticCombinatorics.PartB.Ch9.SkipListAnalysis
+import AnalyticCombinatorics.PartB.Ch9.BrownianExcursion
 
 -- ┌─────────────────────────────────────────┐
 -- │  Examples (build individually)          │
