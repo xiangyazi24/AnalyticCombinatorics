@@ -66,6 +66,7 @@ import AnalyticCombinatorics.PartA.Ch1.ContextFreeGrammars
 import AnalyticCombinatorics.PartA.Ch1.OGFExamples
 import AnalyticCombinatorics.PartA.Ch1.RunLengthEncoding
 import AnalyticCombinatorics.PartA.Ch1.ChordDiagrams
+import AnalyticCombinatorics.PartA.Ch1.BallotSequences
 import AnalyticCombinatorics.PartA.Ch2.PermutationCycles
 import AnalyticCombinatorics.PartA.Ch2.LabelledClass
 import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
@@ -195,6 +196,7 @@ import AnalyticCombinatorics.PartB.Ch4.DominantSingularity
 import AnalyticCombinatorics.PartB.Ch4.ExponentialGrowthRates
 import AnalyticCombinatorics.PartB.Ch4.CoeffBoundsFromGF
 import AnalyticCombinatorics.PartB.Ch4.MeromCoeffExtraction
+import AnalyticCombinatorics.PartB.Ch4.AbelSummation
 import AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 import AnalyticCombinatorics.PartB.Ch5.AsymptoticEnumeration
 import AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
