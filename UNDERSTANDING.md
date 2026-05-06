@@ -90,13 +90,11 @@ Lean 4 形式化项目，对 Flajolet & Sedgewick《Analytic Combinatorics》全
 | PartA/Ch3/PermutationRuns.lean | Eulerian, descents, subfactorial |
 | PartB/Ch4/RationalGF.lean | Partial fraction + geometric coeff |
 
-## 工作流
+## 发布状态
 
-通过 `handoff-dispatch.sh codex` 批量派 codex agent，每批 5 个并行：
-1. 写 task → `HANDOFF/inbox/`
-2. codex 修改 .lean → 写 reply → `HANDOFF/outbox/`
-3. `lake build` 验证 → commit → push
-4. 移 inbox/outbox → `HANDOFF/done/`
+- Release target: `v1.0.0`
+- Release tree excludes internal handoff/task logs.
+- Public metadata is in `README.md`, `LICENSE`, and `RELEASE_NOTES.md`.
 
 ## 已知 build 注意事项
 
