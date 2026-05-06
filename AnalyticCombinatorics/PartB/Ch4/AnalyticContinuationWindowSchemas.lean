@@ -139,4 +139,3 @@ theorem budgetCertificateList_readyWindow :
   native_decide
 
 end AnalyticCombinatorics.PartB.Ch4.AnalyticContinuationWindowSchemas
-

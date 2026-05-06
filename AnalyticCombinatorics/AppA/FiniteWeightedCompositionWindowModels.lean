@@ -140,4 +140,3 @@ theorem budgetCertificateList_readyWindow :
   native_decide
 
 end AnalyticCombinatorics.AppA.FiniteWeightedCompositionWindowModels
-

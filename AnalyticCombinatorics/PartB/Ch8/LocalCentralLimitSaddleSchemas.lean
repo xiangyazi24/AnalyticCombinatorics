@@ -137,4 +137,3 @@ theorem budgetCertificateList_readyWindow :
   native_decide
 
 end AnalyticCombinatorics.PartB.Ch8.LocalCentralLimitSaddleSchemas
-
