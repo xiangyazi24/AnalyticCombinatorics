@@ -1,9 +1,10 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch3.TreeHeightDistribution
+
 open Finset Nat
 
-namespace TreeHeightDistribution
 
 /-!
 # Height distributions in tree families
@@ -160,4 +161,86 @@ theorem internal_external_path_relation_complete :
 example : completeExternalPathLength = ![0, 2, 8, 24, 64, 160, 384] := by
   native_decide
 
-end TreeHeightDistribution
+
+
+structure TreeHeightDistributionBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def TreeHeightDistributionBudgetCertificate.controlled
+    (c : TreeHeightDistributionBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def TreeHeightDistributionBudgetCertificate.budgetControlled
+    (c : TreeHeightDistributionBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def TreeHeightDistributionBudgetCertificate.Ready
+    (c : TreeHeightDistributionBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def TreeHeightDistributionBudgetCertificate.size
+    (c : TreeHeightDistributionBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem treeHeightDistribution_budgetCertificate_le_size
+    (c : TreeHeightDistributionBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleTreeHeightDistributionBudgetCertificate :
+    TreeHeightDistributionBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleTreeHeightDistributionBudgetCertificate.Ready := by
+  constructor
+  · norm_num [TreeHeightDistributionBudgetCertificate.controlled,
+      sampleTreeHeightDistributionBudgetCertificate]
+  · norm_num [TreeHeightDistributionBudgetCertificate.budgetControlled,
+      sampleTreeHeightDistributionBudgetCertificate]
+
+example :
+    sampleTreeHeightDistributionBudgetCertificate.certificateBudgetWindow ≤
+      sampleTreeHeightDistributionBudgetCertificate.size := by
+  apply treeHeightDistribution_budgetCertificate_le_size
+  constructor
+  · norm_num [TreeHeightDistributionBudgetCertificate.controlled,
+      sampleTreeHeightDistributionBudgetCertificate]
+  · norm_num [TreeHeightDistributionBudgetCertificate.budgetControlled,
+      sampleTreeHeightDistributionBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleTreeHeightDistributionBudgetCertificate.Ready := by
+  constructor
+  · norm_num [TreeHeightDistributionBudgetCertificate.controlled,
+      sampleTreeHeightDistributionBudgetCertificate]
+  · norm_num [TreeHeightDistributionBudgetCertificate.budgetControlled,
+      sampleTreeHeightDistributionBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleTreeHeightDistributionBudgetCertificate.certificateBudgetWindow ≤
+      sampleTreeHeightDistributionBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List TreeHeightDistributionBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleTreeHeightDistributionBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleTreeHeightDistributionBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.TreeHeightDistribution

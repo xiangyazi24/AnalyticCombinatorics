@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace SupAperiodicGF
+namespace AnalyticCombinatorics.PartB.Ch4.SupAperiodicGF
+
 
 /-!
 Bounded executable tables for Chapter IV themes around supercritical
@@ -245,4 +246,86 @@ theorem powerOfTwo_lacunary_has_long_gap :
       lookup12 powerOfTwoLacunaryCoeffs 7 = 0 := by
   native_decide
 
-end SupAperiodicGF
+
+
+structure SupAperiodicGFBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SupAperiodicGFBudgetCertificate.controlled
+    (c : SupAperiodicGFBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SupAperiodicGFBudgetCertificate.budgetControlled
+    (c : SupAperiodicGFBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SupAperiodicGFBudgetCertificate.Ready
+    (c : SupAperiodicGFBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SupAperiodicGFBudgetCertificate.size
+    (c : SupAperiodicGFBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem supAperiodicGF_budgetCertificate_le_size
+    (c : SupAperiodicGFBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSupAperiodicGFBudgetCertificate :
+    SupAperiodicGFBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSupAperiodicGFBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SupAperiodicGFBudgetCertificate.controlled,
+      sampleSupAperiodicGFBudgetCertificate]
+  · norm_num [SupAperiodicGFBudgetCertificate.budgetControlled,
+      sampleSupAperiodicGFBudgetCertificate]
+
+example :
+    sampleSupAperiodicGFBudgetCertificate.certificateBudgetWindow ≤
+      sampleSupAperiodicGFBudgetCertificate.size := by
+  apply supAperiodicGF_budgetCertificate_le_size
+  constructor
+  · norm_num [SupAperiodicGFBudgetCertificate.controlled,
+      sampleSupAperiodicGFBudgetCertificate]
+  · norm_num [SupAperiodicGFBudgetCertificate.budgetControlled,
+      sampleSupAperiodicGFBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSupAperiodicGFBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SupAperiodicGFBudgetCertificate.controlled,
+      sampleSupAperiodicGFBudgetCertificate]
+  · norm_num [SupAperiodicGFBudgetCertificate.budgetControlled,
+      sampleSupAperiodicGFBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSupAperiodicGFBudgetCertificate.certificateBudgetWindow ≤
+      sampleSupAperiodicGFBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SupAperiodicGFBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSupAperiodicGFBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSupAperiodicGFBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.SupAperiodicGF

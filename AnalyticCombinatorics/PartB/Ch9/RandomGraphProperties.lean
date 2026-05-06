@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace RandomGraphProperties
+namespace AnalyticCombinatorics.PartB.Ch9.RandomGraphProperties
+
 
 /-! # Random graph property thresholds
 
@@ -161,4 +162,97 @@ example : expectedDegree 7 (1 / 2 : ℚ) = 3 := by native_decide
 example : expectedDegree 9 (1 / 2 : ℚ) = 4 := by native_decide
 example : expectedDegree 11 (1 / 2 : ℚ) = 5 := by native_decide
 
-end RandomGraphProperties
+/-- Greedy chromatic bound sample for a complete graph. -/
+theorem completeGraph_greedy_bound_ten :
+    greedyChromaticBound
+      (completeGraphChromaticNumber 10) (completeGraphMaxDegree 10) := by
+  native_decide
+
+/-- Expected degree sample in `G(n,1/2)`. -/
+theorem expectedDegree_eleven_half :
+    expectedDegree 11 (1 / 2 : ℚ) = 5 := by
+  native_decide
+
+
+
+structure RandomGraphPropertiesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def RandomGraphPropertiesBudgetCertificate.controlled
+    (c : RandomGraphPropertiesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def RandomGraphPropertiesBudgetCertificate.budgetControlled
+    (c : RandomGraphPropertiesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def RandomGraphPropertiesBudgetCertificate.Ready
+    (c : RandomGraphPropertiesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def RandomGraphPropertiesBudgetCertificate.size
+    (c : RandomGraphPropertiesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem randomGraphProperties_budgetCertificate_le_size
+    (c : RandomGraphPropertiesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleRandomGraphPropertiesBudgetCertificate :
+    RandomGraphPropertiesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleRandomGraphPropertiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RandomGraphPropertiesBudgetCertificate.controlled,
+      sampleRandomGraphPropertiesBudgetCertificate]
+  · norm_num [RandomGraphPropertiesBudgetCertificate.budgetControlled,
+      sampleRandomGraphPropertiesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleRandomGraphPropertiesBudgetCertificate.certificateBudgetWindow ≤
+      sampleRandomGraphPropertiesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleRandomGraphPropertiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RandomGraphPropertiesBudgetCertificate.controlled,
+      sampleRandomGraphPropertiesBudgetCertificate]
+  · norm_num [RandomGraphPropertiesBudgetCertificate.budgetControlled,
+      sampleRandomGraphPropertiesBudgetCertificate]
+
+example :
+    sampleRandomGraphPropertiesBudgetCertificate.certificateBudgetWindow ≤
+      sampleRandomGraphPropertiesBudgetCertificate.size := by
+  apply randomGraphProperties_budgetCertificate_le_size
+  constructor
+  · norm_num [RandomGraphPropertiesBudgetCertificate.controlled,
+      sampleRandomGraphPropertiesBudgetCertificate]
+  · norm_num [RandomGraphPropertiesBudgetCertificate.budgetControlled,
+      sampleRandomGraphPropertiesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List RandomGraphPropertiesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleRandomGraphPropertiesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleRandomGraphPropertiesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.RandomGraphProperties

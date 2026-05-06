@@ -10,8 +10,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace SmoothSchemes
-
+namespace AnalyticCombinatorics.PartB.Ch7.SmoothSchemes
 -- ============================================================
 -- §1 Bell numbers
 -- ============================================================
@@ -180,4 +179,85 @@ theorem fixedPointFreeInvolution_rec_1_to_5 :
     fixedPointFreeInvolutionTable 4 = 7 * fixedPointFreeInvolutionTable 3 ∧
     fixedPointFreeInvolutionTable 5 = 9 * fixedPointFreeInvolutionTable 4 := by native_decide
 
-end SmoothSchemes
+
+structure SmoothSchemesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SmoothSchemesBudgetCertificate.controlled
+    (c : SmoothSchemesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SmoothSchemesBudgetCertificate.budgetControlled
+    (c : SmoothSchemesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SmoothSchemesBudgetCertificate.Ready
+    (c : SmoothSchemesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SmoothSchemesBudgetCertificate.size
+    (c : SmoothSchemesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem smoothSchemes_budgetCertificate_le_size
+    (c : SmoothSchemesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSmoothSchemesBudgetCertificate :
+    SmoothSchemesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSmoothSchemesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SmoothSchemesBudgetCertificate.controlled,
+      sampleSmoothSchemesBudgetCertificate]
+  · norm_num [SmoothSchemesBudgetCertificate.budgetControlled,
+      sampleSmoothSchemesBudgetCertificate]
+
+example :
+    sampleSmoothSchemesBudgetCertificate.certificateBudgetWindow ≤
+      sampleSmoothSchemesBudgetCertificate.size := by
+  apply smoothSchemes_budgetCertificate_le_size
+  constructor
+  · norm_num [SmoothSchemesBudgetCertificate.controlled,
+      sampleSmoothSchemesBudgetCertificate]
+  · norm_num [SmoothSchemesBudgetCertificate.budgetControlled,
+      sampleSmoothSchemesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSmoothSchemesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SmoothSchemesBudgetCertificate.controlled,
+      sampleSmoothSchemesBudgetCertificate]
+  · norm_num [SmoothSchemesBudgetCertificate.budgetControlled,
+      sampleSmoothSchemesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSmoothSchemesBudgetCertificate.certificateBudgetWindow ≤
+      sampleSmoothSchemesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SmoothSchemesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSmoothSchemesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSmoothSchemesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.SmoothSchemes

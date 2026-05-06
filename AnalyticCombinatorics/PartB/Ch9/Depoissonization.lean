@@ -13,8 +13,7 @@ set_option linter.style.nativeDecide false
 
 open Finset
 
-namespace Depoissonization
-
+namespace AnalyticCombinatorics.PartB.Ch9.Depoissonization
 /-! ## Partial sums of the exponential series -/
 
 /-- Partial sum of the exponential series: ∑_{k=0}^{n} 1/k! -/
@@ -96,4 +95,85 @@ theorem expectedEmptyNumer_10_5 : expectedEmptyNumer 10 5 = 590490 := by native_
 
 theorem expectedEmptyDenom_10_5 : expectedEmptyDenom 10 5 = 100000 := by native_decide
 
-end Depoissonization
+
+structure DepoissonizationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def DepoissonizationBudgetCertificate.controlled
+    (c : DepoissonizationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def DepoissonizationBudgetCertificate.budgetControlled
+    (c : DepoissonizationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def DepoissonizationBudgetCertificate.Ready
+    (c : DepoissonizationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def DepoissonizationBudgetCertificate.size
+    (c : DepoissonizationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem depoissonization_budgetCertificate_le_size
+    (c : DepoissonizationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleDepoissonizationBudgetCertificate :
+    DepoissonizationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleDepoissonizationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DepoissonizationBudgetCertificate.controlled,
+      sampleDepoissonizationBudgetCertificate]
+  · norm_num [DepoissonizationBudgetCertificate.budgetControlled,
+      sampleDepoissonizationBudgetCertificate]
+
+example :
+    sampleDepoissonizationBudgetCertificate.certificateBudgetWindow ≤
+      sampleDepoissonizationBudgetCertificate.size := by
+  apply depoissonization_budgetCertificate_le_size
+  constructor
+  · norm_num [DepoissonizationBudgetCertificate.controlled,
+      sampleDepoissonizationBudgetCertificate]
+  · norm_num [DepoissonizationBudgetCertificate.budgetControlled,
+      sampleDepoissonizationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleDepoissonizationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DepoissonizationBudgetCertificate.controlled,
+      sampleDepoissonizationBudgetCertificate]
+  · norm_num [DepoissonizationBudgetCertificate.budgetControlled,
+      sampleDepoissonizationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleDepoissonizationBudgetCertificate.certificateBudgetWindow ≤
+      sampleDepoissonizationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List DepoissonizationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleDepoissonizationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleDepoissonizationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.Depoissonization

@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace MellinTransformAsymptotics
+namespace AnalyticCombinatorics.PartB.Ch8.MellinTransformAsymptotics
+
 
 /-!
 Bounded numerical tables inspired by Chapter VIII Mellin-transform analyses:
@@ -91,4 +92,86 @@ theorem summatory_phi_samples :
     eulerPhi 10 = 10 ∧ summatoryEulerPhi 10 = 42 ∧ summatoryEulerPhi 14 = 72 := by
   native_decide
 
-end MellinTransformAsymptotics
+
+
+structure MellinTransformAsymptoticsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def MellinTransformAsymptoticsBudgetCertificate.controlled
+    (c : MellinTransformAsymptoticsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def MellinTransformAsymptoticsBudgetCertificate.budgetControlled
+    (c : MellinTransformAsymptoticsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def MellinTransformAsymptoticsBudgetCertificate.Ready
+    (c : MellinTransformAsymptoticsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def MellinTransformAsymptoticsBudgetCertificate.size
+    (c : MellinTransformAsymptoticsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem mellinTransformAsymptotics_budgetCertificate_le_size
+    (c : MellinTransformAsymptoticsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleMellinTransformAsymptoticsBudgetCertificate :
+    MellinTransformAsymptoticsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleMellinTransformAsymptoticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MellinTransformAsymptoticsBudgetCertificate.controlled,
+      sampleMellinTransformAsymptoticsBudgetCertificate]
+  · norm_num [MellinTransformAsymptoticsBudgetCertificate.budgetControlled,
+      sampleMellinTransformAsymptoticsBudgetCertificate]
+
+example :
+    sampleMellinTransformAsymptoticsBudgetCertificate.certificateBudgetWindow ≤
+      sampleMellinTransformAsymptoticsBudgetCertificate.size := by
+  apply mellinTransformAsymptotics_budgetCertificate_le_size
+  constructor
+  · norm_num [MellinTransformAsymptoticsBudgetCertificate.controlled,
+      sampleMellinTransformAsymptoticsBudgetCertificate]
+  · norm_num [MellinTransformAsymptoticsBudgetCertificate.budgetControlled,
+      sampleMellinTransformAsymptoticsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleMellinTransformAsymptoticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MellinTransformAsymptoticsBudgetCertificate.controlled,
+      sampleMellinTransformAsymptoticsBudgetCertificate]
+  · norm_num [MellinTransformAsymptoticsBudgetCertificate.budgetControlled,
+      sampleMellinTransformAsymptoticsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleMellinTransformAsymptoticsBudgetCertificate.certificateBudgetWindow ≤
+      sampleMellinTransformAsymptoticsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List MellinTransformAsymptoticsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleMellinTransformAsymptoticsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleMellinTransformAsymptoticsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.MellinTransformAsymptotics

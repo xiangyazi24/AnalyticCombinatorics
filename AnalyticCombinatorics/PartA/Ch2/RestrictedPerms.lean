@@ -1,5 +1,7 @@
 import Mathlib.Tactic
 
+namespace AnalyticCombinatorics.PartA.Ch2.RestrictedPerms
+
 open Finset
 
 set_option linter.style.nativeDecide false
@@ -91,3 +93,86 @@ theorem zigzagCount_convolution_checked (n : ℕ) (hn₁ : 2 ≤ n) (hn₂ : n �
       ∑ k ∈ Finset.range n,
         (n - 1).choose k * zigzagCount k * zigzagCount (n - 1 - k) := by
   interval_cases n <;> native_decide
+
+
+structure RestrictedPermsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def RestrictedPermsBudgetCertificate.controlled
+    (c : RestrictedPermsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def RestrictedPermsBudgetCertificate.budgetControlled
+    (c : RestrictedPermsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def RestrictedPermsBudgetCertificate.Ready
+    (c : RestrictedPermsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def RestrictedPermsBudgetCertificate.size
+    (c : RestrictedPermsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem restrictedPerms_budgetCertificate_le_size
+    (c : RestrictedPermsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleRestrictedPermsBudgetCertificate :
+    RestrictedPermsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleRestrictedPermsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RestrictedPermsBudgetCertificate.controlled,
+      sampleRestrictedPermsBudgetCertificate]
+  · norm_num [RestrictedPermsBudgetCertificate.budgetControlled,
+      sampleRestrictedPermsBudgetCertificate]
+
+example :
+    sampleRestrictedPermsBudgetCertificate.certificateBudgetWindow ≤
+      sampleRestrictedPermsBudgetCertificate.size := by
+  apply restrictedPerms_budgetCertificate_le_size
+  constructor
+  · norm_num [RestrictedPermsBudgetCertificate.controlled,
+      sampleRestrictedPermsBudgetCertificate]
+  · norm_num [RestrictedPermsBudgetCertificate.budgetControlled,
+      sampleRestrictedPermsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleRestrictedPermsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RestrictedPermsBudgetCertificate.controlled,
+      sampleRestrictedPermsBudgetCertificate]
+  · norm_num [RestrictedPermsBudgetCertificate.budgetControlled,
+      sampleRestrictedPermsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleRestrictedPermsBudgetCertificate.certificateBudgetWindow ≤
+      sampleRestrictedPermsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List RestrictedPermsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleRestrictedPermsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleRestrictedPermsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.RestrictedPerms

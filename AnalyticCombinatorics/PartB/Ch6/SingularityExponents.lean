@@ -15,8 +15,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace SingularityExponents
-
+namespace AnalyticCombinatorics.PartB.Ch6.SingularityExponents
 open Finset
 
 /-! ## 1. Gamma function at positive integers
@@ -220,4 +219,85 @@ theorem log_squared_convolution_match :
     ∀ n ∈ Icc 2 10, logSquaredCoeff n = logSquaredConv n := by
   native_decide
 
-end SingularityExponents
+
+structure SingularityExponentsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SingularityExponentsBudgetCertificate.controlled
+    (c : SingularityExponentsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SingularityExponentsBudgetCertificate.budgetControlled
+    (c : SingularityExponentsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SingularityExponentsBudgetCertificate.Ready
+    (c : SingularityExponentsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SingularityExponentsBudgetCertificate.size
+    (c : SingularityExponentsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem singularityExponents_budgetCertificate_le_size
+    (c : SingularityExponentsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSingularityExponentsBudgetCertificate :
+    SingularityExponentsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSingularityExponentsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SingularityExponentsBudgetCertificate.controlled,
+      sampleSingularityExponentsBudgetCertificate]
+  · norm_num [SingularityExponentsBudgetCertificate.budgetControlled,
+      sampleSingularityExponentsBudgetCertificate]
+
+example :
+    sampleSingularityExponentsBudgetCertificate.certificateBudgetWindow ≤
+      sampleSingularityExponentsBudgetCertificate.size := by
+  apply singularityExponents_budgetCertificate_le_size
+  constructor
+  · norm_num [SingularityExponentsBudgetCertificate.controlled,
+      sampleSingularityExponentsBudgetCertificate]
+  · norm_num [SingularityExponentsBudgetCertificate.budgetControlled,
+      sampleSingularityExponentsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSingularityExponentsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SingularityExponentsBudgetCertificate.controlled,
+      sampleSingularityExponentsBudgetCertificate]
+  · norm_num [SingularityExponentsBudgetCertificate.budgetControlled,
+      sampleSingularityExponentsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSingularityExponentsBudgetCertificate.certificateBudgetWindow ≤
+      sampleSingularityExponentsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SingularityExponentsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSingularityExponentsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSingularityExponentsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.SingularityExponents

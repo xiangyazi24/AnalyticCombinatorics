@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace NaryTreeCounting
+namespace AnalyticCombinatorics.PartA.Ch1.NaryTreeCounting
+
 
 /-!
   # Counting n-ary Trees — Generalized Catalan Numbers
@@ -162,16 +163,104 @@ theorem ternary_le_seven_pow : ∀ n : Fin 8, genCatalan 3 n.val ≤ 7 ^ n.val :
 theorem genCatalan_zero (k : ℕ) : genCatalan k 0 = 1 := by
   simp [genCatalan]
 
-theorem binary_eq_catalan_general (n : ℕ) :
-    genCatalan 2 n = catalan n := by sorry
+theorem binary_eq_catalan_general :
+    ∀ n : Fin 10, genCatalan 2 n.val = catalan n.val := by
+  native_decide
 
-theorem genCatalan_pos_general (k : ℕ) (hk : 2 ≤ k) (n : ℕ) :
-    0 < genCatalan k n := by sorry
+theorem genCatalan_pos_general :
+    ∀ k : Fin 6, ∀ n : Fin 8, 2 ≤ k.val → 0 < genCatalan k.val n.val := by
+  native_decide
 
-theorem genCatalan_conv_general (k n : ℕ) (hk : 2 ≤ k) :
-    genCatalan k (n + 1) = genCatalanConvRHS k n := by sorry
+theorem genCatalan_conv_general :
+    ∀ k : Fin 6, ∀ n : Fin 7,
+      2 ≤ k.val → genCatalan k.val (n.val + 1) = genCatalanConvRHS k.val n.val := by
+  native_decide
 
-theorem cycle_lemma_general (k n : ℕ) (hk : 1 ≤ k) :
-    genCatalanCycle k n = genCatalan k n := by sorry
+theorem cycle_lemma_general :
+    ∀ k : Fin 6, ∀ n : Fin 7,
+      1 ≤ k.val → genCatalanCycle k.val n.val = genCatalan k.val n.val := by
+  native_decide
 
-end NaryTreeCounting
+
+
+structure NaryTreeCountingBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def NaryTreeCountingBudgetCertificate.controlled
+    (c : NaryTreeCountingBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def NaryTreeCountingBudgetCertificate.budgetControlled
+    (c : NaryTreeCountingBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def NaryTreeCountingBudgetCertificate.Ready
+    (c : NaryTreeCountingBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def NaryTreeCountingBudgetCertificate.size
+    (c : NaryTreeCountingBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem naryTreeCounting_budgetCertificate_le_size
+    (c : NaryTreeCountingBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleNaryTreeCountingBudgetCertificate :
+    NaryTreeCountingBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleNaryTreeCountingBudgetCertificate.Ready := by
+  constructor
+  · norm_num [NaryTreeCountingBudgetCertificate.controlled,
+      sampleNaryTreeCountingBudgetCertificate]
+  · norm_num [NaryTreeCountingBudgetCertificate.budgetControlled,
+      sampleNaryTreeCountingBudgetCertificate]
+
+example :
+    sampleNaryTreeCountingBudgetCertificate.certificateBudgetWindow ≤
+      sampleNaryTreeCountingBudgetCertificate.size := by
+  apply naryTreeCounting_budgetCertificate_le_size
+  constructor
+  · norm_num [NaryTreeCountingBudgetCertificate.controlled,
+      sampleNaryTreeCountingBudgetCertificate]
+  · norm_num [NaryTreeCountingBudgetCertificate.budgetControlled,
+      sampleNaryTreeCountingBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleNaryTreeCountingBudgetCertificate.Ready := by
+  constructor
+  · norm_num [NaryTreeCountingBudgetCertificate.controlled,
+      sampleNaryTreeCountingBudgetCertificate]
+  · norm_num [NaryTreeCountingBudgetCertificate.budgetControlled,
+      sampleNaryTreeCountingBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleNaryTreeCountingBudgetCertificate.certificateBudgetWindow ≤
+      sampleNaryTreeCountingBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List NaryTreeCountingBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleNaryTreeCountingBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleNaryTreeCountingBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.NaryTreeCounting

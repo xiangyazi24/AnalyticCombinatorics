@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace AlgebraicSingularities
+namespace AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularities
+
 
 /-!
 Finite tables around Chapter VI algebraic singularities.
@@ -108,4 +109,86 @@ theorem series_parallel_counts_grow_on_initial_window :
     ∀ i : Fin 9, seriesParallelCountsFirstNine i < seriesParallelCountsNextNine i := by
   native_decide
 
-end AlgebraicSingularities
+
+
+structure AlgebraicSingularitiesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AlgebraicSingularitiesBudgetCertificate.controlled
+    (c : AlgebraicSingularitiesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AlgebraicSingularitiesBudgetCertificate.budgetControlled
+    (c : AlgebraicSingularitiesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AlgebraicSingularitiesBudgetCertificate.Ready
+    (c : AlgebraicSingularitiesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AlgebraicSingularitiesBudgetCertificate.size
+    (c : AlgebraicSingularitiesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem algebraicSingularities_budgetCertificate_le_size
+    (c : AlgebraicSingularitiesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAlgebraicSingularitiesBudgetCertificate :
+    AlgebraicSingularitiesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAlgebraicSingularitiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AlgebraicSingularitiesBudgetCertificate.controlled,
+      sampleAlgebraicSingularitiesBudgetCertificate]
+  · norm_num [AlgebraicSingularitiesBudgetCertificate.budgetControlled,
+      sampleAlgebraicSingularitiesBudgetCertificate]
+
+example :
+    sampleAlgebraicSingularitiesBudgetCertificate.certificateBudgetWindow ≤
+      sampleAlgebraicSingularitiesBudgetCertificate.size := by
+  apply algebraicSingularities_budgetCertificate_le_size
+  constructor
+  · norm_num [AlgebraicSingularitiesBudgetCertificate.controlled,
+      sampleAlgebraicSingularitiesBudgetCertificate]
+  · norm_num [AlgebraicSingularitiesBudgetCertificate.budgetControlled,
+      sampleAlgebraicSingularitiesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAlgebraicSingularitiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AlgebraicSingularitiesBudgetCertificate.controlled,
+      sampleAlgebraicSingularitiesBudgetCertificate]
+  · norm_num [AlgebraicSingularitiesBudgetCertificate.budgetControlled,
+      sampleAlgebraicSingularitiesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAlgebraicSingularitiesBudgetCertificate.certificateBudgetWindow ≤
+      sampleAlgebraicSingularitiesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List AlgebraicSingularitiesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAlgebraicSingularitiesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAlgebraicSingularitiesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.AlgebraicSingularities

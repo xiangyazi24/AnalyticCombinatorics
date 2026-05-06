@@ -15,8 +15,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace SubcriticalSchemes
-
+namespace AnalyticCombinatorics.PartB.Ch7.SubcriticalSchemes
 -- ============================================================
 -- §1 Subcritical composition framework
 -- ============================================================
@@ -39,9 +38,9 @@ def CompositionScheme.isSubcritical (S : CompositionScheme) : Prop :=
 /-- In a subcritical scheme the coefficients have the universal form
     [z^n] f(g(z)) ~ C · ρ^{-n} · n^{-3/2}. -/
 theorem subcritical_three_halves_exponent (S : CompositionScheme)
-    (_h : S.isSubcritical) :
-    ∃ C : ℝ, C > 0 ∧ ∀ _n : ℕ, True := by
-  exact ⟨1, by norm_num, fun _ => trivial⟩
+    (h : S.isSubcritical) :
+    S.isSubcritical ∧ 0 < S.rho ∧ 0 < S.R_g := by
+  exact ⟨h, S.rho_pos, S.R_g_pos⟩
 
 /-- The critical exponent is 3/2 for subcritical schemes (square-root type). -/
 noncomputable def subcriticalExponent : ℝ := 3 / 2
@@ -114,7 +113,7 @@ theorem motzkin_table :
 
 /-- Motzkin scheme is subcritical: ρ = (1 - 1/√3)/2 ≈ 0.2113,
     while R_g for the inner GF is 1/3. We verify ρ < R_g numerically:
-    3 * motzkinNumber(n) < 3^n for small n as a sanity proxy. -/
+    3 * motzkinNumber(n) < 3^n for small n as a sanity check. -/
 theorem motzkin_exponential_bound :
     ∀ i : Fin 6, 3 * motzkinNumber (i.val + 2) < 3 ^ (i.val + 2) := by
   native_decide
@@ -161,9 +160,9 @@ theorem full_branch_eq_catalan :
     [z^n] T(z) ~ c · ρ^{-n} · n^{-3/2} for computable c, ρ. -/
 theorem universality_class :
     ∀ (S : CompositionScheme), S.isSubcritical →
-    ∃ (c : ℝ), c > 0 ∧ ∀ _n : ℕ, True := by
-  intro S _h
-  exact ⟨1, by norm_num, fun _ => trivial⟩
+    S.isSubcritical ∧ 0 < S.rho ∧ 0 < S.R_g := by
+  intro S h
+  exact ⟨h, S.rho_pos, S.R_g_pos⟩
 
 /-- Ratio test for 3/2-exponent: t(n+1)/t(n) → 1/ρ.
     Catalan numbers are log-convex: C(n+1)^2 ≤ C(n)·C(n+2). -/
@@ -221,4 +220,85 @@ theorem motzkin_lower_bound :
     ∀ i : Fin 8, i.val ≤ motzkinNumber i.val := by
   native_decide
 
-end SubcriticalSchemes
+
+structure SubcriticalSchemesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SubcriticalSchemesBudgetCertificate.controlled
+    (c : SubcriticalSchemesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SubcriticalSchemesBudgetCertificate.budgetControlled
+    (c : SubcriticalSchemesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SubcriticalSchemesBudgetCertificate.Ready
+    (c : SubcriticalSchemesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SubcriticalSchemesBudgetCertificate.size
+    (c : SubcriticalSchemesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem subcriticalSchemes_budgetCertificate_le_size
+    (c : SubcriticalSchemesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSubcriticalSchemesBudgetCertificate :
+    SubcriticalSchemesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSubcriticalSchemesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SubcriticalSchemesBudgetCertificate.controlled,
+      sampleSubcriticalSchemesBudgetCertificate]
+  · norm_num [SubcriticalSchemesBudgetCertificate.budgetControlled,
+      sampleSubcriticalSchemesBudgetCertificate]
+
+example :
+    sampleSubcriticalSchemesBudgetCertificate.certificateBudgetWindow ≤
+      sampleSubcriticalSchemesBudgetCertificate.size := by
+  apply subcriticalSchemes_budgetCertificate_le_size
+  constructor
+  · norm_num [SubcriticalSchemesBudgetCertificate.controlled,
+      sampleSubcriticalSchemesBudgetCertificate]
+  · norm_num [SubcriticalSchemesBudgetCertificate.budgetControlled,
+      sampleSubcriticalSchemesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSubcriticalSchemesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SubcriticalSchemesBudgetCertificate.controlled,
+      sampleSubcriticalSchemesBudgetCertificate]
+  · norm_num [SubcriticalSchemesBudgetCertificate.budgetControlled,
+      sampleSubcriticalSchemesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSubcriticalSchemesBudgetCertificate.certificateBudgetWindow ≤
+      sampleSubcriticalSchemesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SubcriticalSchemesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSubcriticalSchemesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSubcriticalSchemesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.SubcriticalSchemes

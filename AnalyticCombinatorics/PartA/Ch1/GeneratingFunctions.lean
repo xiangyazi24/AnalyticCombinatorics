@@ -10,8 +10,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace GeneratingFunctions
-
+namespace AnalyticCombinatorics.PartA.Ch1.GeneratingFunctions
 /-- OGF coefficient extraction: [z^n] A(z) = a_n -/
 def ogfCoeff (a : ℕ → ℕ) (n : ℕ) : ℕ := a n
 
@@ -85,4 +84,95 @@ example : borelTransform (fun _ => 1) 4 = 1 / (Nat.factorial 4 : ℚ) := by nati
 example : borelTransform (fun _ => 1) 5 = 1 / (Nat.factorial 5 : ℚ) := by native_decide
 example : borelTransform (fun _ => 1) 6 = 1 / (Nat.factorial 6 : ℚ) := by native_decide
 
-end GeneratingFunctions
+/-- Binomial transform of the constant sequence at index eight. -/
+theorem binomialTransform_const_one_eight :
+    binomialTransform (fun _ => 1) 8 = 2 ^ 8 := by
+  native_decide
+
+/-- Inverse binomial transform recovers the constant sequence at index six. -/
+theorem invBinomialTransform_powers_two_six :
+    invBinomialTransform (fun n => (2 : ℤ) ^ n) 6 = 1 := by
+  native_decide
+
+
+structure GeneratingFunctionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def GeneratingFunctionsBudgetCertificate.controlled
+    (c : GeneratingFunctionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def GeneratingFunctionsBudgetCertificate.budgetControlled
+    (c : GeneratingFunctionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def GeneratingFunctionsBudgetCertificate.Ready
+    (c : GeneratingFunctionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def GeneratingFunctionsBudgetCertificate.size
+    (c : GeneratingFunctionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem generatingFunctions_budgetCertificate_le_size
+    (c : GeneratingFunctionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleGeneratingFunctionsBudgetCertificate :
+    GeneratingFunctionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleGeneratingFunctionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GeneratingFunctionsBudgetCertificate.controlled,
+      sampleGeneratingFunctionsBudgetCertificate]
+  · norm_num [GeneratingFunctionsBudgetCertificate.budgetControlled,
+      sampleGeneratingFunctionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleGeneratingFunctionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleGeneratingFunctionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleGeneratingFunctionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GeneratingFunctionsBudgetCertificate.controlled,
+      sampleGeneratingFunctionsBudgetCertificate]
+  · norm_num [GeneratingFunctionsBudgetCertificate.budgetControlled,
+      sampleGeneratingFunctionsBudgetCertificate]
+
+example :
+    sampleGeneratingFunctionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleGeneratingFunctionsBudgetCertificate.size := by
+  apply generatingFunctions_budgetCertificate_le_size
+  constructor
+  · norm_num [GeneratingFunctionsBudgetCertificate.controlled,
+      sampleGeneratingFunctionsBudgetCertificate]
+  · norm_num [GeneratingFunctionsBudgetCertificate.budgetControlled,
+      sampleGeneratingFunctionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List GeneratingFunctionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleGeneratingFunctionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleGeneratingFunctionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.GeneratingFunctions

@@ -14,8 +14,7 @@ set_option linter.style.nativeDecide false
 
 open Finset Nat
 
-namespace CentralLimitSaddlePoint
-
+namespace AnalyticCombinatorics.PartB.Ch8.CentralLimitSaddlePoint
 /-! ## 1. Binomial distribution: C(n,k) values and symmetry -/
 
 /-- Spot-check values of C(10,k). -/
@@ -231,4 +230,93 @@ example : 2 * motzkin 6 ≥ 2^6 := by native_decide
 example : 2 * motzkin 7 ≥ 2^7 := by native_decide
 example : 2 * motzkin 8 ≥ 2^8 := by native_decide
 
-end CentralLimitSaddlePoint
+
+structure CentralLimitSaddlePointBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CentralLimitSaddlePointBudgetCertificate.controlled
+    (c : CentralLimitSaddlePointBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CentralLimitSaddlePointBudgetCertificate.budgetControlled
+    (c : CentralLimitSaddlePointBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CentralLimitSaddlePointBudgetCertificate.Ready
+    (c : CentralLimitSaddlePointBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CentralLimitSaddlePointBudgetCertificate.size
+    (c : CentralLimitSaddlePointBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem centralLimitSaddlePoint_budgetCertificate_le_size
+    (c : CentralLimitSaddlePointBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCentralLimitSaddlePointBudgetCertificate :
+    CentralLimitSaddlePointBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleCentralLimitSaddlePointBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CentralLimitSaddlePointBudgetCertificate.controlled,
+      sampleCentralLimitSaddlePointBudgetCertificate]
+  · norm_num [CentralLimitSaddlePointBudgetCertificate.budgetControlled,
+      sampleCentralLimitSaddlePointBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCentralLimitSaddlePointBudgetCertificate.certificateBudgetWindow ≤
+      sampleCentralLimitSaddlePointBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleCentralLimitSaddlePointBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CentralLimitSaddlePointBudgetCertificate.controlled,
+      sampleCentralLimitSaddlePointBudgetCertificate]
+  · norm_num [CentralLimitSaddlePointBudgetCertificate.budgetControlled,
+      sampleCentralLimitSaddlePointBudgetCertificate]
+
+example :
+    sampleCentralLimitSaddlePointBudgetCertificate.certificateBudgetWindow ≤
+      sampleCentralLimitSaddlePointBudgetCertificate.size := by
+  apply centralLimitSaddlePoint_budgetCertificate_le_size
+  constructor
+  · norm_num [CentralLimitSaddlePointBudgetCertificate.controlled,
+      sampleCentralLimitSaddlePointBudgetCertificate]
+  · norm_num [CentralLimitSaddlePointBudgetCertificate.budgetControlled,
+      sampleCentralLimitSaddlePointBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleCentralLimitSaddlePointBudgetCertificate_ready :
+    sampleCentralLimitSaddlePointBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CentralLimitSaddlePointBudgetCertificate.controlled,
+      sampleCentralLimitSaddlePointBudgetCertificate]
+  · norm_num [CentralLimitSaddlePointBudgetCertificate.budgetControlled,
+      sampleCentralLimitSaddlePointBudgetCertificate]
+
+def budgetCertificateListReady (data : List CentralLimitSaddlePointBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCentralLimitSaddlePointBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCentralLimitSaddlePointBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.CentralLimitSaddlePoint

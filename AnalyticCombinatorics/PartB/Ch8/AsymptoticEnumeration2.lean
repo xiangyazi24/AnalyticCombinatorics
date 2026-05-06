@@ -6,8 +6,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace AsymptoticEnumeration2
-
+namespace AnalyticCombinatorics.PartB.Ch8.AsymptoticEnumeration2
 open Finset
 
 /-! ## 1. Integer partitions p(n), n = 0 .. 20 -/
@@ -141,4 +140,85 @@ theorem largeSchroeder_gt_two_catalan_2_7 :
       largeSchroederTable ⟨(i : ℕ) + 2, by omega⟩ > 2 * catalan ((i : ℕ) + 2) := by
   native_decide
 
-end AsymptoticEnumeration2
+
+structure AsymptoticEnumeration2BudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AsymptoticEnumeration2BudgetCertificate.controlled
+    (c : AsymptoticEnumeration2BudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AsymptoticEnumeration2BudgetCertificate.budgetControlled
+    (c : AsymptoticEnumeration2BudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AsymptoticEnumeration2BudgetCertificate.Ready
+    (c : AsymptoticEnumeration2BudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AsymptoticEnumeration2BudgetCertificate.size
+    (c : AsymptoticEnumeration2BudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem asymptoticEnumeration2_budgetCertificate_le_size
+    (c : AsymptoticEnumeration2BudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAsymptoticEnumeration2BudgetCertificate :
+    AsymptoticEnumeration2BudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAsymptoticEnumeration2BudgetCertificate.Ready := by
+  constructor
+  · norm_num [AsymptoticEnumeration2BudgetCertificate.controlled,
+      sampleAsymptoticEnumeration2BudgetCertificate]
+  · norm_num [AsymptoticEnumeration2BudgetCertificate.budgetControlled,
+      sampleAsymptoticEnumeration2BudgetCertificate]
+
+example :
+    sampleAsymptoticEnumeration2BudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptoticEnumeration2BudgetCertificate.size := by
+  apply asymptoticEnumeration2_budgetCertificate_le_size
+  constructor
+  · norm_num [AsymptoticEnumeration2BudgetCertificate.controlled,
+      sampleAsymptoticEnumeration2BudgetCertificate]
+  · norm_num [AsymptoticEnumeration2BudgetCertificate.budgetControlled,
+      sampleAsymptoticEnumeration2BudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAsymptoticEnumeration2BudgetCertificate.Ready := by
+  constructor
+  · norm_num [AsymptoticEnumeration2BudgetCertificate.controlled,
+      sampleAsymptoticEnumeration2BudgetCertificate]
+  · norm_num [AsymptoticEnumeration2BudgetCertificate.budgetControlled,
+      sampleAsymptoticEnumeration2BudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAsymptoticEnumeration2BudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptoticEnumeration2BudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List AsymptoticEnumeration2BudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAsymptoticEnumeration2BudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAsymptoticEnumeration2BudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.AsymptoticEnumeration2

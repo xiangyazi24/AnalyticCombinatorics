@@ -2,9 +2,10 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch1.CombinatorialIdentities
+
 open Finset
 
-namespace CombinatorialIdentities
 
 /-!
 Chapter I/III finite checks for binomial coefficient identities used as
@@ -149,4 +150,86 @@ theorem catalan_convolution_0_8 :
   rcases Finset.mem_Icc.mp hn with ⟨hnlo, hnhi⟩
   interval_cases n <;> native_decide
 
-end CombinatorialIdentities
+
+
+structure CombinatorialIdentitiesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CombinatorialIdentitiesBudgetCertificate.controlled
+    (c : CombinatorialIdentitiesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CombinatorialIdentitiesBudgetCertificate.budgetControlled
+    (c : CombinatorialIdentitiesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CombinatorialIdentitiesBudgetCertificate.Ready
+    (c : CombinatorialIdentitiesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CombinatorialIdentitiesBudgetCertificate.size
+    (c : CombinatorialIdentitiesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem combinatorialIdentities_budgetCertificate_le_size
+    (c : CombinatorialIdentitiesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCombinatorialIdentitiesBudgetCertificate :
+    CombinatorialIdentitiesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleCombinatorialIdentitiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CombinatorialIdentitiesBudgetCertificate.controlled,
+      sampleCombinatorialIdentitiesBudgetCertificate]
+  · norm_num [CombinatorialIdentitiesBudgetCertificate.budgetControlled,
+      sampleCombinatorialIdentitiesBudgetCertificate]
+
+example :
+    sampleCombinatorialIdentitiesBudgetCertificate.certificateBudgetWindow ≤
+      sampleCombinatorialIdentitiesBudgetCertificate.size := by
+  apply combinatorialIdentities_budgetCertificate_le_size
+  constructor
+  · norm_num [CombinatorialIdentitiesBudgetCertificate.controlled,
+      sampleCombinatorialIdentitiesBudgetCertificate]
+  · norm_num [CombinatorialIdentitiesBudgetCertificate.budgetControlled,
+      sampleCombinatorialIdentitiesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleCombinatorialIdentitiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CombinatorialIdentitiesBudgetCertificate.controlled,
+      sampleCombinatorialIdentitiesBudgetCertificate]
+  · norm_num [CombinatorialIdentitiesBudgetCertificate.budgetControlled,
+      sampleCombinatorialIdentitiesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCombinatorialIdentitiesBudgetCertificate.certificateBudgetWindow ≤
+      sampleCombinatorialIdentitiesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List CombinatorialIdentitiesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCombinatorialIdentitiesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCombinatorialIdentitiesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.CombinatorialIdentities

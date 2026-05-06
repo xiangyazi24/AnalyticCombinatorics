@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace DerangementVariants
+namespace AnalyticCombinatorics.PartA.Ch1.DerangementVariants
+
 
 open Finset Nat
 
@@ -152,4 +153,86 @@ theorem nearlyFixedPermutations_values :
     nearlyFixedPermutations 8 = 14832 := by
   native_decide
 
-end DerangementVariants
+
+
+structure DerangementVariantsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def DerangementVariantsBudgetCertificate.controlled
+    (c : DerangementVariantsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def DerangementVariantsBudgetCertificate.budgetControlled
+    (c : DerangementVariantsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def DerangementVariantsBudgetCertificate.Ready
+    (c : DerangementVariantsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def DerangementVariantsBudgetCertificate.size
+    (c : DerangementVariantsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem derangementVariants_budgetCertificate_le_size
+    (c : DerangementVariantsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleDerangementVariantsBudgetCertificate :
+    DerangementVariantsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleDerangementVariantsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DerangementVariantsBudgetCertificate.controlled,
+      sampleDerangementVariantsBudgetCertificate]
+  · norm_num [DerangementVariantsBudgetCertificate.budgetControlled,
+      sampleDerangementVariantsBudgetCertificate]
+
+example :
+    sampleDerangementVariantsBudgetCertificate.certificateBudgetWindow ≤
+      sampleDerangementVariantsBudgetCertificate.size := by
+  apply derangementVariants_budgetCertificate_le_size
+  constructor
+  · norm_num [DerangementVariantsBudgetCertificate.controlled,
+      sampleDerangementVariantsBudgetCertificate]
+  · norm_num [DerangementVariantsBudgetCertificate.budgetControlled,
+      sampleDerangementVariantsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleDerangementVariantsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DerangementVariantsBudgetCertificate.controlled,
+      sampleDerangementVariantsBudgetCertificate]
+  · norm_num [DerangementVariantsBudgetCertificate.budgetControlled,
+      sampleDerangementVariantsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleDerangementVariantsBudgetCertificate.certificateBudgetWindow ≤
+      sampleDerangementVariantsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List DerangementVariantsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleDerangementVariantsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleDerangementVariantsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.DerangementVariants

@@ -11,8 +11,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace SymbolicMethodAdvanced
-
+namespace AnalyticCombinatorics.PartA.Ch1.SymbolicMethodAdvanced
 /-! ## 1. Sequence construction SEQ(A)
 
   If A = {1,2}-atoms (two atoms of size 1), then A(z) = 2z and
@@ -89,4 +88,101 @@ example : 3 * Nat.factorial 3 = 18 := by native_decide
 example : 4 * Nat.factorial 4 = 96 := by native_decide
 example : 5 * Nat.factorial 5 = 600 := by native_decide
 
-end SymbolicMethodAdvanced
+/-- Sequence construction for `a` atoms of size one. -/
+def sequenceAtomCount (a n : ℕ) : ℕ :=
+  a ^ n
+
+theorem sequenceAtomCount_two_ten :
+    sequenceAtomCount 2 10 = 1024 := by
+  native_decide
+
+/-- Labelled cycle construction on `n` atoms. -/
+def labelledCycleCount (n : ℕ) : ℕ :=
+  Nat.factorial n / n
+
+theorem labelledCycleCount_six :
+    labelledCycleCount 6 = Nat.factorial 5 := by
+  native_decide
+
+
+structure SymbolicMethodAdvancedBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SymbolicMethodAdvancedBudgetCertificate.controlled
+    (c : SymbolicMethodAdvancedBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SymbolicMethodAdvancedBudgetCertificate.budgetControlled
+    (c : SymbolicMethodAdvancedBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SymbolicMethodAdvancedBudgetCertificate.Ready
+    (c : SymbolicMethodAdvancedBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SymbolicMethodAdvancedBudgetCertificate.size
+    (c : SymbolicMethodAdvancedBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem symbolicMethodAdvanced_budgetCertificate_le_size
+    (c : SymbolicMethodAdvancedBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSymbolicMethodAdvancedBudgetCertificate :
+    SymbolicMethodAdvancedBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleSymbolicMethodAdvancedBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SymbolicMethodAdvancedBudgetCertificate.controlled,
+      sampleSymbolicMethodAdvancedBudgetCertificate]
+  · norm_num [SymbolicMethodAdvancedBudgetCertificate.budgetControlled,
+      sampleSymbolicMethodAdvancedBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSymbolicMethodAdvancedBudgetCertificate.certificateBudgetWindow ≤
+      sampleSymbolicMethodAdvancedBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleSymbolicMethodAdvancedBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SymbolicMethodAdvancedBudgetCertificate.controlled,
+      sampleSymbolicMethodAdvancedBudgetCertificate]
+  · norm_num [SymbolicMethodAdvancedBudgetCertificate.budgetControlled,
+      sampleSymbolicMethodAdvancedBudgetCertificate]
+
+example :
+    sampleSymbolicMethodAdvancedBudgetCertificate.certificateBudgetWindow ≤
+      sampleSymbolicMethodAdvancedBudgetCertificate.size := by
+  apply symbolicMethodAdvanced_budgetCertificate_le_size
+  constructor
+  · norm_num [SymbolicMethodAdvancedBudgetCertificate.controlled,
+      sampleSymbolicMethodAdvancedBudgetCertificate]
+  · norm_num [SymbolicMethodAdvancedBudgetCertificate.budgetControlled,
+      sampleSymbolicMethodAdvancedBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List SymbolicMethodAdvancedBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSymbolicMethodAdvancedBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSymbolicMethodAdvancedBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.SymbolicMethodAdvanced

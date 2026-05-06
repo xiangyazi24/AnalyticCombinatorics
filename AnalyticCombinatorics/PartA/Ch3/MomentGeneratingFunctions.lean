@@ -1,6 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch3.MomentGeneratingFunctions
+
 /-! # Ch III — Moment and probability generating functions
 
 Finite rational checks for the probability distributions that occur in
@@ -8,7 +10,6 @@ combinatorial-parameter analysis: binomial, Poisson, geometric waiting times,
 negative binomial laws, and hypergeometric laws.
 -/
 
-namespace MomentGeneratingFunctions
 
 /-! ## Finite probability and moment generating functions -/
 
@@ -230,4 +231,86 @@ theorem hypergeometric_six_two_two_probabilities :
       hypergeometricPMF 6 2 2 2 = (1 : ℚ) / 15 := by
   native_decide
 
-end MomentGeneratingFunctions
+
+
+structure MomentGeneratingFunctionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def MomentGeneratingFunctionsBudgetCertificate.controlled
+    (c : MomentGeneratingFunctionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def MomentGeneratingFunctionsBudgetCertificate.budgetControlled
+    (c : MomentGeneratingFunctionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def MomentGeneratingFunctionsBudgetCertificate.Ready
+    (c : MomentGeneratingFunctionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def MomentGeneratingFunctionsBudgetCertificate.size
+    (c : MomentGeneratingFunctionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem momentGeneratingFunctions_budgetCertificate_le_size
+    (c : MomentGeneratingFunctionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleMomentGeneratingFunctionsBudgetCertificate :
+    MomentGeneratingFunctionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleMomentGeneratingFunctionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MomentGeneratingFunctionsBudgetCertificate.controlled,
+      sampleMomentGeneratingFunctionsBudgetCertificate]
+  · norm_num [MomentGeneratingFunctionsBudgetCertificate.budgetControlled,
+      sampleMomentGeneratingFunctionsBudgetCertificate]
+
+example :
+    sampleMomentGeneratingFunctionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleMomentGeneratingFunctionsBudgetCertificate.size := by
+  apply momentGeneratingFunctions_budgetCertificate_le_size
+  constructor
+  · norm_num [MomentGeneratingFunctionsBudgetCertificate.controlled,
+      sampleMomentGeneratingFunctionsBudgetCertificate]
+  · norm_num [MomentGeneratingFunctionsBudgetCertificate.budgetControlled,
+      sampleMomentGeneratingFunctionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleMomentGeneratingFunctionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MomentGeneratingFunctionsBudgetCertificate.controlled,
+      sampleMomentGeneratingFunctionsBudgetCertificate]
+  · norm_num [MomentGeneratingFunctionsBudgetCertificate.budgetControlled,
+      sampleMomentGeneratingFunctionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleMomentGeneratingFunctionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleMomentGeneratingFunctionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List MomentGeneratingFunctionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleMomentGeneratingFunctionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleMomentGeneratingFunctionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.MomentGeneratingFunctions

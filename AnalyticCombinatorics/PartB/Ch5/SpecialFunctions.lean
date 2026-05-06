@@ -10,8 +10,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace SpecialFunctions
-
+namespace AnalyticCombinatorics.PartB.Ch5.SpecialFunctions
 open Finset
 
 /-! ## 1. Bernoulli numbers -/
@@ -229,4 +228,100 @@ example : -(1 : ℤ) + 6 - 12 + 8 = 1 := by native_decide
     C(4,0)*1 - C(4,1)*2 + C(4,2)*4 - C(4,3)*8 + C(4,4)*16 = 1-8+24-32+16 = 1. -/
 example : (1 : ℤ) - 8 + 24 - 32 + 16 = 1 := by native_decide
 
-end SpecialFunctions
+/-- Bernoulli table sample at index six. -/
+theorem bernoulliTable_six :
+    bernoulliTable 6 = 1 / 42 := by
+  native_decide
+
+/-- Catalan formula sample at index five. -/
+theorem catalanNum_five :
+    catalanNum 5 = 42 := by
+  native_decide
+
+/-- Rising factorial sample. -/
+theorem risingFactorial_five_three :
+    risingFactorial 5 3 = 210 := by
+  native_decide
+
+
+structure SpecialFunctionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SpecialFunctionsBudgetCertificate.controlled
+    (c : SpecialFunctionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SpecialFunctionsBudgetCertificate.budgetControlled
+    (c : SpecialFunctionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SpecialFunctionsBudgetCertificate.Ready
+    (c : SpecialFunctionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SpecialFunctionsBudgetCertificate.size
+    (c : SpecialFunctionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem specialFunctions_budgetCertificate_le_size
+    (c : SpecialFunctionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSpecialFunctionsBudgetCertificate :
+    SpecialFunctionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleSpecialFunctionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SpecialFunctionsBudgetCertificate.controlled,
+      sampleSpecialFunctionsBudgetCertificate]
+  · norm_num [SpecialFunctionsBudgetCertificate.budgetControlled,
+      sampleSpecialFunctionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSpecialFunctionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleSpecialFunctionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleSpecialFunctionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SpecialFunctionsBudgetCertificate.controlled,
+      sampleSpecialFunctionsBudgetCertificate]
+  · norm_num [SpecialFunctionsBudgetCertificate.budgetControlled,
+      sampleSpecialFunctionsBudgetCertificate]
+
+example :
+    sampleSpecialFunctionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleSpecialFunctionsBudgetCertificate.size := by
+  apply specialFunctions_budgetCertificate_le_size
+  constructor
+  · norm_num [SpecialFunctionsBudgetCertificate.controlled,
+      sampleSpecialFunctionsBudgetCertificate]
+  · norm_num [SpecialFunctionsBudgetCertificate.budgetControlled,
+      sampleSpecialFunctionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List SpecialFunctionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSpecialFunctionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSpecialFunctionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.SpecialFunctions

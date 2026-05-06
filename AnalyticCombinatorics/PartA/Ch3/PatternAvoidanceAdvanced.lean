@@ -2,6 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch3.PatternAvoidanceAdvanced
+
 /-!
 # Advanced Pattern Avoidance in Permutations
 
@@ -13,7 +15,6 @@ standard enumerative sequences for small `n`, and use `native_decide` to check
 the stated equalities in the displayed ranges.
 -/
 
-namespace PatternAvoidanceAdvanced
 
 /-! ## Length-three patterns and Catalan numbers -/
 
@@ -169,4 +170,86 @@ theorem schensted_lis_two_rows_matches_catalan :
         youngTableauPairsAtMostTwoRows1to6 n = catalan1to6 n := by
   native_decide
 
-end PatternAvoidanceAdvanced
+
+
+structure PatternAvoidanceAdvancedBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PatternAvoidanceAdvancedBudgetCertificate.controlled
+    (c : PatternAvoidanceAdvancedBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PatternAvoidanceAdvancedBudgetCertificate.budgetControlled
+    (c : PatternAvoidanceAdvancedBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PatternAvoidanceAdvancedBudgetCertificate.Ready
+    (c : PatternAvoidanceAdvancedBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PatternAvoidanceAdvancedBudgetCertificate.size
+    (c : PatternAvoidanceAdvancedBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem patternAvoidanceAdvanced_budgetCertificate_le_size
+    (c : PatternAvoidanceAdvancedBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePatternAvoidanceAdvancedBudgetCertificate :
+    PatternAvoidanceAdvancedBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : samplePatternAvoidanceAdvancedBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PatternAvoidanceAdvancedBudgetCertificate.controlled,
+      samplePatternAvoidanceAdvancedBudgetCertificate]
+  · norm_num [PatternAvoidanceAdvancedBudgetCertificate.budgetControlled,
+      samplePatternAvoidanceAdvancedBudgetCertificate]
+
+example :
+    samplePatternAvoidanceAdvancedBudgetCertificate.certificateBudgetWindow ≤
+      samplePatternAvoidanceAdvancedBudgetCertificate.size := by
+  apply patternAvoidanceAdvanced_budgetCertificate_le_size
+  constructor
+  · norm_num [PatternAvoidanceAdvancedBudgetCertificate.controlled,
+      samplePatternAvoidanceAdvancedBudgetCertificate]
+  · norm_num [PatternAvoidanceAdvancedBudgetCertificate.budgetControlled,
+      samplePatternAvoidanceAdvancedBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    samplePatternAvoidanceAdvancedBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PatternAvoidanceAdvancedBudgetCertificate.controlled,
+      samplePatternAvoidanceAdvancedBudgetCertificate]
+  · norm_num [PatternAvoidanceAdvancedBudgetCertificate.budgetControlled,
+      samplePatternAvoidanceAdvancedBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePatternAvoidanceAdvancedBudgetCertificate.certificateBudgetWindow ≤
+      samplePatternAvoidanceAdvancedBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List PatternAvoidanceAdvancedBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePatternAvoidanceAdvancedBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePatternAvoidanceAdvancedBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.PatternAvoidanceAdvanced

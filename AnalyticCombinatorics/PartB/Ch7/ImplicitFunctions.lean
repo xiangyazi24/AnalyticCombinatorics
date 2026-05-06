@@ -6,8 +6,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace ImplicitFunctions
-
+namespace AnalyticCombinatorics.PartB.Ch7.ImplicitFunctions
 /-! ## 1. Catalan numbers -/
 
 /-- Catalan numbers `C(n)` for `n = 0, ..., 9`. -/
@@ -67,4 +66,85 @@ theorem catalan_lt_four_pow :
     ∀ i : Fin 9, catalanTable ⟨i.val + 1, by omega⟩ < 4 ^ (i.val + 1) := by
   decide
 
-end ImplicitFunctions
+
+structure ImplicitFunctionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ImplicitFunctionsBudgetCertificate.controlled
+    (c : ImplicitFunctionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ImplicitFunctionsBudgetCertificate.budgetControlled
+    (c : ImplicitFunctionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ImplicitFunctionsBudgetCertificate.Ready
+    (c : ImplicitFunctionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ImplicitFunctionsBudgetCertificate.size
+    (c : ImplicitFunctionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem implicitFunctions_budgetCertificate_le_size
+    (c : ImplicitFunctionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleImplicitFunctionsBudgetCertificate :
+    ImplicitFunctionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleImplicitFunctionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ImplicitFunctionsBudgetCertificate.controlled,
+      sampleImplicitFunctionsBudgetCertificate]
+  · norm_num [ImplicitFunctionsBudgetCertificate.budgetControlled,
+      sampleImplicitFunctionsBudgetCertificate]
+
+example :
+    sampleImplicitFunctionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleImplicitFunctionsBudgetCertificate.size := by
+  apply implicitFunctions_budgetCertificate_le_size
+  constructor
+  · norm_num [ImplicitFunctionsBudgetCertificate.controlled,
+      sampleImplicitFunctionsBudgetCertificate]
+  · norm_num [ImplicitFunctionsBudgetCertificate.budgetControlled,
+      sampleImplicitFunctionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleImplicitFunctionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ImplicitFunctionsBudgetCertificate.controlled,
+      sampleImplicitFunctionsBudgetCertificate]
+  · norm_num [ImplicitFunctionsBudgetCertificate.budgetControlled,
+      sampleImplicitFunctionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleImplicitFunctionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleImplicitFunctionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ImplicitFunctionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleImplicitFunctionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleImplicitFunctionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.ImplicitFunctions

@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace ExponentialGrowthRates
+namespace AnalyticCombinatorics.PartB.Ch4.ExponentialGrowthRates
+
 
 /-! Exponential growth rates of combinatorial sequences (Chapter IV).
 Growth constant from singularity location, algebraic vs transcendental GFs,
@@ -247,4 +248,86 @@ theorem hierarchy_exponential_ne_factorial :
 theorem hierarchy_factorial_ne_superexp :
     GrowthTier.factorial ≠ GrowthTier.superExponential := by decide
 
-end ExponentialGrowthRates
+
+
+structure ExponentialGrowthRatesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ExponentialGrowthRatesBudgetCertificate.controlled
+    (c : ExponentialGrowthRatesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ExponentialGrowthRatesBudgetCertificate.budgetControlled
+    (c : ExponentialGrowthRatesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ExponentialGrowthRatesBudgetCertificate.Ready
+    (c : ExponentialGrowthRatesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ExponentialGrowthRatesBudgetCertificate.size
+    (c : ExponentialGrowthRatesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem exponentialGrowthRates_budgetCertificate_le_size
+    (c : ExponentialGrowthRatesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleExponentialGrowthRatesBudgetCertificate :
+    ExponentialGrowthRatesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleExponentialGrowthRatesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ExponentialGrowthRatesBudgetCertificate.controlled,
+      sampleExponentialGrowthRatesBudgetCertificate]
+  · norm_num [ExponentialGrowthRatesBudgetCertificate.budgetControlled,
+      sampleExponentialGrowthRatesBudgetCertificate]
+
+example :
+    sampleExponentialGrowthRatesBudgetCertificate.certificateBudgetWindow ≤
+      sampleExponentialGrowthRatesBudgetCertificate.size := by
+  apply exponentialGrowthRates_budgetCertificate_le_size
+  constructor
+  · norm_num [ExponentialGrowthRatesBudgetCertificate.controlled,
+      sampleExponentialGrowthRatesBudgetCertificate]
+  · norm_num [ExponentialGrowthRatesBudgetCertificate.budgetControlled,
+      sampleExponentialGrowthRatesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleExponentialGrowthRatesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ExponentialGrowthRatesBudgetCertificate.controlled,
+      sampleExponentialGrowthRatesBudgetCertificate]
+  · norm_num [ExponentialGrowthRatesBudgetCertificate.budgetControlled,
+      sampleExponentialGrowthRatesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleExponentialGrowthRatesBudgetCertificate.certificateBudgetWindow ≤
+      sampleExponentialGrowthRatesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ExponentialGrowthRatesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleExponentialGrowthRatesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleExponentialGrowthRatesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.ExponentialGrowthRates

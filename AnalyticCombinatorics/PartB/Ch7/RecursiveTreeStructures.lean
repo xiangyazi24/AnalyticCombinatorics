@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace RecursiveTreeStructures
+namespace AnalyticCombinatorics.PartB.Ch7.RecursiveTreeStructures
+
 
 /-!
   Recursive decomposition of tree structures, following Chapter VII of
@@ -313,4 +314,86 @@ theorem avl_next_height_not_feasible_1_15 :
       let n := i.val + 1
       n < avlMinNodes (avlMaxHeight n + 1) := by native_decide
 
-end RecursiveTreeStructures
+
+
+structure RecursiveTreeStructuresBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def RecursiveTreeStructuresBudgetCertificate.controlled
+    (c : RecursiveTreeStructuresBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def RecursiveTreeStructuresBudgetCertificate.budgetControlled
+    (c : RecursiveTreeStructuresBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def RecursiveTreeStructuresBudgetCertificate.Ready
+    (c : RecursiveTreeStructuresBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def RecursiveTreeStructuresBudgetCertificate.size
+    (c : RecursiveTreeStructuresBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem recursiveTreeStructures_budgetCertificate_le_size
+    (c : RecursiveTreeStructuresBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleRecursiveTreeStructuresBudgetCertificate :
+    RecursiveTreeStructuresBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleRecursiveTreeStructuresBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RecursiveTreeStructuresBudgetCertificate.controlled,
+      sampleRecursiveTreeStructuresBudgetCertificate]
+  · norm_num [RecursiveTreeStructuresBudgetCertificate.budgetControlled,
+      sampleRecursiveTreeStructuresBudgetCertificate]
+
+example :
+    sampleRecursiveTreeStructuresBudgetCertificate.certificateBudgetWindow ≤
+      sampleRecursiveTreeStructuresBudgetCertificate.size := by
+  apply recursiveTreeStructures_budgetCertificate_le_size
+  constructor
+  · norm_num [RecursiveTreeStructuresBudgetCertificate.controlled,
+      sampleRecursiveTreeStructuresBudgetCertificate]
+  · norm_num [RecursiveTreeStructuresBudgetCertificate.budgetControlled,
+      sampleRecursiveTreeStructuresBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleRecursiveTreeStructuresBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RecursiveTreeStructuresBudgetCertificate.controlled,
+      sampleRecursiveTreeStructuresBudgetCertificate]
+  · norm_num [RecursiveTreeStructuresBudgetCertificate.budgetControlled,
+      sampleRecursiveTreeStructuresBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleRecursiveTreeStructuresBudgetCertificate.certificateBudgetWindow ≤
+      sampleRecursiveTreeStructuresBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List RecursiveTreeStructuresBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleRecursiveTreeStructuresBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleRecursiveTreeStructuresBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.RecursiveTreeStructures

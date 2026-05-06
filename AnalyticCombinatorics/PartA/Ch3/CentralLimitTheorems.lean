@@ -2,6 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch3.CentralLimitTheorems
+
 /-! # Ch III / IX — Central Limit Theorems in Combinatorics
 
 Formalizes numerical verifications of moments, Poisson approximation,
@@ -9,7 +11,6 @@ Gaussian behavior of Eulerian numbers, cycle variance, and fixed-point
 distributions. All checks use `native_decide` on rational or natural arithmetic.
 -/
 
-namespace CentralLimitTheorems
 
 /-! ## 1. Binomial distribution moments: Bin(n, 1/2) -/
 
@@ -162,4 +163,99 @@ example : fixedPointCount 5 0 + fixedPointCount 5 1 + fixedPointCount 5 2 +
 
 example : 44 + 45 + 20 + 10 + 0 + 1 = Nat.factorial 5 := by native_decide
 
-end CentralLimitTheorems
+/-- Eulerian row sum sample at size five. -/
+theorem eulerianNumber_row_five_sum :
+    eulerianNumber 5 0 + eulerianNumber 5 1 + eulerianNumber 5 2 +
+      eulerianNumber 5 3 + eulerianNumber 5 4 = Nat.factorial 5 := by
+  native_decide
+
+/-- Fixed-point count row sum sample at size five. -/
+theorem fixedPointCount_row_five_sum :
+    fixedPointCount 5 0 + fixedPointCount 5 1 + fixedPointCount 5 2 +
+      fixedPointCount 5 3 + fixedPointCount 5 4 + fixedPointCount 5 5 =
+        Nat.factorial 5 := by
+  native_decide
+
+
+
+structure CentralLimitTheoremsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CentralLimitTheoremsBudgetCertificate.controlled
+    (c : CentralLimitTheoremsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CentralLimitTheoremsBudgetCertificate.budgetControlled
+    (c : CentralLimitTheoremsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CentralLimitTheoremsBudgetCertificate.Ready
+    (c : CentralLimitTheoremsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CentralLimitTheoremsBudgetCertificate.size
+    (c : CentralLimitTheoremsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem centralLimitTheorems_budgetCertificate_le_size
+    (c : CentralLimitTheoremsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCentralLimitTheoremsBudgetCertificate :
+    CentralLimitTheoremsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleCentralLimitTheoremsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CentralLimitTheoremsBudgetCertificate.controlled,
+      sampleCentralLimitTheoremsBudgetCertificate]
+  · norm_num [CentralLimitTheoremsBudgetCertificate.budgetControlled,
+      sampleCentralLimitTheoremsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCentralLimitTheoremsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCentralLimitTheoremsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleCentralLimitTheoremsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CentralLimitTheoremsBudgetCertificate.controlled,
+      sampleCentralLimitTheoremsBudgetCertificate]
+  · norm_num [CentralLimitTheoremsBudgetCertificate.budgetControlled,
+      sampleCentralLimitTheoremsBudgetCertificate]
+
+example :
+    sampleCentralLimitTheoremsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCentralLimitTheoremsBudgetCertificate.size := by
+  apply centralLimitTheorems_budgetCertificate_le_size
+  constructor
+  · norm_num [CentralLimitTheoremsBudgetCertificate.controlled,
+      sampleCentralLimitTheoremsBudgetCertificate]
+  · norm_num [CentralLimitTheoremsBudgetCertificate.budgetControlled,
+      sampleCentralLimitTheoremsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List CentralLimitTheoremsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCentralLimitTheoremsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCentralLimitTheoremsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.CentralLimitTheorems

@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace SpeciesTheory
+namespace AnalyticCombinatorics.PartA.Ch1.SpeciesTheory
+
 
 /-!
 # Combinatorial Species — numerical verifications
@@ -75,4 +76,102 @@ example : 3 * 3 ^ 2 = 3 ^ 3 := by native_decide
 example : 4 * 4 ^ 3 = 4 ^ 4 := by native_decide
 example : 5 * 5 ^ 4 = 5 ^ 5 := by native_decide
 
-end SpeciesTheory
+/-- Species of linear orders on `n` labels. -/
+def linearOrderSpeciesCount (n : ℕ) : ℕ :=
+  Nat.factorial n
+
+theorem linearOrderSpeciesCount_eight :
+    linearOrderSpeciesCount 8 = 40320 := by
+  native_decide
+
+/-- Species of simple graphs on `n` labelled vertices. -/
+def simpleGraphSpeciesCount (n : ℕ) : ℕ :=
+  2 ^ (Nat.choose n 2)
+
+theorem simpleGraphSpeciesCount_five :
+    simpleGraphSpeciesCount 5 = 1024 := by
+  native_decide
+
+
+
+structure SpeciesTheoryBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SpeciesTheoryBudgetCertificate.controlled
+    (c : SpeciesTheoryBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SpeciesTheoryBudgetCertificate.budgetControlled
+    (c : SpeciesTheoryBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SpeciesTheoryBudgetCertificate.Ready
+    (c : SpeciesTheoryBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SpeciesTheoryBudgetCertificate.size
+    (c : SpeciesTheoryBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem speciesTheory_budgetCertificate_le_size
+    (c : SpeciesTheoryBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSpeciesTheoryBudgetCertificate :
+    SpeciesTheoryBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleSpeciesTheoryBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SpeciesTheoryBudgetCertificate.controlled,
+      sampleSpeciesTheoryBudgetCertificate]
+  · norm_num [SpeciesTheoryBudgetCertificate.budgetControlled,
+      sampleSpeciesTheoryBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSpeciesTheoryBudgetCertificate.certificateBudgetWindow ≤
+      sampleSpeciesTheoryBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleSpeciesTheoryBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SpeciesTheoryBudgetCertificate.controlled,
+      sampleSpeciesTheoryBudgetCertificate]
+  · norm_num [SpeciesTheoryBudgetCertificate.budgetControlled,
+      sampleSpeciesTheoryBudgetCertificate]
+
+example :
+    sampleSpeciesTheoryBudgetCertificate.certificateBudgetWindow ≤
+      sampleSpeciesTheoryBudgetCertificate.size := by
+  apply speciesTheory_budgetCertificate_le_size
+  constructor
+  · norm_num [SpeciesTheoryBudgetCertificate.controlled,
+      sampleSpeciesTheoryBudgetCertificate]
+  · norm_num [SpeciesTheoryBudgetCertificate.budgetControlled,
+      sampleSpeciesTheoryBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List SpeciesTheoryBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSpeciesTheoryBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSpeciesTheoryBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.SpeciesTheory

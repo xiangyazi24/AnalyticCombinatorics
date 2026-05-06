@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace QueueingAsymptotics
+namespace AnalyticCombinatorics.PartB.Ch8.QueueingAsymptotics
+
 
 /-!
   Queueing theory asymptotics and busy periods from Chapter VIII of
@@ -124,4 +125,86 @@ theorem erlang_b_c_two_rho_one_expanded :
     ((1 : ℚ) / 2) / (1 + 1 + (1 / 2)) = 1 / 5 := by
   native_decide
 
-end QueueingAsymptotics
+
+
+structure QueueingAsymptoticsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def QueueingAsymptoticsBudgetCertificate.controlled
+    (c : QueueingAsymptoticsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def QueueingAsymptoticsBudgetCertificate.budgetControlled
+    (c : QueueingAsymptoticsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def QueueingAsymptoticsBudgetCertificate.Ready
+    (c : QueueingAsymptoticsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def QueueingAsymptoticsBudgetCertificate.size
+    (c : QueueingAsymptoticsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem queueingAsymptotics_budgetCertificate_le_size
+    (c : QueueingAsymptoticsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleQueueingAsymptoticsBudgetCertificate :
+    QueueingAsymptoticsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleQueueingAsymptoticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [QueueingAsymptoticsBudgetCertificate.controlled,
+      sampleQueueingAsymptoticsBudgetCertificate]
+  · norm_num [QueueingAsymptoticsBudgetCertificate.budgetControlled,
+      sampleQueueingAsymptoticsBudgetCertificate]
+
+example :
+    sampleQueueingAsymptoticsBudgetCertificate.certificateBudgetWindow ≤
+      sampleQueueingAsymptoticsBudgetCertificate.size := by
+  apply queueingAsymptotics_budgetCertificate_le_size
+  constructor
+  · norm_num [QueueingAsymptoticsBudgetCertificate.controlled,
+      sampleQueueingAsymptoticsBudgetCertificate]
+  · norm_num [QueueingAsymptoticsBudgetCertificate.budgetControlled,
+      sampleQueueingAsymptoticsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleQueueingAsymptoticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [QueueingAsymptoticsBudgetCertificate.controlled,
+      sampleQueueingAsymptoticsBudgetCertificate]
+  · norm_num [QueueingAsymptoticsBudgetCertificate.budgetControlled,
+      sampleQueueingAsymptoticsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleQueueingAsymptoticsBudgetCertificate.certificateBudgetWindow ≤
+      sampleQueueingAsymptoticsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List QueueingAsymptoticsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleQueueingAsymptoticsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleQueueingAsymptoticsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.QueueingAsymptotics

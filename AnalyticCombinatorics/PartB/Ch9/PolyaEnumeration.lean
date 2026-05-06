@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace PolyaEnumeration
+namespace AnalyticCombinatorics.PartB.Ch9.PolyaEnumeration
+
 
 /-! # Pólya Enumeration and Symmetry
 
@@ -166,4 +167,96 @@ example : Nat.choose 5 3 ≤ Nat.choose 6 3 := by native_decide
 
 end CycleIndex
 
-end PolyaEnumeration
+/-- Cube coloring sample with three colors. -/
+theorem cubeColorings_three :
+    cubeColorings 3 = 57 := by
+  native_decide
+
+/-- Rooted unlabelled tree count sample. -/
+theorem polyaTreeCount_ten :
+    polyaTreeCount ⟨10, by omega⟩ = 719 := by
+  native_decide
+
+
+
+structure PolyaEnumerationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PolyaEnumerationBudgetCertificate.controlled
+    (c : PolyaEnumerationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PolyaEnumerationBudgetCertificate.budgetControlled
+    (c : PolyaEnumerationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PolyaEnumerationBudgetCertificate.Ready
+    (c : PolyaEnumerationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PolyaEnumerationBudgetCertificate.size
+    (c : PolyaEnumerationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem polyaEnumeration_budgetCertificate_le_size
+    (c : PolyaEnumerationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePolyaEnumerationBudgetCertificate :
+    PolyaEnumerationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    samplePolyaEnumerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PolyaEnumerationBudgetCertificate.controlled,
+      samplePolyaEnumerationBudgetCertificate]
+  · norm_num [PolyaEnumerationBudgetCertificate.budgetControlled,
+      samplePolyaEnumerationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePolyaEnumerationBudgetCertificate.certificateBudgetWindow ≤
+      samplePolyaEnumerationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : samplePolyaEnumerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PolyaEnumerationBudgetCertificate.controlled,
+      samplePolyaEnumerationBudgetCertificate]
+  · norm_num [PolyaEnumerationBudgetCertificate.budgetControlled,
+      samplePolyaEnumerationBudgetCertificate]
+
+example :
+    samplePolyaEnumerationBudgetCertificate.certificateBudgetWindow ≤
+      samplePolyaEnumerationBudgetCertificate.size := by
+  apply polyaEnumeration_budgetCertificate_le_size
+  constructor
+  · norm_num [PolyaEnumerationBudgetCertificate.controlled,
+      samplePolyaEnumerationBudgetCertificate]
+  · norm_num [PolyaEnumerationBudgetCertificate.budgetControlled,
+      samplePolyaEnumerationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List PolyaEnumerationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePolyaEnumerationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePolyaEnumerationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.PolyaEnumeration

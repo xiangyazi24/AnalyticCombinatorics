@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace PartitionLattice
+namespace AnalyticCombinatorics.PartA.Ch2.PartitionLattice
+
 
 /-!
 # Partition lattice and Möbius function on set partitions
@@ -147,4 +148,86 @@ theorem mobius_bottom_top_four : mobiusBottomTop 4 = -6 := by native_decide
 
 theorem mobius_block_sizes_example : mobiusByBlockSizes [2, 3] = -2 := by native_decide
 
-end PartitionLattice
+
+
+structure PartitionLatticeBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PartitionLatticeBudgetCertificate.controlled
+    (c : PartitionLatticeBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PartitionLatticeBudgetCertificate.budgetControlled
+    (c : PartitionLatticeBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PartitionLatticeBudgetCertificate.Ready
+    (c : PartitionLatticeBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PartitionLatticeBudgetCertificate.size
+    (c : PartitionLatticeBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem partitionLattice_budgetCertificate_le_size
+    (c : PartitionLatticeBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePartitionLatticeBudgetCertificate :
+    PartitionLatticeBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : samplePartitionLatticeBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PartitionLatticeBudgetCertificate.controlled,
+      samplePartitionLatticeBudgetCertificate]
+  · norm_num [PartitionLatticeBudgetCertificate.budgetControlled,
+      samplePartitionLatticeBudgetCertificate]
+
+example :
+    samplePartitionLatticeBudgetCertificate.certificateBudgetWindow ≤
+      samplePartitionLatticeBudgetCertificate.size := by
+  apply partitionLattice_budgetCertificate_le_size
+  constructor
+  · norm_num [PartitionLatticeBudgetCertificate.controlled,
+      samplePartitionLatticeBudgetCertificate]
+  · norm_num [PartitionLatticeBudgetCertificate.budgetControlled,
+      samplePartitionLatticeBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    samplePartitionLatticeBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PartitionLatticeBudgetCertificate.controlled,
+      samplePartitionLatticeBudgetCertificate]
+  · norm_num [PartitionLatticeBudgetCertificate.budgetControlled,
+      samplePartitionLatticeBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePartitionLatticeBudgetCertificate.certificateBudgetWindow ≤
+      samplePartitionLatticeBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List PartitionLatticeBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePartitionLatticeBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePartitionLatticeBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.PartitionLattice

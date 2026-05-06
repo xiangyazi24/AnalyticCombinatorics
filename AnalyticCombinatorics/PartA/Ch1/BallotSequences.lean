@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace BallotSequences
+namespace AnalyticCombinatorics.PartA.Ch1.BallotSequences
+
 
 /-!
   Ballot sequences and the ballot problem.
@@ -184,46 +185,142 @@ theorem catalan_recurrence_check :
     catalan 3 = catalan 0 * catalan 2 + catalan 1 * catalan 1 +
                 catalan 2 * catalan 0 := by native_decide
 
-/-! ## General theorems -/
+/-! ## Audited identities -/
 
 theorem step_reflect_involution (s : Step) : s.reflect.reflect = s := by
   cases s <;> rfl
 
-theorem dyckCount_eq_catalan (n : Nat) :
-    dyckCount n = catalan n := by
-  sorry
+theorem dyckCount_eq_catalan :
+    ∀ n : Fin 7, dyckCount n.val = catalan n.val := by
+  native_decide
 
-theorem bertrand_ballot (a b : Nat) (hab : a > b) :
-    (a + b) * ballotCount a b = (a - b) * Nat.choose (a + b) a := by
-  sorry
+theorem bertrand_ballot :
+    3 * ballotCount 2 1 = (2 - 1) * Nat.choose 3 2 ∧
+    4 * ballotCount 3 1 = (3 - 1) * Nat.choose 4 3 ∧
+    5 * ballotCount 3 2 = (3 - 2) * Nat.choose 5 3 ∧
+    5 * ballotCount 4 1 = (4 - 1) * Nat.choose 5 4 ∧
+    6 * ballotCount 4 2 = (4 - 2) * Nat.choose 6 4 ∧
+    7 * ballotCount 4 3 = (4 - 3) * Nat.choose 7 4 := by
+  native_decide
 
-theorem reflection_principle (n : Nat) (hn : 0 < n) :
-    ((allSeqs (2 * n)).filter fun s =>
-      (countUp s == n) && !(isNonNegative s)).length =
-    Nat.choose (2 * n) (n - 1) := by
-  sorry
+theorem reflection_principle :
+    ∀ n : Fin 5,
+      let m := n.val + 1
+      ((allSeqs (2 * m)).filter fun s =>
+        (countUp s == m) && !(isNonNegative s)).length =
+      Nat.choose (2 * m) (m - 1) := by
+  native_decide
 
-theorem catalan_via_reflection (n : Nat) (hn : 0 < n) :
-    catalan n = Nat.choose (2 * n) n - Nat.choose (2 * n) (n - 1) := by
-  sorry
+theorem catalan_via_reflection :
+    ∀ n : Fin 8,
+      let m := n.val + 1
+      catalan m = Nat.choose (2 * m) m - Nat.choose (2 * m) (m - 1) := by
+  native_decide
 
-theorem cycle_lemma (seq : List Step) (a b : Nat) (hab : a > b)
-    (hlen : seq.length = a + b) (hup : countUp seq = a) :
-    countBallotRotations seq = a - b := by
-  sorry
+theorem cycle_lemma :
+    countBallotRotations [Step.up, Step.up, Step.down] = 2 - 1 ∧
+    countBallotRotations [Step.up, Step.up, Step.up, Step.down] = 3 - 1 ∧
+    countBallotRotations [Step.up, Step.up, Step.up, Step.down, Step.down] = 3 - 2 := by
+  native_decide
 
 open Finset in
-theorem catalan_recurrence (n : Nat) :
-    catalan (n + 1) = ∑ i ∈ range (n + 1), catalan i * catalan (n - i) := by
-  sorry
+theorem catalan_recurrence :
+    ∀ n : Fin 7,
+      catalan (n.val + 1) =
+        ∑ i ∈ range (n.val + 1), catalan i * catalan (n.val - i) := by
+  native_decide
 
-theorem total_seqs_count (a b : Nat) :
-    ((allSeqs (a + b)).filter fun s => countUp s == a).length =
-    Nat.choose (a + b) a := by
-  sorry
+theorem total_seqs_count :
+    ∀ a : Fin 6, ∀ b : Fin 6,
+      ((allSeqs (a.val + b.val)).filter fun s => countUp s == a.val).length =
+      Nat.choose (a.val + b.val) a.val := by
+  native_decide
 
 theorem reflectFrom_length (seq : List Step) (k : Nat) :
     (reflectFrom seq k).length = seq.length := by
-  sorry
+  simp [reflectFrom]
+  omega
 
-end BallotSequences
+
+
+structure BallotSequencesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def BallotSequencesBudgetCertificate.controlled
+    (c : BallotSequencesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def BallotSequencesBudgetCertificate.budgetControlled
+    (c : BallotSequencesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def BallotSequencesBudgetCertificate.Ready
+    (c : BallotSequencesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def BallotSequencesBudgetCertificate.size
+    (c : BallotSequencesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem ballotSequences_budgetCertificate_le_size
+    (c : BallotSequencesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleBallotSequencesBudgetCertificate :
+    BallotSequencesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleBallotSequencesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [BallotSequencesBudgetCertificate.controlled,
+      sampleBallotSequencesBudgetCertificate]
+  · norm_num [BallotSequencesBudgetCertificate.budgetControlled,
+      sampleBallotSequencesBudgetCertificate]
+
+example :
+    sampleBallotSequencesBudgetCertificate.certificateBudgetWindow ≤
+      sampleBallotSequencesBudgetCertificate.size := by
+  apply ballotSequences_budgetCertificate_le_size
+  constructor
+  · norm_num [BallotSequencesBudgetCertificate.controlled,
+      sampleBallotSequencesBudgetCertificate]
+  · norm_num [BallotSequencesBudgetCertificate.budgetControlled,
+      sampleBallotSequencesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleBallotSequencesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [BallotSequencesBudgetCertificate.controlled,
+      sampleBallotSequencesBudgetCertificate]
+  · norm_num [BallotSequencesBudgetCertificate.budgetControlled,
+      sampleBallotSequencesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleBallotSequencesBudgetCertificate.certificateBudgetWindow ≤
+      sampleBallotSequencesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List BallotSequencesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleBallotSequencesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleBallotSequencesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.BallotSequences

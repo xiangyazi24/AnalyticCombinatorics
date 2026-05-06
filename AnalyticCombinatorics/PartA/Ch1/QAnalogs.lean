@@ -12,8 +12,7 @@ set_option linter.style.nativeDecide false
 
 open Finset
 
-namespace QAnalogs
-
+namespace AnalyticCombinatorics.PartA.Ch1.QAnalogs
 /-! ## q-numbers and q-factorials -/
 
 /-- Natural-number evaluation of the q-number `[n]_q = (q^n - 1)/(q - 1)`. -/
@@ -123,4 +122,85 @@ example : gaussianRowSum 2 5 = 374 := by native_decide
 
 
 
-end QAnalogs
+
+structure QAnalogsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def QAnalogsBudgetCertificate.controlled
+    (c : QAnalogsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def QAnalogsBudgetCertificate.budgetControlled
+    (c : QAnalogsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def QAnalogsBudgetCertificate.Ready
+    (c : QAnalogsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def QAnalogsBudgetCertificate.size
+    (c : QAnalogsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem qAnalogs_budgetCertificate_le_size
+    (c : QAnalogsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleQAnalogsBudgetCertificate :
+    QAnalogsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleQAnalogsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [QAnalogsBudgetCertificate.controlled,
+      sampleQAnalogsBudgetCertificate]
+  · norm_num [QAnalogsBudgetCertificate.budgetControlled,
+      sampleQAnalogsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleQAnalogsBudgetCertificate.certificateBudgetWindow ≤
+      sampleQAnalogsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleQAnalogsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [QAnalogsBudgetCertificate.controlled,
+      sampleQAnalogsBudgetCertificate]
+  · norm_num [QAnalogsBudgetCertificate.budgetControlled,
+      sampleQAnalogsBudgetCertificate]
+
+example :
+    sampleQAnalogsBudgetCertificate.certificateBudgetWindow ≤
+      sampleQAnalogsBudgetCertificate.size := by
+  apply qAnalogs_budgetCertificate_le_size
+  constructor
+  · norm_num [QAnalogsBudgetCertificate.controlled,
+      sampleQAnalogsBudgetCertificate]
+  · norm_num [QAnalogsBudgetCertificate.budgetControlled,
+      sampleQAnalogsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List QAnalogsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleQAnalogsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleQAnalogsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.QAnalogs

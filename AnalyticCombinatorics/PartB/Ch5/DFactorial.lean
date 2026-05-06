@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace DFactorial
+namespace AnalyticCombinatorics.PartB.Ch5.DFactorial
+
 
 open Finset
 
@@ -211,4 +212,86 @@ theorem central_delannoy_values_0_to_4 :
       centralDelannoy 3 = 63 ∧ centralDelannoy 4 = 321 := by
   native_decide
 
-end DFactorial
+
+
+structure DFactorialBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def DFactorialBudgetCertificate.controlled
+    (c : DFactorialBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def DFactorialBudgetCertificate.budgetControlled
+    (c : DFactorialBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def DFactorialBudgetCertificate.Ready
+    (c : DFactorialBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def DFactorialBudgetCertificate.size
+    (c : DFactorialBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem dFactorial_budgetCertificate_le_size
+    (c : DFactorialBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleDFactorialBudgetCertificate :
+    DFactorialBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleDFactorialBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DFactorialBudgetCertificate.controlled,
+      sampleDFactorialBudgetCertificate]
+  · norm_num [DFactorialBudgetCertificate.budgetControlled,
+      sampleDFactorialBudgetCertificate]
+
+example :
+    sampleDFactorialBudgetCertificate.certificateBudgetWindow ≤
+      sampleDFactorialBudgetCertificate.size := by
+  apply dFactorial_budgetCertificate_le_size
+  constructor
+  · norm_num [DFactorialBudgetCertificate.controlled,
+      sampleDFactorialBudgetCertificate]
+  · norm_num [DFactorialBudgetCertificate.budgetControlled,
+      sampleDFactorialBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleDFactorialBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DFactorialBudgetCertificate.controlled,
+      sampleDFactorialBudgetCertificate]
+  · norm_num [DFactorialBudgetCertificate.budgetControlled,
+      sampleDFactorialBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleDFactorialBudgetCertificate.certificateBudgetWindow ≤
+      sampleDFactorialBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List DFactorialBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleDFactorialBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleDFactorialBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.DFactorial

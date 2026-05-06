@@ -16,8 +16,7 @@ set_option linter.style.nativeDecide false
 
 open Finset
 
-namespace GFOperations
-
+namespace AnalyticCombinatorics.PartA.Ch1.GFOperations
 /-! ## Hadamard Product -/
 
 /-- Coefficient-wise (Hadamard) product of two sequences. -/
@@ -172,4 +171,85 @@ theorem cauchy_ones_eq_succ :
     ∀ n ∈ Finset.range 6,
       cauchyProduct (fun _ => 1) (fun _ => 1) n = n + 1 := by native_decide
 
-end GFOperations
+
+structure GFOperationsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def GFOperationsBudgetCertificate.controlled
+    (c : GFOperationsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def GFOperationsBudgetCertificate.budgetControlled
+    (c : GFOperationsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def GFOperationsBudgetCertificate.Ready
+    (c : GFOperationsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def GFOperationsBudgetCertificate.size
+    (c : GFOperationsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem gFOperations_budgetCertificate_le_size
+    (c : GFOperationsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleGFOperationsBudgetCertificate :
+    GFOperationsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleGFOperationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GFOperationsBudgetCertificate.controlled,
+      sampleGFOperationsBudgetCertificate]
+  · norm_num [GFOperationsBudgetCertificate.budgetControlled,
+      sampleGFOperationsBudgetCertificate]
+
+example :
+    sampleGFOperationsBudgetCertificate.certificateBudgetWindow ≤
+      sampleGFOperationsBudgetCertificate.size := by
+  apply gFOperations_budgetCertificate_le_size
+  constructor
+  · norm_num [GFOperationsBudgetCertificate.controlled,
+      sampleGFOperationsBudgetCertificate]
+  · norm_num [GFOperationsBudgetCertificate.budgetControlled,
+      sampleGFOperationsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleGFOperationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GFOperationsBudgetCertificate.controlled,
+      sampleGFOperationsBudgetCertificate]
+  · norm_num [GFOperationsBudgetCertificate.budgetControlled,
+      sampleGFOperationsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleGFOperationsBudgetCertificate.certificateBudgetWindow ≤
+      sampleGFOperationsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List GFOperationsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleGFOperationsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleGFOperationsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.GFOperations

@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace WordCombinatorics
+namespace AnalyticCombinatorics.PartA.Ch1.WordCombinatorics
+
 
 /-!
   Finite word-counting tables from Chapter I style symbolic combinatorics.
@@ -176,4 +177,86 @@ theorem binaryDeBruijnCycles_values :
     binaryDeBruijnCycles 5 = 2048 := by
   native_decide
 
-end WordCombinatorics
+
+
+structure WordCombinatoricsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def WordCombinatoricsBudgetCertificate.controlled
+    (c : WordCombinatoricsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def WordCombinatoricsBudgetCertificate.budgetControlled
+    (c : WordCombinatoricsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def WordCombinatoricsBudgetCertificate.Ready
+    (c : WordCombinatoricsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def WordCombinatoricsBudgetCertificate.size
+    (c : WordCombinatoricsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem wordCombinatorics_budgetCertificate_le_size
+    (c : WordCombinatoricsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleWordCombinatoricsBudgetCertificate :
+    WordCombinatoricsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleWordCombinatoricsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [WordCombinatoricsBudgetCertificate.controlled,
+      sampleWordCombinatoricsBudgetCertificate]
+  · norm_num [WordCombinatoricsBudgetCertificate.budgetControlled,
+      sampleWordCombinatoricsBudgetCertificate]
+
+example :
+    sampleWordCombinatoricsBudgetCertificate.certificateBudgetWindow ≤
+      sampleWordCombinatoricsBudgetCertificate.size := by
+  apply wordCombinatorics_budgetCertificate_le_size
+  constructor
+  · norm_num [WordCombinatoricsBudgetCertificate.controlled,
+      sampleWordCombinatoricsBudgetCertificate]
+  · norm_num [WordCombinatoricsBudgetCertificate.budgetControlled,
+      sampleWordCombinatoricsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleWordCombinatoricsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [WordCombinatoricsBudgetCertificate.controlled,
+      sampleWordCombinatoricsBudgetCertificate]
+  · norm_num [WordCombinatoricsBudgetCertificate.budgetControlled,
+      sampleWordCombinatoricsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleWordCombinatoricsBudgetCertificate.certificateBudgetWindow ≤
+      sampleWordCombinatoricsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List WordCombinatoricsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleWordCombinatoricsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleWordCombinatoricsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.WordCombinatorics

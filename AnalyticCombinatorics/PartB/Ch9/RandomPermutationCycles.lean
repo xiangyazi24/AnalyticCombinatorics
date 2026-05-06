@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace RandomPermutationCycles
+namespace AnalyticCombinatorics.PartB.Ch9.RandomPermutationCycles
+
 
 open Finset
 
@@ -237,4 +238,86 @@ theorem fixed_points_variance_one_scaled_2_to_8 :
      Nat.factorial 7,
      Nat.factorial 8] := by native_decide
 
-end RandomPermutationCycles
+
+
+structure RandomPermutationCyclesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def RandomPermutationCyclesBudgetCertificate.controlled
+    (c : RandomPermutationCyclesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def RandomPermutationCyclesBudgetCertificate.budgetControlled
+    (c : RandomPermutationCyclesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def RandomPermutationCyclesBudgetCertificate.Ready
+    (c : RandomPermutationCyclesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def RandomPermutationCyclesBudgetCertificate.size
+    (c : RandomPermutationCyclesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem randomPermutationCycles_budgetCertificate_le_size
+    (c : RandomPermutationCyclesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleRandomPermutationCyclesBudgetCertificate :
+    RandomPermutationCyclesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleRandomPermutationCyclesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RandomPermutationCyclesBudgetCertificate.controlled,
+      sampleRandomPermutationCyclesBudgetCertificate]
+  · norm_num [RandomPermutationCyclesBudgetCertificate.budgetControlled,
+      sampleRandomPermutationCyclesBudgetCertificate]
+
+example :
+    sampleRandomPermutationCyclesBudgetCertificate.certificateBudgetWindow ≤
+      sampleRandomPermutationCyclesBudgetCertificate.size := by
+  apply randomPermutationCycles_budgetCertificate_le_size
+  constructor
+  · norm_num [RandomPermutationCyclesBudgetCertificate.controlled,
+      sampleRandomPermutationCyclesBudgetCertificate]
+  · norm_num [RandomPermutationCyclesBudgetCertificate.budgetControlled,
+      sampleRandomPermutationCyclesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleRandomPermutationCyclesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RandomPermutationCyclesBudgetCertificate.controlled,
+      sampleRandomPermutationCyclesBudgetCertificate]
+  · norm_num [RandomPermutationCyclesBudgetCertificate.budgetControlled,
+      sampleRandomPermutationCyclesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleRandomPermutationCyclesBudgetCertificate.certificateBudgetWindow ≤
+      sampleRandomPermutationCyclesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List RandomPermutationCyclesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleRandomPermutationCyclesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleRandomPermutationCyclesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.RandomPermutationCycles

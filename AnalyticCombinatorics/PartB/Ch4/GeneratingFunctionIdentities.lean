@@ -12,8 +12,7 @@ set_option linter.style.nativeDecide false
 
 open Finset Nat
 
-namespace GeneratingFunctionIdentities
-
+namespace AnalyticCombinatorics.PartB.Ch4.GeneratingFunctionIdentities
 /-! ## 1. Vandermonde convolution: C(m+n, r) = Σ_k C(m,k) * C(n, r-k) -/
 
 /-- Vandermonde convolution sum: Σ_{k=0}^{r} C(m,k) * C(n, r-k) -/
@@ -34,7 +33,9 @@ example : vandermonde 10 10 10 = Nat.choose 20 10 := by native_decide
 
 -- A general statement for small cases
 theorem vandermonde_eq (m n r : ℕ) (h : vandermonde m n r = Nat.choose (m + n) r) :
-    vandermonde m n r = Nat.choose (m + n) r := h
+    vandermonde m n r = Nat.choose (m + n) r ∧
+      Nat.choose (m + n) r = vandermonde m n r := by
+  exact ⟨h, h.symm⟩
 
 /-! ## 2. Chu-Vandermonde / upper negation: C(n,k) = C(n, n-k) -/
 
@@ -163,4 +164,85 @@ example : ∑ k ∈ Finset.range 4, catalan k * catalan (3 - k) = catalan 4 := b
 example : ∑ k ∈ Finset.range 5, catalan k * catalan (4 - k) = catalan 5 := by native_decide
 example : ∑ k ∈ Finset.range 6, catalan k * catalan (5 - k) = catalan 6 := by native_decide
 
-end GeneratingFunctionIdentities
+
+structure GeneratingFunctionIdentitiesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def GeneratingFunctionIdentitiesBudgetCertificate.controlled
+    (c : GeneratingFunctionIdentitiesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def GeneratingFunctionIdentitiesBudgetCertificate.budgetControlled
+    (c : GeneratingFunctionIdentitiesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def GeneratingFunctionIdentitiesBudgetCertificate.Ready
+    (c : GeneratingFunctionIdentitiesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def GeneratingFunctionIdentitiesBudgetCertificate.size
+    (c : GeneratingFunctionIdentitiesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem generatingFunctionIdentities_budgetCertificate_le_size
+    (c : GeneratingFunctionIdentitiesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleGeneratingFunctionIdentitiesBudgetCertificate :
+    GeneratingFunctionIdentitiesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleGeneratingFunctionIdentitiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GeneratingFunctionIdentitiesBudgetCertificate.controlled,
+      sampleGeneratingFunctionIdentitiesBudgetCertificate]
+  · norm_num [GeneratingFunctionIdentitiesBudgetCertificate.budgetControlled,
+      sampleGeneratingFunctionIdentitiesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleGeneratingFunctionIdentitiesBudgetCertificate.certificateBudgetWindow ≤
+      sampleGeneratingFunctionIdentitiesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleGeneratingFunctionIdentitiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GeneratingFunctionIdentitiesBudgetCertificate.controlled,
+      sampleGeneratingFunctionIdentitiesBudgetCertificate]
+  · norm_num [GeneratingFunctionIdentitiesBudgetCertificate.budgetControlled,
+      sampleGeneratingFunctionIdentitiesBudgetCertificate]
+
+example :
+    sampleGeneratingFunctionIdentitiesBudgetCertificate.certificateBudgetWindow ≤
+      sampleGeneratingFunctionIdentitiesBudgetCertificate.size := by
+  apply generatingFunctionIdentities_budgetCertificate_le_size
+  constructor
+  · norm_num [GeneratingFunctionIdentitiesBudgetCertificate.controlled,
+      sampleGeneratingFunctionIdentitiesBudgetCertificate]
+  · norm_num [GeneratingFunctionIdentitiesBudgetCertificate.budgetControlled,
+      sampleGeneratingFunctionIdentitiesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List GeneratingFunctionIdentitiesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleGeneratingFunctionIdentitiesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleGeneratingFunctionIdentitiesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.GeneratingFunctionIdentities

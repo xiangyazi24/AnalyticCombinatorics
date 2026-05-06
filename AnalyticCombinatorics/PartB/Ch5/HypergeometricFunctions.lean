@@ -11,8 +11,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace HypergeometricFunctions
-
+namespace AnalyticCombinatorics.PartB.Ch5.HypergeometricFunctions
 open Finset
 
 /-! ## 1. Pochhammer symbol (rising factorial) -/
@@ -227,4 +226,105 @@ example : risingFact 5 3 = fallingFact 7 3 := by native_decide
 example : risingFact 7 4 = fallingFact 10 4 := by native_decide
 example : risingFact 6 5 = fallingFact 10 5 := by native_decide
 
-end HypergeometricFunctions
+/-- Pochhammer sample. -/
+theorem pochhammer_two_five :
+    pochhammer 2 5 = 720 := by
+  native_decide
+
+/-- Catalan central-binomial sample. -/
+theorem catalanCB_eight :
+    catalanCB 8 = 1430 := by
+  native_decide
+
+/-- Motzkin hypergeometric sample. -/
+theorem motzkinHyp_six :
+    motzkinHyp 6 = 51 := by
+  native_decide
+
+/-- Falling-rising factorial bridge sample. -/
+theorem risingFact_fallingFact_sample :
+    risingFact 7 4 = fallingFact 10 4 := by
+  native_decide
+
+
+structure HypergeometricFunctionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def HypergeometricFunctionsBudgetCertificate.controlled
+    (c : HypergeometricFunctionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def HypergeometricFunctionsBudgetCertificate.budgetControlled
+    (c : HypergeometricFunctionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def HypergeometricFunctionsBudgetCertificate.Ready
+    (c : HypergeometricFunctionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def HypergeometricFunctionsBudgetCertificate.size
+    (c : HypergeometricFunctionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem hypergeometricFunctions_budgetCertificate_le_size
+    (c : HypergeometricFunctionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleHypergeometricFunctionsBudgetCertificate :
+    HypergeometricFunctionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleHypergeometricFunctionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [HypergeometricFunctionsBudgetCertificate.controlled,
+      sampleHypergeometricFunctionsBudgetCertificate]
+  · norm_num [HypergeometricFunctionsBudgetCertificate.budgetControlled,
+      sampleHypergeometricFunctionsBudgetCertificate]
+
+example :
+    sampleHypergeometricFunctionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleHypergeometricFunctionsBudgetCertificate.size := by
+  apply hypergeometricFunctions_budgetCertificate_le_size
+  constructor
+  · norm_num [HypergeometricFunctionsBudgetCertificate.controlled,
+      sampleHypergeometricFunctionsBudgetCertificate]
+  · norm_num [HypergeometricFunctionsBudgetCertificate.budgetControlled,
+      sampleHypergeometricFunctionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleHypergeometricFunctionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [HypergeometricFunctionsBudgetCertificate.controlled,
+      sampleHypergeometricFunctionsBudgetCertificate]
+  · norm_num [HypergeometricFunctionsBudgetCertificate.budgetControlled,
+      sampleHypergeometricFunctionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleHypergeometricFunctionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleHypergeometricFunctionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List HypergeometricFunctionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleHypergeometricFunctionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleHypergeometricFunctionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.HypergeometricFunctions

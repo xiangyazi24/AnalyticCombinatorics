@@ -11,8 +11,7 @@ set_option linter.style.nativeDecide false
 
 open Finset Nat
 
-namespace CombinatoricsOnGraphs
-
+namespace AnalyticCombinatorics.PartA.Ch2.CombinatoricsOnGraphs
 /-! ## 1. Complete Graph K_n: edge count and total labelled graphs
 
   K_n has C(n,2) = n*(n-1)/2 edges.
@@ -258,4 +257,85 @@ theorem spanningTreesKmn_n_1 (m : ℕ) (hm : m ≥ 1) : spanningTreesKmn m 1 = 1
   simp [spanningTreesKmn]
   omega
 
-end CombinatoricsOnGraphs
+
+structure CombinatoricsOnGraphsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CombinatoricsOnGraphsBudgetCertificate.controlled
+    (c : CombinatoricsOnGraphsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CombinatoricsOnGraphsBudgetCertificate.budgetControlled
+    (c : CombinatoricsOnGraphsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CombinatoricsOnGraphsBudgetCertificate.Ready
+    (c : CombinatoricsOnGraphsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CombinatoricsOnGraphsBudgetCertificate.size
+    (c : CombinatoricsOnGraphsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem combinatoricsOnGraphs_budgetCertificate_le_size
+    (c : CombinatoricsOnGraphsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCombinatoricsOnGraphsBudgetCertificate :
+    CombinatoricsOnGraphsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleCombinatoricsOnGraphsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CombinatoricsOnGraphsBudgetCertificate.controlled,
+      sampleCombinatoricsOnGraphsBudgetCertificate]
+  · norm_num [CombinatoricsOnGraphsBudgetCertificate.budgetControlled,
+      sampleCombinatoricsOnGraphsBudgetCertificate]
+
+example :
+    sampleCombinatoricsOnGraphsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCombinatoricsOnGraphsBudgetCertificate.size := by
+  apply combinatoricsOnGraphs_budgetCertificate_le_size
+  constructor
+  · norm_num [CombinatoricsOnGraphsBudgetCertificate.controlled,
+      sampleCombinatoricsOnGraphsBudgetCertificate]
+  · norm_num [CombinatoricsOnGraphsBudgetCertificate.budgetControlled,
+      sampleCombinatoricsOnGraphsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleCombinatoricsOnGraphsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CombinatoricsOnGraphsBudgetCertificate.controlled,
+      sampleCombinatoricsOnGraphsBudgetCertificate]
+  · norm_num [CombinatoricsOnGraphsBudgetCertificate.budgetControlled,
+      sampleCombinatoricsOnGraphsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCombinatoricsOnGraphsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCombinatoricsOnGraphsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List CombinatoricsOnGraphsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCombinatoricsOnGraphsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCombinatoricsOnGraphsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.CombinatoricsOnGraphs

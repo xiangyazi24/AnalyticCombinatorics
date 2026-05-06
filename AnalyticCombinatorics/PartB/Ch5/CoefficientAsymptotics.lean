@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace CoefficientAsymptotics
+namespace AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics
+
 
 /-! # Coefficient Asymptotics
 
@@ -104,4 +105,96 @@ example : catalanPartialSum 0 < catalanPartialSum 1 := by native_decide
 example : catalanPartialSum 1 < catalanPartialSum 2 := by native_decide
 example : catalanPartialSum 2 < catalanPartialSum 5 := by native_decide
 
-end CoefficientAsymptotics
+/-- Catalan ratio check sample. -/
+theorem catalanRatioCheck_twelve :
+    catalanRatioCheck 12 = true := by
+  native_decide
+
+/-- Catalan partial sums stay bounded in this sample window. -/
+theorem catalanPartialSum_ten_lt_two :
+    catalanPartialSum 10 < 2 := by
+  native_decide
+
+
+
+structure CoefficientAsymptoticsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CoefficientAsymptoticsBudgetCertificate.controlled
+    (c : CoefficientAsymptoticsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CoefficientAsymptoticsBudgetCertificate.budgetControlled
+    (c : CoefficientAsymptoticsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CoefficientAsymptoticsBudgetCertificate.Ready
+    (c : CoefficientAsymptoticsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CoefficientAsymptoticsBudgetCertificate.size
+    (c : CoefficientAsymptoticsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem coefficientAsymptotics_budgetCertificate_le_size
+    (c : CoefficientAsymptoticsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCoefficientAsymptoticsBudgetCertificate :
+    CoefficientAsymptoticsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleCoefficientAsymptoticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CoefficientAsymptoticsBudgetCertificate.controlled,
+      sampleCoefficientAsymptoticsBudgetCertificate]
+  · norm_num [CoefficientAsymptoticsBudgetCertificate.budgetControlled,
+      sampleCoefficientAsymptoticsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCoefficientAsymptoticsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCoefficientAsymptoticsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleCoefficientAsymptoticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CoefficientAsymptoticsBudgetCertificate.controlled,
+      sampleCoefficientAsymptoticsBudgetCertificate]
+  · norm_num [CoefficientAsymptoticsBudgetCertificate.budgetControlled,
+      sampleCoefficientAsymptoticsBudgetCertificate]
+
+example :
+    sampleCoefficientAsymptoticsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCoefficientAsymptoticsBudgetCertificate.size := by
+  apply coefficientAsymptotics_budgetCertificate_le_size
+  constructor
+  · norm_num [CoefficientAsymptoticsBudgetCertificate.controlled,
+      sampleCoefficientAsymptoticsBudgetCertificate]
+  · norm_num [CoefficientAsymptoticsBudgetCertificate.budgetControlled,
+      sampleCoefficientAsymptoticsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List CoefficientAsymptoticsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCoefficientAsymptoticsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCoefficientAsymptoticsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.CoefficientAsymptotics

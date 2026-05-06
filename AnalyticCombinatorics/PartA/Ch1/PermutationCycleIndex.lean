@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace PermutationCycleIndex
+namespace AnalyticCombinatorics.PartA.Ch1.PermutationCycleIndex
+
 
 open Finset
 
@@ -243,4 +244,86 @@ theorem cycle_index_binary_multiset_values :
       (2, 3, 4) := by
   native_decide
 
-end PermutationCycleIndex
+
+
+structure PermutationCycleIndexBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PermutationCycleIndexBudgetCertificate.controlled
+    (c : PermutationCycleIndexBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PermutationCycleIndexBudgetCertificate.budgetControlled
+    (c : PermutationCycleIndexBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PermutationCycleIndexBudgetCertificate.Ready
+    (c : PermutationCycleIndexBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PermutationCycleIndexBudgetCertificate.size
+    (c : PermutationCycleIndexBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem permutationCycleIndex_budgetCertificate_le_size
+    (c : PermutationCycleIndexBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePermutationCycleIndexBudgetCertificate :
+    PermutationCycleIndexBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : samplePermutationCycleIndexBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PermutationCycleIndexBudgetCertificate.controlled,
+      samplePermutationCycleIndexBudgetCertificate]
+  · norm_num [PermutationCycleIndexBudgetCertificate.budgetControlled,
+      samplePermutationCycleIndexBudgetCertificate]
+
+example :
+    samplePermutationCycleIndexBudgetCertificate.certificateBudgetWindow ≤
+      samplePermutationCycleIndexBudgetCertificate.size := by
+  apply permutationCycleIndex_budgetCertificate_le_size
+  constructor
+  · norm_num [PermutationCycleIndexBudgetCertificate.controlled,
+      samplePermutationCycleIndexBudgetCertificate]
+  · norm_num [PermutationCycleIndexBudgetCertificate.budgetControlled,
+      samplePermutationCycleIndexBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    samplePermutationCycleIndexBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PermutationCycleIndexBudgetCertificate.controlled,
+      samplePermutationCycleIndexBudgetCertificate]
+  · norm_num [PermutationCycleIndexBudgetCertificate.budgetControlled,
+      samplePermutationCycleIndexBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePermutationCycleIndexBudgetCertificate.certificateBudgetWindow ≤
+      samplePermutationCycleIndexBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List PermutationCycleIndexBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePermutationCycleIndexBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePermutationCycleIndexBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.PermutationCycleIndex

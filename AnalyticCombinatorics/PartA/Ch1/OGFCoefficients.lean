@@ -10,8 +10,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace OGFCoefficients
-
+namespace AnalyticCombinatorics.PartA.Ch1.OGFCoefficients
 /-! ### Central binomial coefficients C(2n, n) -/
 
 def centralBinom (n : ℕ) : ℕ := Nat.choose (2 * n) n
@@ -88,4 +87,95 @@ example : 3 * 6 = 3 * 3 * 2 - 0 * 1 := by native_decide
 example : 4 * 22 = 3 * 5 * 6 - 1 * 2 := by native_decide
 example : 5 * 90 = 3 * 7 * 22 - 2 * 6 := by native_decide
 
-end OGFCoefficients
+/-- Apery-number sample. -/
+theorem aperyNumber_three :
+    aperyNumber 3 = 1445 := by
+  native_decide
+
+/-- Large Schroeder-number sample. -/
+theorem schroederLarge_six :
+    schroederLarge 6 = 1806 := by
+  native_decide
+
+
+structure OGFCoefficientsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def OGFCoefficientsBudgetCertificate.controlled
+    (c : OGFCoefficientsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def OGFCoefficientsBudgetCertificate.budgetControlled
+    (c : OGFCoefficientsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def OGFCoefficientsBudgetCertificate.Ready
+    (c : OGFCoefficientsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def OGFCoefficientsBudgetCertificate.size
+    (c : OGFCoefficientsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem oGFCoefficients_budgetCertificate_le_size
+    (c : OGFCoefficientsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleOGFCoefficientsBudgetCertificate :
+    OGFCoefficientsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleOGFCoefficientsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [OGFCoefficientsBudgetCertificate.controlled,
+      sampleOGFCoefficientsBudgetCertificate]
+  · norm_num [OGFCoefficientsBudgetCertificate.budgetControlled,
+      sampleOGFCoefficientsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleOGFCoefficientsBudgetCertificate.certificateBudgetWindow ≤
+      sampleOGFCoefficientsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleOGFCoefficientsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [OGFCoefficientsBudgetCertificate.controlled,
+      sampleOGFCoefficientsBudgetCertificate]
+  · norm_num [OGFCoefficientsBudgetCertificate.budgetControlled,
+      sampleOGFCoefficientsBudgetCertificate]
+
+example :
+    sampleOGFCoefficientsBudgetCertificate.certificateBudgetWindow ≤
+      sampleOGFCoefficientsBudgetCertificate.size := by
+  apply oGFCoefficients_budgetCertificate_le_size
+  constructor
+  · norm_num [OGFCoefficientsBudgetCertificate.controlled,
+      sampleOGFCoefficientsBudgetCertificate]
+  · norm_num [OGFCoefficientsBudgetCertificate.budgetControlled,
+      sampleOGFCoefficientsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List OGFCoefficientsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleOGFCoefficientsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleOGFCoefficientsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.OGFCoefficients

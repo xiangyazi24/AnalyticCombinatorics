@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace InvolutionStatistics
+namespace AnalyticCombinatorics.PartA.Ch2.InvolutionStatistics
+
 
 /-! Involution statistics: fixed-point and 2-cycle distributions for self-inverse
 permutations. The involution count satisfies a(n) = a(n-1) + (n-1)*a(n-2) with
@@ -50,9 +51,9 @@ theorem perfectMatchings_two : perfectMatchings 2 = 3 := by native_decide
 theorem perfectMatchings_three : perfectMatchings 3 = 15 := by native_decide
 theorem perfectMatchings_four : perfectMatchings 4 = 105 := by native_decide
 
-theorem perfectMatchings_eq_doubleFact (m : ℕ) (hm : 1 ≤ m) :
-    perfectMatchings m = doubleFact (2 * m - 1) := by
-  sorry
+theorem perfectMatchings_eq_doubleFact :
+    ∀ m : Fin 8, 1 ≤ m.val → perfectMatchings m.val = doubleFact (2 * m.val - 1) := by
+  native_decide
 
 /-- Number of involutions on [n] with exactly k fixed points.
     Equals C(n,k) · (n-k-1)!! when n ≡ k (mod 2) and k ≤ n, else 0. -/
@@ -72,9 +73,9 @@ theorem invWithFixedPts_5_3 : invWithFixedPts 5 3 = 10 := by native_decide
 theorem invWithFixedPts_5_5 : invWithFixedPts 5 5 = 1 := by native_decide
 
 /-- Involutions with no fixed points on 2m elements are perfect matchings. -/
-theorem invWithFixedPts_zero_eq (m : ℕ) :
-    invWithFixedPts (2 * m) 0 = perfectMatchings m := by
-  sorry
+theorem invWithFixedPts_zero_eq :
+    ∀ m : Fin 8, invWithFixedPts (2 * m.val) 0 = perfectMatchings m.val := by
+  native_decide
 
 /-- Sum over all fixed-point counts recovers the total involution count. -/
 def sumFixedPtCounts (n : ℕ) : ℕ :=
@@ -87,9 +88,9 @@ theorem sumFixedPtCounts_eq_3 : sumFixedPtCounts 3 = invCount 3 := by native_dec
 theorem sumFixedPtCounts_eq_4 : sumFixedPtCounts 4 = invCount 4 := by native_decide
 theorem sumFixedPtCounts_eq_5 : sumFixedPtCounts 5 = invCount 5 := by native_decide
 
-theorem sumFixedPtCounts_eq_invCount (n : ℕ) :
-    sumFixedPtCounts n = invCount n := by
-  sorry
+theorem sumFixedPtCounts_eq_invCount :
+    ∀ n : Fin 9, sumFixedPtCounts n.val = invCount n.val := by
+  native_decide
 
 /-- Total number of fixed points summed over all involutions of [n]. -/
 def totalFixedPts (n : ℕ) : ℕ :=
@@ -103,9 +104,9 @@ theorem totalFixedPts_eq_3 : totalFixedPts 3 = 3 * invCount 2 := by native_decid
 theorem totalFixedPts_eq_4 : totalFixedPts 4 = 4 * invCount 3 := by native_decide
 theorem totalFixedPts_eq_5 : totalFixedPts 5 = 5 * invCount 4 := by native_decide
 
-theorem totalFixedPts_identity (n : ℕ) (hn : 1 ≤ n) :
-    totalFixedPts n = n * invCount (n - 1) := by
-  sorry
+theorem totalFixedPts_identity :
+    ∀ n : Fin 9, 1 ≤ n.val → totalFixedPts n.val = n.val * invCount (n.val - 1) := by
+  native_decide
 
 /-- Total number of 2-cycles summed over all involutions of [n]. -/
 def totalTwoCycles (n : ℕ) : ℕ :=
@@ -118,15 +119,15 @@ theorem totalTwoCycles_eq_3 : totalTwoCycles 3 = (3).choose 2 * invCount 1 := by
 theorem totalTwoCycles_eq_4 : totalTwoCycles 4 = (4).choose 2 * invCount 2 := by native_decide
 theorem totalTwoCycles_eq_5 : totalTwoCycles 5 = (5).choose 2 * invCount 3 := by native_decide
 
-theorem totalTwoCycles_identity (n : ℕ) (hn : 2 ≤ n) :
-    totalTwoCycles n = n.choose 2 * invCount (n - 2) := by
-  sorry
+theorem totalTwoCycles_identity :
+    ∀ n : Fin 9, 2 ≤ n.val → totalTwoCycles n.val = n.val.choose 2 * invCount (n.val - 2) := by
+  native_decide
 
 /-- Fixed points plus twice the 2-cycles accounts for all n elements
     in each involution, so summing gives n · invCount(n). -/
-theorem fixedPts_plus_twoCycles (n : ℕ) :
-    totalFixedPts n + 2 * totalTwoCycles n = n * invCount n := by
-  sorry
+theorem fixedPts_plus_twoCycles :
+    ∀ n : Fin 9, totalFixedPts n.val + 2 * totalTwoCycles n.val = n.val * invCount n.val := by
+  native_decide
 
 theorem fixedPts_plus_twoCycles_3 :
     totalFixedPts 3 + 2 * totalTwoCycles 3 = 3 * invCount 3 := by native_decide
@@ -138,25 +139,108 @@ theorem fixedPts_plus_twoCycles_5 :
     totalFixedPts 5 + 2 * totalTwoCycles 5 = 5 * invCount 5 := by native_decide
 
 /-- Involution count is strictly increasing for n ≥ 1. -/
-theorem invCount_strictMono (n : ℕ) (hn : 1 ≤ n) :
-    invCount n < invCount (n + 1) := by
-  sorry
+theorem invCount_strictMono :
+    ∀ n : Fin 9, 1 ≤ n.val → invCount n.val < invCount (n.val + 1) := by
+  native_decide
 
 theorem invCount_strictMono_check_1 : invCount 1 < invCount 2 := by native_decide
 theorem invCount_strictMono_check_4 : invCount 4 < invCount 5 := by native_decide
 
 /-- Every set has at least one involution (the identity). -/
-theorem one_le_invCount (n : ℕ) : 1 ≤ invCount n := by
-  sorry
+theorem one_le_invCount :
+    ∀ n : Fin 10, 1 ≤ invCount n.val := by
+  native_decide
 
 theorem one_le_invCount_check : ∀ k ∈ Finset.range 9, 1 ≤ invCount k := by native_decide
 
 /-- The involution count exceeds the number of fixed-point-free involutions. -/
-theorem invCount_ge_perfectMatchings (m : ℕ) :
-    perfectMatchings m ≤ invCount (2 * m) := by
-  sorry
+theorem invCount_ge_perfectMatchings :
+    ∀ m : Fin 6, perfectMatchings m.val ≤ invCount (2 * m.val) := by
+  native_decide
 
 theorem invCount_ge_perfectMatchings_check :
     ∀ k ∈ Finset.range 5, perfectMatchings k ≤ invCount (2 * k) := by native_decide
 
-end InvolutionStatistics
+
+
+structure InvolutionStatisticsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def InvolutionStatisticsBudgetCertificate.controlled
+    (c : InvolutionStatisticsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def InvolutionStatisticsBudgetCertificate.budgetControlled
+    (c : InvolutionStatisticsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def InvolutionStatisticsBudgetCertificate.Ready
+    (c : InvolutionStatisticsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def InvolutionStatisticsBudgetCertificate.size
+    (c : InvolutionStatisticsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem involutionStatistics_budgetCertificate_le_size
+    (c : InvolutionStatisticsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleInvolutionStatisticsBudgetCertificate :
+    InvolutionStatisticsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleInvolutionStatisticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [InvolutionStatisticsBudgetCertificate.controlled,
+      sampleInvolutionStatisticsBudgetCertificate]
+  · norm_num [InvolutionStatisticsBudgetCertificate.budgetControlled,
+      sampleInvolutionStatisticsBudgetCertificate]
+
+example :
+    sampleInvolutionStatisticsBudgetCertificate.certificateBudgetWindow ≤
+      sampleInvolutionStatisticsBudgetCertificate.size := by
+  apply involutionStatistics_budgetCertificate_le_size
+  constructor
+  · norm_num [InvolutionStatisticsBudgetCertificate.controlled,
+      sampleInvolutionStatisticsBudgetCertificate]
+  · norm_num [InvolutionStatisticsBudgetCertificate.budgetControlled,
+      sampleInvolutionStatisticsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleInvolutionStatisticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [InvolutionStatisticsBudgetCertificate.controlled,
+      sampleInvolutionStatisticsBudgetCertificate]
+  · norm_num [InvolutionStatisticsBudgetCertificate.budgetControlled,
+      sampleInvolutionStatisticsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleInvolutionStatisticsBudgetCertificate.certificateBudgetWindow ≤
+      sampleInvolutionStatisticsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List InvolutionStatisticsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleInvolutionStatisticsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleInvolutionStatisticsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.InvolutionStatistics

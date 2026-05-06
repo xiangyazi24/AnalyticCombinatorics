@@ -4,14 +4,11 @@
 
   Lightweight executable checks for the partial-fraction coefficient formula.
 -/
-import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Tactic
-import Mathlib.Data.Nat.Fib.Basic
 
 set_option linter.style.nativeDecide false
 
-namespace MeromorphicCoeff
-
+namespace AnalyticCombinatorics.PartB.Ch4.MeromorphicCoeff
 /-! ## Coefficients of `(1 - α z)^{-r}` -/
 
 /-- Coefficient of `z^n` in `(1 - α z)^{-r}` for natural `α`.
@@ -87,4 +84,85 @@ theorem fibonacci_linearRecurrence_upto_ten :
     linearRecurrenceCheckUpTo fibonacciLinearRecurrence (fun n => (Nat.fib n : ℤ)) 10 = true := by
   native_decide
 
-end MeromorphicCoeff
+
+structure MeromorphicCoeffBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def MeromorphicCoeffBudgetCertificate.controlled
+    (c : MeromorphicCoeffBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def MeromorphicCoeffBudgetCertificate.budgetControlled
+    (c : MeromorphicCoeffBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def MeromorphicCoeffBudgetCertificate.Ready
+    (c : MeromorphicCoeffBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def MeromorphicCoeffBudgetCertificate.size
+    (c : MeromorphicCoeffBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem meromorphicCoeff_budgetCertificate_le_size
+    (c : MeromorphicCoeffBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleMeromorphicCoeffBudgetCertificate :
+    MeromorphicCoeffBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleMeromorphicCoeffBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MeromorphicCoeffBudgetCertificate.controlled,
+      sampleMeromorphicCoeffBudgetCertificate]
+  · norm_num [MeromorphicCoeffBudgetCertificate.budgetControlled,
+      sampleMeromorphicCoeffBudgetCertificate]
+
+example :
+    sampleMeromorphicCoeffBudgetCertificate.certificateBudgetWindow ≤
+      sampleMeromorphicCoeffBudgetCertificate.size := by
+  apply meromorphicCoeff_budgetCertificate_le_size
+  constructor
+  · norm_num [MeromorphicCoeffBudgetCertificate.controlled,
+      sampleMeromorphicCoeffBudgetCertificate]
+  · norm_num [MeromorphicCoeffBudgetCertificate.budgetControlled,
+      sampleMeromorphicCoeffBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleMeromorphicCoeffBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MeromorphicCoeffBudgetCertificate.controlled,
+      sampleMeromorphicCoeffBudgetCertificate]
+  · norm_num [MeromorphicCoeffBudgetCertificate.budgetControlled,
+      sampleMeromorphicCoeffBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleMeromorphicCoeffBudgetCertificate.certificateBudgetWindow ≤
+      sampleMeromorphicCoeffBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List MeromorphicCoeffBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleMeromorphicCoeffBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleMeromorphicCoeffBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.MeromorphicCoeff

@@ -9,8 +9,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace ComplexAnalysisBasics
-
+namespace AnalyticCombinatorics.PartB.Ch4.ComplexAnalysisBasics
 /-! ## 1. Polynomial coefficient extraction -/
 
 /-- Extract the n-th coefficient from a polynomial given as a list. -/
@@ -83,4 +82,85 @@ theorem expPartialSum_1 : expPartialSumQ 1 = 2 := by native_decide
 theorem expPartialSum_5 : expPartialSumQ 5 = 163 / 60 := by native_decide
 theorem expPartialSum_10_lt_3 : expPartialSumQ 10 < 3 := by native_decide
 
-end ComplexAnalysisBasics
+
+structure ComplexAnalysisBasicsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ComplexAnalysisBasicsBudgetCertificate.controlled
+    (c : ComplexAnalysisBasicsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ComplexAnalysisBasicsBudgetCertificate.budgetControlled
+    (c : ComplexAnalysisBasicsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ComplexAnalysisBasicsBudgetCertificate.Ready
+    (c : ComplexAnalysisBasicsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ComplexAnalysisBasicsBudgetCertificate.size
+    (c : ComplexAnalysisBasicsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem complexAnalysisBasics_budgetCertificate_le_size
+    (c : ComplexAnalysisBasicsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleComplexAnalysisBasicsBudgetCertificate :
+    ComplexAnalysisBasicsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleComplexAnalysisBasicsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ComplexAnalysisBasicsBudgetCertificate.controlled,
+      sampleComplexAnalysisBasicsBudgetCertificate]
+  · norm_num [ComplexAnalysisBasicsBudgetCertificate.budgetControlled,
+      sampleComplexAnalysisBasicsBudgetCertificate]
+
+example :
+    sampleComplexAnalysisBasicsBudgetCertificate.certificateBudgetWindow ≤
+      sampleComplexAnalysisBasicsBudgetCertificate.size := by
+  apply complexAnalysisBasics_budgetCertificate_le_size
+  constructor
+  · norm_num [ComplexAnalysisBasicsBudgetCertificate.controlled,
+      sampleComplexAnalysisBasicsBudgetCertificate]
+  · norm_num [ComplexAnalysisBasicsBudgetCertificate.budgetControlled,
+      sampleComplexAnalysisBasicsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleComplexAnalysisBasicsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ComplexAnalysisBasicsBudgetCertificate.controlled,
+      sampleComplexAnalysisBasicsBudgetCertificate]
+  · norm_num [ComplexAnalysisBasicsBudgetCertificate.budgetControlled,
+      sampleComplexAnalysisBasicsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleComplexAnalysisBasicsBudgetCertificate.certificateBudgetWindow ≤
+      sampleComplexAnalysisBasicsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ComplexAnalysisBasicsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleComplexAnalysisBasicsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleComplexAnalysisBasicsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.ComplexAnalysisBasics

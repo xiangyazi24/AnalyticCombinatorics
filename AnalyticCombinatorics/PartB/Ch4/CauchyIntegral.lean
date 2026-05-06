@@ -12,8 +12,7 @@ set_option linter.style.nativeDecide false
 
 open Finset Nat
 
-namespace CauchyIntegral
-
+namespace AnalyticCombinatorics.PartB.Ch4.CauchyIntegral
 /-! ## 1. Geometric series coefficients
 
   By the Cauchy coefficient formula, [z^n] 1/(1-az) = a^n.
@@ -269,4 +268,85 @@ theorem tetrahedral_formula :
     ∀ i : Fin 7, negbinom4_alt i * 6 = ((i : ℕ) + 1) * ((i : ℕ) + 2) * ((i : ℕ) + 3) := by
   decide
 
-end CauchyIntegral
+
+structure CauchyIntegralBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CauchyIntegralBudgetCertificate.controlled
+    (c : CauchyIntegralBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CauchyIntegralBudgetCertificate.budgetControlled
+    (c : CauchyIntegralBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CauchyIntegralBudgetCertificate.Ready
+    (c : CauchyIntegralBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CauchyIntegralBudgetCertificate.size
+    (c : CauchyIntegralBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem cauchyIntegral_budgetCertificate_le_size
+    (c : CauchyIntegralBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCauchyIntegralBudgetCertificate :
+    CauchyIntegralBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleCauchyIntegralBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CauchyIntegralBudgetCertificate.controlled,
+      sampleCauchyIntegralBudgetCertificate]
+  · norm_num [CauchyIntegralBudgetCertificate.budgetControlled,
+      sampleCauchyIntegralBudgetCertificate]
+
+example :
+    sampleCauchyIntegralBudgetCertificate.certificateBudgetWindow ≤
+      sampleCauchyIntegralBudgetCertificate.size := by
+  apply cauchyIntegral_budgetCertificate_le_size
+  constructor
+  · norm_num [CauchyIntegralBudgetCertificate.controlled,
+      sampleCauchyIntegralBudgetCertificate]
+  · norm_num [CauchyIntegralBudgetCertificate.budgetControlled,
+      sampleCauchyIntegralBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleCauchyIntegralBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CauchyIntegralBudgetCertificate.controlled,
+      sampleCauchyIntegralBudgetCertificate]
+  · norm_num [CauchyIntegralBudgetCertificate.budgetControlled,
+      sampleCauchyIntegralBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCauchyIntegralBudgetCertificate.certificateBudgetWindow ≤
+      sampleCauchyIntegralBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List CauchyIntegralBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCauchyIntegralBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCauchyIntegralBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.CauchyIntegral

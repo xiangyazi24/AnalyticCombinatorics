@@ -2,6 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch3.ProbabilityGF
+
 /-! # Ch III — Probability Generating Functions: basic distributions
 
 This file formalizes elementary probability distribution computations
@@ -13,7 +15,6 @@ from Flajolet & Sedgewick Chapter III:
 - Binomial second moment / variance
 -/
 
-namespace ProbabilityGF
 
 /-! ## 1. Binomial distribution mean numerator -/
 
@@ -100,4 +101,96 @@ example : binomialSecondMomentNumer 6 = 6 * 7 * 2 ^ 4 := by native_decide
 example : binomialSecondMomentNumer 7 = 7 * 8 * 2 ^ 5 := by native_decide
 example : binomialSecondMomentNumer 8 = 8 * 9 * 2 ^ 6 := by native_decide
 
-end ProbabilityGF
+/-- Poisson partial-sum sample at truncation five. -/
+theorem poissonPartialSum_five :
+    poissonPartialSum 5 = 65 / 24 := by
+  native_decide
+
+/-- Binomial second-moment numerator sample at eight. -/
+theorem binomialSecondMomentNumer_eight :
+    binomialSecondMomentNumer 8 = 8 * 9 * 2 ^ 6 := by
+  native_decide
+
+
+
+structure ProbabilityGFBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ProbabilityGFBudgetCertificate.controlled
+    (c : ProbabilityGFBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ProbabilityGFBudgetCertificate.budgetControlled
+    (c : ProbabilityGFBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ProbabilityGFBudgetCertificate.Ready
+    (c : ProbabilityGFBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ProbabilityGFBudgetCertificate.size
+    (c : ProbabilityGFBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem probabilityGF_budgetCertificate_le_size
+    (c : ProbabilityGFBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleProbabilityGFBudgetCertificate :
+    ProbabilityGFBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleProbabilityGFBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ProbabilityGFBudgetCertificate.controlled,
+      sampleProbabilityGFBudgetCertificate]
+  · norm_num [ProbabilityGFBudgetCertificate.budgetControlled,
+      sampleProbabilityGFBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleProbabilityGFBudgetCertificate.certificateBudgetWindow ≤
+      sampleProbabilityGFBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleProbabilityGFBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ProbabilityGFBudgetCertificate.controlled,
+      sampleProbabilityGFBudgetCertificate]
+  · norm_num [ProbabilityGFBudgetCertificate.budgetControlled,
+      sampleProbabilityGFBudgetCertificate]
+
+example :
+    sampleProbabilityGFBudgetCertificate.certificateBudgetWindow ≤
+      sampleProbabilityGFBudgetCertificate.size := by
+  apply probabilityGF_budgetCertificate_le_size
+  constructor
+  · norm_num [ProbabilityGFBudgetCertificate.controlled,
+      sampleProbabilityGFBudgetCertificate]
+  · norm_num [ProbabilityGFBudgetCertificate.budgetControlled,
+      sampleProbabilityGFBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List ProbabilityGFBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleProbabilityGFBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleProbabilityGFBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.ProbabilityGF

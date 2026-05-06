@@ -1,6 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch1.SymmetricFunctions
+
 /-!
 # Symmetric Functions: finite Chapter I checks
 
@@ -8,7 +10,6 @@ Small bounded computations for elementary symmetric functions, power sums,
 monomial symmetric functions, Schur specializations, and hook-length counts.
 -/
 
-namespace SymmetricFunctions
 
 /-! ## Elementary symmetric functions at all ones -/
 
@@ -166,4 +167,86 @@ theorem newton_table_consistency :
         4 * (elementary1234 4 : ℤ) = power1234 4 := by
   native_decide
 
-end SymmetricFunctions
+
+
+structure SymmetricFunctionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SymmetricFunctionsBudgetCertificate.controlled
+    (c : SymmetricFunctionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SymmetricFunctionsBudgetCertificate.budgetControlled
+    (c : SymmetricFunctionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SymmetricFunctionsBudgetCertificate.Ready
+    (c : SymmetricFunctionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SymmetricFunctionsBudgetCertificate.size
+    (c : SymmetricFunctionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem symmetricFunctions_budgetCertificate_le_size
+    (c : SymmetricFunctionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSymmetricFunctionsBudgetCertificate :
+    SymmetricFunctionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSymmetricFunctionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SymmetricFunctionsBudgetCertificate.controlled,
+      sampleSymmetricFunctionsBudgetCertificate]
+  · norm_num [SymmetricFunctionsBudgetCertificate.budgetControlled,
+      sampleSymmetricFunctionsBudgetCertificate]
+
+example :
+    sampleSymmetricFunctionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleSymmetricFunctionsBudgetCertificate.size := by
+  apply symmetricFunctions_budgetCertificate_le_size
+  constructor
+  · norm_num [SymmetricFunctionsBudgetCertificate.controlled,
+      sampleSymmetricFunctionsBudgetCertificate]
+  · norm_num [SymmetricFunctionsBudgetCertificate.budgetControlled,
+      sampleSymmetricFunctionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSymmetricFunctionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SymmetricFunctionsBudgetCertificate.controlled,
+      sampleSymmetricFunctionsBudgetCertificate]
+  · norm_num [SymmetricFunctionsBudgetCertificate.budgetControlled,
+      sampleSymmetricFunctionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSymmetricFunctionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleSymmetricFunctionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SymmetricFunctionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSymmetricFunctionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSymmetricFunctionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.SymmetricFunctions

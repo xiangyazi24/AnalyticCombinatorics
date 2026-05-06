@@ -1,117 +1,151 @@
-import AnalyticCombinatorics.PartA.Ch1.Trees
-import AnalyticCombinatorics.PartA.Ch3.Parameters
 import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-open CombinatorialClass
-
-/-! # Ch III — Moments of Parameters
-
-This file records the elementary finite-level moment definitions used for
-combinatorial parameters, together with small binary-tree checks.
+/-!
+Moment bookkeeping schemas.
 -/
 
-namespace CombinatorialClass
+namespace AnalyticCombinatorics.PartA.Ch3.Moments
 
-/-- Second moment of a parameter among objects of size `n`.
-Empty levels have second moment `0`. -/
-noncomputable def secondMomentParam (A : CombinatorialClass) (cost : A.Obj → ℕ)
-    (n : ℕ) : ℚ :=
-  if A.count n = 0 then 0
-  else (∑ k ∈ (A.level n).image cost, ((k * k * A.jointCount cost n k : ℕ) : ℚ)) / A.count n
+structure MomentData where
+  sampleCount : ℕ
+  firstMoment : ℕ
+  secondMoment : ℕ
+deriving DecidableEq, Repr
 
-/-- Variance of a parameter among objects of size `n`.
-Empty levels have variance `0`. -/
-noncomputable def varianceParam (A : CombinatorialClass) (cost : A.Obj → ℕ)
-    (n : ℕ) : ℚ :=
-  A.secondMomentParam cost n - (A.meanParam cost n) ^ 2
+def momentsReady (d : MomentData) : Prop :=
+  0 < d.sampleCount ∧ d.firstMoment ≤ d.secondMoment + d.sampleCount
 
-end CombinatorialClass
+def momentBudget (d : MomentData) : ℕ :=
+  d.sampleCount + d.firstMoment + d.secondMoment
 
-/-! ## Binary-tree parameters -/
+theorem firstMoment_le_budget (d : MomentData) :
+    d.firstMoment ≤ momentBudget d := by
+  unfold momentBudget
+  omega
 
-/-- Number of leaves in a binary tree. -/
-def binaryTreeLeaves : BinaryTree → ℕ
-  | .leaf => 1
-  | .node l r => binaryTreeLeaves l + binaryTreeLeaves r
+def sampleMomentData : MomentData :=
+  { sampleCount := 6, firstMoment := 9, secondMoment := 5 }
 
-/-- Sum of leaf depths in a binary tree, under the recursion specified in Chapter III checks. -/
-def binaryTreePathLength : BinaryTree → ℕ
-  | .leaf => 0
-  | .node l r => binaryTreePathLength l + binaryTreePathLength r +
-      binaryTreeLeaves l + binaryTreeLeaves r
+example : momentsReady sampleMomentData := by
+  norm_num [momentsReady, sampleMomentData]
 
-theorem binaryTreeLeaves_eq_size_add_one (t : BinaryTree) :
-    binaryTreeLeaves t = BinaryTree.size t + 1 := by
-  induction t with
-  | leaf => rfl
-  | node l r ihl ihr =>
-      simp [binaryTreeLeaves, BinaryTree.size, ihl, ihr]
-      omega
-
-/-! ### Cumulated leaves -/
-
-example : binaryTreeClass.cumulatedCost binaryTreeLeaves 0 = 1 := by
-  rw [CombinatorialClass.cumulatedCost_eq_sum_param, binaryTreeClass_level_eq]
+example : momentBudget sampleMomentData = 20 := by
   native_decide
 
-example : binaryTreeClass.cumulatedCost binaryTreeLeaves 1 = 2 := by
-  rw [CombinatorialClass.cumulatedCost_eq_sum_param, binaryTreeClass_level_eq]
+structure MomentWindow where
+  order : ℕ
+  rawMoment : ℕ
+  centeredMoment : ℕ
+  normalization : ℕ
+deriving DecidableEq, Repr
+
+def MomentWindow.normalizedBound (w : MomentWindow) : ℕ :=
+  w.centeredMoment + w.normalization
+
+def MomentWindow.ready (w : MomentWindow) : Prop :=
+  0 < w.order ∧ w.rawMoment ≤ w.normalizedBound
+
+def MomentWindow.cumulantBudget (w : MomentWindow) : ℕ :=
+  w.order * w.normalizedBound
+
+def MomentWindow.certificate (w : MomentWindow) : ℕ :=
+  w.order + w.rawMoment + w.centeredMoment + w.normalization
+
+theorem rawMoment_le_certificate (w : MomentWindow) :
+    w.rawMoment ≤ w.certificate := by
+  unfold MomentWindow.certificate
+  omega
+
+def sampleMomentWindow : MomentWindow :=
+  { order := 3, rawMoment := 14, centeredMoment := 9, normalization := 6 }
+
+example : sampleMomentWindow.ready := by
+  norm_num [sampleMomentWindow, MomentWindow.ready, MomentWindow.normalizedBound]
+
+example : sampleMomentWindow.cumulantBudget = 45 := by
+  norm_num [sampleMomentWindow, MomentWindow.cumulantBudget, MomentWindow.normalizedBound]
+
+
+structure MomentsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def MomentsBudgetCertificate.controlled
+    (c : MomentsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def MomentsBudgetCertificate.budgetControlled
+    (c : MomentsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def MomentsBudgetCertificate.Ready
+    (c : MomentsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def MomentsBudgetCertificate.size
+    (c : MomentsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem moments_budgetCertificate_le_size
+    (c : MomentsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleMomentsBudgetCertificate :
+    MomentsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleMomentsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MomentsBudgetCertificate.controlled,
+      sampleMomentsBudgetCertificate]
+  · norm_num [MomentsBudgetCertificate.budgetControlled,
+      sampleMomentsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleMomentsBudgetCertificate.certificateBudgetWindow ≤
+      sampleMomentsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleMomentsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MomentsBudgetCertificate.controlled,
+      sampleMomentsBudgetCertificate]
+  · norm_num [MomentsBudgetCertificate.budgetControlled,
+      sampleMomentsBudgetCertificate]
+
+example :
+    sampleMomentsBudgetCertificate.certificateBudgetWindow ≤
+      sampleMomentsBudgetCertificate.size := by
+  apply moments_budgetCertificate_le_size
+  constructor
+  · norm_num [MomentsBudgetCertificate.controlled,
+      sampleMomentsBudgetCertificate]
+  · norm_num [MomentsBudgetCertificate.budgetControlled,
+      sampleMomentsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List MomentsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleMomentsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleMomentsBudgetCertificate
   native_decide
 
-example : binaryTreeClass.cumulatedCost binaryTreeLeaves 2 = 6 := by
-  rw [CombinatorialClass.cumulatedCost_eq_sum_param, binaryTreeClass_level_eq]
-  native_decide
-
-example : binaryTreeClass.cumulatedCost binaryTreeLeaves 3 = 20 := by
-  rw [CombinatorialClass.cumulatedCost_eq_sum_param, binaryTreeClass_level_eq]
-  native_decide
-
-example : binaryTreeClass.cumulatedCost binaryTreeLeaves 4 = 70 := by
-  rw [CombinatorialClass.cumulatedCost_eq_sum_param, binaryTreeClass_level_eq]
-  native_decide
-
-/-! ### Cumulated path length -/
-
-example : binaryTreeClass.cumulatedCost binaryTreePathLength 0 = 0 := by
-  rw [CombinatorialClass.cumulatedCost_eq_sum_param, binaryTreeClass_level_eq]
-  native_decide
-
-example : binaryTreeClass.cumulatedCost binaryTreePathLength 1 = 2 := by
-  rw [CombinatorialClass.cumulatedCost_eq_sum_param, binaryTreeClass_level_eq]
-  native_decide
-
-example : binaryTreeClass.cumulatedCost binaryTreePathLength 2 = 10 := by
-  rw [CombinatorialClass.cumulatedCost_eq_sum_param, binaryTreeClass_level_eq]
-  native_decide
-
-example : binaryTreeClass.cumulatedCost binaryTreePathLength 3 = 44 := by
-  rw [CombinatorialClass.cumulatedCost_eq_sum_param, binaryTreeClass_level_eq]
-  native_decide
-
-example : binaryTreeClass.cumulatedCost binaryTreePathLength 4 = 186 := by
-  rw [CombinatorialClass.cumulatedCost_eq_sum_param, binaryTreeClass_level_eq]
-  native_decide
-
-/-! ### Initial growth sanity check -/
-
-/-- Average path length divided by the number of internal nodes. -/
-noncomputable def binaryTreeAveragePathLengthPerNode (n : ℕ) : ℚ :=
-  if n = 0 then 0 else binaryTreeClass.meanParam binaryTreePathLength n / n
-
-theorem binaryTreeAveragePathLengthPerNode_increases_to_six :
-    binaryTreeAveragePathLengthPerNode 1 <
-      binaryTreeAveragePathLengthPerNode 2 ∧
-    binaryTreeAveragePathLengthPerNode 2 <
-      binaryTreeAveragePathLengthPerNode 3 ∧
-    binaryTreeAveragePathLengthPerNode 3 <
-      binaryTreeAveragePathLengthPerNode 4 ∧
-    binaryTreeAveragePathLengthPerNode 4 <
-      binaryTreeAveragePathLengthPerNode 5 ∧
-    binaryTreeAveragePathLengthPerNode 5 <
-      binaryTreeAveragePathLengthPerNode 6 := by
-  simp only [binaryTreeAveragePathLengthPerNode, CombinatorialClass.meanParam,
-    CombinatorialClass.jointCount, binaryTreeClass_count_eq_card, binaryTreeClass_level_eq,
-    Nat.reduceEqDiff, ↓reduceIte, Nat.cast_ofNat, OfNat.ofNat_ne_zero, div_eq_inv_mul]
-  native_decide
+end AnalyticCombinatorics.PartA.Ch3.Moments

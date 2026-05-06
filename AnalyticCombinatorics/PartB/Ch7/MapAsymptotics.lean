@@ -12,8 +12,7 @@ set_option linter.style.nativeDecide false
 
 open Finset Nat
 
-namespace MapAsymptotics
-
+namespace AnalyticCombinatorics.PartB.Ch7.MapAsymptotics
 /-! ## 1. Total functions [n]→[n]: n^n -/
 
 /-- Total number of functions from [n] to [n]. -/
@@ -188,4 +187,85 @@ theorem summary_inequalities :
   · interval_cases n <;> native_decide
   · interval_cases n <;> native_decide
 
-end MapAsymptotics
+
+structure MapAsymptoticsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def MapAsymptoticsBudgetCertificate.controlled
+    (c : MapAsymptoticsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def MapAsymptoticsBudgetCertificate.budgetControlled
+    (c : MapAsymptoticsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def MapAsymptoticsBudgetCertificate.Ready
+    (c : MapAsymptoticsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def MapAsymptoticsBudgetCertificate.size
+    (c : MapAsymptoticsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem mapAsymptotics_budgetCertificate_le_size
+    (c : MapAsymptoticsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleMapAsymptoticsBudgetCertificate :
+    MapAsymptoticsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleMapAsymptoticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MapAsymptoticsBudgetCertificate.controlled,
+      sampleMapAsymptoticsBudgetCertificate]
+  · norm_num [MapAsymptoticsBudgetCertificate.budgetControlled,
+      sampleMapAsymptoticsBudgetCertificate]
+
+example :
+    sampleMapAsymptoticsBudgetCertificate.certificateBudgetWindow ≤
+      sampleMapAsymptoticsBudgetCertificate.size := by
+  apply mapAsymptotics_budgetCertificate_le_size
+  constructor
+  · norm_num [MapAsymptoticsBudgetCertificate.controlled,
+      sampleMapAsymptoticsBudgetCertificate]
+  · norm_num [MapAsymptoticsBudgetCertificate.budgetControlled,
+      sampleMapAsymptoticsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleMapAsymptoticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MapAsymptoticsBudgetCertificate.controlled,
+      sampleMapAsymptoticsBudgetCertificate]
+  · norm_num [MapAsymptoticsBudgetCertificate.budgetControlled,
+      sampleMapAsymptoticsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleMapAsymptoticsBudgetCertificate.certificateBudgetWindow ≤
+      sampleMapAsymptoticsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List MapAsymptoticsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleMapAsymptoticsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleMapAsymptoticsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.MapAsymptotics

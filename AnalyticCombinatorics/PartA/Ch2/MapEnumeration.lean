@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace MapEnumeration
+namespace AnalyticCombinatorics.PartA.Ch2.MapEnumeration
+
 
 /-! # Enumeration of functional digraphs (random mappings)
 
@@ -161,4 +162,86 @@ theorem totalMappings_gt_parkingCount :
 example : idempotentCount 0 + idempotentCount 1 + idempotentCount 2 +
     idempotentCount 3 + idempotentCount 4 = 56 := by native_decide
 
-end MapEnumeration
+
+
+structure MapEnumerationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def MapEnumerationBudgetCertificate.controlled
+    (c : MapEnumerationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def MapEnumerationBudgetCertificate.budgetControlled
+    (c : MapEnumerationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def MapEnumerationBudgetCertificate.Ready
+    (c : MapEnumerationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def MapEnumerationBudgetCertificate.size
+    (c : MapEnumerationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem mapEnumeration_budgetCertificate_le_size
+    (c : MapEnumerationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleMapEnumerationBudgetCertificate :
+    MapEnumerationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleMapEnumerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MapEnumerationBudgetCertificate.controlled,
+      sampleMapEnumerationBudgetCertificate]
+  · norm_num [MapEnumerationBudgetCertificate.budgetControlled,
+      sampleMapEnumerationBudgetCertificate]
+
+example :
+    sampleMapEnumerationBudgetCertificate.certificateBudgetWindow ≤
+      sampleMapEnumerationBudgetCertificate.size := by
+  apply mapEnumeration_budgetCertificate_le_size
+  constructor
+  · norm_num [MapEnumerationBudgetCertificate.controlled,
+      sampleMapEnumerationBudgetCertificate]
+  · norm_num [MapEnumerationBudgetCertificate.budgetControlled,
+      sampleMapEnumerationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleMapEnumerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MapEnumerationBudgetCertificate.controlled,
+      sampleMapEnumerationBudgetCertificate]
+  · norm_num [MapEnumerationBudgetCertificate.budgetControlled,
+      sampleMapEnumerationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleMapEnumerationBudgetCertificate.certificateBudgetWindow ≤
+      sampleMapEnumerationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List MapEnumerationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleMapEnumerationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleMapEnumerationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.MapEnumeration

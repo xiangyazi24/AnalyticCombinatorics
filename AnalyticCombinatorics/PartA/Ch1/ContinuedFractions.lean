@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace ContinuedFractions
+namespace AnalyticCombinatorics.PartA.Ch1.ContinuedFractions
+
 
 /-!
 # Continued Fractions and Generating Function Connections
@@ -297,4 +298,106 @@ example : 3 * 29 + 2 * 41 = 169 := by native_decide
 example : 3 * 3 + 2 * 2 * 2 = 17 := by native_decide
 example : 2 * 3 * 2 = 12 := by native_decide
 
-end ContinuedFractions
+/-- Continued-fraction numerator sample for `e`. -/
+theorem eConvergentsNum_seven :
+    eConvergentsNum 7 = 193 := by
+  native_decide
+
+/-- Continued-fraction denominator sample for `e`. -/
+theorem eConvergentsDen_seven :
+    eConvergentsDen 7 = 71 := by
+  native_decide
+
+/-- Derangement table sample via the local subfactorial recursion. -/
+theorem subfactorial_seven :
+    subfactorial 7 = 1854 := by
+  native_decide
+
+/-- Pell numerator sample for the square-root-two convergents. -/
+theorem sqrt2Num_six :
+    sqrt2Num 6 = 239 := by
+  native_decide
+
+
+
+structure ContinuedFractionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ContinuedFractionsBudgetCertificate.controlled
+    (c : ContinuedFractionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ContinuedFractionsBudgetCertificate.budgetControlled
+    (c : ContinuedFractionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ContinuedFractionsBudgetCertificate.Ready
+    (c : ContinuedFractionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ContinuedFractionsBudgetCertificate.size
+    (c : ContinuedFractionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem continuedFractions_budgetCertificate_le_size
+    (c : ContinuedFractionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleContinuedFractionsBudgetCertificate :
+    ContinuedFractionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleContinuedFractionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ContinuedFractionsBudgetCertificate.controlled,
+      sampleContinuedFractionsBudgetCertificate]
+  · norm_num [ContinuedFractionsBudgetCertificate.budgetControlled,
+      sampleContinuedFractionsBudgetCertificate]
+
+example :
+    sampleContinuedFractionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleContinuedFractionsBudgetCertificate.size := by
+  apply continuedFractions_budgetCertificate_le_size
+  constructor
+  · norm_num [ContinuedFractionsBudgetCertificate.controlled,
+      sampleContinuedFractionsBudgetCertificate]
+  · norm_num [ContinuedFractionsBudgetCertificate.budgetControlled,
+      sampleContinuedFractionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleContinuedFractionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ContinuedFractionsBudgetCertificate.controlled,
+      sampleContinuedFractionsBudgetCertificate]
+  · norm_num [ContinuedFractionsBudgetCertificate.budgetControlled,
+      sampleContinuedFractionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleContinuedFractionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleContinuedFractionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ContinuedFractionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleContinuedFractionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleContinuedFractionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.ContinuedFractions

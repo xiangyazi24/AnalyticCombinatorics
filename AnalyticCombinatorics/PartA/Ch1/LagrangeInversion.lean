@@ -11,8 +11,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace LagrangeInversion
-
+namespace AnalyticCombinatorics.PartA.Ch1.LagrangeInversion
 /-! ## Lagrange coefficient for binary trees (Catalan via Lagrange) -/
 
 /-- The nth Catalan number, obtained as a Lagrange coefficient for T = z + T². -/
@@ -72,4 +71,85 @@ theorem lagrangeCatalan_identity_check :
   rcases Finset.mem_Icc.mp hn with ⟨_, hnhi⟩
   interval_cases n <;> native_decide
 
-end LagrangeInversion
+
+structure LagrangeInversionBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def LagrangeInversionBudgetCertificate.controlled
+    (c : LagrangeInversionBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def LagrangeInversionBudgetCertificate.budgetControlled
+    (c : LagrangeInversionBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def LagrangeInversionBudgetCertificate.Ready
+    (c : LagrangeInversionBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def LagrangeInversionBudgetCertificate.size
+    (c : LagrangeInversionBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem lagrangeInversion_budgetCertificate_le_size
+    (c : LagrangeInversionBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleLagrangeInversionBudgetCertificate :
+    LagrangeInversionBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleLagrangeInversionBudgetCertificate.Ready := by
+  constructor
+  · norm_num [LagrangeInversionBudgetCertificate.controlled,
+      sampleLagrangeInversionBudgetCertificate]
+  · norm_num [LagrangeInversionBudgetCertificate.budgetControlled,
+      sampleLagrangeInversionBudgetCertificate]
+
+example :
+    sampleLagrangeInversionBudgetCertificate.certificateBudgetWindow ≤
+      sampleLagrangeInversionBudgetCertificate.size := by
+  apply lagrangeInversion_budgetCertificate_le_size
+  constructor
+  · norm_num [LagrangeInversionBudgetCertificate.controlled,
+      sampleLagrangeInversionBudgetCertificate]
+  · norm_num [LagrangeInversionBudgetCertificate.budgetControlled,
+      sampleLagrangeInversionBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleLagrangeInversionBudgetCertificate.Ready := by
+  constructor
+  · norm_num [LagrangeInversionBudgetCertificate.controlled,
+      sampleLagrangeInversionBudgetCertificate]
+  · norm_num [LagrangeInversionBudgetCertificate.budgetControlled,
+      sampleLagrangeInversionBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleLagrangeInversionBudgetCertificate.certificateBudgetWindow ≤
+      sampleLagrangeInversionBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List LagrangeInversionBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleLagrangeInversionBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleLagrangeInversionBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.LagrangeInversion

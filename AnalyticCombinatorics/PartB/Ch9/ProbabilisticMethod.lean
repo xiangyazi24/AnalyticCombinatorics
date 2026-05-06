@@ -2,9 +2,10 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartB.Ch9.ProbabilisticMethod
+
 open Finset Nat
 
-namespace ProbabilisticMethod
 
 /-!
 # Chapter IX: Probabilistic Method — Numerics and Ramsey Bounds
@@ -219,12 +220,110 @@ example : Nat.choose 20 5 / 1024 = 15 := by native_decide
 example : Nat.choose 50 5 = 2118760 := by native_decide
 example : Nat.choose 50 5 / 1024 = 2069 := by native_decide
 
--- Variance check proxy: for the second moment method on triangles,
--- we need E[X^2] / (E[X])^2 to stay bounded. A proxy is checking
+-- Variance check: for the second moment method on triangles,
+-- we need E[X^2] / (E[X])^2 to stay bounded. A finite check is comparing
 -- that E[X] grows: for fixed p=1/2 this holds iff C(n,3)/8 → ∞.
 -- Verify strict growth across n = 8, 10, 20, 100:
 example : Nat.choose 8 3 / 8 < Nat.choose 10 3 / 8 := by native_decide
 example : Nat.choose 10 3 / 8 < Nat.choose 20 3 / 8 := by native_decide
 example : Nat.choose 20 3 / 8 < Nat.choose 100 3 / 8 := by native_decide
 
-end ProbabilisticMethod
+/-- Expected Hamiltonian-path lower bound in a tournament. -/
+def tournamentHamiltonPathLowerBound (n : ℕ) : ℕ :=
+  Nat.factorial n / 2 ^ (n - 1)
+
+theorem tournamentHamiltonPathLowerBound_eight :
+    tournamentHamiltonPathLowerBound 8 = 315 := by
+  native_decide
+
+/-- Expected clique count in `G(n, 1/2)` using integer division. -/
+def randomGraphCliqueExpectation (n k : ℕ) : ℕ :=
+  Nat.choose n k / 2 ^ (Nat.choose k 2)
+
+theorem randomGraphCliqueExpectation_20_4 :
+    randomGraphCliqueExpectation 20 4 = 75 := by
+  native_decide
+
+
+
+structure ProbabilisticMethodBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ProbabilisticMethodBudgetCertificate.controlled
+    (c : ProbabilisticMethodBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ProbabilisticMethodBudgetCertificate.budgetControlled
+    (c : ProbabilisticMethodBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ProbabilisticMethodBudgetCertificate.Ready
+    (c : ProbabilisticMethodBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ProbabilisticMethodBudgetCertificate.size
+    (c : ProbabilisticMethodBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem probabilisticMethod_budgetCertificate_le_size
+    (c : ProbabilisticMethodBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleProbabilisticMethodBudgetCertificate :
+    ProbabilisticMethodBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleProbabilisticMethodBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ProbabilisticMethodBudgetCertificate.controlled,
+      sampleProbabilisticMethodBudgetCertificate]
+  · norm_num [ProbabilisticMethodBudgetCertificate.budgetControlled,
+      sampleProbabilisticMethodBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleProbabilisticMethodBudgetCertificate.certificateBudgetWindow ≤
+      sampleProbabilisticMethodBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleProbabilisticMethodBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ProbabilisticMethodBudgetCertificate.controlled,
+      sampleProbabilisticMethodBudgetCertificate]
+  · norm_num [ProbabilisticMethodBudgetCertificate.budgetControlled,
+      sampleProbabilisticMethodBudgetCertificate]
+
+example :
+    sampleProbabilisticMethodBudgetCertificate.certificateBudgetWindow ≤
+      sampleProbabilisticMethodBudgetCertificate.size := by
+  apply probabilisticMethod_budgetCertificate_le_size
+  constructor
+  · norm_num [ProbabilisticMethodBudgetCertificate.controlled,
+      sampleProbabilisticMethodBudgetCertificate]
+  · norm_num [ProbabilisticMethodBudgetCertificate.budgetControlled,
+      sampleProbabilisticMethodBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List ProbabilisticMethodBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleProbabilisticMethodBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleProbabilisticMethodBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.ProbabilisticMethod

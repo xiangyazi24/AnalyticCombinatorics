@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace ConnectedStructures
+namespace AnalyticCombinatorics.PartA.Ch2.ConnectedStructures
+
 
 /-!
 # Connected structures and logarithmic constructions
@@ -250,4 +251,86 @@ theorem digraph_log_extraction_up_to_four :
       (totalDigraphCount 3 : ℤ) (totalDigraphCount 4 : ℤ) = (connectedDigraphCount 4 : ℤ) := by
   native_decide
 
-end ConnectedStructures
+
+
+structure ConnectedStructuresBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ConnectedStructuresBudgetCertificate.controlled
+    (c : ConnectedStructuresBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ConnectedStructuresBudgetCertificate.budgetControlled
+    (c : ConnectedStructuresBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ConnectedStructuresBudgetCertificate.Ready
+    (c : ConnectedStructuresBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ConnectedStructuresBudgetCertificate.size
+    (c : ConnectedStructuresBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem connectedStructures_budgetCertificate_le_size
+    (c : ConnectedStructuresBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleConnectedStructuresBudgetCertificate :
+    ConnectedStructuresBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleConnectedStructuresBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ConnectedStructuresBudgetCertificate.controlled,
+      sampleConnectedStructuresBudgetCertificate]
+  · norm_num [ConnectedStructuresBudgetCertificate.budgetControlled,
+      sampleConnectedStructuresBudgetCertificate]
+
+example :
+    sampleConnectedStructuresBudgetCertificate.certificateBudgetWindow ≤
+      sampleConnectedStructuresBudgetCertificate.size := by
+  apply connectedStructures_budgetCertificate_le_size
+  constructor
+  · norm_num [ConnectedStructuresBudgetCertificate.controlled,
+      sampleConnectedStructuresBudgetCertificate]
+  · norm_num [ConnectedStructuresBudgetCertificate.budgetControlled,
+      sampleConnectedStructuresBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleConnectedStructuresBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ConnectedStructuresBudgetCertificate.controlled,
+      sampleConnectedStructuresBudgetCertificate]
+  · norm_num [ConnectedStructuresBudgetCertificate.budgetControlled,
+      sampleConnectedStructuresBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleConnectedStructuresBudgetCertificate.certificateBudgetWindow ≤
+      sampleConnectedStructuresBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ConnectedStructuresBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleConnectedStructuresBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleConnectedStructuresBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.ConnectedStructures

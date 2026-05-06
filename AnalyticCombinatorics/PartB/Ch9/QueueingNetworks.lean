@@ -1,6 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartB.Ch9.QueueingNetworks
+
 /-!
 # Ch IX -- Queueing networks and service systems
 
@@ -9,7 +11,6 @@ probabilities, Erlang loss probabilities, tandem queues, two-node Jackson
 traffic equations, and Little-law instances.
 -/
 
-namespace QueueingNetworks
 
 open Finset
 
@@ -224,4 +225,86 @@ theorem mm1MeanSojournTime_eq :
       mm1MeanSojournTime s = 1 / (mm1ServiceRate s - mm1ArrivalRate s) := by
   native_decide
 
-end QueueingNetworks
+
+
+structure QueueingNetworksBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def QueueingNetworksBudgetCertificate.controlled
+    (c : QueueingNetworksBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def QueueingNetworksBudgetCertificate.budgetControlled
+    (c : QueueingNetworksBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def QueueingNetworksBudgetCertificate.Ready
+    (c : QueueingNetworksBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def QueueingNetworksBudgetCertificate.size
+    (c : QueueingNetworksBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem queueingNetworks_budgetCertificate_le_size
+    (c : QueueingNetworksBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleQueueingNetworksBudgetCertificate :
+    QueueingNetworksBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleQueueingNetworksBudgetCertificate.Ready := by
+  constructor
+  · norm_num [QueueingNetworksBudgetCertificate.controlled,
+      sampleQueueingNetworksBudgetCertificate]
+  · norm_num [QueueingNetworksBudgetCertificate.budgetControlled,
+      sampleQueueingNetworksBudgetCertificate]
+
+example :
+    sampleQueueingNetworksBudgetCertificate.certificateBudgetWindow ≤
+      sampleQueueingNetworksBudgetCertificate.size := by
+  apply queueingNetworks_budgetCertificate_le_size
+  constructor
+  · norm_num [QueueingNetworksBudgetCertificate.controlled,
+      sampleQueueingNetworksBudgetCertificate]
+  · norm_num [QueueingNetworksBudgetCertificate.budgetControlled,
+      sampleQueueingNetworksBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleQueueingNetworksBudgetCertificate.Ready := by
+  constructor
+  · norm_num [QueueingNetworksBudgetCertificate.controlled,
+      sampleQueueingNetworksBudgetCertificate]
+  · norm_num [QueueingNetworksBudgetCertificate.budgetControlled,
+      sampleQueueingNetworksBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleQueueingNetworksBudgetCertificate.certificateBudgetWindow ≤
+      sampleQueueingNetworksBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List QueueingNetworksBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleQueueingNetworksBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleQueueingNetworksBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.QueueingNetworks

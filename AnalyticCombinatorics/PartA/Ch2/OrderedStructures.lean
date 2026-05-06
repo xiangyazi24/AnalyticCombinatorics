@@ -2,6 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch2.OrderedStructures
+
 /-!
 # Ordered Structures — labelled ordered/ranked enumeration
 
@@ -15,7 +17,6 @@ ordered and labelled combinatorial structures:
 5. Labelled posets
 -/
 
-namespace OrderedStructures
 
 /-! ## 1. Fubini numbers (ordered Bell numbers)
 
@@ -250,4 +251,96 @@ example : Nat.factorial 4 ≤ posetTable 4 := by native_decide
 /-- The number of labelled posets grows strictly faster than linear orders. -/
 example : Nat.factorial 4 < posetTable 4 := by native_decide
 
-end OrderedStructures
+/-- DAG count sample on five labelled vertices. -/
+theorem dagTable_five :
+    dagTable 5 = 29281 := by
+  native_decide
+
+/-- Labelled posets dominate linear orders at size four. -/
+theorem factorial_four_lt_posetTable_four :
+    Nat.factorial 4 < posetTable 4 := by
+  native_decide
+
+
+
+structure OrderedStructuresBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def OrderedStructuresBudgetCertificate.controlled
+    (c : OrderedStructuresBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def OrderedStructuresBudgetCertificate.budgetControlled
+    (c : OrderedStructuresBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def OrderedStructuresBudgetCertificate.Ready
+    (c : OrderedStructuresBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def OrderedStructuresBudgetCertificate.size
+    (c : OrderedStructuresBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem orderedStructures_budgetCertificate_le_size
+    (c : OrderedStructuresBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleOrderedStructuresBudgetCertificate :
+    OrderedStructuresBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleOrderedStructuresBudgetCertificate.Ready := by
+  constructor
+  · norm_num [OrderedStructuresBudgetCertificate.controlled,
+      sampleOrderedStructuresBudgetCertificate]
+  · norm_num [OrderedStructuresBudgetCertificate.budgetControlled,
+      sampleOrderedStructuresBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleOrderedStructuresBudgetCertificate.certificateBudgetWindow ≤
+      sampleOrderedStructuresBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleOrderedStructuresBudgetCertificate.Ready := by
+  constructor
+  · norm_num [OrderedStructuresBudgetCertificate.controlled,
+      sampleOrderedStructuresBudgetCertificate]
+  · norm_num [OrderedStructuresBudgetCertificate.budgetControlled,
+      sampleOrderedStructuresBudgetCertificate]
+
+example :
+    sampleOrderedStructuresBudgetCertificate.certificateBudgetWindow ≤
+      sampleOrderedStructuresBudgetCertificate.size := by
+  apply orderedStructures_budgetCertificate_le_size
+  constructor
+  · norm_num [OrderedStructuresBudgetCertificate.controlled,
+      sampleOrderedStructuresBudgetCertificate]
+  · norm_num [OrderedStructuresBudgetCertificate.budgetControlled,
+      sampleOrderedStructuresBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List OrderedStructuresBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleOrderedStructuresBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleOrderedStructuresBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.OrderedStructures

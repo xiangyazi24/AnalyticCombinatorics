@@ -31,6 +31,14 @@ theorem fallingFactorial_succ (n k : ℕ) :
 theorem risingFactorial_succ (n k : ℕ) :
     risingFactorial n (k + 1) = (n + k) * risingFactorial n k := rfl
 
+theorem fallingFactorial_one (n : ℕ) :
+    fallingFactorial n 1 = n := by
+  simp [fallingFactorial]
+
+theorem risingFactorial_one (n : ℕ) :
+    risingFactorial n 1 = n := by
+  simp [risingFactorial]
+
 theorem fallingFactorial_samples :
     fallingFactorial 6 0 = 1 ∧
     fallingFactorial 6 1 = 6 ∧
@@ -54,6 +62,14 @@ def firstDiff (a : ℕ → ℤ) (n : ℕ) : ℤ :=
 /-- Signed second finite difference. -/
 def secondDiff (a : ℕ → ℤ) (n : ℕ) : ℤ :=
   firstDiff a (n + 1) - firstDiff a n
+
+theorem firstDiff_const (c : ℤ) (n : ℕ) :
+    firstDiff (fun _ => c) n = 0 := by
+  simp [firstDiff]
+
+theorem secondDiff_const (c : ℤ) (n : ℕ) :
+    secondDiff (fun _ => c) n = 0 := by
+  simp [secondDiff, firstDiff_const]
 
 def squareSeq (n : ℕ) : ℤ := (n : ℤ) ^ 2
 
@@ -95,6 +111,10 @@ theorem factorial_logConvex_10 :
 def partialSum (a : ℕ → ℕ) (n : ℕ) : ℕ :=
   (List.range (n + 1)).foldl (fun s k => s + a k) 0
 
+theorem partialSum_zero (a : ℕ → ℕ) :
+    partialSum a 0 = a 0 := by
+  simp [partialSum]
+
 theorem partialSum_linear :
     partialSum (fun n => n) 0 = 0 ∧
     partialSum (fun n => n) 1 = 1 ∧
@@ -114,6 +134,10 @@ theorem partialSum_geometric_two :
 /-- Binomial transform of a finite prefix. -/
 def binomialTransform (a : ℕ → ℕ) (n : ℕ) : ℕ :=
   (List.range (n + 1)).foldl (fun s k => s + n.choose k * a k) 0
+
+theorem binomialTransform_zero (a : ℕ → ℕ) :
+    binomialTransform a 0 = a 0 := by
+  simp [binomialTransform]
 
 theorem binomialTransform_constant :
     binomialTransform (fun _ => 1) 0 = 1 ∧
@@ -135,6 +159,10 @@ theorem binomialTransform_identity :
 def convolution (a b : ℕ → ℕ) (n : ℕ) : ℕ :=
   (List.range (n + 1)).foldl (fun s k => s + a k * b (n - k)) 0
 
+theorem convolution_zero (a b : ℕ → ℕ) :
+    convolution a b 0 = a 0 * b 0 := by
+  simp [convolution]
+
 theorem convolution_constant :
     convolution (fun _ => 1) (fun _ => 1) 0 = 1 ∧
     convolution (fun _ => 1) (fun _ => 1) 1 = 2 ∧
@@ -149,6 +177,87 @@ theorem convolution_geometric :
     convolution (fun n => 2 ^ n) (fun _ => 1) 2 = 7 ∧
     convolution (fun n => 2 ^ n) (fun _ => 1) 3 = 15 ∧
     convolution (fun n => 2 ^ n) (fun _ => 1) 4 = 31 := by
+  native_decide
+
+/-- A finite certificate collecting the prefix budgets used by algebraic tools. -/
+structure UsefulMathBudgetCertificate where
+  transformWindow : ℕ
+  convolutionWindow : ℕ
+  differenceWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def UsefulMathBudgetCertificate.controlled
+    (c : UsefulMathBudgetCertificate) : Prop :=
+  0 < c.transformWindow ∧
+    c.convolutionWindow ≤ c.transformWindow + c.slack ∧
+      c.differenceWindow ≤ c.transformWindow + c.convolutionWindow + c.slack
+
+def UsefulMathBudgetCertificate.budgetControlled
+    (c : UsefulMathBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤
+    c.transformWindow + c.convolutionWindow + c.differenceWindow + c.slack
+
+def UsefulMathBudgetCertificate.Ready
+    (c : UsefulMathBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def UsefulMathBudgetCertificate.size
+    (c : UsefulMathBudgetCertificate) : ℕ :=
+  c.transformWindow + c.convolutionWindow + c.differenceWindow + c.slack
+
+theorem usefulMath_budgetCertificate_le_size
+    (c : UsefulMathBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleUsefulMathBudgetCertificate :
+    UsefulMathBudgetCertificate :=
+  { transformWindow := 6
+    convolutionWindow := 7
+    differenceWindow := 14
+    certificateBudgetWindow := 28
+    slack := 1 }
+
+example : sampleUsefulMathBudgetCertificate.Ready := by
+  constructor
+  · norm_num [UsefulMathBudgetCertificate.controlled,
+      sampleUsefulMathBudgetCertificate]
+  · norm_num [UsefulMathBudgetCertificate.budgetControlled,
+      sampleUsefulMathBudgetCertificate]
+
+example :
+    sampleUsefulMathBudgetCertificate.certificateBudgetWindow ≤
+      sampleUsefulMathBudgetCertificate.size := by
+  apply usefulMath_budgetCertificate_le_size
+  constructor
+  · norm_num [UsefulMathBudgetCertificate.controlled,
+      sampleUsefulMathBudgetCertificate]
+  · norm_num [UsefulMathBudgetCertificate.budgetControlled,
+      sampleUsefulMathBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleUsefulMathBudgetCertificate.Ready := by
+  constructor
+  · norm_num [UsefulMathBudgetCertificate.controlled,
+      sampleUsefulMathBudgetCertificate]
+  · norm_num [UsefulMathBudgetCertificate.budgetControlled,
+      sampleUsefulMathBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleUsefulMathBudgetCertificate.certificateBudgetWindow ≤
+      sampleUsefulMathBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List UsefulMathBudgetCertificate) : Bool :=
+  data.all fun c => c.certificateBudgetWindow ≤ c.size
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady [sampleUsefulMathBudgetCertificate] = true := by
+  unfold budgetCertificateListReady sampleUsefulMathBudgetCertificate
   native_decide
 
 end AnalyticCombinatorics.AppA.UsefulMath

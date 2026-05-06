@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace RationalGFApplications
+namespace AnalyticCombinatorics.PartB.Ch4.RationalGFApplications
+
 
 /-!
 Bounded executable tables for applications of rational generating functions
@@ -113,4 +114,86 @@ theorem fibonacciTransferTraceTable_fibonacci_consequence :
         lookup15 dominoTilingTable (n + 2) + lookup15 dominoTilingTable n := by
   native_decide
 
-end RationalGFApplications
+
+
+structure RationalGFApplicationsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def RationalGFApplicationsBudgetCertificate.controlled
+    (c : RationalGFApplicationsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def RationalGFApplicationsBudgetCertificate.budgetControlled
+    (c : RationalGFApplicationsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def RationalGFApplicationsBudgetCertificate.Ready
+    (c : RationalGFApplicationsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def RationalGFApplicationsBudgetCertificate.size
+    (c : RationalGFApplicationsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem rationalGFApplications_budgetCertificate_le_size
+    (c : RationalGFApplicationsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleRationalGFApplicationsBudgetCertificate :
+    RationalGFApplicationsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleRationalGFApplicationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RationalGFApplicationsBudgetCertificate.controlled,
+      sampleRationalGFApplicationsBudgetCertificate]
+  · norm_num [RationalGFApplicationsBudgetCertificate.budgetControlled,
+      sampleRationalGFApplicationsBudgetCertificate]
+
+example :
+    sampleRationalGFApplicationsBudgetCertificate.certificateBudgetWindow ≤
+      sampleRationalGFApplicationsBudgetCertificate.size := by
+  apply rationalGFApplications_budgetCertificate_le_size
+  constructor
+  · norm_num [RationalGFApplicationsBudgetCertificate.controlled,
+      sampleRationalGFApplicationsBudgetCertificate]
+  · norm_num [RationalGFApplicationsBudgetCertificate.budgetControlled,
+      sampleRationalGFApplicationsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleRationalGFApplicationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RationalGFApplicationsBudgetCertificate.controlled,
+      sampleRationalGFApplicationsBudgetCertificate]
+  · norm_num [RationalGFApplicationsBudgetCertificate.budgetControlled,
+      sampleRationalGFApplicationsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleRationalGFApplicationsBudgetCertificate.certificateBudgetWindow ≤
+      sampleRationalGFApplicationsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List RationalGFApplicationsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleRationalGFApplicationsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleRationalGFApplicationsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.RationalGFApplications

@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace IntegerCompositions
+namespace AnalyticCombinatorics.PartA.Ch1.IntegerCompositions
+
 
 /-!
 # Integer Compositions
@@ -172,4 +173,86 @@ theorem selfConjugate_13 : selfConjugateTable 13 = 3 := by native_decide
 theorem selfConjugate_14 : selfConjugateTable 14 = 3 := by native_decide
 theorem selfConjugate_15 : selfConjugateTable 15 = 4 := by native_decide
 
-end IntegerCompositions
+
+
+structure IntegerCompositionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def IntegerCompositionsBudgetCertificate.controlled
+    (c : IntegerCompositionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def IntegerCompositionsBudgetCertificate.budgetControlled
+    (c : IntegerCompositionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def IntegerCompositionsBudgetCertificate.Ready
+    (c : IntegerCompositionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def IntegerCompositionsBudgetCertificate.size
+    (c : IntegerCompositionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem integerCompositions_budgetCertificate_le_size
+    (c : IntegerCompositionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleIntegerCompositionsBudgetCertificate :
+    IntegerCompositionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleIntegerCompositionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [IntegerCompositionsBudgetCertificate.controlled,
+      sampleIntegerCompositionsBudgetCertificate]
+  · norm_num [IntegerCompositionsBudgetCertificate.budgetControlled,
+      sampleIntegerCompositionsBudgetCertificate]
+
+example :
+    sampleIntegerCompositionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleIntegerCompositionsBudgetCertificate.size := by
+  apply integerCompositions_budgetCertificate_le_size
+  constructor
+  · norm_num [IntegerCompositionsBudgetCertificate.controlled,
+      sampleIntegerCompositionsBudgetCertificate]
+  · norm_num [IntegerCompositionsBudgetCertificate.budgetControlled,
+      sampleIntegerCompositionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleIntegerCompositionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [IntegerCompositionsBudgetCertificate.controlled,
+      sampleIntegerCompositionsBudgetCertificate]
+  · norm_num [IntegerCompositionsBudgetCertificate.budgetControlled,
+      sampleIntegerCompositionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleIntegerCompositionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleIntegerCompositionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List IntegerCompositionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleIntegerCompositionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleIntegerCompositionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.IntegerCompositions

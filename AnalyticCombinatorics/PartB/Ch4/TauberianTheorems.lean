@@ -14,8 +14,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace TauberianTheorems
-
+namespace AnalyticCombinatorics.PartB.Ch4.TauberianTheorems
 /-! ## 1. Geometric partial sums (Abel summation setup)
 
   Abel summation reduces Σ a_k b_k to telescoping.  A classical special case
@@ -268,4 +267,105 @@ example : ePartial 5 < ePartial 6 := by native_decide
 example : ePartial 6 < ePartial 7 := by native_decide
 example : ePartial 7 < ePartial 8 := by native_decide
 
-end TauberianTheorems
+/-- Geometric Abel-summation sample at base two. -/
+theorem geomPartialSum_two_ten :
+    geomPartialSum 2 10 = 2 ^ 11 - 1 := by
+  native_decide
+
+/-- Cesaro mean sample for an even alternating prefix. -/
+theorem cesaroAlt_ten :
+    cesaroAlt 10 = 1 / 11 := by
+  native_decide
+
+/-- Dirichlet partial sum sample for zeta two. -/
+theorem dirichletPartial_two_five :
+    dirichletPartial 2 5 = 5269 / 3600 := by
+  native_decide
+
+/-- Exponential generating function partial sum sample. -/
+theorem ePartial_eight :
+    ePartial 8 = 109601 / 40320 := by
+  native_decide
+
+
+structure TauberianTheoremsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def TauberianTheoremsBudgetCertificate.controlled
+    (c : TauberianTheoremsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def TauberianTheoremsBudgetCertificate.budgetControlled
+    (c : TauberianTheoremsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def TauberianTheoremsBudgetCertificate.Ready
+    (c : TauberianTheoremsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def TauberianTheoremsBudgetCertificate.size
+    (c : TauberianTheoremsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem tauberianTheorems_budgetCertificate_le_size
+    (c : TauberianTheoremsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleTauberianTheoremsBudgetCertificate :
+    TauberianTheoremsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleTauberianTheoremsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [TauberianTheoremsBudgetCertificate.controlled,
+      sampleTauberianTheoremsBudgetCertificate]
+  · norm_num [TauberianTheoremsBudgetCertificate.budgetControlled,
+      sampleTauberianTheoremsBudgetCertificate]
+
+example :
+    sampleTauberianTheoremsBudgetCertificate.certificateBudgetWindow ≤
+      sampleTauberianTheoremsBudgetCertificate.size := by
+  apply tauberianTheorems_budgetCertificate_le_size
+  constructor
+  · norm_num [TauberianTheoremsBudgetCertificate.controlled,
+      sampleTauberianTheoremsBudgetCertificate]
+  · norm_num [TauberianTheoremsBudgetCertificate.budgetControlled,
+      sampleTauberianTheoremsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleTauberianTheoremsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [TauberianTheoremsBudgetCertificate.controlled,
+      sampleTauberianTheoremsBudgetCertificate]
+  · norm_num [TauberianTheoremsBudgetCertificate.budgetControlled,
+      sampleTauberianTheoremsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleTauberianTheoremsBudgetCertificate.certificateBudgetWindow ≤
+      sampleTauberianTheoremsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List TauberianTheoremsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleTauberianTheoremsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleTauberianTheoremsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.TauberianTheorems

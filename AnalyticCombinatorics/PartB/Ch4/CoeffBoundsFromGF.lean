@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace CoeffBoundsFromGF
+namespace AnalyticCombinatorics.PartB.Ch4.CoeffBoundsFromGF
+
 
 /-!
   Analytic Combinatorics — Part B: Complex Asymptotics
@@ -247,4 +248,86 @@ theorem bound_ordering :
     boundStrengthOrder BoundStrength.singularityTransfer := by
   constructor <;> [native_decide; constructor <;> native_decide]
 
-end CoeffBoundsFromGF
+
+
+structure CoeffBoundsFromGFBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CoeffBoundsFromGFBudgetCertificate.controlled
+    (c : CoeffBoundsFromGFBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CoeffBoundsFromGFBudgetCertificate.budgetControlled
+    (c : CoeffBoundsFromGFBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CoeffBoundsFromGFBudgetCertificate.Ready
+    (c : CoeffBoundsFromGFBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CoeffBoundsFromGFBudgetCertificate.size
+    (c : CoeffBoundsFromGFBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem coeffBoundsFromGF_budgetCertificate_le_size
+    (c : CoeffBoundsFromGFBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCoeffBoundsFromGFBudgetCertificate :
+    CoeffBoundsFromGFBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleCoeffBoundsFromGFBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CoeffBoundsFromGFBudgetCertificate.controlled,
+      sampleCoeffBoundsFromGFBudgetCertificate]
+  · norm_num [CoeffBoundsFromGFBudgetCertificate.budgetControlled,
+      sampleCoeffBoundsFromGFBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCoeffBoundsFromGFBudgetCertificate.certificateBudgetWindow ≤
+      sampleCoeffBoundsFromGFBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleCoeffBoundsFromGFBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CoeffBoundsFromGFBudgetCertificate.controlled,
+      sampleCoeffBoundsFromGFBudgetCertificate]
+  · norm_num [CoeffBoundsFromGFBudgetCertificate.budgetControlled,
+      sampleCoeffBoundsFromGFBudgetCertificate]
+
+example :
+    sampleCoeffBoundsFromGFBudgetCertificate.certificateBudgetWindow ≤
+      sampleCoeffBoundsFromGFBudgetCertificate.size := by
+  apply coeffBoundsFromGF_budgetCertificate_le_size
+  constructor
+  · norm_num [CoeffBoundsFromGFBudgetCertificate.controlled,
+      sampleCoeffBoundsFromGFBudgetCertificate]
+  · norm_num [CoeffBoundsFromGFBudgetCertificate.budgetControlled,
+      sampleCoeffBoundsFromGFBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List CoeffBoundsFromGFBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCoeffBoundsFromGFBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCoeffBoundsFromGFBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.CoeffBoundsFromGF

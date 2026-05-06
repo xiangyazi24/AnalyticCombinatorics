@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace GeneratingFunctionAnalyticity
+namespace AnalyticCombinatorics.PartB.Ch5.GeneratingFunctionAnalyticity
+
 
 /-!
 # Analytic properties of generating functions
@@ -169,4 +170,87 @@ theorem two_pow_below_factorial_from_four_to_twelve :
     ∀ i : Fin 9, 2 ^ ((i : ℕ) + 4) < Nat.factorial ((i : ℕ) + 4) := by
   native_decide
 
-end GeneratingFunctionAnalyticity
+
+
+structure GeneratingFunctionAnalyticityBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def GeneratingFunctionAnalyticityBudgetCertificate.controlled
+    (c : GeneratingFunctionAnalyticityBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def GeneratingFunctionAnalyticityBudgetCertificate.budgetControlled
+    (c : GeneratingFunctionAnalyticityBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def GeneratingFunctionAnalyticityBudgetCertificate.Ready
+    (c : GeneratingFunctionAnalyticityBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def GeneratingFunctionAnalyticityBudgetCertificate.size
+    (c : GeneratingFunctionAnalyticityBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem generatingFunctionAnalyticity_budgetCertificate_le_size
+    (c : GeneratingFunctionAnalyticityBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleGeneratingFunctionAnalyticityBudgetCertificate :
+    GeneratingFunctionAnalyticityBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleGeneratingFunctionAnalyticityBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GeneratingFunctionAnalyticityBudgetCertificate.controlled,
+      sampleGeneratingFunctionAnalyticityBudgetCertificate]
+  · norm_num [GeneratingFunctionAnalyticityBudgetCertificate.budgetControlled,
+      sampleGeneratingFunctionAnalyticityBudgetCertificate]
+
+example :
+    sampleGeneratingFunctionAnalyticityBudgetCertificate.certificateBudgetWindow ≤
+      sampleGeneratingFunctionAnalyticityBudgetCertificate.size := by
+  apply generatingFunctionAnalyticity_budgetCertificate_le_size
+  constructor
+  · norm_num [GeneratingFunctionAnalyticityBudgetCertificate.controlled,
+      sampleGeneratingFunctionAnalyticityBudgetCertificate]
+  · norm_num [GeneratingFunctionAnalyticityBudgetCertificate.budgetControlled,
+      sampleGeneratingFunctionAnalyticityBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleGeneratingFunctionAnalyticityBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GeneratingFunctionAnalyticityBudgetCertificate.controlled,
+      sampleGeneratingFunctionAnalyticityBudgetCertificate]
+  · norm_num [GeneratingFunctionAnalyticityBudgetCertificate.budgetControlled,
+      sampleGeneratingFunctionAnalyticityBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleGeneratingFunctionAnalyticityBudgetCertificate.certificateBudgetWindow ≤
+      sampleGeneratingFunctionAnalyticityBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady
+    (data : List GeneratingFunctionAnalyticityBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleGeneratingFunctionAnalyticityBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleGeneratingFunctionAnalyticityBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.GeneratingFunctionAnalyticity

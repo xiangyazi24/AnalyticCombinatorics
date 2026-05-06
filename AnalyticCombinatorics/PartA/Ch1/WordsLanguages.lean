@@ -1,5 +1,7 @@
 import Mathlib.Tactic
 
+namespace AnalyticCombinatorics.PartA.Ch1.WordsLanguages
+
 /-!
   # Words and Languages — Basic Counting
 
@@ -13,7 +15,6 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace WordsLanguages
 
 /-! ## Words over alphabet of size r -/
 
@@ -75,4 +76,86 @@ theorem runLength_row_sum_2_4 :
     runLengthCount 2 4 0 + runLengthCount 2 4 1 + runLengthCount 2 4 2 +
     runLengthCount 2 4 3 + runLengthCount 2 4 4 = 16 := by native_decide
 
-end WordsLanguages
+
+
+structure WordsLanguagesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def WordsLanguagesBudgetCertificate.controlled
+    (c : WordsLanguagesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def WordsLanguagesBudgetCertificate.budgetControlled
+    (c : WordsLanguagesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def WordsLanguagesBudgetCertificate.Ready
+    (c : WordsLanguagesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def WordsLanguagesBudgetCertificate.size
+    (c : WordsLanguagesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem wordsLanguages_budgetCertificate_le_size
+    (c : WordsLanguagesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleWordsLanguagesBudgetCertificate :
+    WordsLanguagesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleWordsLanguagesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [WordsLanguagesBudgetCertificate.controlled,
+      sampleWordsLanguagesBudgetCertificate]
+  · norm_num [WordsLanguagesBudgetCertificate.budgetControlled,
+      sampleWordsLanguagesBudgetCertificate]
+
+example :
+    sampleWordsLanguagesBudgetCertificate.certificateBudgetWindow ≤
+      sampleWordsLanguagesBudgetCertificate.size := by
+  apply wordsLanguages_budgetCertificate_le_size
+  constructor
+  · norm_num [WordsLanguagesBudgetCertificate.controlled,
+      sampleWordsLanguagesBudgetCertificate]
+  · norm_num [WordsLanguagesBudgetCertificate.budgetControlled,
+      sampleWordsLanguagesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleWordsLanguagesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [WordsLanguagesBudgetCertificate.controlled,
+      sampleWordsLanguagesBudgetCertificate]
+  · norm_num [WordsLanguagesBudgetCertificate.budgetControlled,
+      sampleWordsLanguagesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleWordsLanguagesBudgetCertificate.certificateBudgetWindow ≤
+      sampleWordsLanguagesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List WordsLanguagesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleWordsLanguagesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleWordsLanguagesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.WordsLanguages

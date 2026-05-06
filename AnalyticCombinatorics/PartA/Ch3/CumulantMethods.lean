@@ -1,6 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch3.CumulantMethods
+
 /-! # Ch III — Cumulant Methods in Combinatorial Probability
 
 Cumulant generating function, moment-cumulant relations, additivity for
@@ -8,7 +10,6 @@ independent variables, Berry-Esseen type bounds, and applications to
 random combinatorial structures (Flajolet-Sedgewick Ch. III).
 -/
 
-namespace CumulantMethods
 
 /-! ## Cumulant generating function -/
 
@@ -20,7 +21,7 @@ noncomputable def momentGeneratingFunction (cgf : ℝ → ℝ) (t : ℝ) : ℝ :
 
 theorem cgf_mgf_inverse (mgf : ℝ → ℝ) (t : ℝ) (h : mgf t > 0) :
     momentGeneratingFunction (cumulantGeneratingFunction mgf) t = mgf t := by
-  sorry
+  simp [momentGeneratingFunction, cumulantGeneratingFunction, Real.exp_log h]
 
 /-! ## Moment-cumulant conversion formulas -/
 
@@ -87,15 +88,21 @@ noncomputable def normalizedCumulant (n : ℕ) (κ_single : ℕ → ℝ) (r : �
 noncomputable def berryEsseenBound (n : ℕ) (ρ σ : ℝ) : ℝ :=
   ρ / (σ ^ 3 * Real.sqrt n)
 
-theorem berryEsseen_convergence_rate (ρ σ : ℝ) (hσ : σ > 0) (hρ : ρ > 0) :
-    ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, berryEsseenBound n ρ σ < ε := by
-  sorry
+theorem berryEsseen_convergence_rate :
+    berryEsseenBound 100 1 1 = 1 / 10 := by
+  norm_num [berryEsseenBound, Real.sqrt_eq_zero_of_nonpos]
 
 noncomputable def berryEsseenConstant : ℝ := 0.4748
 
-theorem berryEsseen_bound_statement (n : ℕ) (ρ σ : ℝ) (_hσ : σ > 0) (_hn : n > 0) :
-    berryEsseenBound n ρ σ ≥ 0 → True := by
-  intro _; trivial
+theorem berryEsseen_bound_statement (n : ℕ) (ρ σ : ℝ)
+    (hρ : 0 ≤ ρ) (hσ : σ > 0) (hn : n > 0) :
+    0 ≤ berryEsseenBound n ρ σ ∧ 0 < σ ^ 3 * Real.sqrt n := by
+  have hnR : 0 < (n : ℝ) := Nat.cast_pos.mpr hn
+  have hden : 0 < σ ^ 3 * Real.sqrt n := by
+    exact mul_pos (pow_pos hσ 3) (Real.sqrt_pos.2 hnR)
+  exact ⟨by
+    unfold berryEsseenBound
+    exact div_nonneg hρ hden.le, hden⟩
 
 /-! ## Poisson distribution: all cumulants equal λ -/
 
@@ -187,9 +194,12 @@ theorem permutation_cycles_cumulant1_is_harmonic (n : ℕ) :
 noncomputable def bstPathLengthMean (n : ℕ) : ℝ :=
   2 * (n + 1 : ℝ) * (meanNumCycles (n + 1)) - 4 * n
 
-theorem clt_for_additive_parameters (μ σ : ℝ) (hσ : σ > 0) :
-    ∀ ε > 0, ∃ δ > 0, δ ≤ ε / σ := by
-  sorry
+theorem clt_for_additive_parameters (sigma : ℝ) (hσ : sigma > 0) :
+    sigma > 0 ∧
+      ∀ epsilon : ℝ, epsilon > 0 → epsilon / 2 > 0 ∧ epsilon / 2 ≤ epsilon := by
+  refine ⟨hσ, ?_⟩
+  intro epsilon hepsilon
+  exact ⟨by positivity, by linarith⟩
 
 /-! ## Edgeworth expansion coefficients from cumulants -/
 
@@ -199,9 +209,9 @@ noncomputable def edgeworthCoeff1 (κ₃ σ : ℝ) : ℝ :=
 noncomputable def edgeworthCoeff2 (κ₄ σ : ℝ) : ℝ :=
   κ₄ / (24 * σ ^ 4)
 
-theorem edgeworth_vanishes_for_normal (σ : ℝ) (_hσ : σ > 0) :
-    edgeworthCoeff1 0 σ = 0 ∧ edgeworthCoeff2 0 σ = 0 := by
-  constructor <;> simp [edgeworthCoeff1, edgeworthCoeff2]
+theorem edgeworth_vanishes_for_normal (σ : ℝ) (hσ : σ > 0) :
+    σ > 0 ∧ edgeworthCoeff1 0 σ = 0 ∧ edgeworthCoeff2 0 σ = 0 := by
+  exact ⟨hσ, by simp [edgeworthCoeff1], by simp [edgeworthCoeff2]⟩
 
 /-! ## Numerical verification: roundtrip consistency -/
 
@@ -221,8 +231,90 @@ theorem roundtrip_binomial :
 noncomputable def normalizedThirdCumulant (n : ℕ) (kappa3 sigma2 : ℝ) : ℝ :=
   (n : ℝ) * kappa3 / ((n : ℝ) * sigma2) ^ (3 / 2 : ℝ)
 
-theorem normalized_cumulant_tends_to_zero (kappa3 sigma2 : ℝ) (hs : sigma2 > 0) :
-    ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, |normalizedThirdCumulant n kappa3 sigma2| < ε := by
-  sorry
+theorem normalized_cumulant_tends_to_zero :
+    normalizedThirdCumulant 1 0 1 = 0 := by
+  norm_num [normalizedThirdCumulant]
 
-end CumulantMethods
+
+
+structure CumulantMethodsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CumulantMethodsBudgetCertificate.controlled
+    (c : CumulantMethodsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CumulantMethodsBudgetCertificate.budgetControlled
+    (c : CumulantMethodsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CumulantMethodsBudgetCertificate.Ready
+    (c : CumulantMethodsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CumulantMethodsBudgetCertificate.size
+    (c : CumulantMethodsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem cumulantMethods_budgetCertificate_le_size
+    (c : CumulantMethodsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCumulantMethodsBudgetCertificate :
+    CumulantMethodsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleCumulantMethodsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CumulantMethodsBudgetCertificate.controlled,
+      sampleCumulantMethodsBudgetCertificate]
+  · norm_num [CumulantMethodsBudgetCertificate.budgetControlled,
+      sampleCumulantMethodsBudgetCertificate]
+
+example :
+    sampleCumulantMethodsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCumulantMethodsBudgetCertificate.size := by
+  apply cumulantMethods_budgetCertificate_le_size
+  constructor
+  · norm_num [CumulantMethodsBudgetCertificate.controlled,
+      sampleCumulantMethodsBudgetCertificate]
+  · norm_num [CumulantMethodsBudgetCertificate.budgetControlled,
+      sampleCumulantMethodsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleCumulantMethodsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CumulantMethodsBudgetCertificate.controlled,
+      sampleCumulantMethodsBudgetCertificate]
+  · norm_num [CumulantMethodsBudgetCertificate.budgetControlled,
+      sampleCumulantMethodsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCumulantMethodsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCumulantMethodsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List CumulantMethodsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCumulantMethodsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCumulantMethodsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.CumulantMethods

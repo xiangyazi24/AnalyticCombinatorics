@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace LatticePathMethods
+namespace AnalyticCombinatorics.PartA.Ch3.LatticePathMethods
+
 
 /-! # Lattice Path Methods
 
@@ -70,4 +71,101 @@ def centralTrinomial : Fin 6 → ℕ := ![1, 1, 3, 7, 19, 51]
 /-- Verify T_3: C(3,0)*C(0,0) + C(3,2)*C(2,1) = 1 + 6 = 7. -/
 example : 1 * 1 + 3 * 2 = 7 := by native_decide
 
-end LatticePathMethods
+/-- Central Delannoy table sample. -/
+theorem centralDelannoy_six :
+    centralDelannoy 6 = 8989 := by
+  native_decide
+
+/-- Motzkin table sample. -/
+theorem motzkinNumbers_seven :
+    motzkinNumbers 7 = 127 := by
+  native_decide
+
+/-- Central trinomial table sample. -/
+theorem centralTrinomial_five :
+    centralTrinomial 5 = 51 := by
+  native_decide
+
+
+
+structure LatticePathMethodsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def LatticePathMethodsBudgetCertificate.controlled
+    (c : LatticePathMethodsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def LatticePathMethodsBudgetCertificate.budgetControlled
+    (c : LatticePathMethodsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def LatticePathMethodsBudgetCertificate.Ready
+    (c : LatticePathMethodsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def LatticePathMethodsBudgetCertificate.size
+    (c : LatticePathMethodsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem latticePathMethods_budgetCertificate_le_size
+    (c : LatticePathMethodsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleLatticePathMethodsBudgetCertificate :
+    LatticePathMethodsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleLatticePathMethodsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [LatticePathMethodsBudgetCertificate.controlled,
+      sampleLatticePathMethodsBudgetCertificate]
+  · norm_num [LatticePathMethodsBudgetCertificate.budgetControlled,
+      sampleLatticePathMethodsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleLatticePathMethodsBudgetCertificate.certificateBudgetWindow ≤
+      sampleLatticePathMethodsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleLatticePathMethodsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [LatticePathMethodsBudgetCertificate.controlled,
+      sampleLatticePathMethodsBudgetCertificate]
+  · norm_num [LatticePathMethodsBudgetCertificate.budgetControlled,
+      sampleLatticePathMethodsBudgetCertificate]
+
+example :
+    sampleLatticePathMethodsBudgetCertificate.certificateBudgetWindow ≤
+      sampleLatticePathMethodsBudgetCertificate.size := by
+  apply latticePathMethods_budgetCertificate_le_size
+  constructor
+  · norm_num [LatticePathMethodsBudgetCertificate.controlled,
+      sampleLatticePathMethodsBudgetCertificate]
+  · norm_num [LatticePathMethodsBudgetCertificate.budgetControlled,
+      sampleLatticePathMethodsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List LatticePathMethodsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleLatticePathMethodsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleLatticePathMethodsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.LatticePathMethods

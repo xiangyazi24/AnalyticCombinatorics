@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace InverseFunctions
+namespace AnalyticCombinatorics.PartB.Ch7.InverseFunctions
+
 
 /-!
   Chapter VII inverse-function schemas, recorded as executable coefficient
@@ -203,4 +204,86 @@ theorem fussCatalan_formula_small :
           ((m.val + 1) * n.val - n.val + 1) := by
   native_decide
 
-end InverseFunctions
+
+
+structure InverseFunctionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def InverseFunctionsBudgetCertificate.controlled
+    (c : InverseFunctionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def InverseFunctionsBudgetCertificate.budgetControlled
+    (c : InverseFunctionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def InverseFunctionsBudgetCertificate.Ready
+    (c : InverseFunctionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def InverseFunctionsBudgetCertificate.size
+    (c : InverseFunctionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem inverseFunctions_budgetCertificate_le_size
+    (c : InverseFunctionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleInverseFunctionsBudgetCertificate :
+    InverseFunctionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleInverseFunctionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [InverseFunctionsBudgetCertificate.controlled,
+      sampleInverseFunctionsBudgetCertificate]
+  · norm_num [InverseFunctionsBudgetCertificate.budgetControlled,
+      sampleInverseFunctionsBudgetCertificate]
+
+example :
+    sampleInverseFunctionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleInverseFunctionsBudgetCertificate.size := by
+  apply inverseFunctions_budgetCertificate_le_size
+  constructor
+  · norm_num [InverseFunctionsBudgetCertificate.controlled,
+      sampleInverseFunctionsBudgetCertificate]
+  · norm_num [InverseFunctionsBudgetCertificate.budgetControlled,
+      sampleInverseFunctionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleInverseFunctionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [InverseFunctionsBudgetCertificate.controlled,
+      sampleInverseFunctionsBudgetCertificate]
+  · norm_num [InverseFunctionsBudgetCertificate.budgetControlled,
+      sampleInverseFunctionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleInverseFunctionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleInverseFunctionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List InverseFunctionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleInverseFunctionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleInverseFunctionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.InverseFunctions

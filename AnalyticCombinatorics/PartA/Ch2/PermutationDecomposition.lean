@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace PermutationDecomposition
+namespace AnalyticCombinatorics.PartA.Ch2.PermutationDecomposition
+
 
 open Finset Nat
 
@@ -212,4 +213,86 @@ theorem exp_formula_perms_check :
 /-- Stirling's approximation sanity check: 10! = 3628800. -/
 theorem factorial_10 : Nat.factorial 10 = 3628800 := by native_decide
 
-end PermutationDecomposition
+
+
+structure PermutationDecompositionBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PermutationDecompositionBudgetCertificate.controlled
+    (c : PermutationDecompositionBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PermutationDecompositionBudgetCertificate.budgetControlled
+    (c : PermutationDecompositionBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PermutationDecompositionBudgetCertificate.Ready
+    (c : PermutationDecompositionBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PermutationDecompositionBudgetCertificate.size
+    (c : PermutationDecompositionBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem permutationDecomposition_budgetCertificate_le_size
+    (c : PermutationDecompositionBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePermutationDecompositionBudgetCertificate :
+    PermutationDecompositionBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : samplePermutationDecompositionBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PermutationDecompositionBudgetCertificate.controlled,
+      samplePermutationDecompositionBudgetCertificate]
+  · norm_num [PermutationDecompositionBudgetCertificate.budgetControlled,
+      samplePermutationDecompositionBudgetCertificate]
+
+example :
+    samplePermutationDecompositionBudgetCertificate.certificateBudgetWindow ≤
+      samplePermutationDecompositionBudgetCertificate.size := by
+  apply permutationDecomposition_budgetCertificate_le_size
+  constructor
+  · norm_num [PermutationDecompositionBudgetCertificate.controlled,
+      samplePermutationDecompositionBudgetCertificate]
+  · norm_num [PermutationDecompositionBudgetCertificate.budgetControlled,
+      samplePermutationDecompositionBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    samplePermutationDecompositionBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PermutationDecompositionBudgetCertificate.controlled,
+      samplePermutationDecompositionBudgetCertificate]
+  · norm_num [PermutationDecompositionBudgetCertificate.budgetControlled,
+      samplePermutationDecompositionBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePermutationDecompositionBudgetCertificate.certificateBudgetWindow ≤
+      samplePermutationDecompositionBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List PermutationDecompositionBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePermutationDecompositionBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePermutationDecompositionBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.PermutationDecomposition

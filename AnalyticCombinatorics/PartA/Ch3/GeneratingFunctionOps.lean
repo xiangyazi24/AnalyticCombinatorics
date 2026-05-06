@@ -2,9 +2,10 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch3.GeneratingFunctionOps
+
 open Finset Nat
 
-namespace GeneratingFunctionOps
 
 /-! # Generating Function Operations and Coefficient Sequences
 
@@ -375,4 +376,98 @@ example : ∀ i : Fin 9, oddTab i = 2 * (i : ℕ) + 1 := by native_decide
 example : ∀ i : Fin 9,
     squaresTab i = ∑ k : Fin (i : ℕ), (2 * (k : ℕ) + 1) := by native_decide
 
-end GeneratingFunctionOps
+/-- Pointed geometric coefficients multiply by the index. -/
+theorem pointedGeom_index_product :
+    ∀ i : Fin 10, pointedGeom i = (i : ℕ) * geomSeq i := by
+  native_decide
+
+/-- Catalan partial sums match their finite coefficient sums. -/
+theorem catalanPartialSums_eq_sum :
+    ∀ i : Fin 8,
+      catalanPartialSums i =
+        ∑ k : Fin ((i : ℕ) + 1), catalanSeq ⟨k, by omega⟩ := by
+  native_decide
+
+
+
+structure GeneratingFunctionOpsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def GeneratingFunctionOpsBudgetCertificate.controlled
+    (c : GeneratingFunctionOpsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def GeneratingFunctionOpsBudgetCertificate.budgetControlled
+    (c : GeneratingFunctionOpsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def GeneratingFunctionOpsBudgetCertificate.Ready
+    (c : GeneratingFunctionOpsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def GeneratingFunctionOpsBudgetCertificate.size
+    (c : GeneratingFunctionOpsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem generatingFunctionOps_budgetCertificate_le_size
+    (c : GeneratingFunctionOpsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleGeneratingFunctionOpsBudgetCertificate :
+    GeneratingFunctionOpsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleGeneratingFunctionOpsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GeneratingFunctionOpsBudgetCertificate.controlled,
+      sampleGeneratingFunctionOpsBudgetCertificate]
+  · norm_num [GeneratingFunctionOpsBudgetCertificate.budgetControlled,
+      sampleGeneratingFunctionOpsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleGeneratingFunctionOpsBudgetCertificate.certificateBudgetWindow ≤
+      sampleGeneratingFunctionOpsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleGeneratingFunctionOpsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GeneratingFunctionOpsBudgetCertificate.controlled,
+      sampleGeneratingFunctionOpsBudgetCertificate]
+  · norm_num [GeneratingFunctionOpsBudgetCertificate.budgetControlled,
+      sampleGeneratingFunctionOpsBudgetCertificate]
+
+example :
+    sampleGeneratingFunctionOpsBudgetCertificate.certificateBudgetWindow ≤
+      sampleGeneratingFunctionOpsBudgetCertificate.size := by
+  apply generatingFunctionOps_budgetCertificate_le_size
+  constructor
+  · norm_num [GeneratingFunctionOpsBudgetCertificate.controlled,
+      sampleGeneratingFunctionOpsBudgetCertificate]
+  · norm_num [GeneratingFunctionOpsBudgetCertificate.budgetControlled,
+      sampleGeneratingFunctionOpsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List GeneratingFunctionOpsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleGeneratingFunctionOpsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleGeneratingFunctionOpsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.GeneratingFunctionOps

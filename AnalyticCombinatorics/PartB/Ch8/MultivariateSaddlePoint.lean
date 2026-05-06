@@ -12,8 +12,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace MultivariateSaddlePoint
-
+namespace AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint
 open Finset
 
 /-! ## 1. Integer partitions (Hardy–Ramanujan) -/
@@ -192,4 +191,85 @@ example : (∑ k ∈ Finset.range 6, unsignedStirling1 5 k) = Nat.factorial 5 :=
 example : (∑ k ∈ Finset.range 4, unsignedStirling1 3 k) = Nat.factorial 3 := by
   native_decide
 
-end MultivariateSaddlePoint
+
+structure MultivariateSaddlePointBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def MultivariateSaddlePointBudgetCertificate.controlled
+    (c : MultivariateSaddlePointBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def MultivariateSaddlePointBudgetCertificate.budgetControlled
+    (c : MultivariateSaddlePointBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def MultivariateSaddlePointBudgetCertificate.Ready
+    (c : MultivariateSaddlePointBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def MultivariateSaddlePointBudgetCertificate.size
+    (c : MultivariateSaddlePointBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem multivariateSaddlePoint_budgetCertificate_le_size
+    (c : MultivariateSaddlePointBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleMultivariateSaddlePointBudgetCertificate :
+    MultivariateSaddlePointBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleMultivariateSaddlePointBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MultivariateSaddlePointBudgetCertificate.controlled,
+      sampleMultivariateSaddlePointBudgetCertificate]
+  · norm_num [MultivariateSaddlePointBudgetCertificate.budgetControlled,
+      sampleMultivariateSaddlePointBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleMultivariateSaddlePointBudgetCertificate.certificateBudgetWindow ≤
+      sampleMultivariateSaddlePointBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleMultivariateSaddlePointBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MultivariateSaddlePointBudgetCertificate.controlled,
+      sampleMultivariateSaddlePointBudgetCertificate]
+  · norm_num [MultivariateSaddlePointBudgetCertificate.budgetControlled,
+      sampleMultivariateSaddlePointBudgetCertificate]
+
+example :
+    sampleMultivariateSaddlePointBudgetCertificate.certificateBudgetWindow ≤
+      sampleMultivariateSaddlePointBudgetCertificate.size := by
+  apply multivariateSaddlePoint_budgetCertificate_le_size
+  constructor
+  · norm_num [MultivariateSaddlePointBudgetCertificate.controlled,
+      sampleMultivariateSaddlePointBudgetCertificate]
+  · norm_num [MultivariateSaddlePointBudgetCertificate.budgetControlled,
+      sampleMultivariateSaddlePointBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List MultivariateSaddlePointBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleMultivariateSaddlePointBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleMultivariateSaddlePointBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.MultivariateSaddlePoint

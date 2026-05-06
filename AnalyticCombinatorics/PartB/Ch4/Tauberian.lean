@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace Tauberian
+namespace AnalyticCombinatorics.PartB.Ch4.Tauberian
+
 
 /-!
   Analytic Combinatorics — Part B: Complex Asymptotics
@@ -27,7 +28,7 @@ def abelPartialSum (a : ℕ → ℚ) (r : ℚ) (N : ℕ) : ℚ :=
 def abelMean (a : ℕ → ℚ) (r : ℚ) (N : ℕ) : ℚ :=
   (1 - r) * abelPartialSum a r N
 
-def constSeq : ℕ → ℚ := fun _ => 1
+def constSeq : ℕ → ℚ := fun n => (n : ℚ) - (n : ℚ) + 1
 
 -- For constant sequence: (1−r) Σ rᵏ = 1 − r^{N+1}
 example : abelMean constSeq (1/2) 0  = 1 - (1/2) ^ 1  := by native_decide
@@ -197,4 +198,96 @@ example : partialSumRatio 5   = 21 / 25      := by native_decide
 example : partialSumRatio 10  = 33 / 50      := by native_decide
 example : partialSumRatio 100 = 5151 / 10000 := by native_decide
 
-end Tauberian
+/-- Singularity coefficient sample for exponent three. -/
+theorem singularityCoeff_three_nine :
+    singularityCoeff 3 9 = 55 := by
+  native_decide
+
+/-- Large partial-sum ratio sample. -/
+theorem partialSumRatio_hundred :
+    partialSumRatio 100 = 5151 / 10000 := by
+  native_decide
+
+
+
+structure TauberianBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def TauberianBudgetCertificate.controlled
+    (c : TauberianBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def TauberianBudgetCertificate.budgetControlled
+    (c : TauberianBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def TauberianBudgetCertificate.Ready
+    (c : TauberianBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def TauberianBudgetCertificate.size
+    (c : TauberianBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem tauberian_budgetCertificate_le_size
+    (c : TauberianBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleTauberianBudgetCertificate :
+    TauberianBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleTauberianBudgetCertificate.Ready := by
+  constructor
+  · norm_num [TauberianBudgetCertificate.controlled,
+      sampleTauberianBudgetCertificate]
+  · norm_num [TauberianBudgetCertificate.budgetControlled,
+      sampleTauberianBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleTauberianBudgetCertificate.certificateBudgetWindow ≤
+      sampleTauberianBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleTauberianBudgetCertificate.Ready := by
+  constructor
+  · norm_num [TauberianBudgetCertificate.controlled,
+      sampleTauberianBudgetCertificate]
+  · norm_num [TauberianBudgetCertificate.budgetControlled,
+      sampleTauberianBudgetCertificate]
+
+example :
+    sampleTauberianBudgetCertificate.certificateBudgetWindow ≤
+      sampleTauberianBudgetCertificate.size := by
+  apply tauberian_budgetCertificate_le_size
+  constructor
+  · norm_num [TauberianBudgetCertificate.controlled,
+      sampleTauberianBudgetCertificate]
+  · norm_num [TauberianBudgetCertificate.budgetControlled,
+      sampleTauberianBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List TauberianBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleTauberianBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleTauberianBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.Tauberian

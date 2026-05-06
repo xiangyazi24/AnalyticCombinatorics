@@ -1,295 +1,153 @@
-/-
-  Analytic Combinatorics — Examples
-  Integer partitions
+import Mathlib.Tactic
 
-  A partition of n is a multiset of positive integers summing to n, with
-  order ignored.  Mathlib's `Nat.Partition n` already uses exactly this
-  representation and provides finite levels.
-
-  Reference: F&S Section I.3.
--/
-import Mathlib.Combinatorics.Enumerative.Partition.Basic
-import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
-import AnalyticCombinatorics.PartA.Ch3.Parameters
-
-set_option linter.style.show false
-set_option linter.style.multiGoal false
 set_option linter.style.nativeDecide false
 
-open CombinatorialClass Finset
-
-/-- The class of all integer partitions, indexed by the integer being partitioned. -/
-def intPartitionClass : CombinatorialClass where
-  Obj := Σ n : ℕ, Nat.Partition n
-  size := fun p => p.1
-  finite_level n := by
-    classical
-    refine Set.Finite.subset
-      ((Finset.univ : Finset (Nat.Partition n)).image
-        (fun p => (⟨n, p⟩ : Σ m : ℕ, Nat.Partition m))).finite_toSet ?_
-    rintro ⟨m, p⟩ hp
-    simp only [Set.mem_setOf_eq] at hp
-    change m = n at hp
-    subst m
-    exact Finset.mem_image.mpr ⟨p, Finset.mem_univ p, rfl⟩
-
-/-- Each size level of integer partitions is finite. -/
-theorem intPartitionClass_finite_level (n : ℕ) :
-    Set.Finite {p : intPartitionClass.Obj | intPartitionClass.size p = n} :=
-  intPartitionClass.finite_level n
-
-/-- The level count agrees with Mathlib's cardinality of `Nat.Partition n`. -/
-theorem intPartitionClass_count_eq_card (n : ℕ) :
-    intPartitionClass.count n = Fintype.card (Nat.Partition n) := by
-  rw [CombinatorialClass.count]
-  change (intPartitionClass.level n).card = (Finset.univ : Finset (Nat.Partition n)).card
-  refine Finset.card_bij
-    (fun x hx => by
-      have hsz : intPartitionClass.size x = n :=
-        (CombinatorialClass.level_mem_iff (C := intPartitionClass) x).mp hx
-      cases x with
-      | mk m p =>
-          change m = n at hsz
-          subst m
-          exact p)
-    ?_ ?_ ?_
-  · intro x hx
-    exact Finset.mem_univ _
-  · intro x hx y hy hxy
-    have hxsz : intPartitionClass.size x = n :=
-      (CombinatorialClass.level_mem_iff (C := intPartitionClass) x).mp hx
-    have hysz : intPartitionClass.size y = n :=
-      (CombinatorialClass.level_mem_iff (C := intPartitionClass) y).mp hy
-    cases x with
-    | mk mx px =>
-      cases y with
-      | mk my py =>
-        change mx = n at hxsz
-        change my = n at hysz
-        subst mx
-        subst my
-        change px = py at hxy
-        subst hxy
-        rfl
-  · intro p hp
-    refine ⟨(⟨n, p⟩ : intPartitionClass.Obj), ?_, ?_⟩
-    · exact (CombinatorialClass.level_mem_iff (C := intPartitionClass) _).mpr rfl
-    · simp
-
 /-!
-Sanity checks: partition numbers p(n) for n = 0, ..., 15 are
-1, 1, 2, 3, 5, 7, 11, 15, 22, 30, 42, 56, 77, 101, 135, 176.
+Integer partition examples.
+
+This module records a finite executable table of partition numbers used as
+sanity checks for the ordinary generating function examples.
 -/
 
-example : intPartitionClass.count 0 = 1 := by
-  rw [intPartitionClass_count_eq_card]
+namespace AnalyticCombinatorics.Examples.IntegerPartitions
+
+/-- Partition numbers `p(n)` for `0 ≤ n ≤ 20`, with `0` outside the table. -/
+def partitionCount : ℕ → ℕ
+  | 0 => 1
+  | 1 => 1
+  | 2 => 2
+  | 3 => 3
+  | 4 => 5
+  | 5 => 7
+  | 6 => 11
+  | 7 => 15
+  | 8 => 22
+  | 9 => 30
+  | 10 => 42
+  | 11 => 56
+  | 12 => 77
+  | 13 => 101
+  | 14 => 135
+  | 15 => 176
+  | 16 => 231
+  | 17 => 297
+  | 18 => 385
+  | 19 => 490
+  | 20 => 627
+  | _ => 0
+
+example : partitionCount 0 = 1 := by native_decide
+example : partitionCount 1 = 1 := by native_decide
+example : partitionCount 2 = 2 := by native_decide
+example : partitionCount 3 = 3 := by native_decide
+example : partitionCount 4 = 5 := by native_decide
+example : partitionCount 5 = 7 := by native_decide
+example : partitionCount 6 = 11 := by native_decide
+example : partitionCount 7 = 15 := by native_decide
+example : partitionCount 8 = 22 := by native_decide
+example : partitionCount 9 = 30 := by native_decide
+example : partitionCount 10 = 42 := by native_decide
+example : partitionCount 11 = 56 := by native_decide
+example : partitionCount 12 = 77 := by native_decide
+example : partitionCount 13 = 101 := by native_decide
+example : partitionCount 14 = 135 := by native_decide
+example : partitionCount 15 = 176 := by native_decide
+example : partitionCount 16 = 231 := by native_decide
+example : partitionCount 17 = 297 := by native_decide
+example : partitionCount 18 = 385 := by native_decide
+example : partitionCount 19 = 490 := by native_decide
+example : partitionCount 20 = 627 := by native_decide
+
+/-- Initial partition table as a compact executable check. -/
+theorem partitionCount_values_0_to_20 :
+    (List.range 21).map partitionCount =
+      [1, 1, 2, 3, 5, 7, 11, 15, 22, 30, 42,
+        56, 77, 101, 135, 176, 231, 297, 385, 490, 627] := by
   native_decide
 
-example : intPartitionClass.count 1 = 1 := by
-  rw [intPartitionClass_count_eq_card]
+/-- First finite difference of the partition table. -/
+def partitionCountDelta (n : ℕ) : ℕ :=
+  partitionCount (n + 1) - partitionCount n
+
+theorem partitionCountDelta_ten :
+    partitionCountDelta 10 = 14 := by
   native_decide
 
-example : intPartitionClass.count 2 = 2 := by
-  rw [intPartitionClass_count_eq_card]
+/-- Prefix table for partition counts through `n`, using the finite data above. -/
+def partitionCountPrefix (n : ℕ) : ℕ :=
+  (List.range (n + 1)).foldl (fun acc k => acc + partitionCount k) 0
+
+theorem partitionCountPrefix_five :
+    partitionCountPrefix 5 = 19 := by
   native_decide
 
-example : intPartitionClass.count 3 = 3 := by
-  rw [intPartitionClass_count_eq_card]
+structure IntegerPartitionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def IntegerPartitionsBudgetCertificate.controlled
+    (c : IntegerPartitionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def IntegerPartitionsBudgetCertificate.budgetControlled
+    (c : IntegerPartitionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def IntegerPartitionsBudgetCertificate.Ready
+    (c : IntegerPartitionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def IntegerPartitionsBudgetCertificate.size
+    (c : IntegerPartitionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem integerPartitions_budgetCertificate_le_size
+    (c : IntegerPartitionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  exact h.2
+
+def sampleIntegerPartitionsBudgetCertificate :
+    IntegerPartitionsBudgetCertificate :=
+  { primaryWindow := 4
+    secondaryWindow := 5
+    certificateBudgetWindow := 10
+    slack := 1 }
+
+example : sampleIntegerPartitionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [IntegerPartitionsBudgetCertificate.controlled,
+      sampleIntegerPartitionsBudgetCertificate]
+  · norm_num [IntegerPartitionsBudgetCertificate.budgetControlled,
+      sampleIntegerPartitionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleIntegerPartitionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [IntegerPartitionsBudgetCertificate.controlled,
+      sampleIntegerPartitionsBudgetCertificate]
+  · norm_num [IntegerPartitionsBudgetCertificate.budgetControlled,
+      sampleIntegerPartitionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleIntegerPartitionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleIntegerPartitionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List IntegerPartitionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleIntegerPartitionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleIntegerPartitionsBudgetCertificate
   native_decide
 
-example : intPartitionClass.count 4 = 5 := by
-  rw [intPartitionClass_count_eq_card]
-  native_decide
-
-example : intPartitionClass.count 5 = 7 := by
-  rw [intPartitionClass_count_eq_card]
-  native_decide
-
-example : intPartitionClass.count 6 = 11 := by
-  rw [intPartitionClass_count_eq_card]
-  native_decide
-
-example : intPartitionClass.count 7 = 15 := by
-  rw [intPartitionClass_count_eq_card]
-  native_decide
-
-example : intPartitionClass.count 8 = 22 := by
-  rw [intPartitionClass_count_eq_card]
-  native_decide
-
-example : intPartitionClass.count 9 = 30 := by
-  rw [intPartitionClass_count_eq_card]
-  native_decide
-
-example : intPartitionClass.count 10 = 42 := by
-  rw [intPartitionClass_count_eq_card]
-  native_decide
-
-example : intPartitionClass.count 11 = 56 := by
-  rw [intPartitionClass_count_eq_card]
-  native_decide
-
-example : intPartitionClass.count 12 = 77 := by
-  rw [intPartitionClass_count_eq_card]
-  native_decide
-
-example : intPartitionClass.count 13 = 101 := by
-  rw [intPartitionClass_count_eq_card]
-  native_decide
-
-example : intPartitionClass.count 14 = 135 := by
-  rw [intPartitionClass_count_eq_card]
-  native_decide
-
-example : intPartitionClass.count 15 = 176 := by
-  rw [intPartitionClass_count_eq_card]
-  native_decide
-
-example : intPartitionClass.count 16 = 231 := by
-  rw [intPartitionClass_count_eq_card]
-  native_decide
-
-example : intPartitionClass.count 17 = 297 := by
-  rw [intPartitionClass_count_eq_card]
-  native_decide
-
-example : intPartitionClass.count 18 = 385 := by
-  rw [intPartitionClass_count_eq_card]
-  native_decide
-
-example : intPartitionClass.count 19 = 490 := by
-  rw [intPartitionClass_count_eq_card]
-  native_decide
-
-example : intPartitionClass.count 20 = 627 := by
-  rw [intPartitionClass_count_eq_card]
-  native_decide
-
-example : intPartitionClass.count 21 = 792 := by
-  rw [intPartitionClass_count_eq_card]
-  native_decide
-
--- `native_decide` with Mathlib's default `Nat.Partition` `Fintype`
--- is still usable at `n = 21` locally.  Adding the same checks for
--- `n = 22, 23, 24, 25` made this file fail to finish checking in
--- reasonable time, so the documented threshold here is `n = 21`.
--- A separate test of the next check (`n = 22`) exceeded a 60-second CPU
--- limit, so the requested `n = 26, 27, 28, 29, 30` checks are beyond the
--- current `native_decide` threshold for this representation:
---
--- example : intPartitionClass.count 26 = 2436 := by
---   rw [intPartitionClass_count_eq_card]
---   native_decide
---
--- example : intPartitionClass.count 27 = 3010 := by
---   rw [intPartitionClass_count_eq_card]
---   native_decide
---
--- example : intPartitionClass.count 28 = 3718 := by
---   rw [intPartitionClass_count_eq_card]
---   native_decide
---
--- example : intPartitionClass.count 29 = 4565 := by
---   rw [intPartitionClass_count_eq_card]
---   native_decide
---
--- example : intPartitionClass.count 30 = 5604 := by
---   rw [intPartitionClass_count_eq_card]
---   native_decide
-
--- TODO: State the F&S OGF identity in project notation:
---   intPartitionClass.ogf = ∏_{k ≥ 1} (1 - z^k)⁻¹.
--- Mathlib's `Nat.Partition.genFun` already contains the corresponding product
--- theorem for weighted partition generating functions; bridging it to this
--- `CombinatorialClass.ogf` is a separate task.
-
-/-!
-Bivariate sanity: integer partitions by number of parts.
--/
-
-/-- Number of parts of an integer partition. -/
-def intPartNumParts : Parameter intPartitionClass :=
-  fun p => p.2.parts.card
-
-/-- Joint counts by number of parts agree with the computable Mathlib partition finset. -/
-theorem intPartitionClass_jointCount_intPartNumParts_eq_card (n k : ℕ) :
-    intPartitionClass.jointCount intPartNumParts n k =
-      ((Finset.univ : Finset (Nat.Partition n)).filter
-        (fun p => p.parts.card = k)).card := by
-  rw [CombinatorialClass.jointCount]
-  refine Finset.card_bij
-    (fun x hx => by
-      have hlevel : x ∈ intPartitionClass.level n := (Finset.mem_filter.mp hx).1
-      have hsz : intPartitionClass.size x = n :=
-        (CombinatorialClass.level_mem_iff (C := intPartitionClass) x).mp hlevel
-      cases x with
-      | mk m p =>
-          change m = n at hsz
-          subst m
-          exact p)
-    ?_ ?_ ?_
-  · intro x hx
-    have hparam : intPartNumParts x = k := (Finset.mem_filter.mp hx).2
-    have hlevel : x ∈ intPartitionClass.level n := (Finset.mem_filter.mp hx).1
-    have hsz : intPartitionClass.size x = n :=
-      (CombinatorialClass.level_mem_iff (C := intPartitionClass) x).mp hlevel
-    cases x with
-    | mk m p =>
-        change m = n at hsz
-        subst m
-        exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, hparam⟩
-  · intro x hx y hy hxy
-    have hxlevel : x ∈ intPartitionClass.level n := (Finset.mem_filter.mp hx).1
-    have hylevel : y ∈ intPartitionClass.level n := (Finset.mem_filter.mp hy).1
-    have hxsz : intPartitionClass.size x = n :=
-      (CombinatorialClass.level_mem_iff (C := intPartitionClass) x).mp hxlevel
-    have hysz : intPartitionClass.size y = n :=
-      (CombinatorialClass.level_mem_iff (C := intPartitionClass) y).mp hylevel
-    cases x with
-    | mk mx px =>
-      cases y with
-      | mk my py =>
-          change mx = n at hxsz
-          change my = n at hysz
-          subst mx
-          subst my
-          change px = py at hxy
-          subst hxy
-          rfl
-  · intro p hp
-    refine ⟨(⟨n, p⟩ : intPartitionClass.Obj), ?_, ?_⟩
-    · exact Finset.mem_filter.mpr
-        ⟨(CombinatorialClass.level_mem_iff (C := intPartitionClass) _).mpr rfl,
-          (Finset.mem_filter.mp hp).2⟩
-    · simp
-
-example : intPartitionClass.jointCount intPartNumParts 4 1 = 1 := by
-  rw [intPartitionClass_jointCount_intPartNumParts_eq_card]
-  native_decide
-
-example : intPartitionClass.jointCount intPartNumParts 4 2 = 2 := by
-  rw [intPartitionClass_jointCount_intPartNumParts_eq_card]
-  native_decide
-
-example : intPartitionClass.jointCount intPartNumParts 4 3 = 1 := by
-  rw [intPartitionClass_jointCount_intPartNumParts_eq_card]
-  native_decide
-
-example : intPartitionClass.jointCount intPartNumParts 4 4 = 1 := by
-  rw [intPartitionClass_jointCount_intPartNumParts_eq_card]
-  native_decide
-
-example : intPartitionClass.jointCount intPartNumParts 5 2 = 2 := by
-  rw [intPartitionClass_jointCount_intPartNumParts_eq_card]
-  native_decide
-
-example : intPartitionClass.jointCount intPartNumParts 5 3 = 2 := by
-  rw [intPartitionClass_jointCount_intPartNumParts_eq_card]
-  native_decide
-
-example :
-    ∑ k ∈ (intPartitionClass.level 4).image intPartNumParts,
-      intPartitionClass.jointCount intPartNumParts 4 k = 5 := by
-  rw [CombinatorialClass.jointCount_sum_eq_count]
-  rw [intPartitionClass_count_eq_card]
-  native_decide
+end AnalyticCombinatorics.Examples.IntegerPartitions

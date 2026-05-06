@@ -19,8 +19,7 @@ set_option linter.style.nativeDecide false
 
 open Finset Nat
 
-namespace AsymptoticTransfer
-
+namespace AnalyticCombinatorics.PartB.Ch6.AsymptoticTransfer
 -- ============================================================
 -- Section 1: Standard algebraic scale
 -- ============================================================
@@ -352,4 +351,105 @@ example : centralBinom 7 < 4 ^ 7 := by native_decide
 -- n=8: C(16,8)=12870 < 4^8=65536
 example : centralBinom 8 < 4 ^ 8 := by native_decide
 
-end AsymptoticTransfer
+/-- Transfer coefficient for a fourth-order pole at index ten. -/
+theorem transferCoeff_order_four_ten :
+    transferCoeff 4 10 = 286 := by
+  native_decide
+
+/-- Central-binomial transfer sample at index ten. -/
+theorem centralBinom_ten :
+    centralBinom 10 = 184756 := by
+  native_decide
+
+/-- Harmonic-number logarithmic transfer sample at index eight. -/
+theorem harmonicRat_eight :
+    harmonicRat 8 = 761 / 280 := by
+  native_decide
+
+/-- Zeta partial sum sample for the dilogarithm scale. -/
+theorem zetaPartial_two_five :
+    zetaPartial 2 5 = 5269 / 3600 := by
+  native_decide
+
+
+structure AsymptoticTransferBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AsymptoticTransferBudgetCertificate.controlled
+    (c : AsymptoticTransferBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AsymptoticTransferBudgetCertificate.budgetControlled
+    (c : AsymptoticTransferBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AsymptoticTransferBudgetCertificate.Ready
+    (c : AsymptoticTransferBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AsymptoticTransferBudgetCertificate.size
+    (c : AsymptoticTransferBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem asymptoticTransfer_budgetCertificate_le_size
+    (c : AsymptoticTransferBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAsymptoticTransferBudgetCertificate :
+    AsymptoticTransferBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAsymptoticTransferBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AsymptoticTransferBudgetCertificate.controlled,
+      sampleAsymptoticTransferBudgetCertificate]
+  · norm_num [AsymptoticTransferBudgetCertificate.budgetControlled,
+      sampleAsymptoticTransferBudgetCertificate]
+
+example :
+    sampleAsymptoticTransferBudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptoticTransferBudgetCertificate.size := by
+  apply asymptoticTransfer_budgetCertificate_le_size
+  constructor
+  · norm_num [AsymptoticTransferBudgetCertificate.controlled,
+      sampleAsymptoticTransferBudgetCertificate]
+  · norm_num [AsymptoticTransferBudgetCertificate.budgetControlled,
+      sampleAsymptoticTransferBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAsymptoticTransferBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AsymptoticTransferBudgetCertificate.controlled,
+      sampleAsymptoticTransferBudgetCertificate]
+  · norm_num [AsymptoticTransferBudgetCertificate.budgetControlled,
+      sampleAsymptoticTransferBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAsymptoticTransferBudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptoticTransferBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List AsymptoticTransferBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAsymptoticTransferBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAsymptoticTransferBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.AsymptoticTransfer

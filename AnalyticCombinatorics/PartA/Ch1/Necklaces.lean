@@ -6,16 +6,13 @@
   division used for the final quotient.
 -/
 import Mathlib.Tactic
-import Mathlib.Data.Nat.Totient
-import Mathlib.NumberTheory.Divisors
 
 set_option linter.style.show false
 set_option linter.style.nativeDecide false
 
 open Finset
 
-namespace Necklaces
-
+namespace AnalyticCombinatorics.PartA.Ch1.Necklaces
 /-- Burnside numerator for `k`-colored necklaces of length `n`. -/
 def necklaceBurnsideSum (k n : ℕ) : ℕ :=
   ∑ d ∈ Nat.divisors n, Nat.totient d * k ^ (n / d)
@@ -94,4 +91,100 @@ example :
       ∑ d ∈ Nat.divisors 8, Nat.totient d * 2 ^ (8 / d) := by
   native_decide
 
-end Necklaces
+/-- Binary necklace count at length six. -/
+theorem binaryNecklaceCount_six :
+    binaryNecklaceCount 6 = 14 := by
+  native_decide
+
+/-- Ternary necklace count at length four. -/
+theorem ternaryNecklaceCount_four :
+    necklaceCount 3 4 = 24 := by
+  native_decide
+
+/-- Burnside numerator recovers the quotient after multiplying by length. -/
+theorem necklaceBurnside_binary_eight :
+    8 * necklaceCount 2 8 = necklaceBurnsideSum 2 8 := by
+  native_decide
+
+
+structure NecklacesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def NecklacesBudgetCertificate.controlled
+    (c : NecklacesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def NecklacesBudgetCertificate.budgetControlled
+    (c : NecklacesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def NecklacesBudgetCertificate.Ready
+    (c : NecklacesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def NecklacesBudgetCertificate.size
+    (c : NecklacesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem necklaces_budgetCertificate_le_size
+    (c : NecklacesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleNecklacesBudgetCertificate :
+    NecklacesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleNecklacesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [NecklacesBudgetCertificate.controlled,
+      sampleNecklacesBudgetCertificate]
+  · norm_num [NecklacesBudgetCertificate.budgetControlled,
+      sampleNecklacesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleNecklacesBudgetCertificate.certificateBudgetWindow ≤
+      sampleNecklacesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleNecklacesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [NecklacesBudgetCertificate.controlled,
+      sampleNecklacesBudgetCertificate]
+  · norm_num [NecklacesBudgetCertificate.budgetControlled,
+      sampleNecklacesBudgetCertificate]
+
+example :
+    sampleNecklacesBudgetCertificate.certificateBudgetWindow ≤
+      sampleNecklacesBudgetCertificate.size := by
+  apply necklaces_budgetCertificate_le_size
+  constructor
+  · norm_num [NecklacesBudgetCertificate.controlled,
+      sampleNecklacesBudgetCertificate]
+  · norm_num [NecklacesBudgetCertificate.budgetControlled,
+      sampleNecklacesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List NecklacesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleNecklacesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleNecklacesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.Necklaces

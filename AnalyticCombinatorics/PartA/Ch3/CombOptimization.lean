@@ -2,6 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch3.CombOptimization
+
 /-! # Ch III/IX — Combinatorial Optimization Structures
 
 This file formalizes enumerative results related to combinatorial optimization
@@ -15,7 +17,6 @@ structures from Flajolet & Sedgewick's *Analytic Combinatorics*:
 - **Perfect matchings** — double factorial formulas
 -/
 
-namespace CombOptimization
 
 /-! ## 1. Binary Search Trees
 
@@ -125,4 +126,101 @@ example : Nat.factorial 8 / (2 ^ 4 * Nat.factorial 4) = 105 := by native_decide
 /-- PM(K_10) = 10!/(2^5 * 5!) = 945. -/
 example : Nat.factorial 10 / (2 ^ 5 * Nat.factorial 5) = 945 := by native_decide
 
-end CombOptimization
+/-- Cayley count for labelled spanning trees of `K_n`. -/
+def cayleySpanningTreeCount (n : ℕ) : ℕ :=
+  n ^ (n - 2)
+
+theorem cayleySpanningTreeCount_six :
+    cayleySpanningTreeCount 6 = 1296 := by
+  native_decide
+
+/-- Perfect matchings in `K_(2n)` via the double-factorial quotient. -/
+def completeGraphPerfectMatchingCount (n : ℕ) : ℕ :=
+  Nat.factorial (2 * n) / (2 ^ n * Nat.factorial n)
+
+theorem completeGraphPerfectMatchingCount_five :
+    completeGraphPerfectMatchingCount 5 = 945 := by
+  native_decide
+
+
+structure CombOptimizationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CombOptimizationBudgetCertificate.controlled
+    (c : CombOptimizationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CombOptimizationBudgetCertificate.budgetControlled
+    (c : CombOptimizationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CombOptimizationBudgetCertificate.Ready
+    (c : CombOptimizationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CombOptimizationBudgetCertificate.size
+    (c : CombOptimizationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem combOptimization_budgetCertificate_le_size
+    (c : CombOptimizationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCombOptimizationBudgetCertificate :
+    CombOptimizationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleCombOptimizationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CombOptimizationBudgetCertificate.controlled,
+      sampleCombOptimizationBudgetCertificate]
+  · norm_num [CombOptimizationBudgetCertificate.budgetControlled,
+      sampleCombOptimizationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCombOptimizationBudgetCertificate.certificateBudgetWindow ≤
+      sampleCombOptimizationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleCombOptimizationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CombOptimizationBudgetCertificate.controlled,
+      sampleCombOptimizationBudgetCertificate]
+  · norm_num [CombOptimizationBudgetCertificate.budgetControlled,
+      sampleCombOptimizationBudgetCertificate]
+
+example :
+    sampleCombOptimizationBudgetCertificate.certificateBudgetWindow ≤
+      sampleCombOptimizationBudgetCertificate.size := by
+  apply combOptimization_budgetCertificate_le_size
+  constructor
+  · norm_num [CombOptimizationBudgetCertificate.controlled,
+      sampleCombOptimizationBudgetCertificate]
+  · norm_num [CombOptimizationBudgetCertificate.budgetControlled,
+      sampleCombOptimizationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List CombOptimizationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCombOptimizationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCombOptimizationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.CombOptimization

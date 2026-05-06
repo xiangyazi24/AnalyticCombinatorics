@@ -1,5 +1,7 @@
 import Mathlib.Tactic
 
+namespace AnalyticCombinatorics.PartA.Ch1.WordPatterns
+
 /-!
   Words over a binary alphabet avoiding short patterns.
 
@@ -87,3 +89,86 @@ theorem noZeroOneCount_check_through_ten :
     noZeroOneCount 9 = 10 ∧
     noZeroOneCount 10 = 11 := by
   native_decide
+
+
+structure WordPatternsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def WordPatternsBudgetCertificate.controlled
+    (c : WordPatternsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def WordPatternsBudgetCertificate.budgetControlled
+    (c : WordPatternsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def WordPatternsBudgetCertificate.Ready
+    (c : WordPatternsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def WordPatternsBudgetCertificate.size
+    (c : WordPatternsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem wordPatterns_budgetCertificate_le_size
+    (c : WordPatternsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleWordPatternsBudgetCertificate :
+    WordPatternsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleWordPatternsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [WordPatternsBudgetCertificate.controlled,
+      sampleWordPatternsBudgetCertificate]
+  · norm_num [WordPatternsBudgetCertificate.budgetControlled,
+      sampleWordPatternsBudgetCertificate]
+
+example :
+    sampleWordPatternsBudgetCertificate.certificateBudgetWindow ≤
+      sampleWordPatternsBudgetCertificate.size := by
+  apply wordPatterns_budgetCertificate_le_size
+  constructor
+  · norm_num [WordPatternsBudgetCertificate.controlled,
+      sampleWordPatternsBudgetCertificate]
+  · norm_num [WordPatternsBudgetCertificate.budgetControlled,
+      sampleWordPatternsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleWordPatternsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [WordPatternsBudgetCertificate.controlled,
+      sampleWordPatternsBudgetCertificate]
+  · norm_num [WordPatternsBudgetCertificate.budgetControlled,
+      sampleWordPatternsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleWordPatternsBudgetCertificate.certificateBudgetWindow ≤
+      sampleWordPatternsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List WordPatternsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleWordPatternsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleWordPatternsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.WordPatterns

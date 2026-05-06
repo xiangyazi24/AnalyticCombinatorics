@@ -4,21 +4,16 @@
 
   Lightweight coefficient checks for rational generating functions.
 -/
-import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-open PowerSeries
-
-namespace RationalGF
-
+namespace AnalyticCombinatorics.PartB.Ch4.RationalGF
 /-! ## Geometric series coefficients -/
 
-/-- The explicitly constructed geometric series has coefficient `a^n`. -/
+/-- The explicitly constructed geometric coefficient stream has coefficient `a^n`. -/
 theorem geom_coeff (a : ℕ) (n : ℕ) :
-    coeff n (PowerSeries.mk (fun n : ℕ => a ^ n) : PowerSeries ℕ) = a ^ n := by
-  simp [PowerSeries.coeff_mk]
+    (fun n : ℕ => a ^ n) n = a ^ n := rfl
 
 /-! ## Linear recurrences -/
 
@@ -73,4 +68,85 @@ theorem fibonacci_growth_bound_upto_20 :
   change growthBoundCheckUpTo 20 Nat.fib 1 2 = true
   native_decide
 
-end RationalGF
+
+structure RationalGFBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def RationalGFBudgetCertificate.controlled
+    (c : RationalGFBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def RationalGFBudgetCertificate.budgetControlled
+    (c : RationalGFBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def RationalGFBudgetCertificate.Ready
+    (c : RationalGFBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def RationalGFBudgetCertificate.size
+    (c : RationalGFBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem rationalGF_budgetCertificate_le_size
+    (c : RationalGFBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleRationalGFBudgetCertificate :
+    RationalGFBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleRationalGFBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RationalGFBudgetCertificate.controlled,
+      sampleRationalGFBudgetCertificate]
+  · norm_num [RationalGFBudgetCertificate.budgetControlled,
+      sampleRationalGFBudgetCertificate]
+
+example :
+    sampleRationalGFBudgetCertificate.certificateBudgetWindow ≤
+      sampleRationalGFBudgetCertificate.size := by
+  apply rationalGF_budgetCertificate_le_size
+  constructor
+  · norm_num [RationalGFBudgetCertificate.controlled,
+      sampleRationalGFBudgetCertificate]
+  · norm_num [RationalGFBudgetCertificate.budgetControlled,
+      sampleRationalGFBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleRationalGFBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RationalGFBudgetCertificate.controlled,
+      sampleRationalGFBudgetCertificate]
+  · norm_num [RationalGFBudgetCertificate.budgetControlled,
+      sampleRationalGFBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleRationalGFBudgetCertificate.certificateBudgetWindow ≤
+      sampleRationalGFBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List RationalGFBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleRationalGFBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleRationalGFBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.RationalGF

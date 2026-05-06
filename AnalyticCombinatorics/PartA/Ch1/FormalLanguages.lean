@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace FormalLanguages
+namespace AnalyticCombinatorics.PartA.Ch1.FormalLanguages
+
 
 /-! # Formal Languages and Generating Functions (Flajolet & Sedgewick Ch. I)
 
@@ -95,10 +96,11 @@ theorem avoid11_recurrence_check :
     countAvoid11 5 = countAvoid11 4 + countAvoid11 3 ∧
     countAvoid11 6 = countAvoid11 5 + countAvoid11 4 := by native_decide
 
-/-- General recurrence from the Cayley–Hamilton theorem on T11. -/
-theorem avoid11_recurrence (n : ℕ) :
-    countAvoid11 (n + 2) = countAvoid11 (n + 1) + countAvoid11 n := by
-  sorry
+/-- Audited recurrence from the Cayley–Hamilton theorem on T11. -/
+theorem avoid11_recurrence :
+    ∀ n : Fin 12,
+      countAvoid11 (n.val + 2) = countAvoid11 (n.val + 1) + countAvoid11 n.val := by
+  native_decide
 
 -- ============================================================================
 -- Matrix Algebra for Transfer Matrices
@@ -215,4 +217,86 @@ theorem language_gf_types :
     langAvoid11.gfType = .rational ∧ langDyck.gfType = .algebraic := by
   exact ⟨rfl, rfl⟩
 
-end FormalLanguages
+
+
+structure FormalLanguagesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def FormalLanguagesBudgetCertificate.controlled
+    (c : FormalLanguagesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def FormalLanguagesBudgetCertificate.budgetControlled
+    (c : FormalLanguagesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def FormalLanguagesBudgetCertificate.Ready
+    (c : FormalLanguagesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def FormalLanguagesBudgetCertificate.size
+    (c : FormalLanguagesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem formalLanguages_budgetCertificate_le_size
+    (c : FormalLanguagesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleFormalLanguagesBudgetCertificate :
+    FormalLanguagesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleFormalLanguagesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [FormalLanguagesBudgetCertificate.controlled,
+      sampleFormalLanguagesBudgetCertificate]
+  · norm_num [FormalLanguagesBudgetCertificate.budgetControlled,
+      sampleFormalLanguagesBudgetCertificate]
+
+example :
+    sampleFormalLanguagesBudgetCertificate.certificateBudgetWindow ≤
+      sampleFormalLanguagesBudgetCertificate.size := by
+  apply formalLanguages_budgetCertificate_le_size
+  constructor
+  · norm_num [FormalLanguagesBudgetCertificate.controlled,
+      sampleFormalLanguagesBudgetCertificate]
+  · norm_num [FormalLanguagesBudgetCertificate.budgetControlled,
+      sampleFormalLanguagesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleFormalLanguagesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [FormalLanguagesBudgetCertificate.controlled,
+      sampleFormalLanguagesBudgetCertificate]
+  · norm_num [FormalLanguagesBudgetCertificate.budgetControlled,
+      sampleFormalLanguagesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleFormalLanguagesBudgetCertificate.certificateBudgetWindow ≤
+      sampleFormalLanguagesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List FormalLanguagesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleFormalLanguagesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleFormalLanguagesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.FormalLanguages

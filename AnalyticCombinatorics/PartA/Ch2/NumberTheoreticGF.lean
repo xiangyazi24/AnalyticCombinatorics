@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace NumberTheoreticGF
+namespace AnalyticCombinatorics.PartA.Ch2.NumberTheoreticGF
+
 
 /-! # Number-Theoretic Generating Functions
 
@@ -73,4 +74,101 @@ example : (1 : ℤ) + (-1) + 1 = 1 := by native_decide
 /-- Σ_{d|6} λ(d) = λ(1)+λ(2)+λ(3)+λ(6) = 1-1-1+1 = 0 (6 is not a square). -/
 example : (1 : ℤ) + (-1) + (-1) + 1 = 0 := by native_decide
 
-end NumberTheoreticGF
+/-- Möbius table sample at `n = 6`, using zero-based indexing. -/
+theorem mobiusTable_six :
+    mobiusTable 5 = 1 := by
+  native_decide
+
+/-- Totient table sample at `n = 10`, using zero-based indexing. -/
+theorem totientTable_ten :
+    totientTable 9 = 4 := by
+  native_decide
+
+/-- Liouville table sample at `n = 9`, using zero-based indexing. -/
+theorem liouvilleTable_nine :
+    liouvilleTable 8 = 1 := by
+  native_decide
+
+
+
+structure NumberTheoreticGFBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def NumberTheoreticGFBudgetCertificate.controlled
+    (c : NumberTheoreticGFBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def NumberTheoreticGFBudgetCertificate.budgetControlled
+    (c : NumberTheoreticGFBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def NumberTheoreticGFBudgetCertificate.Ready
+    (c : NumberTheoreticGFBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def NumberTheoreticGFBudgetCertificate.size
+    (c : NumberTheoreticGFBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem numberTheoreticGF_budgetCertificate_le_size
+    (c : NumberTheoreticGFBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleNumberTheoreticGFBudgetCertificate :
+    NumberTheoreticGFBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleNumberTheoreticGFBudgetCertificate.Ready := by
+  constructor
+  · norm_num [NumberTheoreticGFBudgetCertificate.controlled,
+      sampleNumberTheoreticGFBudgetCertificate]
+  · norm_num [NumberTheoreticGFBudgetCertificate.budgetControlled,
+      sampleNumberTheoreticGFBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleNumberTheoreticGFBudgetCertificate.certificateBudgetWindow ≤
+      sampleNumberTheoreticGFBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleNumberTheoreticGFBudgetCertificate.Ready := by
+  constructor
+  · norm_num [NumberTheoreticGFBudgetCertificate.controlled,
+      sampleNumberTheoreticGFBudgetCertificate]
+  · norm_num [NumberTheoreticGFBudgetCertificate.budgetControlled,
+      sampleNumberTheoreticGFBudgetCertificate]
+
+example :
+    sampleNumberTheoreticGFBudgetCertificate.certificateBudgetWindow ≤
+      sampleNumberTheoreticGFBudgetCertificate.size := by
+  apply numberTheoreticGF_budgetCertificate_le_size
+  constructor
+  · norm_num [NumberTheoreticGFBudgetCertificate.controlled,
+      sampleNumberTheoreticGFBudgetCertificate]
+  · norm_num [NumberTheoreticGFBudgetCertificate.budgetControlled,
+      sampleNumberTheoreticGFBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List NumberTheoreticGFBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleNumberTheoreticGFBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleNumberTheoreticGFBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.NumberTheoreticGF

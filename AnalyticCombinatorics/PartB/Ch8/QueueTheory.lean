@@ -10,8 +10,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace QueueTheory
-
+namespace AnalyticCombinatorics.PartB.Ch8.QueueTheory
 /-! ## 1. Catalan ballot sequences (queue paths)
 
   The number of paths from (0,0) to (2n,0) that stay ≥ 0 with steps +1/−1
@@ -129,4 +128,101 @@ example : Nat.choose 5 2 * Nat.choose 6 3 - Nat.choose 5 3 * Nat.choose 6 2 = 50
 example : Nat.choose 6 2 * Nat.choose 7 3 - Nat.choose 6 3 * Nat.choose 7 2 = 105 := by
   native_decide
 
-end QueueTheory
+/-- Strict ballot count with natural-number division. -/
+def strictBallotCount (a b : ℕ) : ℕ :=
+  (a - b) * Nat.choose (a + b) a / (a + b)
+
+theorem strictBallotCount_6_4 :
+    strictBallotCount 6 4 = 42 := by
+  native_decide
+
+/-- Queue length mean for an M/M/1 queue at rational traffic intensity. -/
+def mmOneMean (rho : ℚ) : ℚ :=
+  rho / (1 - rho)
+
+theorem mmOneMean_three_quarters :
+    mmOneMean (3 / 4) = 3 := by
+  native_decide
+
+
+structure QueueTheoryBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def QueueTheoryBudgetCertificate.controlled
+    (c : QueueTheoryBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def QueueTheoryBudgetCertificate.budgetControlled
+    (c : QueueTheoryBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def QueueTheoryBudgetCertificate.Ready
+    (c : QueueTheoryBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def QueueTheoryBudgetCertificate.size
+    (c : QueueTheoryBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem queueTheory_budgetCertificate_le_size
+    (c : QueueTheoryBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleQueueTheoryBudgetCertificate :
+    QueueTheoryBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleQueueTheoryBudgetCertificate.Ready := by
+  constructor
+  · norm_num [QueueTheoryBudgetCertificate.controlled,
+      sampleQueueTheoryBudgetCertificate]
+  · norm_num [QueueTheoryBudgetCertificate.budgetControlled,
+      sampleQueueTheoryBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleQueueTheoryBudgetCertificate.certificateBudgetWindow ≤
+      sampleQueueTheoryBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleQueueTheoryBudgetCertificate.Ready := by
+  constructor
+  · norm_num [QueueTheoryBudgetCertificate.controlled,
+      sampleQueueTheoryBudgetCertificate]
+  · norm_num [QueueTheoryBudgetCertificate.budgetControlled,
+      sampleQueueTheoryBudgetCertificate]
+
+example :
+    sampleQueueTheoryBudgetCertificate.certificateBudgetWindow ≤
+      sampleQueueTheoryBudgetCertificate.size := by
+  apply queueTheory_budgetCertificate_le_size
+  constructor
+  · norm_num [QueueTheoryBudgetCertificate.controlled,
+      sampleQueueTheoryBudgetCertificate]
+  · norm_num [QueueTheoryBudgetCertificate.budgetControlled,
+      sampleQueueTheoryBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List QueueTheoryBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleQueueTheoryBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleQueueTheoryBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.QueueTheory

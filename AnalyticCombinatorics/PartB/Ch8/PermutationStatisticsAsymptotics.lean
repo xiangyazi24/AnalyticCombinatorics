@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace PermutationStatisticsAsymptotics
+namespace AnalyticCombinatorics.PartB.Ch8.PermutationStatisticsAsymptotics
+
 
 /-!
 # Permutation Statistics Asymptotics
@@ -174,4 +175,87 @@ theorem involution_recurrence_2_to_6 :
         involutionNumber ((i : Nat) + 1) + ((i : Nat) + 1) * involutionNumber (i : Nat) := by
   native_decide
 
-end PermutationStatisticsAsymptotics
+
+
+structure PermutationStatisticsAsymptoticsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PermutationStatisticsAsymptoticsBudgetCertificate.controlled
+    (c : PermutationStatisticsAsymptoticsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PermutationStatisticsAsymptoticsBudgetCertificate.budgetControlled
+    (c : PermutationStatisticsAsymptoticsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PermutationStatisticsAsymptoticsBudgetCertificate.Ready
+    (c : PermutationStatisticsAsymptoticsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PermutationStatisticsAsymptoticsBudgetCertificate.size
+    (c : PermutationStatisticsAsymptoticsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem permutationStatisticsAsymptotics_budgetCertificate_le_size
+    (c : PermutationStatisticsAsymptoticsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePermutationStatisticsAsymptoticsBudgetCertificate :
+    PermutationStatisticsAsymptoticsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : samplePermutationStatisticsAsymptoticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PermutationStatisticsAsymptoticsBudgetCertificate.controlled,
+      samplePermutationStatisticsAsymptoticsBudgetCertificate]
+  · norm_num [PermutationStatisticsAsymptoticsBudgetCertificate.budgetControlled,
+      samplePermutationStatisticsAsymptoticsBudgetCertificate]
+
+example :
+    samplePermutationStatisticsAsymptoticsBudgetCertificate.certificateBudgetWindow ≤
+      samplePermutationStatisticsAsymptoticsBudgetCertificate.size := by
+  apply permutationStatisticsAsymptotics_budgetCertificate_le_size
+  constructor
+  · norm_num [PermutationStatisticsAsymptoticsBudgetCertificate.controlled,
+      samplePermutationStatisticsAsymptoticsBudgetCertificate]
+  · norm_num [PermutationStatisticsAsymptoticsBudgetCertificate.budgetControlled,
+      samplePermutationStatisticsAsymptoticsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    samplePermutationStatisticsAsymptoticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PermutationStatisticsAsymptoticsBudgetCertificate.controlled,
+      samplePermutationStatisticsAsymptoticsBudgetCertificate]
+  · norm_num [PermutationStatisticsAsymptoticsBudgetCertificate.budgetControlled,
+      samplePermutationStatisticsAsymptoticsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePermutationStatisticsAsymptoticsBudgetCertificate.certificateBudgetWindow ≤
+      samplePermutationStatisticsAsymptoticsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady
+    (data : List PermutationStatisticsAsymptoticsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePermutationStatisticsAsymptoticsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePermutationStatisticsAsymptoticsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.PermutationStatisticsAsymptotics

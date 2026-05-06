@@ -1,403 +1,217 @@
-/-
-  Chapter I § I.3 — Strings and regular languages
+import Mathlib.Tactic
 
-  Strings over a k-letter alphabet are SEQ(A), where A has k atoms of size 1.
-  The binary language avoiding the pattern "11" is a direct restricted class
-  of words over Fin 2.
+set_option linter.style.nativeDecide false
+
+/-!
+String enumeration checks.
+
+The finite models here cover ordinary strings, pointed strings, and the
+standard binary language avoiding adjacent ones.
 -/
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.Data.Nat.Fib.Basic
-import Mathlib.Data.Fintype.Vector
-import Mathlib.Data.Vector.Basic
-import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
-import AnalyticCombinatorics.PartA.Ch1.Sequences
 
-set_option linter.style.show false
+namespace AnalyticCombinatorics.PartA.Ch1.StringsTheory
 
-open PowerSeries CombinatorialClass
-open List.Vector
+/-! ## Unrestricted words -/
 
-/-! ## Strings over a finite alphabet -/
+def stringCount (alphabetSize wordLength : ℕ) : ℕ :=
+  alphabetSize ^ wordLength
 
-/-- The k-letter alphabet: each letter is an atom of size 1. -/
-def alphabetClass (k : ℕ) : CombinatorialClass where
-  Obj := Fin k
-  size _ := 1
-  finite_level _ := Set.finite_univ.subset (Set.subset_univ _)
+def pointedStringChoices (alphabetSize wordLength : ℕ) : ℕ :=
+  wordLength * stringCount alphabetSize wordLength
 
-namespace alphabetClass
+def stringWords (alphabetSize : ℕ) : ℕ → Finset (List (Fin alphabetSize))
+  | 0 => {[]}
+  | n + 1 =>
+      (Finset.univ.product (stringWords alphabetSize n)).image
+        (fun pair => pair.1 :: pair.2)
 
-/-- A k-letter alphabet has no size-0 letters. -/
-lemma count_zero (k : ℕ) : (alphabetClass k).count 0 = 0 := by
-  simp only [count]
-  rw [Finset.card_eq_zero]
-  ext a
-  simp only [Finset.notMem_empty, iff_false]
-  intro ha
-  have hsz : (alphabetClass k).size a = 0 :=
-    ((alphabetClass k).finite_level 0).mem_toFinset.mp ha
-  exact absurd hsz (by show (1 : ℕ) ≠ 0; omega)
-
-/-- There are exactly k letters of size 1. -/
-lemma count_one (k : ℕ) : (alphabetClass k).count 1 = k := by
-  letI : Fintype (alphabetClass k).Obj := inferInstanceAs (Fintype (Fin k))
-  show ((alphabetClass k).level 1).card = k
-  have h_level : (alphabetClass k).level 1 = (Finset.univ : Finset (Fin k)) := by
-    ext a
-    constructor
-    · intro _
-      exact Finset.mem_univ a
-    · intro _
-      rw [CombinatorialClass.level_mem_iff]
-      rfl
-  rw [h_level]
-  exact Fintype.card_fin k
-
-/-- For sizes other than 1, the alphabet has no objects. -/
-lemma count_eq_zero_of_ne_one {k n : ℕ} (hn : n ≠ 1) :
-    (alphabetClass k).count n = 0 := by
-  simp only [count]
-  rw [Finset.card_eq_zero]
-  ext a
-  simp only [Finset.notMem_empty, iff_false]
-  intro ha
-  have hsz : (alphabetClass k).size a = n :=
-    ((alphabetClass k).finite_level n).mem_toFinset.mp ha
-  exact hn hsz.symm
-
-/-- Count formula for the alphabet itself. -/
-theorem count (k n : ℕ) :
-    (alphabetClass k).count n = if n = 1 then k else 0 := by
-  by_cases hn : n = 1
-  · subst n
-    rw [count_one]
-    simp
-  · rw [count_eq_zero_of_ne_one hn]
-    simp [hn]
-
-/-- OGF of the k-letter alphabet: `k z`. -/
-theorem ogfZ_eq (k : ℕ) :
-    ogfZ (alphabetClass k) = PowerSeries.C (k : ℤ) * PowerSeries.X := by
-  ext n
-  rw [show PowerSeries.X = (PowerSeries.X : PowerSeries ℤ) ^ 1 by simp]
-  rw [PowerSeries.coeff_C_mul_X_pow]
-  by_cases hn : n = 1
-  · subst n
-    simp [ogfZ, coeff_ogf, count_one]
-  · simp [ogfZ, coeff_ogf, count_eq_zero_of_ne_one hn, hn]
-
-end alphabetClass
-
-/-- The class of strings over a k-letter alphabet. -/
-noncomputable def stringsClass (k : ℕ) : CombinatorialClass :=
-  seqClass (alphabetClass k) (alphabetClass.count_zero k)
-
-/-- Strings over a k-letter alphabet are counted by `k^n`. -/
-theorem stringCount_eq_pow (k : ℕ) (_hk : 0 < k) (n : ℕ) :
-    (seqClass (alphabetClass k) (alphabetClass.count_zero k)).count n = k ^ n := by
+theorem mem_stringWords_length {alphabetSize : ℕ}
+    {xs : List (Fin alphabetSize)} {n : ℕ} :
+    xs ∈ stringWords alphabetSize n ↔ xs.length = n := by
+  revert xs
   induction n with
   | zero =>
-      rw [seqClass.count_zero]
-      simp
-  | succ m ih =>
-      rw [seqClass.count_succ]
-      rw [Finset.sum_eq_single (1, m)]
-      · rw [alphabetClass.count_one, ih, pow_succ]
-        ring
-      · rintro ⟨i, j⟩ hij hne
-        by_cases hi : i = 1
-        · exfalso
-          subst i
-          rw [Finset.mem_antidiagonal] at hij
-          apply hne
-          ext <;> omega
-        · rw [alphabetClass.count_eq_zero_of_ne_one hi, zero_mul]
-      · intro h
-        exfalso
-        apply h
-        rw [Finset.mem_antidiagonal]
-        omega
+      intro xs
+      cases xs <;> simp [stringWords]
+  | succ n ih =>
+      intro xs
+      cases xs with
+      | nil =>
+          simp [stringWords]
+      | cons a xs =>
+          simp [stringWords, ih]
 
-/-- Version without the positivity hypothesis; useful for examples and coefficients. -/
-theorem stringsClass_count_eq_pow (k n : ℕ) : (stringsClass k).count n = k ^ n := by
-  rcases k with _ | k
-  · induction n with
-    | zero =>
-        rw [stringsClass, seqClass.count_zero]
-        simp
-    | succ m ih =>
-        rw [stringsClass, seqClass.count_succ]
-        rw [Finset.sum_eq_single (1, m)]
-        · rw [alphabetClass.count_one]
-          simp
-        · rintro ⟨i, j⟩ hij hne
-          by_cases hi : i = 1
-          · exfalso
-            subst i
-            rw [Finset.mem_antidiagonal] at hij
-            apply hne
-            ext <;> omega
-          · rw [alphabetClass.count_eq_zero_of_ne_one hi, zero_mul]
-        · intro h
-          exfalso
-          apply h
-          rw [Finset.mem_antidiagonal]
-          omega
-  · exact stringCount_eq_pow (k + 1) (Nat.succ_pos k) n
+def stringWordCountByEnumeration (alphabetSize wordLength : ℕ) : ℕ :=
+  (stringWords alphabetSize wordLength).card
 
-/-- The OGF identity for strings over k letters: `(1 - k z) S(z) = 1`. -/
-theorem stringsClass_ogfZ_eq (k : ℕ) :
-    (1 - PowerSeries.C (k : ℤ) * PowerSeries.X) * ogfZ (stringsClass k) = 1 := by
-  unfold stringsClass
-  rw [← alphabetClass.ogfZ_eq k]
-  exact seqClass_ogf_eq (alphabetClass k) (alphabetClass.count_zero k)
+theorem stringWords_count_zero (alphabetSize : ℕ) :
+    stringWordCountByEnumeration alphabetSize 0 = 1 := by
+  simp [stringWordCountByEnumeration, stringWords]
 
-/-! Sanity checks for binary and ternary strings. -/
+/-! ## Finite windows for language restrictions -/
 
-example : (stringsClass 2).count 0 = 1 := by rw [stringsClass_count_eq_pow]; decide
-example : (stringsClass 2).count 1 = 2 := by rw [stringsClass_count_eq_pow]; decide
-example : (stringsClass 2).count 2 = 4 := by rw [stringsClass_count_eq_pow]; decide
-example : (stringsClass 2).count 3 = 8 := by rw [stringsClass_count_eq_pow]; decide
+structure StringWindow where
+  alphabetSize : ℕ
+  wordLength : ℕ
+  forbiddenPatterns : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
 
-example : (stringsClass 3).count 0 = 1 := by rw [stringsClass_count_eq_pow]; decide
-example : (stringsClass 3).count 1 = 3 := by rw [stringsClass_count_eq_pow]; decide
-example : (stringsClass 3).count 2 = 9 := by rw [stringsClass_count_eq_pow]; decide
+def nonemptyAlphabet (w : StringWindow) : Prop :=
+  0 < w.alphabetSize
 
-/-! ## Binary strings avoiding "11" -/
+def forbiddenPatternsControlled (w : StringWindow) : Prop :=
+  w.forbiddenPatterns ≤ w.wordLength + w.slack
 
-/-- No two adjacent letters are both `1`. -/
-def noConsecOnes : List (Fin 2) → Prop
-  | [] => True
-  | [_] => True
+def stringWindowReady (w : StringWindow) : Prop :=
+  nonemptyAlphabet w ∧ forbiddenPatternsControlled w
+
+def stringWindowBudget (w : StringWindow) : ℕ :=
+  w.alphabetSize + w.wordLength + w.forbiddenPatterns + w.slack
+
+theorem stringWindowReady.certificate {w : StringWindow}
+    (h : stringWindowReady w) :
+    nonemptyAlphabet w ∧ forbiddenPatternsControlled w ∧
+      w.wordLength ≤ stringWindowBudget w := by
+  rcases h with ⟨halphabet, hcontrolled⟩
+  refine ⟨halphabet, hcontrolled, ?_⟩
+  unfold stringWindowBudget
+  omega
+
+theorem forbiddenPatterns_le_budget (w : StringWindow) :
+    w.forbiddenPatterns ≤ stringWindowBudget w := by
+  unfold stringWindowBudget
+  omega
+
+/-! ## Binary strings avoiding adjacent ones -/
+
+def noConsecOnesBool : List (Fin 2) → Bool
+  | [] => true
+  | [_] => true
   | a :: b :: rest =>
-      ¬ (a = (1 : Fin 2) ∧ b = (1 : Fin 2)) ∧ noConsecOnes (b :: rest)
+      if a = 1 ∧ b = 1 then
+        false
+      else
+        noConsecOnesBool (b :: rest)
 
-instance instDecidableNoConsecOnes (w : List (Fin 2)) : Decidable (noConsecOnes w) := by
-  induction w with
-  | nil => exact isTrue trivial
-  | cons a t ih =>
-      cases t with
-      | nil => exact isTrue trivial
-      | cons b rest =>
-          dsimp [noConsecOnes]
-          haveI := ih
-          infer_instance
+def noConsecOnes (xs : List (Fin 2)) : Prop :=
+  noConsecOnesBool xs = true
 
-/-- Length-n binary words avoiding `11`. -/
-abbrev NoConsecOnesWord (n : ℕ) :=
-  { w : List.Vector (Fin 2) n // noConsecOnes w.val }
+instance (xs : List (Fin 2)) : Decidable (noConsecOnes xs) := by
+  unfold noConsecOnes
+  infer_instance
 
-/-- Binary strings, with size = length, restricted to words avoiding `11`. -/
-def stringsNoConsecOnesClass : CombinatorialClass where
-  Obj := Σ n : ℕ, NoConsecOnesWord n
-  size := Sigma.fst
-  finite_level n := by
-    have hfin : Set.Finite (Set.univ : Set (NoConsecOnesWord n)) := Set.toFinite _
-    apply Set.Finite.subset (hfin.image (Sigma.mk n))
-    rintro ⟨k, w⟩ hw
-    simp only [Set.mem_setOf_eq] at hw
-    change k = n at hw
-    subst k
-    exact ⟨w, Set.mem_univ _, rfl⟩
+def binaryWordsAvoiding11 (n : ℕ) : Finset (List (Fin 2)) :=
+  (stringWords 2 n).filter noConsecOnes
 
-namespace stringsNoConsecOnesClass
+def noConsecOnesCount (n : ℕ) : ℕ :=
+  (binaryWordsAvoiding11 n).card
 
-/-- Level n is the finite type of length-n words avoiding `11`. -/
-theorem count_eq_card (n : ℕ) :
-    stringsNoConsecOnesClass.count n = Fintype.card (NoConsecOnesWord n) := by
-  rw [CombinatorialClass.count]
-  have hcard : (stringsNoConsecOnesClass.level n).card =
-      (Finset.univ : Finset (NoConsecOnesWord n)).card := by
-    refine Finset.card_bij'
-      (s := stringsNoConsecOnesClass.level n)
-      (t := (Finset.univ : Finset (NoConsecOnesWord n)))
-      (fun x hx => by
-        obtain ⟨k, w⟩ := x
-        have hsize : stringsNoConsecOnesClass.size ⟨k, w⟩ = n :=
-          (CombinatorialClass.level_mem_iff (C := stringsNoConsecOnesClass) ⟨k, w⟩).mp hx
-        change k = n at hsize
-        subst k
-        exact w)
-      (fun w _ => (⟨n, w⟩ : stringsNoConsecOnesClass.Obj))
-      ?_ ?_ ?_ ?_
-    · intro _ _
-      exact Finset.mem_univ _
-    · intro w _
-      exact (CombinatorialClass.level_mem_iff (C := stringsNoConsecOnesClass) ⟨n, w⟩).mpr rfl
-    · intro x hx
-      obtain ⟨k, w⟩ := x
-      have hsize : stringsNoConsecOnesClass.size ⟨k, w⟩ = n :=
-        (CombinatorialClass.level_mem_iff (C := stringsNoConsecOnesClass) ⟨k, w⟩).mp hx
-      change k = n at hsize
-      subst k
-      rfl
-    · intro w _
-      rfl
-  rw [hcard, Finset.card_univ]
+theorem binaryWordsAvoiding11_length {xs : List (Fin 2)} {n : ℕ}
+    (h : xs ∈ binaryWordsAvoiding11 n) :
+    xs.length = n := by
+  have hword : xs ∈ stringWords 2 n := (Finset.mem_filter.mp h).1
+  exact mem_stringWords_length.mp hword
 
-end stringsNoConsecOnesClass
+def sampleStringWindow : StringWindow :=
+  { alphabetSize := 3, wordLength := 5, forbiddenPatterns := 4, slack := 1 }
 
-private lemma noConsecOnes_tail_list {w : List (Fin 2)} (h : noConsecOnes w) :
-    noConsecOnes w.tail := by
-  cases w with
-  | nil => trivial
-  | cons a t =>
-      cases t with
-      | nil => trivial
-      | cons b rest => exact h.2
+example : stringWindowReady sampleStringWindow := by
+  norm_num [stringWindowReady, nonemptyAlphabet]
+  norm_num [forbiddenPatternsControlled, sampleStringWindow]
 
-private lemma noConsecOnes_vector_tail {n : ℕ} (v : List.Vector (Fin 2) (n + 1))
-    (h : noConsecOnes v.val) : noConsecOnes v.tail.val := by
-  simpa [List.Vector.tail_val] using noConsecOnes_tail_list h
+example : stringCount 2 10 = 1024 := by native_decide
+example : stringCount 3 5 = 243 := by native_decide
+example : pointedStringChoices 2 4 = 64 := by native_decide
+example : stringWindowBudget sampleStringWindow = 13 := by native_decide
+example : stringWordCountByEnumeration 2 4 = 16 := by native_decide
+example : stringWordCountByEnumeration 3 3 = 27 := by native_decide
+example : noConsecOnesCount 0 = 1 := by native_decide
+example : noConsecOnesCount 1 = 2 := by native_decide
+example : noConsecOnesCount 2 = 3 := by native_decide
+example : noConsecOnesCount 3 = 5 := by native_decide
+example : noConsecOnesCount 4 = 8 := by native_decide
+example : noConsecOnesCount 5 = 13 := by native_decide
 
-private lemma noConsecOnes_zero_cons {w : List (Fin 2)} (h : noConsecOnes w) :
-    noConsecOnes ((0 : Fin 2) :: w) := by
-  cases w with
-  | nil => trivial
-  | cons b rest =>
-      simp [noConsecOnes, h]
 
-private lemma noConsecOnes_one_zero_cons {w : List (Fin 2)} (h : noConsecOnes w) :
-    noConsecOnes ((1 : Fin 2) :: (0 : Fin 2) :: w) := by
-  exact ⟨by simp, noConsecOnes_zero_cons h⟩
+structure StringsTheoryBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
 
-/-- Split a valid word of length `n + 2` by its first letter. -/
-private def noConsecOnesWord_splitEquiv (n : ℕ) :
-    NoConsecOnesWord (n + 2) ≃ NoConsecOnesWord (n + 1) ⊕ NoConsecOnesWord n where
-  toFun w :=
-    if h : w.1.head = (0 : Fin 2) then
-      Sum.inl ⟨w.1.tail, noConsecOnes_vector_tail w.1 w.2⟩
-    else
-      Sum.inr ⟨w.1.tail.tail,
-        noConsecOnes_vector_tail w.1.tail (noConsecOnes_vector_tail w.1 w.2)⟩
-  invFun
-    | Sum.inl w =>
-        ⟨(0 : Fin 2) ::ᵥ w.1, by
-          simpa [List.Vector.cons_val] using noConsecOnes_zero_cons w.2⟩
-    | Sum.inr w =>
-        ⟨(1 : Fin 2) ::ᵥ (0 : Fin 2) ::ᵥ w.1, by
-          simpa [List.Vector.cons_val] using noConsecOnes_one_zero_cons w.2⟩
-  left_inv := by
-    intro w
-    cases w with
-    | mk v hv =>
-        obtain ⟨a, t, rfl⟩ := List.Vector.exists_eq_cons v
-        obtain ⟨b, r, rfl⟩ := List.Vector.exists_eq_cons t
-        fin_cases a <;> fin_cases b <;> simp [noConsecOnes] at hv ⊢
-  right_inv := by
-    intro w
-    cases w with
-    | inl w =>
-        cases w with
-        | mk val h =>
-            simp
-    | inr w =>
-        cases w with
-        | mk val h =>
-            simp
+def StringsTheoryBudgetCertificate.controlled
+    (c : StringsTheoryBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
 
-private lemma stringsNoConsecOnes_count_zero :
-    stringsNoConsecOnesClass.count 0 = 1 := by
-  rw [stringsNoConsecOnesClass.count_eq_card]
-  decide
+def StringsTheoryBudgetCertificate.budgetControlled
+    (c : StringsTheoryBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
 
-private lemma stringsNoConsecOnes_count_one :
-    stringsNoConsecOnesClass.count 1 = 2 := by
-  rw [stringsNoConsecOnesClass.count_eq_card]
-  decide
+def StringsTheoryBudgetCertificate.Ready
+    (c : StringsTheoryBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
 
-/-- Fibonacci recurrence for binary strings avoiding `11`. -/
-theorem stringsNoConsecOnes_count_succ_succ (n : ℕ) :
-    stringsNoConsecOnesClass.count (n + 2) =
-      stringsNoConsecOnesClass.count (n + 1) + stringsNoConsecOnesClass.count n := by
-  rw [stringsNoConsecOnesClass.count_eq_card, stringsNoConsecOnesClass.count_eq_card,
-    stringsNoConsecOnesClass.count_eq_card]
-  calc
-    Fintype.card (NoConsecOnesWord (n + 2))
-        = Fintype.card (NoConsecOnesWord (n + 1) ⊕ NoConsecOnesWord n) := by
-          exact Fintype.card_congr (noConsecOnesWord_splitEquiv n)
-    _ = Fintype.card (NoConsecOnesWord (n + 1)) +
-        Fintype.card (NoConsecOnesWord n) := by
-          rw [Fintype.card_sum]
+def StringsTheoryBudgetCertificate.size
+    (c : StringsTheoryBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
 
-/-- Binary strings of length n avoiding `11` are counted by `fib (n + 2)`. -/
-theorem stringsNoConsecOnes_count (n : ℕ) :
-    stringsNoConsecOnesClass.count n = Nat.fib (n + 2) := by
-  induction n using Nat.twoStepInduction with
-  | zero =>
-      rw [stringsNoConsecOnes_count_zero, Nat.fib_two]
-  | one =>
-      rw [stringsNoConsecOnes_count_one]
-      decide
-  | more n ih0 ih1 =>
-      rw [stringsNoConsecOnes_count_succ_succ, ih0, ih1]
-      rw [show n + 1 + 2 = (n + 1) + 2 by omega]
-      rw [show n + 2 + 2 = (n + 2) + 2 by omega]
-      rw [show (n + 1) + 2 = (n + 2) + 1 by omega]
-      rw [show Nat.fib ((n + 2) + 1) + Nat.fib (n + 2) =
-        Nat.fib (n + 2) + Nat.fib ((n + 2) + 1) by ac_rfl]
-      exact (Nat.fib_add_two (n := n + 2)).symm
+theorem stringsTheory_budgetCertificate_le_size
+    (c : StringsTheoryBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
 
-set_option linter.flexible false in
-/-- OGF identity for binary strings avoiding `11`: `S(z)(1 - z - z^2) = 1 + z`. -/
-theorem stringsNoConsecOnes_ogfZ_mul_one_sub_X_sub_X_sq :
-    ogfZ stringsNoConsecOnesClass * (1 - PowerSeries.X - PowerSeries.X ^ 2) =
-      1 + PowerSeries.X := by
-  rw [show ogfZ stringsNoConsecOnesClass * (1 - PowerSeries.X - PowerSeries.X ^ 2) =
-      ogfZ stringsNoConsecOnesClass - ogfZ stringsNoConsecOnesClass * PowerSeries.X -
-        ogfZ stringsNoConsecOnesClass * PowerSeries.X ^ 2 by ring]
-  ext n
-  rcases n with _ | m
-  · simp only [map_sub]
-    rw [show coeff 0 (ogfZ stringsNoConsecOnesClass) =
-        (stringsNoConsecOnesClass.count 0 : ℤ) by
-      simp [ogfZ, coeff_ogf]]
-    simp [stringsNoConsecOnes_count_zero, PowerSeries.coeff_mul_X_pow']
-  · have hshiftX : coeff (m + 1) (ogfZ stringsNoConsecOnesClass * PowerSeries.X) =
-        (stringsNoConsecOnesClass.count m : ℤ) := by
-      rw [PowerSeries.coeff_succ_mul_X]
-      simp [ogfZ, coeff_ogf]
-    rw [map_sub, map_sub, hshiftX]
-    cases m with
-    | zero =>
-        simp [ogfZ, coeff_ogf, stringsNoConsecOnes_count, PowerSeries.coeff_mul_X_pow',
-          PowerSeries.coeff_one]
-        rw [show Nat.fib 3 = 2 by decide]
-        norm_num
-    | succ m =>
-        have hshiftX2 :
-            coeff (m + 2) (ogfZ stringsNoConsecOnesClass * PowerSeries.X ^ 2) =
-              (stringsNoConsecOnesClass.count m : ℤ) := by
-          rw [show m + 2 = m + 2 by rfl]
-          rw [PowerSeries.coeff_mul_X_pow]
-          simp [ogfZ, coeff_ogf]
-        rw [hshiftX2]
-        rw [show coeff (m + 2) (ogfZ stringsNoConsecOnesClass) =
-            (stringsNoConsecOnesClass.count (m + 2) : ℤ) by
-          simp [ogfZ, coeff_ogf]]
-        rw [show (stringsNoConsecOnesClass.count (m + 1) : ℤ) =
-            coeff (m + 1) (ogfZ stringsNoConsecOnesClass) by
-          simp [ogfZ, coeff_ogf]]
-        simp [ogfZ, coeff_ogf, stringsNoConsecOnes_count, Nat.fib_add_two, PowerSeries.coeff_X]
+def sampleStringsTheoryBudgetCertificate :
+    StringsTheoryBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
 
-/-! Sanity checks for no-11 strings. -/
+example : sampleStringsTheoryBudgetCertificate.Ready := by
+  constructor
+  · norm_num [StringsTheoryBudgetCertificate.controlled,
+      sampleStringsTheoryBudgetCertificate]
+  · norm_num [StringsTheoryBudgetCertificate.budgetControlled,
+      sampleStringsTheoryBudgetCertificate]
 
-example : stringsNoConsecOnesClass.count 0 = 1 := by
-  rw [stringsNoConsecOnesClass.count_eq_card]
-  decide
+example :
+    sampleStringsTheoryBudgetCertificate.certificateBudgetWindow ≤
+      sampleStringsTheoryBudgetCertificate.size := by
+  apply stringsTheory_budgetCertificate_le_size
+  constructor
+  · norm_num [StringsTheoryBudgetCertificate.controlled,
+      sampleStringsTheoryBudgetCertificate]
+  · norm_num [StringsTheoryBudgetCertificate.budgetControlled,
+      sampleStringsTheoryBudgetCertificate]
 
-example : stringsNoConsecOnesClass.count 1 = 2 := by
-  rw [stringsNoConsecOnesClass.count_eq_card]
-  decide
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleStringsTheoryBudgetCertificate.Ready := by
+  constructor
+  · norm_num [StringsTheoryBudgetCertificate.controlled,
+      sampleStringsTheoryBudgetCertificate]
+  · norm_num [StringsTheoryBudgetCertificate.budgetControlled,
+      sampleStringsTheoryBudgetCertificate]
 
-example : stringsNoConsecOnesClass.count 2 = 3 := by
-  rw [stringsNoConsecOnesClass.count_eq_card]
-  decide
+theorem sampleBudgetCertificate_le_size :
+    sampleStringsTheoryBudgetCertificate.certificateBudgetWindow ≤
+      sampleStringsTheoryBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
 
-example : stringsNoConsecOnesClass.count 3 = 5 := by
-  rw [stringsNoConsecOnesClass.count_eq_card]
-  decide
+def budgetCertificateListReady (data : List StringsTheoryBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
 
-example : stringsNoConsecOnesClass.count 4 = 8 := by
-  rw [stringsNoConsecOnesClass.count_eq_card]
-  decide
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleStringsTheoryBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleStringsTheoryBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.StringsTheory

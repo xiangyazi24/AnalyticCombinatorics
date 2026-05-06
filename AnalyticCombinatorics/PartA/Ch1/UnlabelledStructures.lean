@@ -5,16 +5,13 @@
   necklaces, i.e. cyclic equivalence classes of binary words of length `n`.
 -/
 import Mathlib.Tactic
-import Mathlib.Data.Nat.Totient
-import Mathlib.NumberTheory.Divisors
 
 set_option linter.style.show false
 set_option linter.style.nativeDecide false
 
 open Finset
 
-namespace UnlabelledStructures
-
+namespace AnalyticCombinatorics.PartA.Ch1.UnlabelledStructures
 /-- The Burnside numerator for binary necklaces of length `n`.
 
 For `n > 0`, Burnside's lemma for the cyclic group gives
@@ -93,4 +90,100 @@ example : unrootedTreeCount 7 = 6 := by native_decide
 example : unrootedTreeCount 8 = 11 := by native_decide
 example : unrootedTreeCount 9 = 23 := by native_decide
 
-end UnlabelledStructures
+/-- Binary necklace count at length eight. -/
+theorem necklaceCount_eight :
+    necklaceCount 8 = 36 := by
+  native_decide
+
+/-- Burnside numerator divisibility sample for length eight. -/
+theorem necklaceCountTimesN_eight :
+    necklaceCountTimesN 8 = 8 * necklaceCount 8 := by
+  native_decide
+
+/-- Unlabelled tree table sample at nine vertices. -/
+theorem unrootedTreeCount_nine :
+    unrootedTreeCount 9 = 23 := by
+  native_decide
+
+
+structure UnlabelledStructuresBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def UnlabelledStructuresBudgetCertificate.controlled
+    (c : UnlabelledStructuresBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def UnlabelledStructuresBudgetCertificate.budgetControlled
+    (c : UnlabelledStructuresBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def UnlabelledStructuresBudgetCertificate.Ready
+    (c : UnlabelledStructuresBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def UnlabelledStructuresBudgetCertificate.size
+    (c : UnlabelledStructuresBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem unlabelledStructures_budgetCertificate_le_size
+    (c : UnlabelledStructuresBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleUnlabelledStructuresBudgetCertificate :
+    UnlabelledStructuresBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleUnlabelledStructuresBudgetCertificate.Ready := by
+  constructor
+  · norm_num [UnlabelledStructuresBudgetCertificate.controlled,
+      sampleUnlabelledStructuresBudgetCertificate]
+  · norm_num [UnlabelledStructuresBudgetCertificate.budgetControlled,
+      sampleUnlabelledStructuresBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleUnlabelledStructuresBudgetCertificate.certificateBudgetWindow ≤
+      sampleUnlabelledStructuresBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleUnlabelledStructuresBudgetCertificate.Ready := by
+  constructor
+  · norm_num [UnlabelledStructuresBudgetCertificate.controlled,
+      sampleUnlabelledStructuresBudgetCertificate]
+  · norm_num [UnlabelledStructuresBudgetCertificate.budgetControlled,
+      sampleUnlabelledStructuresBudgetCertificate]
+
+example :
+    sampleUnlabelledStructuresBudgetCertificate.certificateBudgetWindow ≤
+      sampleUnlabelledStructuresBudgetCertificate.size := by
+  apply unlabelledStructures_budgetCertificate_le_size
+  constructor
+  · norm_num [UnlabelledStructuresBudgetCertificate.controlled,
+      sampleUnlabelledStructuresBudgetCertificate]
+  · norm_num [UnlabelledStructuresBudgetCertificate.budgetControlled,
+      sampleUnlabelledStructuresBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List UnlabelledStructuresBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleUnlabelledStructuresBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleUnlabelledStructuresBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.UnlabelledStructures

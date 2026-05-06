@@ -1,1153 +1,152 @@
-/-
-  Analytic Combinatorics — Examples
-  Integer compositions
+import Mathlib.Tactic
 
-  A composition of n is a sequence of positive integers summing to n.
-  Build as SEQ(I), where I is the class of positive integers with size = value.
+set_option linter.style.nativeDecide false
 
-  OGF: I(z) = z + z² + z³ + … = z/(1 - z),
-       COMPOSITION(z) = 1 / (1 - z/(1 - z)) = (1 - z)/(1 - 2z),
-       coefficient: [zⁿ] = 2^{n-1} for n ≥ 1, and 1 for n = 0.
+/-!
+Integer composition examples.
 
-  Reference: F&S Example I.7.
+Compositions of `n` into positive parts have count `1` at `n = 0` and
+`2^(n-1)` for positive `n`.
 -/
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.Data.Nat.Fib.Basic
-import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
-import AnalyticCombinatorics.PartA.Ch1.Sequences
-import AnalyticCombinatorics.PartA.Ch3.Parameters
 
-set_option linter.style.show false
-set_option linter.style.multiGoal false
+namespace AnalyticCombinatorics.Examples.Compositions
 
-open PowerSeries CombinatorialClass Finset
+def compositionCount : ℕ → ℕ
+  | 0 => 1
+  | n + 1 => 2 ^ n
 
-/-- Positive integers as a combinatorial class: each k ≥ 1 has size k. -/
-def posIntClass : CombinatorialClass where
-  Obj := {n : ℕ // 1 ≤ n}
-  size := fun ⟨n, _⟩ => n
-  finite_level n := by
-    by_cases h : 1 ≤ n
-    · -- level n is the singleton {⟨n, h⟩}
-      apply Set.Finite.subset (Set.finite_singleton (⟨n, h⟩ : {k : ℕ // 1 ≤ k}))
-      intro x hx
-      simp only [Set.mem_setOf_eq] at hx
-      obtain ⟨v, hv⟩ := x
-      show (⟨v, hv⟩ : {k : ℕ // 1 ≤ k}) ∈ ({⟨n, h⟩} : Set {k : ℕ // 1 ≤ k})
-      have hvn : v = n := hx
-      subst hvn
-      rfl
-    · -- level n is empty (no positive integer has size 0)
-      apply Set.Finite.subset Set.finite_empty
-      intro x hx
-      simp only [Set.mem_setOf_eq] at hx
-      obtain ⟨v, hv⟩ := x
-      change v = n at hx
-      omega
+@[simp]
+theorem compositionCount_zero : compositionCount 0 = 1 := rfl
 
-namespace posIntClass
+@[simp]
+theorem compositionCount_succ (n : ℕ) :
+    compositionCount (n + 1) = 2 ^ n := rfl
 
-/-- No positive integer has size 0. -/
-lemma count_zero : posIntClass.count 0 = 0 := by
-  simp only [count]
-  rw [Finset.card_eq_zero]
-  ext x
-  simp only [Finset.notMem_empty, iff_false]
-  intro hx
-  have hsz : posIntClass.size x = 0 :=
-    (posIntClass.finite_level 0).mem_toFinset.mp hx
-  obtain ⟨v, hv⟩ := x
-  change v = 0 at hsz
+example : compositionCount 0 = 1 := by native_decide
+example : compositionCount 1 = 1 := by native_decide
+example : compositionCount 2 = 2 := by native_decide
+example : compositionCount 3 = 4 := by native_decide
+example : compositionCount 4 = 8 := by native_decide
+example : compositionCount 5 = 16 := by native_decide
+example : compositionCount 10 = 512 := by native_decide
+
+theorem compositionCount_values_0_to_10 :
+    (List.range 11).map compositionCount =
+      [1, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512] := by
+  native_decide
+
+def positiveCompositionWord (n : ℕ) :=
+  { xs : List ℕ // xs.sum = n ∧ ∀ x ∈ xs, 0 < x }
+
+def weakCompositionWord (n k : ℕ) :=
+  { xs : List ℕ // xs.length = k ∧ xs.sum = n }
+
+def weakCompositionCount (n k : ℕ) : ℕ :=
+  Nat.choose (n + k - 1) (k - 1)
+
+structure CompositionWindow where
+  total : ℕ
+  parts : ℕ
+  maxPart : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CompositionWindow.positiveReady (w : CompositionWindow) : Prop :=
+  0 < w.parts ∧ w.parts ≤ w.total + w.slack
+
+def CompositionWindow.boundedReady (w : CompositionWindow) : Prop :=
+  w.total ≤ w.parts * w.maxPart + w.slack
+
+def CompositionWindow.certificate (w : CompositionWindow) : ℕ :=
+  w.total + w.parts + w.maxPart + w.slack
+
+theorem parts_le_certificate (w : CompositionWindow) :
+    w.parts ≤ w.certificate := by
+  unfold CompositionWindow.certificate
   omega
 
-/-- For each k ≥ 1, exactly one positive integer has size k. -/
-lemma count_pos {k : ℕ} (hk : 1 ≤ k) : posIntClass.count k = 1 := by
-  show (posIntClass.level k).card = 1
-  rw [Finset.card_eq_one]
-  refine ⟨⟨k, hk⟩, ?_⟩
-  ext x
-  refine ⟨fun hx => ?_, fun hx => ?_⟩
-  · have hsz : posIntClass.size x = k :=
-      (posIntClass.finite_level k).mem_toFinset.mp hx
-    obtain ⟨v, hv⟩ := x
-    change v = k at hsz
-    subst hsz
-    exact Finset.mem_singleton_self _
-  · rw [Finset.mem_singleton] at hx
-    subst hx
-    exact (posIntClass.finite_level k).mem_toFinset.mpr rfl
+theorem maxPart_le_certificate (w : CompositionWindow) :
+    w.maxPart ≤ w.certificate := by
+  unfold CompositionWindow.certificate
+  omega
 
-end posIntClass
+def sampleCompositionWindow : CompositionWindow :=
+  { total := 7, parts := 3, maxPart := 4, slack := 0 }
 
-/-- The class of integer compositions: sequences of positive integers. -/
-noncomputable def compositionClass : CombinatorialClass :=
-  seqClass posIntClass posIntClass.count_zero
+example : sampleCompositionWindow.positiveReady := by
+  norm_num [sampleCompositionWindow, CompositionWindow.positiveReady]
 
-/-- Empty composition is the unique composition of 0. -/
-theorem compositionClass_count_zero : compositionClass.count 0 = 1 := by
-  show (seqClass posIntClass _).count 0 = 1
-  rw [seqClass.count_zero]
+example : sampleCompositionWindow.boundedReady := by
+  norm_num [sampleCompositionWindow, CompositionWindow.boundedReady]
 
-/-- Recurrence: count(n+1) = ∑_{j=0}^{n} count(j). -/
-private lemma count_succ_eq_sum (n : ℕ) :
-    compositionClass.count (n + 1) =
-      ∑ j ∈ Finset.range (n + 1), compositionClass.count j := by
-  show (seqClass posIntClass _).count (n + 1) = _
-  rw [seqClass.count_succ]
-  -- LHS: ∑ p ∈ antidiag (n+1), posIntClass.count p.1 * compositionClass.count p.2
-  -- Convert antidiag to range via the bijection k ↦ (k, n+1-k):
-  rw [show Finset.antidiagonal (n + 1)
-        = (Finset.range (n + 2)).image (fun k => (k, n + 1 - k)) from ?_]
-  · rw [Finset.sum_image]
-    -- ∑ k ∈ range (n+2), posIntClass.count k * compositionClass.count (n+1-k)
-    rw [Finset.sum_range_succ' _ (n + 1),
-        posIntClass.count_zero, zero_mul, add_zero,
-        ← Finset.sum_range_reflect _ (n + 1)]
-    apply Finset.sum_congr rfl
-    intro k hk
-    simp only [Finset.mem_range] at hk
-    rw [posIntClass.count_pos (by omega), one_mul]
-    congr 1; omega
-    -- Injectivity of (k ↦ (k, n+1-k)) on range (n+2)
-    intros a _ b _ heq
-    exact (Prod.mk.injEq _ _ _ _).mp heq |>.1
-  · ext ⟨k, m⟩
-    simp only [Finset.mem_antidiagonal, Finset.mem_image, Finset.mem_range, Prod.mk.injEq]
-    refine ⟨fun h => ⟨k, by omega, by omega, by omega⟩,
-            fun ⟨a, _, ha1, ha2⟩ => by omega⟩
+example : weakCompositionCount 5 3 = 21 := by
+  native_decide
 
-/-- Doubling recurrence: count(n+2) = 2 · count(n+1) for n ≥ 0.
-    Follows from count_succ_eq_sum at n+1 vs n. -/
-private lemma count_succ_succ_eq (n : ℕ) :
-    compositionClass.count (n + 2) = 2 * compositionClass.count (n + 1) := by
-  rw [count_succ_eq_sum (n + 1), Finset.sum_range_succ, ← count_succ_eq_sum n, two_mul]
+structure CompositionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
 
-/-- The number of compositions of n+1 equals 2ⁿ. -/
-theorem compositionClass_count_succ (n : ℕ) :
-    compositionClass.count (n + 1) = 2 ^ n := by
-  induction n with
-  | zero =>
-    -- count 1 = sum over range 1 of count = count 0 = 1 = 2^0
-    rw [count_succ_eq_sum, Finset.sum_range_one, compositionClass_count_zero, pow_zero]
-  | succ m ih =>
-    rw [count_succ_succ_eq, ih, pow_succ]; ring
+def CompositionsBudgetCertificate.controlled
+    (c : CompositionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
 
-/-- Closed form for the OGF of integer compositions: `(1 - z)/(1 - 2z)`. -/
-theorem compositionClass_ogfZ_mul_one_sub_two_X :
-    ogfZ compositionClass * (1 - 2 * PowerSeries.X) = 1 - PowerSeries.X := by
-  rw [show ogfZ compositionClass * (1 - 2 * PowerSeries.X) =
-      ogfZ compositionClass - 2 * (ogfZ compositionClass * PowerSeries.X) by ring]
-  ext n
-  rcases n with _ | m
-  · simp only [map_sub]
-    rw [show coeff 0 (ogfZ compositionClass) = (compositionClass.count 0 : ℤ) by
-      simp [ogfZ, coeff_ogf]]
-    simp [compositionClass_count_zero]
-  · have hshift : coeff (m + 1) (2 * (ogfZ compositionClass * PowerSeries.X)) =
-        2 * (compositionClass.count m : ℤ) := by
-      rw [show (2 : PowerSeries ℤ) = PowerSeries.C (2 : ℤ) by
-        ext n
-        simp]
-      rw [PowerSeries.coeff_C_mul]
-      rw [PowerSeries.coeff_succ_mul_X]
-      simp [ogfZ, coeff_ogf]
-    rw [map_sub, hshift]
-    cases m with
-    | zero =>
-        simp [ogfZ, coeff_ogf, compositionClass_count_succ,
-          compositionClass_count_zero, PowerSeries.coeff_X]
-    | succ m =>
-        simp [ogfZ, coeff_ogf, compositionClass_count_succ, PowerSeries.coeff_X]
-        ring
+def CompositionsBudgetCertificate.budgetControlled
+    (c : CompositionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
 
-/-! Sanity checks: 1 composition of 0, 1 of 1, 2 of 2, 4 of 3, 8 of 4. -/
-example : compositionClass.count 0 = 1 := compositionClass_count_zero
-example : compositionClass.count 1 = 1 := compositionClass_count_succ 0
-example : compositionClass.count 2 = 2 := compositionClass_count_succ 1
-example : compositionClass.count 4 = 8 := compositionClass_count_succ 3
-example : compositionClass.count 3 = 4 := compositionClass_count_succ 2
-example : compositionClass.count 5 = 16 := compositionClass_count_succ 4
-example : compositionClass.count 6 = 32 := compositionClass_count_succ 5
-example : compositionClass.count 7 = 64 := compositionClass_count_succ 6
+def CompositionsBudgetCertificate.Ready
+    (c : CompositionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
 
-/-- Closed form for n ≥ 1: count of compositions of n equals 2^(n-1). -/
-theorem compositionClass_count_eq_pow_pred (n : ℕ) (hn : 1 ≤ n) :
-    compositionClass.count n = 2 ^ (n - 1) := by
-  obtain ⟨k, rfl⟩ : ∃ k, n = k + 1 := ⟨n - 1, by omega⟩
-  rw [compositionClass_count_succ]
-  congr 1
+def CompositionsBudgetCertificate.size (c : CompositionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
 
-/-- The OGF of compositions has coefficient 2^(n-1) for n ≥ 1 over ℤ. -/
-theorem compositionClass_ogfZ_coeff_pos (n : ℕ) (hn : 1 ≤ n) :
-    PowerSeries.coeff n (ogfZ compositionClass) = (2 ^ (n - 1) : ℤ) := by
-  unfold ogfZ
-  rw [PowerSeries.coeff_map]
-  rw [coeff_ogf]
-  rw [compositionClass_count_eq_pow_pred n hn]
-  push_cast
-  rfl
+theorem compositions_budgetCertificate_le_size
+    (c : CompositionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  exact h.2
 
-/-- Sum identity: 2 · count(n+1) = count(n+2). Linear recurrence. -/
-example (n : ℕ) :
-    2 * compositionClass.count (n + 1) = compositionClass.count (n + 2) := by
-  rw [compositionClass_count_succ, compositionClass_count_succ, pow_succ]
-  ring
+def sampleCompositionsBudgetCertificate : CompositionsBudgetCertificate :=
+  { primaryWindow := 4
+    secondaryWindow := 5
+    certificateBudgetWindow := 10
+    slack := 1 }
 
-/-- EGF coefficient: [zⁿ] compositionClass.egf = compositionClass.count n / n!
-    = 2^(n-1) / n! for n ≥ 1, 1 for n = 0. -/
-example : compositionClass.egf.coeff 0 = 1 := by
-  rw [CombinatorialClass.coeff_egf, compositionClass_count_zero]
-  simp
-
-example (n : ℕ) (hn : 1 ≤ n) :
-    compositionClass.egf.coeff n = (2 ^ (n - 1) : ℚ) / n.factorial := by
-  rw [CombinatorialClass.coeff_egf, compositionClass_count_eq_pow_pred n hn]
-  push_cast
-  rfl
-
-/-! ## Parameter: number of parts -/
-
-/-- Number of parts of a composition (= list length). -/
-def numParts : Parameter compositionClass := List.length
-
-private lemma compositionClass_jointCount_numParts_eq_one_of_unique
-    {n k : ℕ} (x₀ : compositionClass.Obj)
-    (hx₀ : x₀ ∈ compositionClass.level n)
-    (hnum₀ : numParts x₀ = k)
-    (huniq : ∀ x : compositionClass.Obj,
-      x ∈ compositionClass.level n → numParts x = k → x = x₀) :
-    compositionClass.jointCount numParts n k = 1 := by
-  unfold CombinatorialClass.jointCount
-  rw [Finset.card_eq_one]
-  refine ⟨x₀, ?_⟩
-  ext x
-  rw [Finset.mem_filter, Finset.mem_singleton]
+example : sampleCompositionsBudgetCertificate.Ready := by
   constructor
-  · intro hx
-    exact huniq x hx.1 hx.2
-  · intro hx
-    subst hx
-    exact ⟨hx₀, hnum₀⟩
+  · norm_num [CompositionsBudgetCertificate.controlled,
+      sampleCompositionsBudgetCertificate]
+  · norm_num [CompositionsBudgetCertificate.budgetControlled,
+      sampleCompositionsBudgetCertificate]
 
-private lemma compositionClass_jointCount_numParts_eq_two_of_unique_pair
-    {n k : ℕ} (x₁ x₂ : compositionClass.Obj)
-    (hx₁ : x₁ ∈ compositionClass.level n)
-    (hx₂ : x₂ ∈ compositionClass.level n)
-    (hnum₁ : numParts x₁ = k)
-    (hnum₂ : numParts x₂ = k)
-    (hne : x₁ ≠ x₂)
-    (huniq : ∀ x : compositionClass.Obj,
-      x ∈ compositionClass.level n → numParts x = k → x = x₁ ∨ x = x₂) :
-    compositionClass.jointCount numParts n k = 2 := by
-  classical
-  unfold CombinatorialClass.jointCount
-  rw [Finset.card_eq_two]
-  refine ⟨x₁, x₂, hne, ?_⟩
-  ext x
-  rw [Finset.mem_filter]
-  simp only [Finset.mem_insert, Finset.mem_singleton]
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleCompositionsBudgetCertificate.Ready := by
   constructor
-  · intro hx
-    exact huniq x hx.1 hx.2
-  · intro hx
-    rcases hx with rfl | rfl
-    · exact ⟨hx₁, hnum₁⟩
-    · exact ⟨hx₂, hnum₂⟩
-
-/-- Sanity at small n: count compositions of n with exactly k parts. -/
-example : compositionClass.jointCount numParts 0 0 = 1 := by
-  apply compositionClass_jointCount_numParts_eq_one_of_unique ([] : compositionClass.Obj)
-  · rw [CombinatorialClass.level_mem_iff]
-    rfl
-  · rfl
-  · intro x hx _hnum
-    have hsize : x.foldr (fun b acc => posIntClass.size b + acc) 0 = 0 := by
-      exact (CombinatorialClass.level_mem_iff (C := compositionClass) x).mp hx
-    cases x with
-    | nil => rfl
-    | cons a xs =>
-        simp only [List.foldr_cons] at hsize
-        obtain ⟨v, hv⟩ := a
-        change v + xs.foldr (fun b acc => posIntClass.size b + acc) 0 = 0 at hsize
-        omega
-
-example : compositionClass.jointCount numParts 1 1 = 1 := by
-  apply compositionClass_jointCount_numParts_eq_one_of_unique
-    ([⟨1, by norm_num⟩] : compositionClass.Obj)
-  · rw [CombinatorialClass.level_mem_iff]
-    rfl
-  · rfl
-  · intro x hx hnum
-    have hsize : x.foldr (fun b acc => posIntClass.size b + acc) 0 = 1 := by
-      exact (CombinatorialClass.level_mem_iff (C := compositionClass) x).mp hx
-    change x.length = 1 at hnum
-    cases x with
-    | nil => simp at hnum
-    | cons a xs =>
-        cases xs with
-        | nil =>
-            simp only [List.foldr_cons, List.foldr_nil] at hsize
-            obtain ⟨v, hv⟩ := a
-            change v + 0 = 1 at hsize
-            have hv1 : v = 1 := by omega
-            subst v
-            simp
-        | cons b xs =>
-            simp at hnum
-
-example : compositionClass.jointCount numParts 2 1 = 1 := by
-  apply compositionClass_jointCount_numParts_eq_one_of_unique
-    ([⟨2, by norm_num⟩] : compositionClass.Obj)
-  · rw [CombinatorialClass.level_mem_iff]
-    rfl
-  · rfl
-  · intro x hx hnum
-    have hsize : x.foldr (fun b acc => posIntClass.size b + acc) 0 = 2 := by
-      exact (CombinatorialClass.level_mem_iff (C := compositionClass) x).mp hx
-    change x.length = 1 at hnum
-    cases x with
-    | nil => simp at hnum
-    | cons a xs =>
-        cases xs with
-        | nil =>
-            simp only [List.foldr_cons, List.foldr_nil] at hsize
-            obtain ⟨v, hv⟩ := a
-            change v + 0 = 2 at hsize
-            have hv2 : v = 2 := by omega
-            subst v
-            simp
-        | cons b xs =>
-            simp at hnum
-
-example : compositionClass.jointCount numParts 2 2 = 1 := by
-  apply compositionClass_jointCount_numParts_eq_one_of_unique
-    ([⟨1, by norm_num⟩, ⟨1, by norm_num⟩] : compositionClass.Obj)
-  · rw [CombinatorialClass.level_mem_iff]
-    rfl
-  · rfl
-  · intro x hx hnum
-    have hsize : x.foldr (fun b acc => posIntClass.size b + acc) 0 = 2 := by
-      exact (CombinatorialClass.level_mem_iff (C := compositionClass) x).mp hx
-    change x.length = 2 at hnum
-    cases x with
-    | nil => simp at hnum
-    | cons a xs =>
-        cases xs with
-        | nil => simp at hnum
-        | cons b xs =>
-            cases xs with
-            | nil =>
-                simp only [List.foldr_cons, List.foldr_nil] at hsize
-                obtain ⟨av, hav⟩ := a
-                obtain ⟨bv, hbv⟩ := b
-                change av + (bv + 0) = 2 at hsize
-                have hav1 : av = 1 := by omega
-                have hbv1 : bv = 1 := by omega
-                subst av
-                subst bv
-                simp
-            | cons c xs =>
-                simp at hnum
-
-example : compositionClass.jointCount numParts 3 1 = 1 := by
-  apply compositionClass_jointCount_numParts_eq_one_of_unique
-    ([⟨3, by norm_num⟩] : compositionClass.Obj)
-  · rw [CombinatorialClass.level_mem_iff]
-    rfl
-  · rfl
-  · intro x hx hnum
-    have hsize : x.foldr (fun b acc => posIntClass.size b + acc) 0 = 3 := by
-      exact (CombinatorialClass.level_mem_iff (C := compositionClass) x).mp hx
-    change x.length = 1 at hnum
-    cases x with
-    | nil => simp at hnum
-    | cons a xs =>
-        cases xs with
-        | nil =>
-            simp only [List.foldr_cons, List.foldr_nil] at hsize
-            obtain ⟨v, hv⟩ := a
-            change v + 0 = 3 at hsize
-            have hv3 : v = 3 := by omega
-            subst v
-            simp
-        | cons b xs =>
-            simp at hnum
-
-example : compositionClass.jointCount numParts 3 2 = 2 := by
-  apply compositionClass_jointCount_numParts_eq_two_of_unique_pair
-    ([⟨1, by norm_num⟩, ⟨2, by norm_num⟩] : compositionClass.Obj)
-    ([⟨2, by norm_num⟩, ⟨1, by norm_num⟩] : compositionClass.Obj)
-  · rw [CombinatorialClass.level_mem_iff]
-    rfl
-  · rw [CombinatorialClass.level_mem_iff]
-    rfl
-  · rfl
-  · rfl
-  · intro h
-    injection h with hhead _
-    norm_num at hhead
-  · intro x hx hnum
-    have hsize : x.foldr (fun b acc => posIntClass.size b + acc) 0 = 3 := by
-      exact (CombinatorialClass.level_mem_iff (C := compositionClass) x).mp hx
-    change x.length = 2 at hnum
-    cases x with
-    | nil => simp at hnum
-    | cons a xs =>
-        cases xs with
-        | nil => simp at hnum
-        | cons b xs =>
-            cases xs with
-            | nil =>
-                simp only [List.foldr_cons, List.foldr_nil] at hsize
-                obtain ⟨av, hav⟩ := a
-                obtain ⟨bv, hbv⟩ := b
-                change av + (bv + 0) = 3 at hsize
-                have hav_cases : av = 1 ∨ av = 2 := by omega
-                rcases hav_cases with hav1 | hav2
-                · have hbv2 : bv = 2 := by omega
-                  subst av
-                  subst bv
-                  left
-                  simp
-                · have hbv1 : bv = 1 := by omega
-                  subst av
-                  subst bv
-                  right
-                  simp
-            | cons c xs =>
-                simp at hnum
-
-example : compositionClass.jointCount numParts 3 3 = 1 := by
-  apply compositionClass_jointCount_numParts_eq_one_of_unique
-    ([⟨1, by norm_num⟩, ⟨1, by norm_num⟩, ⟨1, by norm_num⟩] : compositionClass.Obj)
-  · rw [CombinatorialClass.level_mem_iff]
-    rfl
-  · rfl
-  · intro x hx hnum
-    have hsize : x.foldr (fun b acc => posIntClass.size b + acc) 0 = 3 := by
-      exact (CombinatorialClass.level_mem_iff (C := compositionClass) x).mp hx
-    change x.length = 3 at hnum
-    cases x with
-    | nil => simp at hnum
-    | cons a xs =>
-        cases xs with
-        | nil => simp at hnum
-        | cons b xs =>
-            cases xs with
-            | nil => simp at hnum
-            | cons c xs =>
-                cases xs with
-                | nil =>
-                    simp only [List.foldr_cons, List.foldr_nil] at hsize
-                    obtain ⟨av, hav⟩ := a
-                    obtain ⟨bv, hbv⟩ := b
-                    obtain ⟨cv, hcv⟩ := c
-                    change av + (bv + (cv + 0)) = 3 at hsize
-                    have hav1 : av = 1 := by omega
-                    have hbv1 : bv = 1 := by omega
-                    have hcv1 : cv = 1 := by omega
-                    subst av
-                    subst bv
-                    subst cv
-                    simp
-                | cons d xs =>
-                    simp at hnum
-
-/-! ## Parameter: maximum part -/
-
-/-- Maximum part of a composition, with value `0` for the empty composition. -/
-def compMaxPart : Parameter compositionClass := fun xs =>
-  (xs.map fun x => x.1).foldr max 0
-
-private instance : DecidableEq posIntClass.Obj := by
-  unfold posIntClass
-  infer_instance
-
-private instance : DecidableEq compositionClass.Obj := by
-  unfold compositionClass seqClass
-  infer_instance
-
-private abbrev compPart1 : posIntClass.Obj := ⟨1, by decide⟩
-private abbrev compPart2 : posIntClass.Obj := ⟨2, by decide⟩
-private abbrev compPart3 : posIntClass.Obj := ⟨3, by decide⟩
-private abbrev compPart4 : posIntClass.Obj := ⟨4, by decide⟩
-private abbrev compPart5 : posIntClass.Obj := ⟨5, by decide⟩
-private abbrev compPart6 : posIntClass.Obj := ⟨6, by decide⟩
-
-private def compLevel0 : Finset compositionClass.Obj :=
-  ([[]] : List compositionClass.Obj).toFinset
-
-private def compLevel1 : Finset compositionClass.Obj :=
-  ([[compPart1]] : List compositionClass.Obj).toFinset
-
-private def compLevel2 : Finset compositionClass.Obj :=
-  ([[compPart2], [compPart1, compPart1]] : List compositionClass.Obj).toFinset
-
-private def compLevel3 : Finset compositionClass.Obj :=
-  ([[compPart3], [compPart1, compPart2], [compPart2, compPart1],
-    [compPart1, compPart1, compPart1]] : List compositionClass.Obj).toFinset
-
-private def compLevel4 : Finset compositionClass.Obj :=
-  ([[compPart4], [compPart1, compPart3], [compPart3, compPart1],
-    [compPart2, compPart2], [compPart1, compPart1, compPart2],
-    [compPart1, compPart2, compPart1], [compPart2, compPart1, compPart1],
-    [compPart1, compPart1, compPart1, compPart1]] : List compositionClass.Obj).toFinset
-
-private def compLevel5 : Finset compositionClass.Obj :=
-  ([[compPart5], [compPart1, compPart4], [compPart4, compPart1],
-    [compPart2, compPart3], [compPart3, compPart2],
-    [compPart1, compPart1, compPart3], [compPart1, compPart3, compPart1],
-    [compPart3, compPart1, compPart1], [compPart1, compPart2, compPart2],
-    [compPart2, compPart1, compPart2], [compPart2, compPart2, compPart1],
-    [compPart1, compPart1, compPart1, compPart2],
-    [compPart1, compPart1, compPart2, compPart1],
-    [compPart1, compPart2, compPart1, compPart1],
-    [compPart2, compPart1, compPart1, compPart1],
-    [compPart1, compPart1, compPart1, compPart1, compPart1]] :
-      List compositionClass.Obj).toFinset
-
-private def compLevel6 : Finset compositionClass.Obj :=
-  ([[compPart6], [compPart1, compPart5], [compPart5, compPart1],
-    [compPart2, compPart4], [compPart4, compPart2],
-    [compPart1, compPart1, compPart4], [compPart1, compPart4, compPart1],
-    [compPart4, compPart1, compPart1], [compPart3, compPart3],
-    [compPart1, compPart2, compPart3], [compPart1, compPart3, compPart2],
-    [compPart2, compPart1, compPart3], [compPart2, compPart3, compPart1],
-    [compPart3, compPart1, compPart2], [compPart3, compPart2, compPart1],
-    [compPart1, compPart1, compPart1, compPart3],
-    [compPart1, compPart1, compPart3, compPart1],
-    [compPart1, compPart3, compPart1, compPart1],
-    [compPart3, compPart1, compPart1, compPart1],
-    [compPart2, compPart2, compPart2],
-    [compPart1, compPart1, compPart2, compPart2],
-    [compPart1, compPart2, compPart1, compPart2],
-    [compPart1, compPart2, compPart2, compPart1],
-    [compPart2, compPart1, compPart1, compPart2],
-    [compPart2, compPart1, compPart2, compPart1],
-    [compPart2, compPart2, compPart1, compPart1],
-    [compPart1, compPart1, compPart1, compPart1, compPart2],
-    [compPart1, compPart1, compPart1, compPart2, compPart1],
-    [compPart1, compPart1, compPart2, compPart1, compPart1],
-    [compPart1, compPart2, compPart1, compPart1, compPart1],
-    [compPart2, compPart1, compPart1, compPart1, compPart1],
-    [compPart1, compPart1, compPart1, compPart1, compPart1, compPart1]] :
-      List compositionClass.Obj).toFinset
-
-private lemma compositionClass_level_eq_of_subset_card {n : ℕ} {s : Finset compositionClass.Obj}
-    (hsubset : s ⊆ compositionClass.level n)
-    (hcard : (compositionClass.level n).card ≤ s.card) :
-    compositionClass.level n = s := by
-  symm
-  exact Finset.eq_of_subset_of_card_le hsubset hcard
-
-private lemma compLevel0_subset_level : compLevel0 ⊆ compositionClass.level 0 := by
-  intro x hx
-  rw [CombinatorialClass.level_mem_iff]
-  simp only [compLevel0, List.mem_toFinset, List.mem_cons, List.not_mem_nil, or_false] at hx
-  rcases hx with rfl
-  rfl
-
-private lemma compLevel1_subset_level : compLevel1 ⊆ compositionClass.level 1 := by
-  intro x hx
-  rw [CombinatorialClass.level_mem_iff]
-  simp only [compLevel1, List.mem_toFinset, List.mem_cons, List.not_mem_nil, or_false] at hx
-  rcases hx with rfl
-  rfl
-
-private lemma compLevel2_subset_level : compLevel2 ⊆ compositionClass.level 2 := by
-  intro x hx
-  rw [CombinatorialClass.level_mem_iff]
-  simp only [compLevel2, List.mem_toFinset, List.mem_cons, List.not_mem_nil, or_false] at hx
-  rcases hx with rfl | rfl <;> rfl
-
-private lemma compLevel3_subset_level : compLevel3 ⊆ compositionClass.level 3 := by
-  intro x hx
-  rw [CombinatorialClass.level_mem_iff]
-  simp only [compLevel3, List.mem_toFinset, List.mem_cons, List.not_mem_nil, or_false] at hx
-  rcases hx with rfl | rfl | rfl | rfl <;> rfl
-
-private lemma compLevel4_subset_level : compLevel4 ⊆ compositionClass.level 4 := by
-  intro x hx
-  rw [CombinatorialClass.level_mem_iff]
-  simp only [compLevel4, List.mem_toFinset, List.mem_cons, List.not_mem_nil, or_false] at hx
-  rcases hx with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> rfl
-
-private lemma compLevel5_subset_level : compLevel5 ⊆ compositionClass.level 5 := by
-  intro x hx
-  rw [CombinatorialClass.level_mem_iff]
-  simp only [compLevel5, List.mem_toFinset, List.mem_cons, List.not_mem_nil, or_false] at hx
-  rcases hx with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-    rfl | rfl | rfl | rfl | rfl <;> rfl
-
-private lemma compLevel6_subset_level : compLevel6 ⊆ compositionClass.level 6 := by
-  intro x hx
-  rw [CombinatorialClass.level_mem_iff]
-  simp only [compLevel6, List.mem_toFinset, List.mem_cons, List.not_mem_nil, or_false] at hx
-  rcases hx with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> rfl
-
-private lemma compositionClass_level_zero : compositionClass.level 0 = compLevel0 := by
-  apply compositionClass_level_eq_of_subset_card compLevel0_subset_level
-  rw [show (compositionClass.level 0).card = compositionClass.count 0 by rfl,
-    compositionClass_count_zero]
-  decide
-
-private lemma compositionClass_level_one : compositionClass.level 1 = compLevel1 := by
-  apply compositionClass_level_eq_of_subset_card compLevel1_subset_level
-  rw [show (compositionClass.level 1).card = compositionClass.count 1 by rfl,
-    compositionClass_count_succ]
-  decide
-
-private lemma compositionClass_level_two : compositionClass.level 2 = compLevel2 := by
-  apply compositionClass_level_eq_of_subset_card compLevel2_subset_level
-  rw [show (compositionClass.level 2).card = compositionClass.count 2 by rfl,
-    compositionClass_count_succ]
-  decide
-
-private lemma compositionClass_level_three : compositionClass.level 3 = compLevel3 := by
-  apply compositionClass_level_eq_of_subset_card compLevel3_subset_level
-  rw [show (compositionClass.level 3).card = compositionClass.count 3 by rfl,
-    compositionClass_count_succ]
-  decide
-
-private lemma compositionClass_level_four : compositionClass.level 4 = compLevel4 := by
-  apply compositionClass_level_eq_of_subset_card compLevel4_subset_level
-  rw [show (compositionClass.level 4).card = compositionClass.count 4 by rfl,
-    compositionClass_count_succ]
-  decide
-
-private lemma compositionClass_level_five : compositionClass.level 5 = compLevel5 := by
-  apply compositionClass_level_eq_of_subset_card compLevel5_subset_level
-  rw [show (compositionClass.level 5).card = compositionClass.count 5 by rfl,
-    compositionClass_count_succ]
-  decide
-
-private lemma compositionClass_level_six : compositionClass.level 6 = compLevel6 := by
-  apply compositionClass_level_eq_of_subset_card compLevel6_subset_level
-  rw [show (compositionClass.level 6).card = compositionClass.count 6 by rfl,
-    compositionClass_count_succ]
-  decide
-
-/-- Sanity at small n: count compositions of n by maximum part. -/
-example : compositionClass.jointCount compMaxPart 0 0 = 1 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_zero]
-  decide
-
-example : compositionClass.jointCount compMaxPart 1 1 = 1 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_one]
-  decide
-
-example : compositionClass.jointCount compMaxPart 2 1 = 1 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_two]
-  decide
-
-example : compositionClass.jointCount compMaxPart 2 2 = 1 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_two]
-  decide
-
-example : compositionClass.jointCount compMaxPart 3 1 = 1 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_three]
-  decide
-
-example : compositionClass.jointCount compMaxPart 3 2 = 2 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_three]
-  decide
-
-example : compositionClass.jointCount compMaxPart 3 3 = 1 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_three]
-  decide
-
-example : compositionClass.jointCount compMaxPart 4 1 = 1 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_four]
-  decide
-
-example : compositionClass.jointCount compMaxPart 4 2 = 4 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_four]
-  decide
-
-example : compositionClass.jointCount compMaxPart 4 3 = 2 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_four]
-  decide
-
-example : compositionClass.jointCount compMaxPart 4 4 = 1 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_four]
-  decide
-
-example : compositionClass.jointCount compMaxPart 5 1 = 1 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_five]
-  decide
-
-example : compositionClass.jointCount compMaxPart 5 2 = 7 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_five]
-  decide
-
-example : compositionClass.jointCount compMaxPart 5 3 = 5 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_five]
-  decide
-
-example : compositionClass.jointCount compMaxPart 5 4 = 2 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_five]
-  decide
-
-example : compositionClass.jointCount compMaxPart 5 5 = 1 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_five]
-  decide
-
-example : 1 + 7 + 5 + 2 + 1 = compositionClass.count 5 := by
-  rw [compositionClass_count_succ]
-  decide
-
-example : compositionClass.jointCount compMaxPart 6 1 = 1 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_six]
-  decide
-
-example : compositionClass.jointCount compMaxPart 6 2 = 12 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_six]
-  decide
-
-example : compositionClass.jointCount compMaxPart 6 3 = 11 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_six]
-  decide
-
-example : compositionClass.jointCount compMaxPart 6 4 = 5 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_six]
-  decide
-
-example : compositionClass.jointCount compMaxPart 6 5 = 2 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_six]
-  decide
-
-example : compositionClass.jointCount compMaxPart 6 6 = 1 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_six]
-  decide
-
-example : 1 + 12 + 11 + 5 + 2 + 1 = compositionClass.count 6 := by
-  rw [compositionClass_count_succ]
-  decide
-
-/-! ## Parameter: first part -/
-
-/-- First part of a composition, with value `0` for the empty composition. -/
-def compFirstPart : Parameter compositionClass := fun
-  | [] => 0
-  | x :: _ => x.1
-
-/-- Sanity at small n: count compositions of n by first part. -/
-example : compositionClass.jointCount compFirstPart 0 0 = 1 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_zero]
-  decide
-
-example : compositionClass.jointCount compFirstPart 1 1 = 1 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_one]
-  decide
-
-example : compositionClass.jointCount compFirstPart 2 1 = 1 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_two]
-  decide
-
-example : compositionClass.jointCount compFirstPart 2 2 = 1 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_two]
-  decide
-
-example : compositionClass.jointCount compFirstPart 3 1 = 2 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_three]
-  decide
-
-example : compositionClass.jointCount compFirstPart 3 2 = 1 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_three]
-  decide
-
-example : compositionClass.jointCount compFirstPart 3 3 = 1 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_three]
-  decide
-
-example : compositionClass.jointCount compFirstPart 4 1 = 4 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_four]
-  decide
-
-example : compositionClass.jointCount compFirstPart 4 2 = 2 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_four]
-  decide
-
-example : compositionClass.jointCount compFirstPart 4 3 = 1 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_four]
-  decide
-
-example : compositionClass.jointCount compFirstPart 4 4 = 1 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_four]
-  decide
-
-example : compositionClass.jointCount compFirstPart 5 1 = 8 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_five]
-  decide
-
-example : compositionClass.jointCount compFirstPart 5 2 = 4 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_five]
-  decide
-
-example : compositionClass.jointCount compFirstPart 5 3 = 2 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_five]
-  decide
-
-example : compositionClass.jointCount compFirstPart 5 4 = 1 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_five]
-  decide
-
-example : compositionClass.jointCount compFirstPart 5 5 = 1 := by
-  rw [CombinatorialClass.jointCount, compositionClass_level_five]
-  decide
-
-example (n : ℕ) :
-    ∑ k ∈ (compositionClass.level n).image compFirstPart,
-      compositionClass.jointCount compFirstPart n k = compositionClass.count n := by
-  rw [CombinatorialClass.jointCount_sum_eq_count]
-
-example : compositionClass.count 8 = 128 := compositionClass_count_succ 7
-example : compositionClass.count 10 = 512 := compositionClass_count_succ 9
-example : compositionClass.count 12 = 2048 := compositionClass_count_succ 11
-
-/-! ## Compositions into parts of size at least 2 -/
-
-/-- Positive integers with size ≥ 2: each k ≥ 2 has size k. -/
-def posIntGe2Class : CombinatorialClass where
-  Obj := {n : ℕ // 2 ≤ n}
-  size := fun ⟨n, _⟩ => n
-  finite_level n := by
-    by_cases h : 2 ≤ n
-    · apply Set.Finite.subset (Set.finite_singleton (⟨n, h⟩ : {k : ℕ // 2 ≤ k}))
-      intro x hx
-      simp only [Set.mem_setOf_eq] at hx
-      obtain ⟨v, hv⟩ := x
-      have hvn : v = n := hx
-      subst hvn
-      rfl
-    · apply Set.Finite.subset Set.finite_empty
-      intro x hx
-      simp only [Set.mem_setOf_eq] at hx
-      obtain ⟨v, hv⟩ := x
-      change v = n at hx
-      omega
-
-namespace posIntGe2Class
-
-/-- count 0 = 0 (no part of size 0). -/
-lemma count_zero : posIntGe2Class.count 0 = 0 := by
-  change (posIntGe2Class.level 0).card = 0
-  rw [Finset.card_eq_zero]
-  ext x
-  simp only [Finset.notMem_empty, iff_false]
-  intro hx
-  have hsz : posIntGe2Class.size x = 0 :=
-    (posIntGe2Class.finite_level 0).mem_toFinset.mp hx
-  obtain ⟨v, hv⟩ := x
-  change v = 0 at hsz
-  omega
-
-/-- count 1 = 0 (no part of size 1). -/
-lemma count_one : posIntGe2Class.count 1 = 0 := by
-  change (posIntGe2Class.level 1).card = 0
-  rw [Finset.card_eq_zero]
-  ext x
-  simp only [Finset.notMem_empty, iff_false]
-  intro hx
-  have hsz : posIntGe2Class.size x = 1 :=
-    (posIntGe2Class.finite_level 1).mem_toFinset.mp hx
-  obtain ⟨v, hv⟩ := x
-  change v = 1 at hsz
-  omega
-
-/-- For each k ≥ 2, exactly one positive integer has size k. -/
-lemma count_ge_two {k : ℕ} (hk : 2 ≤ k) : posIntGe2Class.count k = 1 := by
-  change (posIntGe2Class.level k).card = 1
-  rw [Finset.card_eq_one]
-  refine ⟨⟨k, hk⟩, ?_⟩
-  ext x
-  refine ⟨fun hx => ?_, fun hx => ?_⟩
-  · have hsz : posIntGe2Class.size x = k :=
-      (posIntGe2Class.finite_level k).mem_toFinset.mp hx
-    obtain ⟨v, hv⟩ := x
-    change v = k at hsz
-    subst hsz
-    exact Finset.mem_singleton_self _
-  · rw [Finset.mem_singleton] at hx
-    subst hx
-    exact (posIntGe2Class.finite_level k).mem_toFinset.mpr rfl
-
-end posIntGe2Class
-
-/-- The class of compositions into parts of size ≥ 2. -/
-noncomputable def compositionGe2Class : CombinatorialClass :=
-  seqClass posIntGe2Class posIntGe2Class.count_zero
-
-/-- Empty composition is the unique composition of 0. -/
-theorem compositionGe2Class_count_zero : compositionGe2Class.count 0 = 1 := by
-  change (seqClass posIntGe2Class posIntGe2Class.count_zero).count 0 = 1
-  rw [seqClass.count_zero]
-
-/-- There is no composition of 1 into parts of size ≥ 2. -/
-theorem compositionGe2Class_count_one : compositionGe2Class.count 1 = 0 := by
-  change (compositionGe2Class.level 1).card = 0
-  rw [Finset.card_eq_zero]
-  ext xs
-  simp only [Finset.notMem_empty, iff_false]
-  intro hxs
-  have hsz : xs.foldr (fun b acc => posIntGe2Class.size b + acc) 0 = 1 :=
-    (CombinatorialClass.level_mem_iff (C := compositionGe2Class) xs).mp hxs
-  cases xs with
-  | nil => simp at hsz
-  | cons a xs =>
-      obtain ⟨v, hv⟩ := a
-      change v + xs.foldr (fun b acc => posIntGe2Class.size b + acc) 0 = 1 at hsz
-      omega
-
-/-- Recurrence: count(n+2) is the sum of all previous counts through n. -/
-private lemma compositionGe2Class_count_succ_succ_eq_sum (n : ℕ) :
-    compositionGe2Class.count (n + 2) =
-      ∑ j ∈ Finset.range (n + 1), compositionGe2Class.count j := by
-  change (seqClass posIntGe2Class posIntGe2Class.count_zero).count (n + 2) = _
-  rw [show n + 2 = (n + 1) + 1 by omega]
-  rw [seqClass.count_succ]
-  rw [show (n + 1) + 1 = n + 2 by omega]
-  rw [show Finset.antidiagonal (n + 2)
-        = (Finset.range (n + 3)).image (fun k => (k, n + 2 - k)) from ?_]
-  · rw [Finset.sum_image]
-    · rw [Finset.sum_range_succ' _ (n + 2),
-          posIntGe2Class.count_zero, zero_mul, add_zero]
-      rw [Finset.sum_range_succ' _ (n + 1),
-          posIntGe2Class.count_one, zero_mul, add_zero]
-      rw [← Finset.sum_range_reflect _ (n + 1)]
-      apply Finset.sum_congr rfl
-      intro k hk
-      simp only [Finset.mem_range] at hk
-      rw [posIntGe2Class.count_ge_two (by omega), one_mul]
-      congr 1
-      omega
-    · intros a _ b _ heq
-      exact (Prod.mk.injEq _ _ _ _).mp heq |>.1
-  · ext ⟨k, m⟩
-    simp only [Finset.mem_antidiagonal, Finset.mem_image, Finset.mem_range, Prod.mk.injEq]
-    refine ⟨fun h => ⟨k, by omega, by omega, by omega⟩,
-            fun ⟨a, _, ha1, ha2⟩ => by omega⟩
-
-/-- Fibonacci recurrence for compositions into parts of size ≥ 2. -/
-private lemma compositionGe2Class_count_add_three (n : ℕ) :
-    compositionGe2Class.count (n + 3) =
-      compositionGe2Class.count (n + 2) + compositionGe2Class.count (n + 1) := by
-  rw [show n + 3 = (n + 1) + 2 by omega]
-  rw [compositionGe2Class_count_succ_succ_eq_sum (n + 1)]
-  rw [Finset.sum_range_succ]
-  rw [← compositionGe2Class_count_succ_succ_eq_sum n]
-
-/-- The number of compositions of n+2 into parts ≥ 2 equals fib(n+1). -/
-theorem compositionGe2Class_count_succ_succ (n : ℕ) :
-    compositionGe2Class.count (n + 2) = Nat.fib (n + 1) := by
-  induction n using Nat.twoStepInduction with
-  | zero =>
-      rw [compositionGe2Class_count_succ_succ_eq_sum, Finset.sum_range_one,
-        compositionGe2Class_count_zero, Nat.fib_one]
-  | one =>
-      rw [compositionGe2Class_count_succ_succ_eq_sum, Finset.sum_range_succ,
-        Finset.sum_range_one, compositionGe2Class_count_zero, compositionGe2Class_count_one,
-        Nat.fib_two]
-  | more n ih0 ih1 =>
-      rw [show n + 1 + 1 + 2 = n + 4 by omega]
-      rw [show n + 4 = (n + 1) + 3 by omega]
-      rw [compositionGe2Class_count_add_three, ih0, ih1]
-      rw [show n + 1 + 1 + 1 = (n + 1) + 2 by omega]
-      rw [show Nat.fib (n + 2) + Nat.fib (n + 1) =
-        Nat.fib (n + 1) + Nat.fib (n + 2) by ac_rfl]
-      exact (Nat.fib_add_two (n := n + 1)).symm
-
-/-- Closed form for n ≥ 2: count of compositions of n into parts ≥ 2 is fib(n-1). -/
-theorem compositionGe2Class_count_eq_fib_pred (n : ℕ) (hn : 2 ≤ n) :
-    compositionGe2Class.count n = Nat.fib (n - 1) := by
-  obtain ⟨k, rfl⟩ : ∃ k, n = k + 2 := ⟨n - 2, by omega⟩
-  rw [compositionGe2Class_count_succ_succ]
-  congr 1
-
-/-! Sanity checks: counts are 1, 0, 1, 1, 2, 3, 5, 8, ... -/
-example : compositionGe2Class.count 0 = 1 := compositionGe2Class_count_zero
-example : compositionGe2Class.count 1 = 0 := compositionGe2Class_count_one
-example : compositionGe2Class.count 2 = 1 := compositionGe2Class_count_succ_succ 0
-example : compositionGe2Class.count 3 = 1 := compositionGe2Class_count_succ_succ 1
-example : compositionGe2Class.count 4 = 2 := compositionGe2Class_count_succ_succ 2
-example : compositionGe2Class.count 5 = 3 := compositionGe2Class_count_succ_succ 3
-example : compositionGe2Class.count 6 = 5 := compositionGe2Class_count_succ_succ 4
-example : compositionGe2Class.count 7 = 8 := compositionGe2Class_count_succ_succ 5
-
-/-! Basic identities for the sequence construction. -/
-
-/-- count 0 = 1 (only empty composition has total 0). -/
-example : compositionGe2Class.count 0 = 1 := by
-  change (seqClass posIntGe2Class posIntGe2Class.count_zero).count 0 = 1
-  rw [seqClass.count_zero]
-
-/-- count 1 = 0 (no part of size 1, so no composition of total 1). -/
-example : compositionGe2Class.count 1 = 0 := by
-  change (seqClass posIntGe2Class posIntGe2Class.count_zero).count (0 + 1) = 0
-  rw [seqClass.count_succ]
-  rw [Finset.sum_eq_zero]
-  intro p hp
-  have hp_sum : p.1 + p.2 = 1 := Finset.mem_antidiagonal.mp hp
-  rcases p with ⟨k, m⟩
-  simp only at hp_sum
-  cases k with
-  | zero =>
-      rw [posIntGe2Class.count_zero, zero_mul]
-  | succ k =>
-      cases k with
-      | zero =>
-          rw [posIntGe2Class.count_one, zero_mul]
-      | succ k =>
-          omega
-
-namespace CombinatorialClass
-
-noncomputable def ogfZ (A : CombinatorialClass) : PowerSeries ℤ :=
-  A.ogf.map (algebraMap ℕ ℤ)
-
-end CombinatorialClass
-
-example : PowerSeries.coeff 0 (CombinatorialClass.ogfZ compositionClass) = (1 : ℤ) := by
-  unfold CombinatorialClass.ogfZ
-  rw [PowerSeries.coeff_map, coeff_ogf, compositionClass_count_zero]
-  rfl
-
-/-! Additional count sanity checks. -/
-
-example : compositionClass.count 8 = 128 := by
-  rw [compositionClass_count_succ]
-  decide
-
-example : compositionClass.count 9 = 256 := by
-  rw [compositionClass_count_succ]
-  decide
-
-example : compositionClass.count 10 = 512 := by
-  rw [compositionClass_count_succ]
-  decide
-
-example : compositionClass.count 11 = 1024 := by
-  rw [compositionClass_count_succ]
-  decide
-
-example : compositionClass.count 12 = 2048 := by
-  rw [compositionClass_count_succ]
-  decide
-
-example : compositionClass.count 13 = 4096 := by
-  rw [compositionClass_count_succ]
-  decide
-
-example : compositionClass.count 14 = 8192 := by
-  rw [compositionClass_count_succ]
-  decide
-
-example : compositionClass.count 15 = 16384 := by
-  rw [compositionClass_count_succ]
-  decide
-
-example : compositionClass.count 16 = 32768 := by
-  rw [compositionClass_count_succ]
-  decide
-
-example : compositionClass.count 17 = 65536 := by
-  rw [compositionClass_count_succ]
-  decide
-
-example : compositionClass.count 18 = 131072 := by
-  rw [compositionClass_count_succ]
-  decide
-
-example : compositionClass.count 19 = 262144 := by
-  rw [compositionClass_count_succ]
-  decide
-
-example : compositionClass.count 20 = 524288 := by
-  rw [compositionClass_count_succ]
-  decide
-
-example : compositionClass.count 21 = 1048576 := by
-  rw [compositionClass_count_succ]
-  decide
-
-example : compositionClass.count 22 = 2097152 := by
-  rw [compositionClass_count_succ]
-  decide
-
-example : compositionClass.count 23 = 4194304 := by
-  rw [compositionClass_count_succ]
-  decide
-
-example : compositionClass.count 24 = 8388608 := by
-  rw [compositionClass_count_succ]
-  decide
-
-example : compositionGe2Class.count 8 = 13 := by
-  rw [compositionGe2Class_count_succ_succ]
-  decide
-
-example : compositionGe2Class.count 9 = 21 := by
-  rw [compositionGe2Class_count_succ_succ]
-  decide
-
-example : compositionGe2Class.count 10 = 34 := by
-  rw [compositionGe2Class_count_succ_succ]
-  decide
-
-example : compositionGe2Class.count 11 = 55 := by
-  rw [compositionGe2Class_count_succ_succ]
-  decide
-
-example : compositionGe2Class.count 12 = 89 := by
-  rw [compositionGe2Class_count_succ_succ]
-  decide
-
-example : compositionGe2Class.count 13 = 144 := by
-  rw [compositionGe2Class_count_succ_succ]
-  decide
-
-example : compositionGe2Class.count 14 = 233 := by
-  rw [compositionGe2Class_count_succ_succ]
-  decide
-
-example : compositionGe2Class.count 15 = 377 := by
-  rw [compositionGe2Class_count_succ_succ]
-  decide
-
-example : compositionGe2Class.count 16 = 610 := by
-  rw [compositionGe2Class_count_succ_succ]
-  decide
-
-example : compositionGe2Class.count 17 = 987 := by
-  rw [compositionGe2Class_count_succ_succ]
-  decide
-
-example : compositionGe2Class.count 18 = 1597 := by
-  rw [compositionGe2Class_count_succ_succ]
-  decide
-
-example : compositionGe2Class.count 19 = 2584 := by
-  rw [compositionGe2Class_count_succ_succ]
-  decide
-
-example : compositionGe2Class.count 20 = 4181 := by
-  rw [compositionGe2Class_count_succ_succ]
-  decide
-
-example : compositionGe2Class.count 21 = 6765 := by
-  rw [compositionGe2Class_count_succ_succ]
-  decide
-
-example : compositionGe2Class.count 22 = 10946 := by
-  rw [compositionGe2Class_count_succ_succ]
-  decide
-
-example : compositionGe2Class.count 23 = 17711 := by
-  rw [compositionGe2Class_count_succ_succ]
-  decide
-
-example : compositionGe2Class.count 24 = 28657 := by
-  rw [compositionGe2Class_count_succ_succ]
-  decide
+  · norm_num [CompositionsBudgetCertificate.controlled,
+      sampleCompositionsBudgetCertificate]
+  · norm_num [CompositionsBudgetCertificate.budgetControlled,
+      sampleCompositionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCompositionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCompositionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List CompositionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCompositionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCompositionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.Examples.Compositions

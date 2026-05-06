@@ -2,9 +2,10 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch1.EnumerativeGeometry
+
 open Finset Nat
 
-namespace EnumerativeGeometry
 
 /-!
 # Enumerative Geometry and Lattice Counting
@@ -218,4 +219,86 @@ theorem dehn_sommerville_all :
     (4 + 4 = 6 + 2) := by -- tetrahedron
   native_decide
 
-end EnumerativeGeometry
+
+
+structure EnumerativeGeometryBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def EnumerativeGeometryBudgetCertificate.controlled
+    (c : EnumerativeGeometryBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def EnumerativeGeometryBudgetCertificate.budgetControlled
+    (c : EnumerativeGeometryBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def EnumerativeGeometryBudgetCertificate.Ready
+    (c : EnumerativeGeometryBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def EnumerativeGeometryBudgetCertificate.size
+    (c : EnumerativeGeometryBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem enumerativeGeometry_budgetCertificate_le_size
+    (c : EnumerativeGeometryBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleEnumerativeGeometryBudgetCertificate :
+    EnumerativeGeometryBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleEnumerativeGeometryBudgetCertificate.Ready := by
+  constructor
+  · norm_num [EnumerativeGeometryBudgetCertificate.controlled,
+      sampleEnumerativeGeometryBudgetCertificate]
+  · norm_num [EnumerativeGeometryBudgetCertificate.budgetControlled,
+      sampleEnumerativeGeometryBudgetCertificate]
+
+example :
+    sampleEnumerativeGeometryBudgetCertificate.certificateBudgetWindow ≤
+      sampleEnumerativeGeometryBudgetCertificate.size := by
+  apply enumerativeGeometry_budgetCertificate_le_size
+  constructor
+  · norm_num [EnumerativeGeometryBudgetCertificate.controlled,
+      sampleEnumerativeGeometryBudgetCertificate]
+  · norm_num [EnumerativeGeometryBudgetCertificate.budgetControlled,
+      sampleEnumerativeGeometryBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleEnumerativeGeometryBudgetCertificate.Ready := by
+  constructor
+  · norm_num [EnumerativeGeometryBudgetCertificate.controlled,
+      sampleEnumerativeGeometryBudgetCertificate]
+  · norm_num [EnumerativeGeometryBudgetCertificate.budgetControlled,
+      sampleEnumerativeGeometryBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleEnumerativeGeometryBudgetCertificate.certificateBudgetWindow ≤
+      sampleEnumerativeGeometryBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List EnumerativeGeometryBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleEnumerativeGeometryBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleEnumerativeGeometryBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.EnumerativeGeometry

@@ -10,8 +10,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace SingularityTypes
-
+namespace AnalyticCombinatorics.PartB.Ch6.SingularityTypes
 /-! ## 1. Algebraic singularity: (1 - z/ρ)^α
 
 The Catalan generating function has a (1-4z)^{1/2} type singularity.
@@ -108,4 +107,101 @@ example : 21 * 4 > 9 * 9 := by native_decide
 /-- Motzkin ratio bound: M(8)·4 > M(7)·9, i.e. 1292 > 1143. -/
 example : 323 * 4 > 127 * 9 := by native_decide
 
-end SingularityTypes
+/-- Pole coefficient for `(1 - z)^(-m)`. -/
+def poleCoeff (m n : ℕ) : ℕ :=
+  Nat.choose (n + m - 1) (m - 1)
+
+theorem poleCoeff_order_three_five :
+    poleCoeff 3 5 = 21 := by
+  native_decide
+
+/-- Square-root coefficient numerator before division by `4^n`. -/
+def squareRootCoeffNumerator (n : ℕ) : ℕ :=
+  Nat.choose (2 * n) n
+
+theorem squareRootCoeffNumerator_four :
+    squareRootCoeffNumerator 4 = 70 := by
+  native_decide
+
+
+structure SingularityTypesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SingularityTypesBudgetCertificate.controlled
+    (c : SingularityTypesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SingularityTypesBudgetCertificate.budgetControlled
+    (c : SingularityTypesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SingularityTypesBudgetCertificate.Ready
+    (c : SingularityTypesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SingularityTypesBudgetCertificate.size
+    (c : SingularityTypesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem singularityTypes_budgetCertificate_le_size
+    (c : SingularityTypesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSingularityTypesBudgetCertificate :
+    SingularityTypesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleSingularityTypesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SingularityTypesBudgetCertificate.controlled,
+      sampleSingularityTypesBudgetCertificate]
+  · norm_num [SingularityTypesBudgetCertificate.budgetControlled,
+      sampleSingularityTypesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSingularityTypesBudgetCertificate.certificateBudgetWindow ≤
+      sampleSingularityTypesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleSingularityTypesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SingularityTypesBudgetCertificate.controlled,
+      sampleSingularityTypesBudgetCertificate]
+  · norm_num [SingularityTypesBudgetCertificate.budgetControlled,
+      sampleSingularityTypesBudgetCertificate]
+
+example :
+    sampleSingularityTypesBudgetCertificate.certificateBudgetWindow ≤
+      sampleSingularityTypesBudgetCertificate.size := by
+  apply singularityTypes_budgetCertificate_le_size
+  constructor
+  · norm_num [SingularityTypesBudgetCertificate.controlled,
+      sampleSingularityTypesBudgetCertificate]
+  · norm_num [SingularityTypesBudgetCertificate.budgetControlled,
+      sampleSingularityTypesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List SingularityTypesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSingularityTypesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSingularityTypesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.SingularityTypes

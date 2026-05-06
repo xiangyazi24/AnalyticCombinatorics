@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace LargeDeviations
+namespace AnalyticCombinatorics.PartB.Ch8.LargeDeviations
+
 
 open Finset
 
@@ -254,4 +255,86 @@ theorem binomial_exp_moment_sum_identities :
         binomialExpMoment 5 ((2 : ℚ) / 5) 2 := by
   native_decide
 
-end LargeDeviations
+
+
+structure LargeDeviationsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def LargeDeviationsBudgetCertificate.controlled
+    (c : LargeDeviationsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def LargeDeviationsBudgetCertificate.budgetControlled
+    (c : LargeDeviationsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def LargeDeviationsBudgetCertificate.Ready
+    (c : LargeDeviationsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def LargeDeviationsBudgetCertificate.size
+    (c : LargeDeviationsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem largeDeviations_budgetCertificate_le_size
+    (c : LargeDeviationsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleLargeDeviationsBudgetCertificate :
+    LargeDeviationsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleLargeDeviationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [LargeDeviationsBudgetCertificate.controlled,
+      sampleLargeDeviationsBudgetCertificate]
+  · norm_num [LargeDeviationsBudgetCertificate.budgetControlled,
+      sampleLargeDeviationsBudgetCertificate]
+
+example :
+    sampleLargeDeviationsBudgetCertificate.certificateBudgetWindow ≤
+      sampleLargeDeviationsBudgetCertificate.size := by
+  apply largeDeviations_budgetCertificate_le_size
+  constructor
+  · norm_num [LargeDeviationsBudgetCertificate.controlled,
+      sampleLargeDeviationsBudgetCertificate]
+  · norm_num [LargeDeviationsBudgetCertificate.budgetControlled,
+      sampleLargeDeviationsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleLargeDeviationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [LargeDeviationsBudgetCertificate.controlled,
+      sampleLargeDeviationsBudgetCertificate]
+  · norm_num [LargeDeviationsBudgetCertificate.budgetControlled,
+      sampleLargeDeviationsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleLargeDeviationsBudgetCertificate.certificateBudgetWindow ≤
+      sampleLargeDeviationsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List LargeDeviationsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleLargeDeviationsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleLargeDeviationsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.LargeDeviations

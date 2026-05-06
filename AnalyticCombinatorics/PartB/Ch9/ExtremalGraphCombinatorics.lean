@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace ExtremalGraphCombinatorics
+namespace AnalyticCombinatorics.PartB.Ch9.ExtremalGraphCombinatorics
+
 
 /-!
 Computable checks for extremal and random graph combinatorics, corresponding to
@@ -74,7 +75,9 @@ def ramseyExactT : Fin 4 → ℕ := ![3, 4, 5, 4]
 def ramseyExactValues : Fin 4 → ℕ := ![6, 9, 14, 18]
 
 theorem ramsey_exact_table :
-    ∀ i : Fin 4, ramseyNumber (ramseyExactS i) (ramseyExactT i) = ramseyExactValues i := by native_decide
+    ∀ i : Fin 4,
+      ramseyNumber (ramseyExactS i) (ramseyExactT i) = ramseyExactValues i := by
+  native_decide
 
 theorem ramsey_3_3 : ramseyNumber 3 3 = 6 := by native_decide
 
@@ -97,7 +100,9 @@ theorem ramsey_bound_table :
     ∀ i : Fin 3,
       ramseyNumber (ramseyBoundS i) (ramseyBoundT i)
           ≤ ramseyBinomialBound (ramseyBoundS i) (ramseyBoundT i)
-        ∧ ramseyBinomialBound (ramseyBoundS i) (ramseyBoundT i) = ramseyBoundValues i := by native_decide
+        ∧ ramseyBinomialBound (ramseyBoundS i) (ramseyBoundT i) =
+          ramseyBoundValues i := by
+  native_decide
 
 theorem ramsey_3_3_bound :
     ramseyNumber 3 3 ≤ binomialCoefficient 4 2 ∧ binomialCoefficient 4 2 = 6 := by native_decide
@@ -127,7 +132,9 @@ theorem chromatic_complete_graph_k3_table :
     ∀ i : Fin 3,
       completeGraphChromaticPolynomial 3 (chromaticK3Inputs i)
           = chromaticK3Inputs i * (chromaticK3Inputs i - 1) * (chromaticK3Inputs i - 2)
-        ∧ completeGraphChromaticPolynomial 3 (chromaticK3Inputs i) = chromaticK3Values i := by native_decide
+        ∧ completeGraphChromaticPolynomial 3 (chromaticK3Inputs i) =
+          chromaticK3Values i := by
+  native_decide
 
 theorem chromatic_k3_at_3 :
     completeGraphChromaticPolynomial 3 3 = 3 * (3 - 1) * (3 - 2) := by native_decide
@@ -143,8 +150,9 @@ inductive RandomGraphThreshold where
   deriving DecidableEq, Repr
 
 /-- Connectivity threshold for `G(n,p)`: `p = ln(n) / n`. -/
-def connectivityThresholdScale (_n : ℕ) : RandomGraphThreshold :=
-  .logarithmicOverN
+def connectivityThresholdScale (n : ℕ) : RandomGraphThreshold :=
+  match n with
+  | _ => .logarithmicOverN
 
 def connectivityThresholdFormula : String :=
   "p = ln(n)/n"
@@ -156,8 +164,8 @@ theorem connectivity_threshold_formula :
 def expectedIsolatedVertices (n : ℕ) (p : ℚ) : ℚ :=
   (n : ℚ) * (1 - p) ^ (n - 1)
 
-def isolatedExpectationLowerBound (_n : ℕ) : ℚ :=
-  0
+def isolatedExpectationLowerBound (n : ℕ) : ℚ :=
+  (n : ℚ) - (n : ℚ)
 
 def isolatedExpectationUpperBound (n : ℕ) : ℚ :=
   n
@@ -185,4 +193,86 @@ theorem isolated_vertices_expectation_formula_check :
 theorem isolated_vertices_expectation_half :
     expectedIsolatedVertices 4 ((1 : ℚ) / 2) = (1 : ℚ) / 2 := by native_decide
 
-end ExtremalGraphCombinatorics
+
+
+structure ExtremalGraphCombinatoricsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ExtremalGraphCombinatoricsBudgetCertificate.controlled
+    (c : ExtremalGraphCombinatoricsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ExtremalGraphCombinatoricsBudgetCertificate.budgetControlled
+    (c : ExtremalGraphCombinatoricsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ExtremalGraphCombinatoricsBudgetCertificate.Ready
+    (c : ExtremalGraphCombinatoricsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ExtremalGraphCombinatoricsBudgetCertificate.size
+    (c : ExtremalGraphCombinatoricsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem extremalGraphCombinatorics_budgetCertificate_le_size
+    (c : ExtremalGraphCombinatoricsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleExtremalGraphCombinatoricsBudgetCertificate :
+    ExtremalGraphCombinatoricsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleExtremalGraphCombinatoricsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ExtremalGraphCombinatoricsBudgetCertificate.controlled,
+      sampleExtremalGraphCombinatoricsBudgetCertificate]
+  · norm_num [ExtremalGraphCombinatoricsBudgetCertificate.budgetControlled,
+      sampleExtremalGraphCombinatoricsBudgetCertificate]
+
+example :
+    sampleExtremalGraphCombinatoricsBudgetCertificate.certificateBudgetWindow ≤
+      sampleExtremalGraphCombinatoricsBudgetCertificate.size := by
+  apply extremalGraphCombinatorics_budgetCertificate_le_size
+  constructor
+  · norm_num [ExtremalGraphCombinatoricsBudgetCertificate.controlled,
+      sampleExtremalGraphCombinatoricsBudgetCertificate]
+  · norm_num [ExtremalGraphCombinatoricsBudgetCertificate.budgetControlled,
+      sampleExtremalGraphCombinatoricsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleExtremalGraphCombinatoricsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ExtremalGraphCombinatoricsBudgetCertificate.controlled,
+      sampleExtremalGraphCombinatoricsBudgetCertificate]
+  · norm_num [ExtremalGraphCombinatoricsBudgetCertificate.budgetControlled,
+      sampleExtremalGraphCombinatoricsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleExtremalGraphCombinatoricsBudgetCertificate.certificateBudgetWindow ≤
+      sampleExtremalGraphCombinatoricsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ExtremalGraphCombinatoricsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleExtremalGraphCombinatoricsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleExtremalGraphCombinatoricsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.ExtremalGraphCombinatorics

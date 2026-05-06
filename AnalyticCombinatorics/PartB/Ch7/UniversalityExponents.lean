@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace UniversalityExponents
+namespace AnalyticCombinatorics.PartB.Ch7.UniversalityExponents
+
 
 /-!
   Chapter VII finite checks: universality of critical exponents.
@@ -211,13 +212,100 @@ noncomputable def treeExponent : ℝ := 3 / 2
 noncomputable def mapExponent : ℝ := 5 / 2
 noncomputable def higherExponent : ℝ := 7 / 2
 
-theorem exponent_gap_map_tree : mapExponent - treeExponent = 1 := by sorry
-theorem exponent_gap_higher_map : higherExponent - mapExponent = 1 := by sorry
-theorem map_gt_tree : mapExponent > treeExponent := by sorry
-theorem higher_gt_map : higherExponent > mapExponent := by sorry
+theorem exponent_gap_map_tree : mapExponent - treeExponent = 1 := by
+  norm_num [mapExponent, treeExponent]
+theorem exponent_gap_higher_map : higherExponent - mapExponent = 1 := by
+  norm_num [higherExponent, mapExponent]
+theorem map_gt_tree : mapExponent > treeExponent := by
+  norm_num [mapExponent, treeExponent]
+theorem higher_gt_map : higherExponent > mapExponent := by
+  norm_num [higherExponent, mapExponent]
 
 /-- Each algebraic universality class raises the exponent by exactly 1. -/
 theorem universal_exponent_step :
-    mapExponent - treeExponent = higherExponent - mapExponent := by sorry
+    mapExponent - treeExponent = higherExponent - mapExponent := by
+  norm_num [mapExponent, treeExponent, higherExponent]
 
-end UniversalityExponents
+
+
+structure UniversalityExponentsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def UniversalityExponentsBudgetCertificate.controlled
+    (c : UniversalityExponentsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def UniversalityExponentsBudgetCertificate.budgetControlled
+    (c : UniversalityExponentsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def UniversalityExponentsBudgetCertificate.Ready
+    (c : UniversalityExponentsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def UniversalityExponentsBudgetCertificate.size
+    (c : UniversalityExponentsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem universalityExponents_budgetCertificate_le_size
+    (c : UniversalityExponentsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleUniversalityExponentsBudgetCertificate :
+    UniversalityExponentsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleUniversalityExponentsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [UniversalityExponentsBudgetCertificate.controlled,
+      sampleUniversalityExponentsBudgetCertificate]
+  · norm_num [UniversalityExponentsBudgetCertificate.budgetControlled,
+      sampleUniversalityExponentsBudgetCertificate]
+
+example :
+    sampleUniversalityExponentsBudgetCertificate.certificateBudgetWindow ≤
+      sampleUniversalityExponentsBudgetCertificate.size := by
+  apply universalityExponents_budgetCertificate_le_size
+  constructor
+  · norm_num [UniversalityExponentsBudgetCertificate.controlled,
+      sampleUniversalityExponentsBudgetCertificate]
+  · norm_num [UniversalityExponentsBudgetCertificate.budgetControlled,
+      sampleUniversalityExponentsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleUniversalityExponentsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [UniversalityExponentsBudgetCertificate.controlled,
+      sampleUniversalityExponentsBudgetCertificate]
+  · norm_num [UniversalityExponentsBudgetCertificate.budgetControlled,
+      sampleUniversalityExponentsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleUniversalityExponentsBudgetCertificate.certificateBudgetWindow ≤
+      sampleUniversalityExponentsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List UniversalityExponentsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleUniversalityExponentsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleUniversalityExponentsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.UniversalityExponents

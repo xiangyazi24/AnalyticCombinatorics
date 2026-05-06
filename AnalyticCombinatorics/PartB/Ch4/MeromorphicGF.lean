@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace MeromorphicGF
+namespace AnalyticCombinatorics.PartB.Ch4.MeromorphicGF
+
 
 /-!
 Bounded executable checks for meromorphic generating functions, partial
@@ -120,4 +121,86 @@ theorem thirdOrderRational_characteristic_recurrence :
           6 * thirdOrderRationalCoeff n.val := by
   native_decide
 
-end MeromorphicGF
+
+
+structure MeromorphicGFBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def MeromorphicGFBudgetCertificate.controlled
+    (c : MeromorphicGFBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def MeromorphicGFBudgetCertificate.budgetControlled
+    (c : MeromorphicGFBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def MeromorphicGFBudgetCertificate.Ready
+    (c : MeromorphicGFBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def MeromorphicGFBudgetCertificate.size
+    (c : MeromorphicGFBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem meromorphicGF_budgetCertificate_le_size
+    (c : MeromorphicGFBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleMeromorphicGFBudgetCertificate :
+    MeromorphicGFBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleMeromorphicGFBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MeromorphicGFBudgetCertificate.controlled,
+      sampleMeromorphicGFBudgetCertificate]
+  · norm_num [MeromorphicGFBudgetCertificate.budgetControlled,
+      sampleMeromorphicGFBudgetCertificate]
+
+example :
+    sampleMeromorphicGFBudgetCertificate.certificateBudgetWindow ≤
+      sampleMeromorphicGFBudgetCertificate.size := by
+  apply meromorphicGF_budgetCertificate_le_size
+  constructor
+  · norm_num [MeromorphicGFBudgetCertificate.controlled,
+      sampleMeromorphicGFBudgetCertificate]
+  · norm_num [MeromorphicGFBudgetCertificate.budgetControlled,
+      sampleMeromorphicGFBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleMeromorphicGFBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MeromorphicGFBudgetCertificate.controlled,
+      sampleMeromorphicGFBudgetCertificate]
+  · norm_num [MeromorphicGFBudgetCertificate.budgetControlled,
+      sampleMeromorphicGFBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleMeromorphicGFBudgetCertificate.certificateBudgetWindow ≤
+      sampleMeromorphicGFBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List MeromorphicGFBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleMeromorphicGFBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleMeromorphicGFBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.MeromorphicGF

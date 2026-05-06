@@ -11,8 +11,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace AnalyticInequalities
-
+namespace AnalyticCombinatorics.PartB.Ch7.AnalyticInequalities
 /-! ## Section 1: Stirling's approximation bounds
 
   The classical bounds √(2πn) · (n/e)^n ≤ n! ≤ √(2πn) · (n/e)^n · e^{1/(12n)}
@@ -110,4 +109,124 @@ example : Nat.fib 6 ≥ 2 ^ 3 := by native_decide      -- 8 ≥ 8
 example : Nat.fib 10 ≥ 2 ^ 5 := by native_decide     -- 55 ≥ 32
 example : Nat.fib 20 ≥ 2 ^ 10 := by native_decide    -- 6765 ≥ 1024
 
-end AnalyticInequalities
+/-- Catalan number by its binomial quotient. -/
+def catalanBoundModel (n : ℕ) : ℕ :=
+  Nat.choose (2 * n) n / (n + 1)
+
+theorem catalanBoundModel_upper_seven :
+    catalanBoundModel 7 ≤ 4 ^ 7 := by
+  native_decide
+
+theorem catalanBoundModel_lower_ten :
+    2 ^ 10 ≤ catalanBoundModel 10 := by
+  native_decide
+
+/-- Falling-factorial upper-bound model `binom n k * k! ≤ n^k`. -/
+def fallingFactorialModel (n k : ℕ) : ℕ :=
+  Nat.choose n k * Nat.factorial k
+
+theorem fallingFactorialModel_sample :
+    fallingFactorialModel 20 5 ≤ 20 ^ 5 := by
+  native_decide
+
+/-- Loose exponential envelope used for integer partition samples. -/
+def partitionExponentialEnvelope (base n : ℕ) : ℕ :=
+  base ^ n
+
+theorem partitionEnvelope_ten :
+    42 ≤ partitionExponentialEnvelope 3 10 := by
+  native_decide
+
+/-- Fibonacci envelope for the chapter's coefficient inequalities. -/
+def fibonacciPowerSlack (n : ℕ) : ℕ :=
+  2 ^ n - Nat.fib n
+
+theorem fibonacciPowerSlack_ten :
+    fibonacciPowerSlack 10 = 969 := by
+  native_decide
+
+theorem fibonacciPowerSlack_twenty_pos :
+    0 < fibonacciPowerSlack 20 := by
+  native_decide
+
+structure AnalyticInequalitiesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AnalyticInequalitiesBudgetCertificate.controlled
+    (c : AnalyticInequalitiesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AnalyticInequalitiesBudgetCertificate.budgetControlled
+    (c : AnalyticInequalitiesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AnalyticInequalitiesBudgetCertificate.Ready
+    (c : AnalyticInequalitiesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AnalyticInequalitiesBudgetCertificate.size
+    (c : AnalyticInequalitiesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem analyticInequalities_budgetCertificate_le_size
+    (c : AnalyticInequalitiesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAnalyticInequalitiesBudgetCertificate :
+    AnalyticInequalitiesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAnalyticInequalitiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AnalyticInequalitiesBudgetCertificate.controlled,
+      sampleAnalyticInequalitiesBudgetCertificate]
+  · norm_num [AnalyticInequalitiesBudgetCertificate.budgetControlled,
+      sampleAnalyticInequalitiesBudgetCertificate]
+
+example :
+    sampleAnalyticInequalitiesBudgetCertificate.certificateBudgetWindow ≤
+      sampleAnalyticInequalitiesBudgetCertificate.size := by
+  apply analyticInequalities_budgetCertificate_le_size
+  constructor
+  · norm_num [AnalyticInequalitiesBudgetCertificate.controlled,
+      sampleAnalyticInequalitiesBudgetCertificate]
+  · norm_num [AnalyticInequalitiesBudgetCertificate.budgetControlled,
+      sampleAnalyticInequalitiesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAnalyticInequalitiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AnalyticInequalitiesBudgetCertificate.controlled,
+      sampleAnalyticInequalitiesBudgetCertificate]
+  · norm_num [AnalyticInequalitiesBudgetCertificate.budgetControlled,
+      sampleAnalyticInequalitiesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAnalyticInequalitiesBudgetCertificate.certificateBudgetWindow ≤
+      sampleAnalyticInequalitiesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List AnalyticInequalitiesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAnalyticInequalitiesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAnalyticInequalitiesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.AnalyticInequalities

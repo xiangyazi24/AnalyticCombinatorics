@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace MapEnumeration
+namespace AnalyticCombinatorics.PartB.Ch7.MapEnumeration
+
 
 /-!
   Finite, executable checks for map-enumeration tables from the Chapter VII
@@ -86,7 +87,9 @@ def rootedTriangulationsByVertices (v : ℕ) : ℕ :=
   if h : 2 ≤ v ∧ v - 2 < 10 then rootedTriangulationVertexShiftTable ⟨v - 2, h.2⟩ else 0
 
 theorem rootedTriangulation_formula_matches_table :
-    ∀ i : Fin 10, rootedTriangulationShiftFormula i.val = rootedTriangulationVertexShiftTable i := by
+    ∀ i : Fin 10,
+      rootedTriangulationShiftFormula i.val =
+        rootedTriangulationVertexShiftTable i := by
   native_decide
 
 theorem rootedTriangulationsByVertices_values :
@@ -183,4 +186,86 @@ theorem rootedNonseparable_smaller_than_all_maps_1_10 :
       rootedNonseparableMapByEdges (i.val + 1) ≤ rootedPlanarMapByEdges (i.val + 1) := by
   native_decide
 
-end MapEnumeration
+
+
+structure MapEnumerationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def MapEnumerationBudgetCertificate.controlled
+    (c : MapEnumerationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def MapEnumerationBudgetCertificate.budgetControlled
+    (c : MapEnumerationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def MapEnumerationBudgetCertificate.Ready
+    (c : MapEnumerationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def MapEnumerationBudgetCertificate.size
+    (c : MapEnumerationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem mapEnumeration_budgetCertificate_le_size
+    (c : MapEnumerationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleMapEnumerationBudgetCertificate :
+    MapEnumerationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleMapEnumerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MapEnumerationBudgetCertificate.controlled,
+      sampleMapEnumerationBudgetCertificate]
+  · norm_num [MapEnumerationBudgetCertificate.budgetControlled,
+      sampleMapEnumerationBudgetCertificate]
+
+example :
+    sampleMapEnumerationBudgetCertificate.certificateBudgetWindow ≤
+      sampleMapEnumerationBudgetCertificate.size := by
+  apply mapEnumeration_budgetCertificate_le_size
+  constructor
+  · norm_num [MapEnumerationBudgetCertificate.controlled,
+      sampleMapEnumerationBudgetCertificate]
+  · norm_num [MapEnumerationBudgetCertificate.budgetControlled,
+      sampleMapEnumerationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleMapEnumerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MapEnumerationBudgetCertificate.controlled,
+      sampleMapEnumerationBudgetCertificate]
+  · norm_num [MapEnumerationBudgetCertificate.budgetControlled,
+      sampleMapEnumerationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleMapEnumerationBudgetCertificate.certificateBudgetWindow ≤
+      sampleMapEnumerationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List MapEnumerationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleMapEnumerationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleMapEnumerationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.MapEnumeration

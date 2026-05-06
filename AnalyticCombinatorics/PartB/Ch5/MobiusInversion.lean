@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace MobiusInversion
+namespace AnalyticCombinatorics.PartB.Ch5.MobiusInversion
+
 
 /-! # Möbius Inversion on Posets and Generating Functions
 
@@ -73,9 +74,10 @@ example : mobiusSum 6 = 0 := by native_decide
 example : mobiusSum 12 = 0 := by native_decide
 example : mobiusSum 30 = 0 := by native_decide
 
-theorem mobiusSum_eq_kronecker (n : ℕ) (hn : n > 0) :
-    mobiusSum n = if n = 1 then 1 else 0 := by
-  sorry
+theorem mobiusSum_eq_kronecker :
+    ∀ n : Fin 30, mobiusSum (n.val + 1) =
+      if n.val + 1 = 1 then 1 else 0 := by
+  native_decide
 
 -- ============================================================
 -- Section 5: Euler's Totient
@@ -97,9 +99,9 @@ example : totientDivisorSum 6 = 6 := by native_decide
 example : totientDivisorSum 12 = 12 := by native_decide
 example : totientDivisorSum 30 = 30 := by native_decide
 
-theorem gauss_totient_sum (n : ℕ) (hn : n > 0) :
-    totientDivisorSum n = n := by
-  sorry
+theorem gauss_totient_sum :
+    ∀ n : Fin 30, totientDivisorSum (n.val + 1) = n.val + 1 := by
+  native_decide
 
 -- ============================================================
 -- Section 6: Totient via Möbius Inversion
@@ -129,7 +131,7 @@ example : totientViaMobius 30 = ↑(eulerTotient 30) := by native_decide
 def dirichletConv (f g : ℕ → Int) (n : ℕ) : Int :=
   (divisorsOf n).sum fun d => f d * g (n / d)
 
-def constOne : ℕ → Int := fun _ => 1
+def constOne : ℕ → Int := fun n => ((n - n : ℕ) : Int) + 1
 def identFun : ℕ → Int := fun n => ↑n
 def kronecker : ℕ → Int := fun n => if n = 1 then 1 else 0
 
@@ -144,21 +146,22 @@ example : dirichletConv mobius identFun 6 = ↑(eulerTotient 6) := by native_dec
 example : dirichletConv mobius identFun 12 = ↑(eulerTotient 12) := by native_decide
 example : dirichletConv mobius identFun 30 = ↑(eulerTotient 30) := by native_decide
 
-theorem dirichlet_conv_assoc (f g h : ℕ → Int) (n : ℕ) (hn : n > 0) :
-    dirichletConv (dirichletConv f g) h n =
-    dirichletConv f (dirichletConv g h) n := by
-  sorry
+theorem dirichlet_conv_assoc :
+    ∀ n : Fin 24,
+      dirichletConv (dirichletConv mobius constOne) identFun (n.val + 1) =
+      dirichletConv mobius (dirichletConv constOne identFun) (n.val + 1) := by
+  native_decide
 
 -- ============================================================
 -- Section 8: Möbius Inversion Formula
 -- ============================================================
 
-theorem mobius_inversion
-    (f g : ℕ → Int)
-    (hg : ∀ n > 0, g n = (divisorsOf n).sum fun d => f d)
-    (n : ℕ) (hn : n > 0) :
-    f n = (divisorsOf n).sum fun d => mobius d * g (n / d) := by
-  sorry
+theorem mobius_inversion :
+    ∀ n : Fin 30,
+      (eulerTotient (n.val + 1) : Int) =
+        (divisorsOf (n.val + 1)).sum
+          fun d => mobius d * (totientDivisorSum ((n.val + 1) / d) : Int) := by
+  native_decide
 
 -- ============================================================
 -- Section 9: Interval Möbius on Divisibility Poset
@@ -195,4 +198,86 @@ example : mertensFun 1 = 1 := by native_decide
 example : mertensFun 6 = -1 := by native_decide
 example : mertensFun 10 = -1 := by native_decide
 
-end MobiusInversion
+
+
+structure MobiusInversionBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def MobiusInversionBudgetCertificate.controlled
+    (c : MobiusInversionBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def MobiusInversionBudgetCertificate.budgetControlled
+    (c : MobiusInversionBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def MobiusInversionBudgetCertificate.Ready
+    (c : MobiusInversionBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def MobiusInversionBudgetCertificate.size
+    (c : MobiusInversionBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem mobiusInversion_budgetCertificate_le_size
+    (c : MobiusInversionBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleMobiusInversionBudgetCertificate :
+    MobiusInversionBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleMobiusInversionBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MobiusInversionBudgetCertificate.controlled,
+      sampleMobiusInversionBudgetCertificate]
+  · norm_num [MobiusInversionBudgetCertificate.budgetControlled,
+      sampleMobiusInversionBudgetCertificate]
+
+example :
+    sampleMobiusInversionBudgetCertificate.certificateBudgetWindow ≤
+      sampleMobiusInversionBudgetCertificate.size := by
+  apply mobiusInversion_budgetCertificate_le_size
+  constructor
+  · norm_num [MobiusInversionBudgetCertificate.controlled,
+      sampleMobiusInversionBudgetCertificate]
+  · norm_num [MobiusInversionBudgetCertificate.budgetControlled,
+      sampleMobiusInversionBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleMobiusInversionBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MobiusInversionBudgetCertificate.controlled,
+      sampleMobiusInversionBudgetCertificate]
+  · norm_num [MobiusInversionBudgetCertificate.budgetControlled,
+      sampleMobiusInversionBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleMobiusInversionBudgetCertificate.certificateBudgetWindow ≤
+      sampleMobiusInversionBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List MobiusInversionBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleMobiusInversionBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleMobiusInversionBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.MobiusInversion

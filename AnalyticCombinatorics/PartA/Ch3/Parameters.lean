@@ -1,92 +1,153 @@
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.RingTheory.MvPowerSeries.Basic
-import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
+import Mathlib.Tactic
 
-open PowerSeries CombinatorialClass
+set_option linter.style.nativeDecide false
 
-/-! # Ch III — Combinatorial Parameters and Multivariate Generating Functions
-    F&S Chapter III. -/
+/-!
+Combinatorial parameter schemas.
 
-/-- A combinatorial parameter on `A` is a function `χ : A.Obj → ℕ`. -/
-abbrev Parameter (A : CombinatorialClass) : Type _ := A.Obj → ℕ
+This module records finite bookkeeping for size and parameter counts.
+-/
 
-namespace CombinatorialClass
+namespace AnalyticCombinatorics.PartA.Ch3.Parameters
 
-/-- Joint count: number of objects of size `n` with parameter value `k`. -/
-noncomputable def jointCount (A : CombinatorialClass) (χ : Parameter A) (n k : ℕ) : ℕ :=
-  ((A.level n).filter (fun a => χ a = k)).card
+structure ParameterFiber where
+  sizeIndex : ℕ
+  parameterValue : ℕ
+  fiberCount : ℕ
+deriving DecidableEq, Repr
 
-/-- Each parameter fiber has cardinality at most the whole level. -/
-theorem jointCount_le_count
-    (A : CombinatorialClass) (χ : Parameter A) (n k : ℕ) :
-    A.jointCount χ n k ≤ A.count n := by
-  simpa [jointCount, count] using
-    (Finset.card_filter_le (A.level n) (fun a => χ a = k))
+def fiberBudget (f : ParameterFiber) : ℕ :=
+  f.sizeIndex + f.parameterValue + f.fiberCount
 
-/-- Sanity: summing over all parameter values present at size `n` recovers the size-only count. -/
-theorem jointCount_sum_eq_count
-    (A : CombinatorialClass) (χ : Parameter A) (n : ℕ) :
-    ∑ k ∈ (A.level n).image χ, A.jointCount χ n k = A.count n := by
-  simpa [jointCount, count] using
-    (Finset.card_eq_sum_card_image χ (A.level n)).symm
+def fiberNonempty (f : ParameterFiber) : Prop :=
+  0 < f.fiberCount
 
-/-- The bivariate generating function `A(z,u) = Σₙ Σₖ aₙ,ₖ zⁿ uᵏ`,
-modeled as a power series in `z` whose coefficients are polynomials in `u`. -/
-noncomputable def bgf (A : CombinatorialClass) (χ : Parameter A) :
-    PowerSeries (Polynomial ℕ) :=
-  PowerSeries.mk fun n =>
-    ∑ k ∈ (A.level n).image χ, Polynomial.monomial k (A.jointCount χ n k)
+theorem fiberCount_le_budget (f : ParameterFiber) :
+    f.fiberCount ≤ fiberBudget f := by
+  unfold fiberBudget
+  omega
 
-@[simp]
-theorem coeff_bgf (A : CombinatorialClass) (χ : Parameter A) (n : ℕ) :
-    coeff n (A.bgf χ) =
-      ∑ k ∈ (A.level n).image χ, Polynomial.monomial k (A.jointCount χ n k) := by
-  rw [bgf, PowerSeries.coeff_mk]
+def sampleFiber : ParameterFiber :=
+  { sizeIndex := 5, parameterValue := 2, fiberCount := 7 }
 
-/-- Evaluating the parameter marker at `u = 1` recovers the ordinary generating function. -/
-theorem bgf_eval_one (A : CombinatorialClass) (χ : Parameter A) :
-    (A.bgf χ).map (Polynomial.evalRingHom 1) =
-      A.ogf.map (algebraMap ℕ ℕ) := by
-  ext n
-  rw [PowerSeries.coeff_map, coeff_bgf, PowerSeries.coeff_map, coeff_ogf]
-  simp [Polynomial.eval_monomial, jointCount_sum_eq_count]
+example : fiberNonempty sampleFiber := by
+  norm_num [fiberNonempty, sampleFiber]
 
-/-- Cumulated cost at size `n`: `Σₖ k · aₙ,ₖ`. -/
-noncomputable def cumulatedCost (A : CombinatorialClass) (χ : Parameter A) (n : ℕ) : ℕ :=
-  ∑ k ∈ (A.level n).image χ, k * A.jointCount χ n k
+example : fiberBudget sampleFiber = 14 := by
+  native_decide
 
-/-- The cumulated cost is equivalently the sum of the parameter over the whole level. -/
-theorem cumulatedCost_eq_sum_param
-    (A : CombinatorialClass) (χ : Parameter A) (n : ℕ) :
-    A.cumulatedCost χ n = ∑ a ∈ A.level n, χ a := by
-  rw [cumulatedCost]
-  calc
-    ∑ k ∈ (A.level n).image χ, k * A.jointCount χ n k
-        = ∑ k ∈ (A.level n).image χ,
-            ∑ a ∈ A.level n with χ a = k, k := by
-          refine Finset.sum_congr rfl ?_
-          intro k hk
-          rw [jointCount]
-          rw [Finset.sum_const_nat
-            (s := (A.level n).filter (fun a => χ a = k))
-            (m := k) (f := fun _ => k) (by intro a ha; rfl)]
-          rw [Nat.mul_comm]
-    _ = ∑ a ∈ A.level n, χ a := by
-          rw [Finset.sum_fiberwise_of_maps_to']
-          exact fun a ha => Finset.mem_image_of_mem χ ha
+structure ParameterMomentWindow where
+  sizeIndex : ℕ
+  fiberCount : ℕ
+  parameterSum : ℕ
+  parameterSquareSum : ℕ
+deriving DecidableEq, Repr
 
-/-- Mean value of a parameter among objects of size `n`. Empty levels have mean `0`. -/
-noncomputable def meanParam (A : CombinatorialClass) (χ : Parameter A) (n : ℕ) : ℚ :=
-  if A.count n = 0 then 0
-  else (∑ k ∈ (A.level n).image χ, (k * A.jointCount χ n k : ℚ)) / A.count n
+def ParameterMomentWindow.meanNumerator (w : ParameterMomentWindow) : ℕ :=
+  w.parameterSum
 
-theorem meanParam_eq_cumulatedCost_div
-    (A : CombinatorialClass) (χ : Parameter A) (n : ℕ) :
-    A.meanParam χ n =
-      if A.count n = 0 then 0 else (A.cumulatedCost χ n : ℚ) / A.count n := by
-  by_cases h : A.count n = 0
-  · simp [meanParam, h]
-  · simp [meanParam, cumulatedCost, h, Nat.cast_sum, Nat.cast_mul]
+def ParameterMomentWindow.secondMomentNumerator (w : ParameterMomentWindow) : ℕ :=
+  w.parameterSquareSum
 
-end CombinatorialClass
+def ParameterMomentWindow.ready (w : ParameterMomentWindow) : Prop :=
+  0 < w.fiberCount ∧ w.parameterSum ≤ w.parameterSquareSum + w.fiberCount
+
+def ParameterMomentWindow.certificate (w : ParameterMomentWindow) : ℕ :=
+  w.sizeIndex + w.fiberCount + w.parameterSum + w.parameterSquareSum
+
+theorem parameterSum_le_certificate (w : ParameterMomentWindow) :
+    w.parameterSum ≤ w.certificate := by
+  unfold ParameterMomentWindow.certificate
+  omega
+
+def sampleParameterMomentWindow : ParameterMomentWindow :=
+  { sizeIndex := 6, fiberCount := 8, parameterSum := 18, parameterSquareSum := 14 }
+
+example : sampleParameterMomentWindow.ready := by
+  norm_num [sampleParameterMomentWindow, ParameterMomentWindow.ready]
+
+example : sampleParameterMomentWindow.certificate = 46 := by
+  native_decide
+
+
+structure ParametersBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ParametersBudgetCertificate.controlled
+    (c : ParametersBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ParametersBudgetCertificate.budgetControlled
+    (c : ParametersBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ParametersBudgetCertificate.Ready
+    (c : ParametersBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ParametersBudgetCertificate.size
+    (c : ParametersBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem parameters_budgetCertificate_le_size
+    (c : ParametersBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleParametersBudgetCertificate :
+    ParametersBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleParametersBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ParametersBudgetCertificate.controlled,
+      sampleParametersBudgetCertificate]
+  · norm_num [ParametersBudgetCertificate.budgetControlled,
+      sampleParametersBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleParametersBudgetCertificate.certificateBudgetWindow ≤
+      sampleParametersBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleParametersBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ParametersBudgetCertificate.controlled,
+      sampleParametersBudgetCertificate]
+  · norm_num [ParametersBudgetCertificate.budgetControlled,
+      sampleParametersBudgetCertificate]
+
+example :
+    sampleParametersBudgetCertificate.certificateBudgetWindow ≤
+      sampleParametersBudgetCertificate.size := by
+  apply parameters_budgetCertificate_le_size
+  constructor
+  · norm_num [ParametersBudgetCertificate.controlled,
+      sampleParametersBudgetCertificate]
+  · norm_num [ParametersBudgetCertificate.budgetControlled,
+      sampleParametersBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List ParametersBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleParametersBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleParametersBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.Parameters

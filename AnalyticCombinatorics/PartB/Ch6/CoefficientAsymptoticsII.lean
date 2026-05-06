@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace CoefficientAsymptoticsII
+namespace AnalyticCombinatorics.PartB.Ch6.CoefficientAsymptoticsII
+
 
 /-!
   Finite coefficient tables inspired by the advanced coefficient asymptotics
@@ -138,7 +139,9 @@ theorem ternary_power_five_symmetry :
 
 /-- The central coefficient is the maximum in this bounded row. -/
 theorem ternary_power_five_center_dominates :
-    ∀ n : Fin 11, tableAt ternaryPowerFiveTable n ≤ tableAt ternaryPowerFiveTable 5 := by native_decide
+    ∀ n : Fin 11,
+      tableAt ternaryPowerFiveTable n ≤ tableAt ternaryPowerFiveTable 5 := by
+  native_decide
 
 -- ============================================================
 -- Gaussian central windows
@@ -190,4 +193,86 @@ theorem central_binomial_mod_small_primes :
       centralBinomial (smallPrimeTable i) % smallPrimeTable i =
         2 % smallPrimeTable i := by native_decide
 
-end CoefficientAsymptoticsII
+
+
+structure CoefficientAsymptoticsIIBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CoefficientAsymptoticsIIBudgetCertificate.controlled
+    (c : CoefficientAsymptoticsIIBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CoefficientAsymptoticsIIBudgetCertificate.budgetControlled
+    (c : CoefficientAsymptoticsIIBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CoefficientAsymptoticsIIBudgetCertificate.Ready
+    (c : CoefficientAsymptoticsIIBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CoefficientAsymptoticsIIBudgetCertificate.size
+    (c : CoefficientAsymptoticsIIBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem coefficientAsymptoticsII_budgetCertificate_le_size
+    (c : CoefficientAsymptoticsIIBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCoefficientAsymptoticsIIBudgetCertificate :
+    CoefficientAsymptoticsIIBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleCoefficientAsymptoticsIIBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CoefficientAsymptoticsIIBudgetCertificate.controlled,
+      sampleCoefficientAsymptoticsIIBudgetCertificate]
+  · norm_num [CoefficientAsymptoticsIIBudgetCertificate.budgetControlled,
+      sampleCoefficientAsymptoticsIIBudgetCertificate]
+
+example :
+    sampleCoefficientAsymptoticsIIBudgetCertificate.certificateBudgetWindow ≤
+      sampleCoefficientAsymptoticsIIBudgetCertificate.size := by
+  apply coefficientAsymptoticsII_budgetCertificate_le_size
+  constructor
+  · norm_num [CoefficientAsymptoticsIIBudgetCertificate.controlled,
+      sampleCoefficientAsymptoticsIIBudgetCertificate]
+  · norm_num [CoefficientAsymptoticsIIBudgetCertificate.budgetControlled,
+      sampleCoefficientAsymptoticsIIBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleCoefficientAsymptoticsIIBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CoefficientAsymptoticsIIBudgetCertificate.controlled,
+      sampleCoefficientAsymptoticsIIBudgetCertificate]
+  · norm_num [CoefficientAsymptoticsIIBudgetCertificate.budgetControlled,
+      sampleCoefficientAsymptoticsIIBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCoefficientAsymptoticsIIBudgetCertificate.certificateBudgetWindow ≤
+      sampleCoefficientAsymptoticsIIBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List CoefficientAsymptoticsIIBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCoefficientAsymptoticsIIBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCoefficientAsymptoticsIIBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.CoefficientAsymptoticsII

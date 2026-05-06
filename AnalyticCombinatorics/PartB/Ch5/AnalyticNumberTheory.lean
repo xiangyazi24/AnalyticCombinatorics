@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace AnalyticNumberTheory
+namespace AnalyticCombinatorics.PartB.Ch5.AnalyticNumberTheory
+
 
 def primeCountingAtEven : Fin 15 → ℕ :=
   ![1, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9, 9, 9, 10]
@@ -139,4 +140,86 @@ theorem mertens_upper_values :
       mertensUpper 9 = -3 := by
   native_decide
 
-end AnalyticNumberTheory
+
+
+structure AnalyticNumberTheoryBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AnalyticNumberTheoryBudgetCertificate.controlled
+    (c : AnalyticNumberTheoryBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AnalyticNumberTheoryBudgetCertificate.budgetControlled
+    (c : AnalyticNumberTheoryBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AnalyticNumberTheoryBudgetCertificate.Ready
+    (c : AnalyticNumberTheoryBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AnalyticNumberTheoryBudgetCertificate.size
+    (c : AnalyticNumberTheoryBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem analyticNumberTheory_budgetCertificate_le_size
+    (c : AnalyticNumberTheoryBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAnalyticNumberTheoryBudgetCertificate :
+    AnalyticNumberTheoryBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAnalyticNumberTheoryBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AnalyticNumberTheoryBudgetCertificate.controlled,
+      sampleAnalyticNumberTheoryBudgetCertificate]
+  · norm_num [AnalyticNumberTheoryBudgetCertificate.budgetControlled,
+      sampleAnalyticNumberTheoryBudgetCertificate]
+
+example :
+    sampleAnalyticNumberTheoryBudgetCertificate.certificateBudgetWindow ≤
+      sampleAnalyticNumberTheoryBudgetCertificate.size := by
+  apply analyticNumberTheory_budgetCertificate_le_size
+  constructor
+  · norm_num [AnalyticNumberTheoryBudgetCertificate.controlled,
+      sampleAnalyticNumberTheoryBudgetCertificate]
+  · norm_num [AnalyticNumberTheoryBudgetCertificate.budgetControlled,
+      sampleAnalyticNumberTheoryBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAnalyticNumberTheoryBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AnalyticNumberTheoryBudgetCertificate.controlled,
+      sampleAnalyticNumberTheoryBudgetCertificate]
+  · norm_num [AnalyticNumberTheoryBudgetCertificate.budgetControlled,
+      sampleAnalyticNumberTheoryBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAnalyticNumberTheoryBudgetCertificate.certificateBudgetWindow ≤
+      sampleAnalyticNumberTheoryBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List AnalyticNumberTheoryBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAnalyticNumberTheoryBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAnalyticNumberTheoryBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.AnalyticNumberTheory

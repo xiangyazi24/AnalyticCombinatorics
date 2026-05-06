@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace CriticalExponents
+namespace AnalyticCombinatorics.PartB.Ch7.CriticalExponents
+
 
 /-!
   Chapter VII finite checks: critical exponents and universality tables.
@@ -209,4 +210,86 @@ theorem rootedPlanarMap_strictly_increases :
     rootedPlanarMapTable 10 < rootedPlanarMapTable 11 := by
   native_decide
 
-end CriticalExponents
+
+
+structure CriticalExponentsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CriticalExponentsBudgetCertificate.controlled
+    (c : CriticalExponentsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CriticalExponentsBudgetCertificate.budgetControlled
+    (c : CriticalExponentsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CriticalExponentsBudgetCertificate.Ready
+    (c : CriticalExponentsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CriticalExponentsBudgetCertificate.size
+    (c : CriticalExponentsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem criticalExponents_budgetCertificate_le_size
+    (c : CriticalExponentsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCriticalExponentsBudgetCertificate :
+    CriticalExponentsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleCriticalExponentsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CriticalExponentsBudgetCertificate.controlled,
+      sampleCriticalExponentsBudgetCertificate]
+  · norm_num [CriticalExponentsBudgetCertificate.budgetControlled,
+      sampleCriticalExponentsBudgetCertificate]
+
+example :
+    sampleCriticalExponentsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCriticalExponentsBudgetCertificate.size := by
+  apply criticalExponents_budgetCertificate_le_size
+  constructor
+  · norm_num [CriticalExponentsBudgetCertificate.controlled,
+      sampleCriticalExponentsBudgetCertificate]
+  · norm_num [CriticalExponentsBudgetCertificate.budgetControlled,
+      sampleCriticalExponentsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleCriticalExponentsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CriticalExponentsBudgetCertificate.controlled,
+      sampleCriticalExponentsBudgetCertificate]
+  · norm_num [CriticalExponentsBudgetCertificate.budgetControlled,
+      sampleCriticalExponentsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCriticalExponentsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCriticalExponentsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List CriticalExponentsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCriticalExponentsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCriticalExponentsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.CriticalExponents

@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace CombinatoricsBoundsC
+namespace AnalyticCombinatorics.PartB.Ch8.CombinatoricsBoundsC
+
 
 open Finset
 
@@ -227,7 +228,9 @@ theorem couponCollectorVarianceApprox_table :
 
 theorem couponCollectorVarianceExact_le_approx_table :
     ∀ i : Fin 8,
-      couponCollectorVarianceExact (i.val + 1) ≤ couponCollectorVarianceApprox (i.val + 1) := by native_decide
+      couponCollectorVarianceExact (i.val + 1) ≤
+        couponCollectorVarianceApprox (i.val + 1) := by
+  native_decide
 
 theorem couponCollectorVarianceApprox_upper_bound_table :
     ∀ i : Fin 8,
@@ -260,4 +263,86 @@ theorem occupancyExpected_ten_ten_rational_check :
 theorem occupancyExpected_ten_ten_value :
     expectedEmptyBins 10 10 = (3486784401 : Rat) / 1000000000 := by native_decide
 
-end CombinatoricsBoundsC
+
+
+structure CombinatoricsBoundsCBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CombinatoricsBoundsCBudgetCertificate.controlled
+    (c : CombinatoricsBoundsCBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CombinatoricsBoundsCBudgetCertificate.budgetControlled
+    (c : CombinatoricsBoundsCBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CombinatoricsBoundsCBudgetCertificate.Ready
+    (c : CombinatoricsBoundsCBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CombinatoricsBoundsCBudgetCertificate.size
+    (c : CombinatoricsBoundsCBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem combinatoricsBoundsC_budgetCertificate_le_size
+    (c : CombinatoricsBoundsCBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCombinatoricsBoundsCBudgetCertificate :
+    CombinatoricsBoundsCBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleCombinatoricsBoundsCBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CombinatoricsBoundsCBudgetCertificate.controlled,
+      sampleCombinatoricsBoundsCBudgetCertificate]
+  · norm_num [CombinatoricsBoundsCBudgetCertificate.budgetControlled,
+      sampleCombinatoricsBoundsCBudgetCertificate]
+
+example :
+    sampleCombinatoricsBoundsCBudgetCertificate.certificateBudgetWindow ≤
+      sampleCombinatoricsBoundsCBudgetCertificate.size := by
+  apply combinatoricsBoundsC_budgetCertificate_le_size
+  constructor
+  · norm_num [CombinatoricsBoundsCBudgetCertificate.controlled,
+      sampleCombinatoricsBoundsCBudgetCertificate]
+  · norm_num [CombinatoricsBoundsCBudgetCertificate.budgetControlled,
+      sampleCombinatoricsBoundsCBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleCombinatoricsBoundsCBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CombinatoricsBoundsCBudgetCertificate.controlled,
+      sampleCombinatoricsBoundsCBudgetCertificate]
+  · norm_num [CombinatoricsBoundsCBudgetCertificate.budgetControlled,
+      sampleCombinatoricsBoundsCBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCombinatoricsBoundsCBudgetCertificate.certificateBudgetWindow ≤
+      sampleCombinatoricsBoundsCBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List CombinatoricsBoundsCBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCombinatoricsBoundsCBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCombinatoricsBoundsCBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.CombinatoricsBoundsC

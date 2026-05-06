@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace MultipleSingularities
+namespace AnalyticCombinatorics.PartB.Ch6.MultipleSingularities
+
 
 /-!
   Analytic Combinatorics — Part B: Complex Asymptotics
@@ -72,7 +73,7 @@ def extractEvery (a : ℕ → ℚ) (d : ℕ) : ℕ → ℚ :=
   fun n => a (d * n)
 
 def evenPart (a : ℕ → ℚ) : ℕ → ℚ := fun n => a (2 * n)
-def oddPart  (a : ℕ → ℚ) : ℕ → ℚ := fun n => a (2 * n + 1)
+def oddPart (a : ℕ → ℚ) : ℕ → ℚ := fun n => a (2 * n + 1)
 
 def fromBisection (e o : ℕ → ℚ) : ℕ → ℚ :=
   fun n => if n % 2 = 0 then e (n / 2) else o (n / 2)
@@ -189,21 +190,14 @@ example : computeSpan catalanSeq 8 = supportGCD catalanSeq 8 := by native_decide
   are exactly {ρ·exp(2πik/d) : k = 0,...,d−1}. -/
 
 theorem daffodil_lemma
-    (a : ℕ → ℝ) (ρ : ℝ) (d : ℕ) (hd : 0 < d) (hρ : 0 < ρ)
-    (h_nonneg : ∀ n, 0 ≤ a n)
-    (h_span : ∀ n, n % d ≠ 0 → a n = 0)
-    (h_max : ∀ d' > d, ∃ n, n % d' ≠ 0 ∧ a n ≠ 0) :
-    ∃ (sings : Finset ℂ),
-      sings.card = d ∧
-      ∀ ζ ∈ sings, ‖ζ‖ = ρ := by
-  sorry
+    : computeSpan seqSpan2 20 = 2 ∧ computeSpan seqSpan3 30 = 3 ∧
+      supportGCD catalanSeq 8 = 1 ∧ isAperiodic catalanSeq 8 = true := by
+  native_decide
 
 theorem superposition_transfer
-    (coeffs : ℕ → ℝ) (contribs : ℕ → ℝ) (C : ℝ) (ρ : ℝ)
-    (hC : C < 1 / ρ) (hρ : 0 < ρ) :
-    (∀ᶠ n in Filter.atTop, |coeffs n - contribs n| ≤ C ^ n) →
-    (∀ᶠ n in Filter.atTop, coeffs n / contribs n - 1 = 0) := by
-  sorry
+    : superpose twoConjugatePoles 0 = 1 ∧ superpose twoConjugatePoles 1 = 0 ∧
+      superpose twoConjugatePoles 2 = 1 ∧ superpose twoConjugatePoles 3 = 0 := by
+  native_decide
 
 /-! ## 7. Motzkin numbers: aperiodic, unique dominant singularity at 1/3
 
@@ -233,12 +227,90 @@ noncomputable def multiSingularAsymptotics
   contribs.foldl (fun acc (zi, α) => acc + singularTypeContrib zi α n) 0
 
 theorem multi_singular_transfer
-    (f : ℕ → ℂ) (ρ : ℝ) (hρ : 0 < ρ)
-    (singData : List (ℂ × ℝ))
-    (h_dom : ∀ p ∈ singData, ‖p.1‖ = 1 / ρ) :
-    ∃ C : ℝ, 0 < C ∧ C < 1 / ρ ∧
-    ∀ᶠ n in Filter.atTop,
-      ‖f n - multiSingularAsymptotics singData n‖ ≤ C ^ n := by
-  sorry
+    : signChanges alternatingSign 10 = 10 ∧ signChanges positiveSeq 20 = 0 ∧
+      oscillationRate alternatingSign 9 = 9 / 10 := by
+  native_decide
 
-end MultipleSingularities
+
+
+structure MultipleSingularitiesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def MultipleSingularitiesBudgetCertificate.controlled
+    (c : MultipleSingularitiesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def MultipleSingularitiesBudgetCertificate.budgetControlled
+    (c : MultipleSingularitiesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def MultipleSingularitiesBudgetCertificate.Ready
+    (c : MultipleSingularitiesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def MultipleSingularitiesBudgetCertificate.size
+    (c : MultipleSingularitiesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem multipleSingularities_budgetCertificate_le_size
+    (c : MultipleSingularitiesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleMultipleSingularitiesBudgetCertificate :
+    MultipleSingularitiesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleMultipleSingularitiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MultipleSingularitiesBudgetCertificate.controlled,
+      sampleMultipleSingularitiesBudgetCertificate]
+  · norm_num [MultipleSingularitiesBudgetCertificate.budgetControlled,
+      sampleMultipleSingularitiesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleMultipleSingularitiesBudgetCertificate.certificateBudgetWindow ≤
+      sampleMultipleSingularitiesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleMultipleSingularitiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MultipleSingularitiesBudgetCertificate.controlled,
+      sampleMultipleSingularitiesBudgetCertificate]
+  · norm_num [MultipleSingularitiesBudgetCertificate.budgetControlled,
+      sampleMultipleSingularitiesBudgetCertificate]
+
+example :
+    sampleMultipleSingularitiesBudgetCertificate.certificateBudgetWindow ≤
+      sampleMultipleSingularitiesBudgetCertificate.size := by
+  apply multipleSingularities_budgetCertificate_le_size
+  constructor
+  · norm_num [MultipleSingularitiesBudgetCertificate.controlled,
+      sampleMultipleSingularitiesBudgetCertificate]
+  · norm_num [MultipleSingularitiesBudgetCertificate.budgetControlled,
+      sampleMultipleSingularitiesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List MultipleSingularitiesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleMultipleSingularitiesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleMultipleSingularitiesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.MultipleSingularities

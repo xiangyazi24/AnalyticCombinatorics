@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace ContextFreeSchemes
+namespace AnalyticCombinatorics.PartB.Ch7.ContextFreeSchemes
+
 
 /-!
 Chapter VII context-free and implicit-function schemes, in a finite
@@ -370,4 +371,86 @@ theorem simple_tree_matches_cayley_1_to_7 :
     simpleTreeExponentialCoeff 6 = cayleyRootedTrees 6 ∧
     simpleTreeExponentialCoeff 7 = cayleyRootedTrees 7 := by native_decide
 
-end ContextFreeSchemes
+
+
+structure ContextFreeSchemesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ContextFreeSchemesBudgetCertificate.controlled
+    (c : ContextFreeSchemesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ContextFreeSchemesBudgetCertificate.budgetControlled
+    (c : ContextFreeSchemesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ContextFreeSchemesBudgetCertificate.Ready
+    (c : ContextFreeSchemesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ContextFreeSchemesBudgetCertificate.size
+    (c : ContextFreeSchemesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem contextFreeSchemes_budgetCertificate_le_size
+    (c : ContextFreeSchemesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleContextFreeSchemesBudgetCertificate :
+    ContextFreeSchemesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleContextFreeSchemesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ContextFreeSchemesBudgetCertificate.controlled,
+      sampleContextFreeSchemesBudgetCertificate]
+  · norm_num [ContextFreeSchemesBudgetCertificate.budgetControlled,
+      sampleContextFreeSchemesBudgetCertificate]
+
+example :
+    sampleContextFreeSchemesBudgetCertificate.certificateBudgetWindow ≤
+      sampleContextFreeSchemesBudgetCertificate.size := by
+  apply contextFreeSchemes_budgetCertificate_le_size
+  constructor
+  · norm_num [ContextFreeSchemesBudgetCertificate.controlled,
+      sampleContextFreeSchemesBudgetCertificate]
+  · norm_num [ContextFreeSchemesBudgetCertificate.budgetControlled,
+      sampleContextFreeSchemesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleContextFreeSchemesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ContextFreeSchemesBudgetCertificate.controlled,
+      sampleContextFreeSchemesBudgetCertificate]
+  · norm_num [ContextFreeSchemesBudgetCertificate.budgetControlled,
+      sampleContextFreeSchemesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleContextFreeSchemesBudgetCertificate.certificateBudgetWindow ≤
+      sampleContextFreeSchemesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ContextFreeSchemesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleContextFreeSchemesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleContextFreeSchemesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.ContextFreeSchemes

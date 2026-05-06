@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace PermutationCycles
+namespace AnalyticCombinatorics.PartA.Ch2.PermutationCycles
+
 
 open Finset
 
@@ -176,4 +177,86 @@ theorem stirling1_diag (n : ℕ) (hn : n ≤ 6) :
     stirling1 n n = 1 := by
   interval_cases n <;> native_decide
 
-end PermutationCycles
+
+
+structure PermutationCyclesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PermutationCyclesBudgetCertificate.controlled
+    (c : PermutationCyclesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PermutationCyclesBudgetCertificate.budgetControlled
+    (c : PermutationCyclesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PermutationCyclesBudgetCertificate.Ready
+    (c : PermutationCyclesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PermutationCyclesBudgetCertificate.size
+    (c : PermutationCyclesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem permutationCycles_budgetCertificate_le_size
+    (c : PermutationCyclesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePermutationCyclesBudgetCertificate :
+    PermutationCyclesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : samplePermutationCyclesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PermutationCyclesBudgetCertificate.controlled,
+      samplePermutationCyclesBudgetCertificate]
+  · norm_num [PermutationCyclesBudgetCertificate.budgetControlled,
+      samplePermutationCyclesBudgetCertificate]
+
+example :
+    samplePermutationCyclesBudgetCertificate.certificateBudgetWindow ≤
+      samplePermutationCyclesBudgetCertificate.size := by
+  apply permutationCycles_budgetCertificate_le_size
+  constructor
+  · norm_num [PermutationCyclesBudgetCertificate.controlled,
+      samplePermutationCyclesBudgetCertificate]
+  · norm_num [PermutationCyclesBudgetCertificate.budgetControlled,
+      samplePermutationCyclesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    samplePermutationCyclesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PermutationCyclesBudgetCertificate.controlled,
+      samplePermutationCyclesBudgetCertificate]
+  · norm_num [PermutationCyclesBudgetCertificate.budgetControlled,
+      samplePermutationCyclesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePermutationCyclesBudgetCertificate.certificateBudgetWindow ≤
+      samplePermutationCyclesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List PermutationCyclesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePermutationCyclesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePermutationCyclesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.PermutationCycles

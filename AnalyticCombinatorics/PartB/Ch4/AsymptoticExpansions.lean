@@ -14,8 +14,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace AsymptoticExpansions
-
+namespace AnalyticCombinatorics.PartB.Ch4.AsymptoticExpansions
 /-! ## 1. Geometric series partial sums
 
   Σ_{k=0}^{n-1} r^k = (r^n - 1)/(r - 1) for r ≠ 1.
@@ -193,4 +192,101 @@ example : Nat.fib 7 * Nat.fib 9 = Nat.fib 8 ^ 2 + 1 := by native_decide
 -- n=10 (even): fib(9)*fib(11) = fib(10)^2 + 1, i.e. 3026 = 3025 + 1
 example : Nat.fib 9 * Nat.fib 11 = Nat.fib 10 ^ 2 + 1 := by native_decide
 
-end AsymptoticExpansions
+/-- Finite geometric prefix used in elementary asymptotic expansions. -/
+def geometricPrefix (base n : ℕ) : ℕ :=
+  ∑ k ∈ Finset.range n, base ^ k
+
+theorem geometricPrefix_two_ten :
+    geometricPrefix 2 10 = 1023 := by
+  native_decide
+
+/-- Dominant coefficient model for `1 / ((1 - z) * (1 - 2z))`. -/
+def dominantTwoPoleCoeff (n : ℕ) : ℕ :=
+  2 ^ (n + 1) - 1
+
+theorem dominantTwoPoleCoeff_nine :
+    dominantTwoPoleCoeff 9 = 1023 := by
+  native_decide
+
+
+structure AsymptoticExpansionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AsymptoticExpansionsBudgetCertificate.controlled
+    (c : AsymptoticExpansionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AsymptoticExpansionsBudgetCertificate.budgetControlled
+    (c : AsymptoticExpansionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AsymptoticExpansionsBudgetCertificate.Ready
+    (c : AsymptoticExpansionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AsymptoticExpansionsBudgetCertificate.size
+    (c : AsymptoticExpansionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem asymptoticExpansions_budgetCertificate_le_size
+    (c : AsymptoticExpansionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAsymptoticExpansionsBudgetCertificate :
+    AsymptoticExpansionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleAsymptoticExpansionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AsymptoticExpansionsBudgetCertificate.controlled,
+      sampleAsymptoticExpansionsBudgetCertificate]
+  · norm_num [AsymptoticExpansionsBudgetCertificate.budgetControlled,
+      sampleAsymptoticExpansionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAsymptoticExpansionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptoticExpansionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleAsymptoticExpansionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AsymptoticExpansionsBudgetCertificate.controlled,
+      sampleAsymptoticExpansionsBudgetCertificate]
+  · norm_num [AsymptoticExpansionsBudgetCertificate.budgetControlled,
+      sampleAsymptoticExpansionsBudgetCertificate]
+
+example :
+    sampleAsymptoticExpansionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptoticExpansionsBudgetCertificate.size := by
+  apply asymptoticExpansions_budgetCertificate_le_size
+  constructor
+  · norm_num [AsymptoticExpansionsBudgetCertificate.controlled,
+      sampleAsymptoticExpansionsBudgetCertificate]
+  · norm_num [AsymptoticExpansionsBudgetCertificate.budgetControlled,
+      sampleAsymptoticExpansionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List AsymptoticExpansionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAsymptoticExpansionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAsymptoticExpansionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.AsymptoticExpansions

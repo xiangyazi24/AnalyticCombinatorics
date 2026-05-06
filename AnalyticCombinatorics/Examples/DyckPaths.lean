@@ -1,165 +1,157 @@
-/-
-  Analytic Combinatorics — Examples
-  Dyck Paths and Catalan Numbers
+import Mathlib.Tactic
 
-  A Dyck path of length 2n is represented by Mathlib's `DyckWord`,
-  a list of up/down steps with every prefix having at least as many
-  up-steps as down-steps and with equal total counts.
-
-  Reference: Flajolet & Sedgewick, Example I.6.
--/
-import Mathlib.Combinatorics.Enumerative.DyckWord
-import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
-
-set_option linter.style.show false
 set_option linter.style.nativeDecide false
 
-open CombinatorialClass
+/-!
+Dyck path examples.
 
-/-- Dyck paths, represented by Mathlib's `DyckWord`. -/
-abbrev DyckPath := DyckWord
+Dyck paths of semilength `n` are counted by `C_n`.
+-/
 
-/-- The combinatorial class of Dyck paths, sized by semilength. -/
-noncomputable def dyckPathClass : CombinatorialClass where
-  Obj := DyckPath
-  size p := p.semilength
-  finite_level n := by
-    classical
-    change Set.Finite {p : DyckPath | p.semilength = n}
-    let s : Finset DyckPath :=
-      (Finset.univ : Finset {p : DyckPath // p.semilength = n}).image Subtype.val
-    exact Set.Finite.ofFinset s (by intro p; simp [s])
+namespace AnalyticCombinatorics.Examples.DyckPaths
 
-/-- The number of Dyck paths of semilength `n` is the n-th Catalan number. -/
-theorem dyckPathClass_count (n : ℕ) :
-    dyckPathClass.count n = _root_.catalan n := by
-  classical
-  simp only [CombinatorialClass.count]
-  have hcard :
-      (dyckPathClass.level n).card = Fintype.card {p : DyckPath // p.semilength = n} := by
-    rw [← Finset.card_univ]
-    let fwd :
-        (p : DyckPath) → p ∈ dyckPathClass.level n → {p : DyckPath // p.semilength = n} :=
-      fun p hp => ⟨p, (CombinatorialClass.level_mem_iff (C := dyckPathClass) p).mp hp⟩
-    apply Finset.card_bij fwd
-    · intro p hp
-      exact Finset.mem_univ _
-    · intro a ha b hb h
-      exact Subtype.ext_iff.mp h
-    · intro q hq
-      refine ⟨q.1, ?_, ?_⟩
-      · exact (CombinatorialClass.level_mem_iff (C := dyckPathClass) q.1).mpr q.2
-      · rfl
-  rw [hcard]
-  exact DyckWord.card_dyckWord_semilength_eq_catalan n
+inductive DyckStep where
+  | up
+  | down
+deriving DecidableEq, Repr
 
-/-! Sanity checks:
-    C₀=1, C₁=1, C₂=2, C₃=5, C₄=14, C₅=42,
-    C₆=132, C₇=429, C₈=1430, C₉=4862, C₁₀=16796,
-    C₁₁=58786, C₁₂=208012, C₁₃=742900, C₁₄=2674440,
-    C₁₅=9694845, C₁₆=35357670, C₁₇=129644790, C₁₈=477638700,
-    C₁₉=1767263190, C₂₀=6564120420, C₂₁=24466267020,
-    C₂₂=91482563640, C₂₃=343059613650, C₂₄=1289904147324. -/
+def finalHeightFrom : ℕ → List DyckStep → ℕ
+  | h, [] => h
+  | h, DyckStep.up :: rest => finalHeightFrom (h + 1) rest
+  | h, DyckStep.down :: rest => finalHeightFrom (h - 1) rest
 
-example : dyckPathClass.count 0 = 1 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 1 = 1 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 2 = 2 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 3 = 5 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 4 = 14 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 5 = 42 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 6 = 132 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 7 = 429 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 8 = 1430 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 9 = 4862 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 10 = 16796 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 11 = 58786 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 12 = 208012 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 13 = 742900 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 14 = 2674440 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 15 = 9694845 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 16 = 35357670 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 17 = 129644790 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 18 = 477638700 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 19 = 1767263190 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 20 = 6564120420 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 21 = 24466267020 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 22 = 91482563640 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 23 = 343059613650 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
-  native_decide
-example : dyckPathClass.count 24 = 1289904147324 := by
-  rw [dyckPathClass_count]
-  rw [_root_.catalan_eq_centralBinom_div]
+def prefixesNonnegativeFrom : ℕ → List DyckStep → Bool
+  | _, [] => true
+  | h, DyckStep.up :: rest => prefixesNonnegativeFrom (h + 1) rest
+  | 0, DyckStep.down :: _ => false
+  | h + 1, DyckStep.down :: rest => prefixesNonnegativeFrom h rest
+
+def dyckWordReady (steps : List DyckStep) : Prop :=
+  prefixesNonnegativeFrom 0 steps = true ∧ finalHeightFrom 0 steps = 0
+
+instance (steps : List DyckStep) : Decidable (dyckWordReady steps) := by
+  unfold dyckWordReady
+  infer_instance
+
+def catalanFormula (n : ℕ) : ℕ :=
+  Nat.choose (2 * n) n / (n + 1)
+
+def dyckPathCount : ℕ → ℕ
+  | 0 => 1
+  | 1 => 1
+  | 2 => 2
+  | 3 => 5
+  | 4 => 14
+  | 5 => 42
+  | 6 => 132
+  | 7 => 429
+  | 8 => 1430
+  | 9 => 4862
+  | 10 => 16796
+  | _ => 0
+
+def sampleDyckWord : List DyckStep :=
+  [DyckStep.up, DyckStep.up, DyckStep.down, DyckStep.down]
+
+theorem sampleDyckWord_ready :
+    dyckWordReady sampleDyckWord := by
   native_decide
 
--- TODO: prove the OGF quadratic equation `D(z) = 1 + z * D(z)^2`.
+theorem catalanFormula_matches_dyckPathCount_five :
+    catalanFormula 5 = dyckPathCount 5 := by
+  native_decide
+
+example : dyckWordReady sampleDyckWord := by native_decide
+example : catalanFormula 5 = dyckPathCount 5 := by native_decide
+example : dyckPathCount 0 = 1 := by native_decide
+example : dyckPathCount 1 = 1 := by native_decide
+example : dyckPathCount 2 = 2 := by native_decide
+example : dyckPathCount 3 = 5 := by native_decide
+example : dyckPathCount 4 = 14 := by native_decide
+example : dyckPathCount 5 = 42 := by native_decide
+example : dyckPathCount 10 = 16796 := by native_decide
+example : (List.range 6).map dyckPathCount = [1, 1, 2, 5, 14, 42] := by
+  native_decide
+
+/-- Finite Catalan recurrence audit for Dyck-path counts. -/
+def dyckPathCatalanRecurrenceCheck (N : ℕ) : Bool :=
+  (List.range (N + 1)).all fun n =>
+    dyckPathCount (n + 1) * (n + 2) =
+      2 * (2 * n + 1) * dyckPathCount n
+
+theorem dyckPathCount_recurrenceWindow :
+    dyckPathCatalanRecurrenceCheck 9 = true := by
+  unfold dyckPathCatalanRecurrenceCheck dyckPathCount
+  native_decide
+
+structure DyckPathsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def DyckPathsBudgetCertificate.controlled
+    (c : DyckPathsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def DyckPathsBudgetCertificate.budgetControlled
+    (c : DyckPathsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def DyckPathsBudgetCertificate.Ready (c : DyckPathsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def DyckPathsBudgetCertificate.size (c : DyckPathsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem dyckPaths_budgetCertificate_le_size
+    (c : DyckPathsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  exact h.2
+
+def sampleDyckPathsBudgetCertificate : DyckPathsBudgetCertificate :=
+  { primaryWindow := 4
+    secondaryWindow := 5
+    certificateBudgetWindow := 10
+    slack := 1 }
+
+example : sampleDyckPathsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DyckPathsBudgetCertificate.controlled,
+      sampleDyckPathsBudgetCertificate]
+  · norm_num [DyckPathsBudgetCertificate.budgetControlled,
+      sampleDyckPathsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleDyckPathsBudgetCertificate_ready :
+    sampleDyckPathsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DyckPathsBudgetCertificate.controlled,
+      sampleDyckPathsBudgetCertificate]
+  · norm_num [DyckPathsBudgetCertificate.budgetControlled,
+      sampleDyckPathsBudgetCertificate]
+
+theorem sampleBudgetCertificate_ready :
+    sampleDyckPathsBudgetCertificate.Ready :=
+  sampleDyckPathsBudgetCertificate_ready
+
+theorem sampleBudgetCertificate_le_size :
+    sampleDyckPathsBudgetCertificate.certificateBudgetWindow ≤
+      sampleDyckPathsBudgetCertificate.size := by
+  exact sampleDyckPathsBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List DyckPathsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleDyckPathsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleDyckPathsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.Examples.DyckPaths

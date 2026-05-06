@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace ComplexVariables
+namespace AnalyticCombinatorics.PartB.Ch4.ComplexVariables
+
 
 open Finset
 
@@ -253,4 +254,86 @@ theorem hadamard_geometric_3_3_upto_eight :
     geomHadamardCheckUpTo 3 3 8 = true := by
   native_decide
 
-end ComplexVariables
+
+
+structure ComplexVariablesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ComplexVariablesBudgetCertificate.controlled
+    (c : ComplexVariablesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ComplexVariablesBudgetCertificate.budgetControlled
+    (c : ComplexVariablesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ComplexVariablesBudgetCertificate.Ready
+    (c : ComplexVariablesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ComplexVariablesBudgetCertificate.size
+    (c : ComplexVariablesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem complexVariables_budgetCertificate_le_size
+    (c : ComplexVariablesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleComplexVariablesBudgetCertificate :
+    ComplexVariablesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleComplexVariablesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ComplexVariablesBudgetCertificate.controlled,
+      sampleComplexVariablesBudgetCertificate]
+  · norm_num [ComplexVariablesBudgetCertificate.budgetControlled,
+      sampleComplexVariablesBudgetCertificate]
+
+example :
+    sampleComplexVariablesBudgetCertificate.certificateBudgetWindow ≤
+      sampleComplexVariablesBudgetCertificate.size := by
+  apply complexVariables_budgetCertificate_le_size
+  constructor
+  · norm_num [ComplexVariablesBudgetCertificate.controlled,
+      sampleComplexVariablesBudgetCertificate]
+  · norm_num [ComplexVariablesBudgetCertificate.budgetControlled,
+      sampleComplexVariablesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleComplexVariablesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ComplexVariablesBudgetCertificate.controlled,
+      sampleComplexVariablesBudgetCertificate]
+  · norm_num [ComplexVariablesBudgetCertificate.budgetControlled,
+      sampleComplexVariablesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleComplexVariablesBudgetCertificate.certificateBudgetWindow ≤
+      sampleComplexVariablesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ComplexVariablesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleComplexVariablesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleComplexVariablesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.ComplexVariables

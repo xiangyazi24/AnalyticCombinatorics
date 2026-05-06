@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace AsymptoticSeries
+namespace AnalyticCombinatorics.PartB.Ch4.AsymptoticSeries
+
 
 /-!
   Chapter IV computational checks for asymptotic series and expansions.
@@ -206,4 +207,96 @@ example : laplaceMoment 4 = 4 * laplaceMoment 3 := by native_decide
 example : laplaceMoment 6 = 6 * laplaceMoment 5 := by native_decide
 example : laplaceMoment 10 = 10 * laplaceMoment 9 := by native_decide
 
-end AsymptoticSeries
+/-- Stirling correction numerator sample. -/
+theorem stirlingFactorialSeries_numerator_three :
+    stirlingFactorialSeries.correctionNumerators[3]! = -139 := by
+  native_decide
+
+/-- Central-binomial sample used in the asymptotic scale checks. -/
+theorem centralBinomial_ten :
+    centralBinomial 10 = 184756 := by
+  native_decide
+
+
+
+structure AsymptoticSeriesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AsymptoticSeriesBudgetCertificate.controlled
+    (c : AsymptoticSeriesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AsymptoticSeriesBudgetCertificate.budgetControlled
+    (c : AsymptoticSeriesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AsymptoticSeriesBudgetCertificate.Ready
+    (c : AsymptoticSeriesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AsymptoticSeriesBudgetCertificate.size
+    (c : AsymptoticSeriesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem asymptoticSeries_budgetCertificate_le_size
+    (c : AsymptoticSeriesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAsymptoticSeriesBudgetCertificate :
+    AsymptoticSeriesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleAsymptoticSeriesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AsymptoticSeriesBudgetCertificate.controlled,
+      sampleAsymptoticSeriesBudgetCertificate]
+  · norm_num [AsymptoticSeriesBudgetCertificate.budgetControlled,
+      sampleAsymptoticSeriesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAsymptoticSeriesBudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptoticSeriesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleAsymptoticSeriesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AsymptoticSeriesBudgetCertificate.controlled,
+      sampleAsymptoticSeriesBudgetCertificate]
+  · norm_num [AsymptoticSeriesBudgetCertificate.budgetControlled,
+      sampleAsymptoticSeriesBudgetCertificate]
+
+example :
+    sampleAsymptoticSeriesBudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptoticSeriesBudgetCertificate.size := by
+  apply asymptoticSeries_budgetCertificate_le_size
+  constructor
+  · norm_num [AsymptoticSeriesBudgetCertificate.controlled,
+      sampleAsymptoticSeriesBudgetCertificate]
+  · norm_num [AsymptoticSeriesBudgetCertificate.budgetControlled,
+      sampleAsymptoticSeriesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List AsymptoticSeriesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAsymptoticSeriesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAsymptoticSeriesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.AsymptoticSeries

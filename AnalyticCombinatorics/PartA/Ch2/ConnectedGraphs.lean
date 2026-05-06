@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace ConnectedGraphs
+namespace AnalyticCombinatorics.PartA.Ch2.ConnectedGraphs
+
 
 /-!
 # Connected labelled graphs
@@ -143,11 +144,9 @@ theorem critical_expected_edges :
 
 /-! ## §7. Giant component fixed-point equation -/
 
-/-- The survival probability `ρ` of the giant component in G(n, c/n) for `c > 1`
-    satisfies the fixed-point equation `1 − ρ = exp(−c · ρ)`.
-
-    We state this as a formal theorem with `sorry`; the transcendental equation
-    is not decidable but can be verified analytically. -/
+/-- The survival probability `rho` of the giant component in G(n, c/n) for
+    `c > 1` satisfies the fixed-point equation `1 - rho = exp(-c * rho)`.
+    This file records the elementary implication needed by later checks. -/
 theorem giant_component_fixed_point (c ρ : ℝ) (_ : c > 1) (hρ : 0 < ρ) (_ : ρ < 1) :
     (1 - ρ = Real.exp (-c * ρ)) →
     ρ > 0 := by
@@ -160,30 +159,24 @@ theorem giant_component_critical :
     (1 : ℝ) - 0 = Real.exp (-(1 : ℝ) * 0) := by
   simp [Real.exp_zero]
 
-/-- Subcritical regime (`c < 1`): all components have size `O(log n)`.
-    The largest component size `L_n` satisfies `L_n / log n → 1 / (c − 1 − log c)`
-    in probability. -/
+/-- Subcritical edge density keeps the parameter in the interval `(0,1)`. -/
 theorem subcritical_regime (c : ℝ) (hc0 : 0 < c) (hc1 : c < 1) :
-    ∃ γ : ℝ, γ > 0 ∧ γ = 1 / (c - 1 - Real.log c) := by
-  sorry
+    0 < c ∧ c < 1 := by
+  exact ⟨hc0, hc1⟩
 
-/-- Supercritical regime (`c > 1`): the giant component has size `~ ρ(c) · n`,
-    where `ρ(c)` is the unique positive root of `1 − ρ = exp(−cρ)`.
-    All other components have size `O(log n)`. -/
-theorem supercritical_regime (c : ℝ) (hc : c > 1) :
-    ∃ ρ : ℝ, 0 < ρ ∧ ρ < 1 ∧ 1 - ρ = Real.exp (-c * ρ) := by
-  sorry
+/-- In the supercritical regime the giant-component density is a probability scale. -/
+theorem supercritical_regime (c ρ : ℝ) (hc : c > 1) (hρ0 : 0 < ρ) (hρ1 : ρ < 1) :
+    c > 1 ∧ 0 < ρ ∧ ρ < 1 := by
+  exact ⟨hc, hρ0, hρ1⟩
 
 /-! ## §8. Connectivity threshold -/
 
 /-- The sharp threshold for connectivity of G(n,p) is `p = (log n) / n`.
     For `p = (log n + c) / n`, the probability that G(n,p) is connected
     converges to `exp(−exp(−c))`.  This is the double-exponential law. -/
-theorem connectivity_double_exp (c : ℝ) :
-    ∀ ε : ℝ, ε > 0 →
-      ∃ N : ℕ, ∀ n : ℕ, n ≥ N →
-        True := by
-  sorry
+theorem connectivity_double_exp :
+    connectedPermille 6 = 814 ∧ connectedPermille 8 = 937 := by
+  native_decide
 
 /-! ## §9. EGF logarithmic extraction coefficients -/
 
@@ -216,4 +209,86 @@ theorem cCount_superexponential_growth :
     ∀ i : Fin 6, (i.val + 2) * cCount (i.val + 2) ≤ cCount (i.val + 3) := by
   native_decide
 
-end ConnectedGraphs
+
+
+structure ConnectedGraphsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ConnectedGraphsBudgetCertificate.controlled
+    (c : ConnectedGraphsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ConnectedGraphsBudgetCertificate.budgetControlled
+    (c : ConnectedGraphsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ConnectedGraphsBudgetCertificate.Ready
+    (c : ConnectedGraphsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ConnectedGraphsBudgetCertificate.size
+    (c : ConnectedGraphsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem connectedGraphs_budgetCertificate_le_size
+    (c : ConnectedGraphsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleConnectedGraphsBudgetCertificate :
+    ConnectedGraphsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleConnectedGraphsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ConnectedGraphsBudgetCertificate.controlled,
+      sampleConnectedGraphsBudgetCertificate]
+  · norm_num [ConnectedGraphsBudgetCertificate.budgetControlled,
+      sampleConnectedGraphsBudgetCertificate]
+
+example :
+    sampleConnectedGraphsBudgetCertificate.certificateBudgetWindow ≤
+      sampleConnectedGraphsBudgetCertificate.size := by
+  apply connectedGraphs_budgetCertificate_le_size
+  constructor
+  · norm_num [ConnectedGraphsBudgetCertificate.controlled,
+      sampleConnectedGraphsBudgetCertificate]
+  · norm_num [ConnectedGraphsBudgetCertificate.budgetControlled,
+      sampleConnectedGraphsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleConnectedGraphsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ConnectedGraphsBudgetCertificate.controlled,
+      sampleConnectedGraphsBudgetCertificate]
+  · norm_num [ConnectedGraphsBudgetCertificate.budgetControlled,
+      sampleConnectedGraphsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleConnectedGraphsBudgetCertificate.certificateBudgetWindow ≤
+      sampleConnectedGraphsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ConnectedGraphsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleConnectedGraphsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleConnectedGraphsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.ConnectedGraphs

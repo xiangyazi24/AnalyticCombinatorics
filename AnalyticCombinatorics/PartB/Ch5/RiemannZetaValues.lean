@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace RiemannZetaValues
+namespace AnalyticCombinatorics.PartB.Ch5.RiemannZetaValues
+
 
 open Finset
 
@@ -126,4 +127,86 @@ theorem harmonic_number_ten_value :
 theorem harmonic_number_ten_greater_than_two :
     harmonicPartial 10 > 2 := by native_decide
 
-end RiemannZetaValues
+
+
+structure RiemannZetaValuesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def RiemannZetaValuesBudgetCertificate.controlled
+    (c : RiemannZetaValuesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def RiemannZetaValuesBudgetCertificate.budgetControlled
+    (c : RiemannZetaValuesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def RiemannZetaValuesBudgetCertificate.Ready
+    (c : RiemannZetaValuesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def RiemannZetaValuesBudgetCertificate.size
+    (c : RiemannZetaValuesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem riemannZetaValues_budgetCertificate_le_size
+    (c : RiemannZetaValuesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleRiemannZetaValuesBudgetCertificate :
+    RiemannZetaValuesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleRiemannZetaValuesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RiemannZetaValuesBudgetCertificate.controlled,
+      sampleRiemannZetaValuesBudgetCertificate]
+  · norm_num [RiemannZetaValuesBudgetCertificate.budgetControlled,
+      sampleRiemannZetaValuesBudgetCertificate]
+
+example :
+    sampleRiemannZetaValuesBudgetCertificate.certificateBudgetWindow ≤
+      sampleRiemannZetaValuesBudgetCertificate.size := by
+  apply riemannZetaValues_budgetCertificate_le_size
+  constructor
+  · norm_num [RiemannZetaValuesBudgetCertificate.controlled,
+      sampleRiemannZetaValuesBudgetCertificate]
+  · norm_num [RiemannZetaValuesBudgetCertificate.budgetControlled,
+      sampleRiemannZetaValuesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleRiemannZetaValuesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RiemannZetaValuesBudgetCertificate.controlled,
+      sampleRiemannZetaValuesBudgetCertificate]
+  · norm_num [RiemannZetaValuesBudgetCertificate.budgetControlled,
+      sampleRiemannZetaValuesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleRiemannZetaValuesBudgetCertificate.certificateBudgetWindow ≤
+      sampleRiemannZetaValuesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List RiemannZetaValuesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleRiemannZetaValuesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleRiemannZetaValuesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.RiemannZetaValues

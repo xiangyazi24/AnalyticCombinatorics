@@ -13,8 +13,7 @@ set_option linter.style.nativeDecide false
 
 open Finset
 
-namespace LargePowers
-
+namespace AnalyticCombinatorics.PartB.Ch9.LargePowers
 /-! ## Section 1: Central binomial coefficient bounds (Gaussian peak) -/
 
 /-- C(10,5) = 252. -/
@@ -71,4 +70,101 @@ example : Nat.choose 20 10 * 2 < 4 ^ 10 := by native_decide
     illustrating concentration away from the maximum. -/
 example : Nat.choose 8 4 * 3 < 2 ^ 8 := by native_decide
 
-end LargePowers
+/-- Central binomial peak in a large power. -/
+def centralBinomialPeak (n : ℕ) : ℕ :=
+  Nat.choose (2 * n) n
+
+theorem centralBinomialPeak_ten :
+    centralBinomialPeak 10 = 184756 := by
+  native_decide
+
+/-- Cleared peak fraction against the full binomial mass. -/
+def centralPeakSlack (n multiplier : ℕ) : ℕ :=
+  2 ^ (2 * n) - multiplier * centralBinomialPeak n
+
+theorem centralPeakSlack_four_three :
+    centralPeakSlack 4 3 = 46 := by
+  native_decide
+
+
+structure LargePowersBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def LargePowersBudgetCertificate.controlled
+    (c : LargePowersBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def LargePowersBudgetCertificate.budgetControlled
+    (c : LargePowersBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def LargePowersBudgetCertificate.Ready
+    (c : LargePowersBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def LargePowersBudgetCertificate.size
+    (c : LargePowersBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem largePowers_budgetCertificate_le_size
+    (c : LargePowersBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleLargePowersBudgetCertificate :
+    LargePowersBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleLargePowersBudgetCertificate.Ready := by
+  constructor
+  · norm_num [LargePowersBudgetCertificate.controlled,
+      sampleLargePowersBudgetCertificate]
+  · norm_num [LargePowersBudgetCertificate.budgetControlled,
+      sampleLargePowersBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleLargePowersBudgetCertificate.certificateBudgetWindow ≤
+      sampleLargePowersBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleLargePowersBudgetCertificate.Ready := by
+  constructor
+  · norm_num [LargePowersBudgetCertificate.controlled,
+      sampleLargePowersBudgetCertificate]
+  · norm_num [LargePowersBudgetCertificate.budgetControlled,
+      sampleLargePowersBudgetCertificate]
+
+example :
+    sampleLargePowersBudgetCertificate.certificateBudgetWindow ≤
+      sampleLargePowersBudgetCertificate.size := by
+  apply largePowers_budgetCertificate_le_size
+  constructor
+  · norm_num [LargePowersBudgetCertificate.controlled,
+      sampleLargePowersBudgetCertificate]
+  · norm_num [LargePowersBudgetCertificate.budgetControlled,
+      sampleLargePowersBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List LargePowersBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleLargePowersBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleLargePowersBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.LargePowers

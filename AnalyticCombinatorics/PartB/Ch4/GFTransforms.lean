@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace GFTransforms
+namespace AnalyticCombinatorics.PartB.Ch4.GFTransforms
+
 
 /-!
 Chapter IV generating-function transforms, stated as finite coefficient
@@ -214,4 +215,86 @@ theorem weighted_lambert_coefficients_are_euler_log_coefficients_upto_twelve :
       List.ofFn (fun i : Fin 12 => eulerLogCoeff onesZ (i.val + 1)) := by
   native_decide
 
-end GFTransforms
+
+
+structure GFTransformsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def GFTransformsBudgetCertificate.controlled
+    (c : GFTransformsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def GFTransformsBudgetCertificate.budgetControlled
+    (c : GFTransformsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def GFTransformsBudgetCertificate.Ready
+    (c : GFTransformsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def GFTransformsBudgetCertificate.size
+    (c : GFTransformsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem gFTransforms_budgetCertificate_le_size
+    (c : GFTransformsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleGFTransformsBudgetCertificate :
+    GFTransformsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleGFTransformsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GFTransformsBudgetCertificate.controlled,
+      sampleGFTransformsBudgetCertificate]
+  · norm_num [GFTransformsBudgetCertificate.budgetControlled,
+      sampleGFTransformsBudgetCertificate]
+
+example :
+    sampleGFTransformsBudgetCertificate.certificateBudgetWindow ≤
+      sampleGFTransformsBudgetCertificate.size := by
+  apply gFTransforms_budgetCertificate_le_size
+  constructor
+  · norm_num [GFTransformsBudgetCertificate.controlled,
+      sampleGFTransformsBudgetCertificate]
+  · norm_num [GFTransformsBudgetCertificate.budgetControlled,
+      sampleGFTransformsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleGFTransformsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GFTransformsBudgetCertificate.controlled,
+      sampleGFTransformsBudgetCertificate]
+  · norm_num [GFTransformsBudgetCertificate.budgetControlled,
+      sampleGFTransformsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleGFTransformsBudgetCertificate.certificateBudgetWindow ≤
+      sampleGFTransformsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List GFTransformsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleGFTransformsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleGFTransformsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.GFTransforms

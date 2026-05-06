@@ -15,8 +15,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace RandomTrees
-
+namespace AnalyticCombinatorics.PartB.Ch9.RandomTrees
 open Finset
 
 /-! ## 1.  Binary search trees and Catalan numbers -/
@@ -167,7 +166,7 @@ theorem factorial_grows :
   native_decide
 
 /-- Expected number of leaves in an RRT with n nodes is approximately n/2.
-    Rational proxy: harmonic n / 2 < n / 2 for large n is false;
+    Rational check: harmonic n / 2 < n / 2 for large n is false;
     instead we note that H(n) < n for all n ≥ 1 (expected leaves ≈ n/2 heuristic). -/
 theorem harmonic_lt_n :
     harmonic 2 < 2 ∧
@@ -389,4 +388,85 @@ theorem perfectTree_strictly_increasing :
     perfectTreeNodes 7 < perfectTreeNodes 8 := by
   native_decide
 
-end RandomTrees
+
+structure RandomTreesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def RandomTreesBudgetCertificate.controlled
+    (c : RandomTreesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def RandomTreesBudgetCertificate.budgetControlled
+    (c : RandomTreesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def RandomTreesBudgetCertificate.Ready
+    (c : RandomTreesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def RandomTreesBudgetCertificate.size
+    (c : RandomTreesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem randomTrees_budgetCertificate_le_size
+    (c : RandomTreesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleRandomTreesBudgetCertificate :
+    RandomTreesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleRandomTreesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RandomTreesBudgetCertificate.controlled,
+      sampleRandomTreesBudgetCertificate]
+  · norm_num [RandomTreesBudgetCertificate.budgetControlled,
+      sampleRandomTreesBudgetCertificate]
+
+example :
+    sampleRandomTreesBudgetCertificate.certificateBudgetWindow ≤
+      sampleRandomTreesBudgetCertificate.size := by
+  apply randomTrees_budgetCertificate_le_size
+  constructor
+  · norm_num [RandomTreesBudgetCertificate.controlled,
+      sampleRandomTreesBudgetCertificate]
+  · norm_num [RandomTreesBudgetCertificate.budgetControlled,
+      sampleRandomTreesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleRandomTreesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RandomTreesBudgetCertificate.controlled,
+      sampleRandomTreesBudgetCertificate]
+  · norm_num [RandomTreesBudgetCertificate.budgetControlled,
+      sampleRandomTreesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleRandomTreesBudgetCertificate.certificateBudgetWindow ≤
+      sampleRandomTreesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List RandomTreesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleRandomTreesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleRandomTreesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.RandomTrees

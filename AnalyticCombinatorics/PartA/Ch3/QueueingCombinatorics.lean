@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace QueueingCombinatorics
+namespace AnalyticCombinatorics.PartA.Ch3.QueueingCombinatorics
+
 
 /-!
 # Queueing and Service Combinatorics
@@ -337,4 +338,86 @@ theorem priorityQueue_catalan_integer_4 : priorityQueueCatalanIntegerForm 4 = tr
 theorem priorityQueue_catalan_integer_5 : priorityQueueCatalanIntegerForm 5 = true := by
   native_decide
 
-end QueueingCombinatorics
+
+
+structure QueueingCombinatoricsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def QueueingCombinatoricsBudgetCertificate.controlled
+    (c : QueueingCombinatoricsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def QueueingCombinatoricsBudgetCertificate.budgetControlled
+    (c : QueueingCombinatoricsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def QueueingCombinatoricsBudgetCertificate.Ready
+    (c : QueueingCombinatoricsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def QueueingCombinatoricsBudgetCertificate.size
+    (c : QueueingCombinatoricsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem queueingCombinatorics_budgetCertificate_le_size
+    (c : QueueingCombinatoricsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleQueueingCombinatoricsBudgetCertificate :
+    QueueingCombinatoricsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleQueueingCombinatoricsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [QueueingCombinatoricsBudgetCertificate.controlled,
+      sampleQueueingCombinatoricsBudgetCertificate]
+  · norm_num [QueueingCombinatoricsBudgetCertificate.budgetControlled,
+      sampleQueueingCombinatoricsBudgetCertificate]
+
+example :
+    sampleQueueingCombinatoricsBudgetCertificate.certificateBudgetWindow ≤
+      sampleQueueingCombinatoricsBudgetCertificate.size := by
+  apply queueingCombinatorics_budgetCertificate_le_size
+  constructor
+  · norm_num [QueueingCombinatoricsBudgetCertificate.controlled,
+      sampleQueueingCombinatoricsBudgetCertificate]
+  · norm_num [QueueingCombinatoricsBudgetCertificate.budgetControlled,
+      sampleQueueingCombinatoricsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleQueueingCombinatoricsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [QueueingCombinatoricsBudgetCertificate.controlled,
+      sampleQueueingCombinatoricsBudgetCertificate]
+  · norm_num [QueueingCombinatoricsBudgetCertificate.budgetControlled,
+      sampleQueueingCombinatoricsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleQueueingCombinatoricsBudgetCertificate.certificateBudgetWindow ≤
+      sampleQueueingCombinatoricsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List QueueingCombinatoricsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleQueueingCombinatoricsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleQueueingCombinatoricsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.QueueingCombinatorics

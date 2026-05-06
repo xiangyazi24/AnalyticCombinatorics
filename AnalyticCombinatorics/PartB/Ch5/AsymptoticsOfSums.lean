@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace AsymptoticsOfSums
+namespace AnalyticCombinatorics.PartB.Ch5.AsymptoticsOfSums
+
 
 open Finset
 
@@ -106,7 +107,8 @@ theorem alternating_harmonic_values_1_to_12 :
 
 /-! ## Digit sums and digital roots -/
 
-/-- Fuel-limited digit sum in base `b`; the public wrapper supplies enough fuel for base `b >= 2`. -/
+/-- Fuel-limited digit sum in base `b`; the public wrapper supplies enough fuel for
+    base `b >= 2`. -/
 def digitSumBaseAux (b : ℕ) : ℕ → ℕ → ℕ
   | 0, _ => 0
   | fuel + 1, n =>
@@ -145,4 +147,86 @@ theorem digit_sum_456_789_mod9 :
       digitSumBase 10 456 = 15 ∧
       digitSumBase 10 789 = 24 := by native_decide
 
-end AsymptoticsOfSums
+
+
+structure AsymptoticsOfSumsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AsymptoticsOfSumsBudgetCertificate.controlled
+    (c : AsymptoticsOfSumsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AsymptoticsOfSumsBudgetCertificate.budgetControlled
+    (c : AsymptoticsOfSumsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AsymptoticsOfSumsBudgetCertificate.Ready
+    (c : AsymptoticsOfSumsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AsymptoticsOfSumsBudgetCertificate.size
+    (c : AsymptoticsOfSumsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem asymptoticsOfSums_budgetCertificate_le_size
+    (c : AsymptoticsOfSumsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAsymptoticsOfSumsBudgetCertificate :
+    AsymptoticsOfSumsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAsymptoticsOfSumsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AsymptoticsOfSumsBudgetCertificate.controlled,
+      sampleAsymptoticsOfSumsBudgetCertificate]
+  · norm_num [AsymptoticsOfSumsBudgetCertificate.budgetControlled,
+      sampleAsymptoticsOfSumsBudgetCertificate]
+
+example :
+    sampleAsymptoticsOfSumsBudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptoticsOfSumsBudgetCertificate.size := by
+  apply asymptoticsOfSums_budgetCertificate_le_size
+  constructor
+  · norm_num [AsymptoticsOfSumsBudgetCertificate.controlled,
+      sampleAsymptoticsOfSumsBudgetCertificate]
+  · norm_num [AsymptoticsOfSumsBudgetCertificate.budgetControlled,
+      sampleAsymptoticsOfSumsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAsymptoticsOfSumsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AsymptoticsOfSumsBudgetCertificate.controlled,
+      sampleAsymptoticsOfSumsBudgetCertificate]
+  · norm_num [AsymptoticsOfSumsBudgetCertificate.budgetControlled,
+      sampleAsymptoticsOfSumsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAsymptoticsOfSumsBudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptoticsOfSumsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List AsymptoticsOfSumsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAsymptoticsOfSumsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAsymptoticsOfSumsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.AsymptoticsOfSums

@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace LimitDistributions
+namespace AnalyticCombinatorics.PartA.Ch3.LimitDistributions
+
 
 open Finset
 
@@ -246,4 +247,86 @@ theorem exponential_discrete_right_mean_rate_two :
     exponentialDiscreteRightMean 2 (1 / 10) = 1 / 2 := by
   native_decide
 
-end LimitDistributions
+
+
+structure LimitDistributionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def LimitDistributionsBudgetCertificate.controlled
+    (c : LimitDistributionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def LimitDistributionsBudgetCertificate.budgetControlled
+    (c : LimitDistributionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def LimitDistributionsBudgetCertificate.Ready
+    (c : LimitDistributionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def LimitDistributionsBudgetCertificate.size
+    (c : LimitDistributionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem limitDistributions_budgetCertificate_le_size
+    (c : LimitDistributionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleLimitDistributionsBudgetCertificate :
+    LimitDistributionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleLimitDistributionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [LimitDistributionsBudgetCertificate.controlled,
+      sampleLimitDistributionsBudgetCertificate]
+  · norm_num [LimitDistributionsBudgetCertificate.budgetControlled,
+      sampleLimitDistributionsBudgetCertificate]
+
+example :
+    sampleLimitDistributionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleLimitDistributionsBudgetCertificate.size := by
+  apply limitDistributions_budgetCertificate_le_size
+  constructor
+  · norm_num [LimitDistributionsBudgetCertificate.controlled,
+      sampleLimitDistributionsBudgetCertificate]
+  · norm_num [LimitDistributionsBudgetCertificate.budgetControlled,
+      sampleLimitDistributionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleLimitDistributionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [LimitDistributionsBudgetCertificate.controlled,
+      sampleLimitDistributionsBudgetCertificate]
+  · norm_num [LimitDistributionsBudgetCertificate.budgetControlled,
+      sampleLimitDistributionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleLimitDistributionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleLimitDistributionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List LimitDistributionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleLimitDistributionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleLimitDistributionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.LimitDistributions

@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace AlgebraicFunctionCoefficients
+namespace AnalyticCombinatorics.PartB.Ch6.AlgebraicFunctionCoefficients
+
 
 /-!
   Coefficient extraction for algebraic functions, following Chapter VI of
@@ -158,4 +159,87 @@ theorem narayana_values :
 theorem narayana_row_sums_eq_catalan_1_5 :
     ∀ n : Fin 5, narayanaRowSum ((n : ℕ) + 1) = catalanCoeff ((n : ℕ) + 1) := by native_decide
 
-end AlgebraicFunctionCoefficients
+
+
+structure AlgebraicFunctionCoefficientsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AlgebraicFunctionCoefficientsBudgetCertificate.controlled
+    (c : AlgebraicFunctionCoefficientsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AlgebraicFunctionCoefficientsBudgetCertificate.budgetControlled
+    (c : AlgebraicFunctionCoefficientsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AlgebraicFunctionCoefficientsBudgetCertificate.Ready
+    (c : AlgebraicFunctionCoefficientsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AlgebraicFunctionCoefficientsBudgetCertificate.size
+    (c : AlgebraicFunctionCoefficientsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem algebraicFunctionCoefficients_budgetCertificate_le_size
+    (c : AlgebraicFunctionCoefficientsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAlgebraicFunctionCoefficientsBudgetCertificate :
+    AlgebraicFunctionCoefficientsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAlgebraicFunctionCoefficientsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AlgebraicFunctionCoefficientsBudgetCertificate.controlled,
+      sampleAlgebraicFunctionCoefficientsBudgetCertificate]
+  · norm_num [AlgebraicFunctionCoefficientsBudgetCertificate.budgetControlled,
+      sampleAlgebraicFunctionCoefficientsBudgetCertificate]
+
+example :
+    sampleAlgebraicFunctionCoefficientsBudgetCertificate.certificateBudgetWindow ≤
+      sampleAlgebraicFunctionCoefficientsBudgetCertificate.size := by
+  apply algebraicFunctionCoefficients_budgetCertificate_le_size
+  constructor
+  · norm_num [AlgebraicFunctionCoefficientsBudgetCertificate.controlled,
+      sampleAlgebraicFunctionCoefficientsBudgetCertificate]
+  · norm_num [AlgebraicFunctionCoefficientsBudgetCertificate.budgetControlled,
+      sampleAlgebraicFunctionCoefficientsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAlgebraicFunctionCoefficientsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AlgebraicFunctionCoefficientsBudgetCertificate.controlled,
+      sampleAlgebraicFunctionCoefficientsBudgetCertificate]
+  · norm_num [AlgebraicFunctionCoefficientsBudgetCertificate.budgetControlled,
+      sampleAlgebraicFunctionCoefficientsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAlgebraicFunctionCoefficientsBudgetCertificate.certificateBudgetWindow ≤
+      sampleAlgebraicFunctionCoefficientsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady
+    (data : List AlgebraicFunctionCoefficientsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAlgebraicFunctionCoefficientsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAlgebraicFunctionCoefficientsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.AlgebraicFunctionCoefficients

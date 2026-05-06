@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace PermutationInversions
+namespace AnalyticCombinatorics.PartA.Ch2.PermutationInversions
+
 
 /-!
 # Permutation Inversions, Mahonian Statistics, and Inversion Tables
@@ -400,4 +401,86 @@ theorem worpitzky_4_4 :
           eulerianNum 4 3 * Nat.choose 4 4 := by
   native_decide
 
-end PermutationInversions
+
+
+structure PermutationInversionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PermutationInversionsBudgetCertificate.controlled
+    (c : PermutationInversionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PermutationInversionsBudgetCertificate.budgetControlled
+    (c : PermutationInversionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PermutationInversionsBudgetCertificate.Ready
+    (c : PermutationInversionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PermutationInversionsBudgetCertificate.size
+    (c : PermutationInversionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem permutationInversions_budgetCertificate_le_size
+    (c : PermutationInversionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePermutationInversionsBudgetCertificate :
+    PermutationInversionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : samplePermutationInversionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PermutationInversionsBudgetCertificate.controlled,
+      samplePermutationInversionsBudgetCertificate]
+  · norm_num [PermutationInversionsBudgetCertificate.budgetControlled,
+      samplePermutationInversionsBudgetCertificate]
+
+example :
+    samplePermutationInversionsBudgetCertificate.certificateBudgetWindow ≤
+      samplePermutationInversionsBudgetCertificate.size := by
+  apply permutationInversions_budgetCertificate_le_size
+  constructor
+  · norm_num [PermutationInversionsBudgetCertificate.controlled,
+      samplePermutationInversionsBudgetCertificate]
+  · norm_num [PermutationInversionsBudgetCertificate.budgetControlled,
+      samplePermutationInversionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    samplePermutationInversionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PermutationInversionsBudgetCertificate.controlled,
+      samplePermutationInversionsBudgetCertificate]
+  · norm_num [PermutationInversionsBudgetCertificate.budgetControlled,
+      samplePermutationInversionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePermutationInversionsBudgetCertificate.certificateBudgetWindow ≤
+      samplePermutationInversionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List PermutationInversionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePermutationInversionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePermutationInversionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.PermutationInversions

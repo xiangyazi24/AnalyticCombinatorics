@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace SearchTreeAnalysis
+namespace AnalyticCombinatorics.PartB.Ch9.SearchTreeAnalysis
+
 
 /-!
 # Search Tree Analysis and Digital Structures
@@ -67,7 +68,8 @@ theorem randomBSTExternalPathLength_values :
 
 /-! ## Quicksort comparisons -/
 
-/-- Expected Quicksort comparisons, multiplied by `n!`, for the same recurrence as BST path length. -/
+/-- Expected Quicksort comparisons, multiplied by `n!`, for the same recurrence as
+    BST path length. -/
 def quicksortComparisonsScaled (n : ℕ) : ℕ :=
   bstExpectedPathLengthScaled n
 
@@ -166,4 +168,86 @@ theorem binaryTrieCapacity_is_full_tree :
       [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] := by
   native_decide
 
-end SearchTreeAnalysis
+
+
+structure SearchTreeAnalysisBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SearchTreeAnalysisBudgetCertificate.controlled
+    (c : SearchTreeAnalysisBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SearchTreeAnalysisBudgetCertificate.budgetControlled
+    (c : SearchTreeAnalysisBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SearchTreeAnalysisBudgetCertificate.Ready
+    (c : SearchTreeAnalysisBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SearchTreeAnalysisBudgetCertificate.size
+    (c : SearchTreeAnalysisBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem searchTreeAnalysis_budgetCertificate_le_size
+    (c : SearchTreeAnalysisBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSearchTreeAnalysisBudgetCertificate :
+    SearchTreeAnalysisBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSearchTreeAnalysisBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SearchTreeAnalysisBudgetCertificate.controlled,
+      sampleSearchTreeAnalysisBudgetCertificate]
+  · norm_num [SearchTreeAnalysisBudgetCertificate.budgetControlled,
+      sampleSearchTreeAnalysisBudgetCertificate]
+
+example :
+    sampleSearchTreeAnalysisBudgetCertificate.certificateBudgetWindow ≤
+      sampleSearchTreeAnalysisBudgetCertificate.size := by
+  apply searchTreeAnalysis_budgetCertificate_le_size
+  constructor
+  · norm_num [SearchTreeAnalysisBudgetCertificate.controlled,
+      sampleSearchTreeAnalysisBudgetCertificate]
+  · norm_num [SearchTreeAnalysisBudgetCertificate.budgetControlled,
+      sampleSearchTreeAnalysisBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSearchTreeAnalysisBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SearchTreeAnalysisBudgetCertificate.controlled,
+      sampleSearchTreeAnalysisBudgetCertificate]
+  · norm_num [SearchTreeAnalysisBudgetCertificate.budgetControlled,
+      sampleSearchTreeAnalysisBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSearchTreeAnalysisBudgetCertificate.certificateBudgetWindow ≤
+      sampleSearchTreeAnalysisBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SearchTreeAnalysisBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSearchTreeAnalysisBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSearchTreeAnalysisBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.SearchTreeAnalysis

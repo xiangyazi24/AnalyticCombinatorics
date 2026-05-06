@@ -9,8 +9,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace LinearRecurrences
-
+namespace AnalyticCombinatorics.PartB.Ch4.LinearRecurrences
 /-! ## 1. Fibonacci numbers
 
   F(0)=0, F(1)=1, F(n+2)=F(n+1)+F(n).
@@ -294,4 +293,105 @@ example : fib 11 = fib 6 * fib 6 + fib 5 * fib 5 := by native_decide
 -- (n,m) = (5,5): fib(10) = fib(5)*fib(6) + fib(4)*fib(5)
 example : fib 10 = fib 5 * fib 6 + fib 4 * fib 5 := by native_decide
 
-end LinearRecurrences
+/-- Fibonacci value sample used by the recurrence table. -/
+theorem fib_fifteen :
+    fib 15 = 610 := by
+  native_decide
+
+/-- Lucas value sample used by the recurrence table. -/
+theorem lucas_ten :
+    lucas 10 = 123 := by
+  native_decide
+
+/-- Tribonacci value sample used by the recurrence table. -/
+theorem tribonacci_eleven :
+    tribonacci 11 = 149 := by
+  native_decide
+
+/-- Padovan value sample used by the recurrence table. -/
+theorem padovan_twelve :
+    padovan 12 = 21 := by
+  native_decide
+
+
+structure LinearRecurrencesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def LinearRecurrencesBudgetCertificate.controlled
+    (c : LinearRecurrencesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def LinearRecurrencesBudgetCertificate.budgetControlled
+    (c : LinearRecurrencesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def LinearRecurrencesBudgetCertificate.Ready
+    (c : LinearRecurrencesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def LinearRecurrencesBudgetCertificate.size
+    (c : LinearRecurrencesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem linearRecurrences_budgetCertificate_le_size
+    (c : LinearRecurrencesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleLinearRecurrencesBudgetCertificate :
+    LinearRecurrencesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleLinearRecurrencesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [LinearRecurrencesBudgetCertificate.controlled,
+      sampleLinearRecurrencesBudgetCertificate]
+  · norm_num [LinearRecurrencesBudgetCertificate.budgetControlled,
+      sampleLinearRecurrencesBudgetCertificate]
+
+example :
+    sampleLinearRecurrencesBudgetCertificate.certificateBudgetWindow ≤
+      sampleLinearRecurrencesBudgetCertificate.size := by
+  apply linearRecurrences_budgetCertificate_le_size
+  constructor
+  · norm_num [LinearRecurrencesBudgetCertificate.controlled,
+      sampleLinearRecurrencesBudgetCertificate]
+  · norm_num [LinearRecurrencesBudgetCertificate.budgetControlled,
+      sampleLinearRecurrencesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleLinearRecurrencesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [LinearRecurrencesBudgetCertificate.controlled,
+      sampleLinearRecurrencesBudgetCertificate]
+  · norm_num [LinearRecurrencesBudgetCertificate.budgetControlled,
+      sampleLinearRecurrencesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleLinearRecurrencesBudgetCertificate.certificateBudgetWindow ≤
+      sampleLinearRecurrencesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List LinearRecurrencesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleLinearRecurrencesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleLinearRecurrencesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.LinearRecurrences

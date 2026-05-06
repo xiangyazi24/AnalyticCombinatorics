@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace PoissonApproximation
+namespace AnalyticCombinatorics.PartB.Ch8.PoissonApproximation
+
 
 open scoped BigOperators
 
@@ -91,7 +92,8 @@ theorem binomial_poisson_tail_error_bound :
 
 /-! ## Occupancy: empty bins among `m` balls and `n` bins -/
 
-/-- Number of allocations of `m` labelled balls into `n` labelled bins with exactly `j` empty bins. -/
+/-- Number of allocations of `m` labelled balls into `n` labelled bins with exactly
+    `j` empty bins. -/
 def occupancyEmptyCount (m n j : Nat) : Nat :=
   Nat.choose n j *
     (∑ i ∈ Finset.range (n - j + 1),
@@ -202,4 +204,86 @@ theorem stein_chen_total_intensity :
       rareEventWeight 3 + rareEventWeight 4 + rareEventWeight 5 = 110 := by
   native_decide
 
-end PoissonApproximation
+
+
+structure PoissonApproximationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PoissonApproximationBudgetCertificate.controlled
+    (c : PoissonApproximationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PoissonApproximationBudgetCertificate.budgetControlled
+    (c : PoissonApproximationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PoissonApproximationBudgetCertificate.Ready
+    (c : PoissonApproximationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PoissonApproximationBudgetCertificate.size
+    (c : PoissonApproximationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem poissonApproximation_budgetCertificate_le_size
+    (c : PoissonApproximationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePoissonApproximationBudgetCertificate :
+    PoissonApproximationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : samplePoissonApproximationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PoissonApproximationBudgetCertificate.controlled,
+      samplePoissonApproximationBudgetCertificate]
+  · norm_num [PoissonApproximationBudgetCertificate.budgetControlled,
+      samplePoissonApproximationBudgetCertificate]
+
+example :
+    samplePoissonApproximationBudgetCertificate.certificateBudgetWindow ≤
+      samplePoissonApproximationBudgetCertificate.size := by
+  apply poissonApproximation_budgetCertificate_le_size
+  constructor
+  · norm_num [PoissonApproximationBudgetCertificate.controlled,
+      samplePoissonApproximationBudgetCertificate]
+  · norm_num [PoissonApproximationBudgetCertificate.budgetControlled,
+      samplePoissonApproximationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    samplePoissonApproximationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PoissonApproximationBudgetCertificate.controlled,
+      samplePoissonApproximationBudgetCertificate]
+  · norm_num [PoissonApproximationBudgetCertificate.budgetControlled,
+      samplePoissonApproximationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePoissonApproximationBudgetCertificate.certificateBudgetWindow ≤
+      samplePoissonApproximationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List PoissonApproximationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePoissonApproximationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePoissonApproximationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.PoissonApproximation

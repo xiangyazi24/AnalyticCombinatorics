@@ -13,8 +13,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace LogarithmicSingularities
-
+namespace AnalyticCombinatorics.PartB.Ch6.LogarithmicSingularities
 /-! ## 1. Scaled harmonic numbers
 
 Define posHarm(n) = ∑_{k=1}^{n} (n! / k), which is always a natural number.
@@ -302,4 +301,85 @@ theorem harmQ_diff_5 : harmQ 5 - harmQ 4 = 1 / 5 := by native_decide
 theorem harmQ_diff_6 : harmQ 6 - harmQ 5 = 1 / 6 := by native_decide
 theorem harmQ_diff_7 : harmQ 7 - harmQ 6 = 1 / 7 := by native_decide
 
-end LogarithmicSingularities
+
+structure LogarithmicSingularitiesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def LogarithmicSingularitiesBudgetCertificate.controlled
+    (c : LogarithmicSingularitiesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def LogarithmicSingularitiesBudgetCertificate.budgetControlled
+    (c : LogarithmicSingularitiesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def LogarithmicSingularitiesBudgetCertificate.Ready
+    (c : LogarithmicSingularitiesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def LogarithmicSingularitiesBudgetCertificate.size
+    (c : LogarithmicSingularitiesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem logarithmicSingularities_budgetCertificate_le_size
+    (c : LogarithmicSingularitiesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleLogarithmicSingularitiesBudgetCertificate :
+    LogarithmicSingularitiesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleLogarithmicSingularitiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [LogarithmicSingularitiesBudgetCertificate.controlled,
+      sampleLogarithmicSingularitiesBudgetCertificate]
+  · norm_num [LogarithmicSingularitiesBudgetCertificate.budgetControlled,
+      sampleLogarithmicSingularitiesBudgetCertificate]
+
+example :
+    sampleLogarithmicSingularitiesBudgetCertificate.certificateBudgetWindow ≤
+      sampleLogarithmicSingularitiesBudgetCertificate.size := by
+  apply logarithmicSingularities_budgetCertificate_le_size
+  constructor
+  · norm_num [LogarithmicSingularitiesBudgetCertificate.controlled,
+      sampleLogarithmicSingularitiesBudgetCertificate]
+  · norm_num [LogarithmicSingularitiesBudgetCertificate.budgetControlled,
+      sampleLogarithmicSingularitiesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleLogarithmicSingularitiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [LogarithmicSingularitiesBudgetCertificate.controlled,
+      sampleLogarithmicSingularitiesBudgetCertificate]
+  · norm_num [LogarithmicSingularitiesBudgetCertificate.budgetControlled,
+      sampleLogarithmicSingularitiesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleLogarithmicSingularitiesBudgetCertificate.certificateBudgetWindow ≤
+      sampleLogarithmicSingularitiesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List LogarithmicSingularitiesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleLogarithmicSingularitiesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleLogarithmicSingularitiesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.LogarithmicSingularities

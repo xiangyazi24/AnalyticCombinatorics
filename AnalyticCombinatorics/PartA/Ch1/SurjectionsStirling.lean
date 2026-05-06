@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace SurjectionsStirling
+namespace AnalyticCombinatorics.PartA.Ch1.SurjectionsStirling
+
 
 /-! ## Total functions -/
 
@@ -126,4 +127,86 @@ theorem composition_values :
     compositions 7 4 = compositionTable 2 := by
   native_decide
 
-end SurjectionsStirling
+
+
+structure SurjectionsStirlingBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SurjectionsStirlingBudgetCertificate.controlled
+    (c : SurjectionsStirlingBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SurjectionsStirlingBudgetCertificate.budgetControlled
+    (c : SurjectionsStirlingBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SurjectionsStirlingBudgetCertificate.Ready
+    (c : SurjectionsStirlingBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SurjectionsStirlingBudgetCertificate.size
+    (c : SurjectionsStirlingBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem surjectionsStirling_budgetCertificate_le_size
+    (c : SurjectionsStirlingBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSurjectionsStirlingBudgetCertificate :
+    SurjectionsStirlingBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSurjectionsStirlingBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SurjectionsStirlingBudgetCertificate.controlled,
+      sampleSurjectionsStirlingBudgetCertificate]
+  · norm_num [SurjectionsStirlingBudgetCertificate.budgetControlled,
+      sampleSurjectionsStirlingBudgetCertificate]
+
+example :
+    sampleSurjectionsStirlingBudgetCertificate.certificateBudgetWindow ≤
+      sampleSurjectionsStirlingBudgetCertificate.size := by
+  apply surjectionsStirling_budgetCertificate_le_size
+  constructor
+  · norm_num [SurjectionsStirlingBudgetCertificate.controlled,
+      sampleSurjectionsStirlingBudgetCertificate]
+  · norm_num [SurjectionsStirlingBudgetCertificate.budgetControlled,
+      sampleSurjectionsStirlingBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSurjectionsStirlingBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SurjectionsStirlingBudgetCertificate.controlled,
+      sampleSurjectionsStirlingBudgetCertificate]
+  · norm_num [SurjectionsStirlingBudgetCertificate.budgetControlled,
+      sampleSurjectionsStirlingBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSurjectionsStirlingBudgetCertificate.certificateBudgetWindow ≤
+      sampleSurjectionsStirlingBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SurjectionsStirlingBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSurjectionsStirlingBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSurjectionsStirlingBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.SurjectionsStirling

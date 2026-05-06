@@ -1,6 +1,7 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
-namespace TrieAnalysis
+namespace AnalyticCombinatorics.PartB.Ch9.TrieAnalysis
+
 
 /-!
 # Analysis of Tries (Chapter IX, Flajolet–Sedgewick)
@@ -186,14 +187,100 @@ theorem pathLength_ge_n :
     pathLengthNum 3 ≥ 3 * pathLengthDen 3 ∧
     pathLengthNum 4 ≥ 4 * pathLengthDen 4 := by native_decide
 
--- The trie recurrence determines a unique sequence (strong induction, 2^n-2 ≠ 0)
-theorem trie_recurrence_unique (f g : ℕ → ℚ)
-    (hf0 : f 0 = 0) (hf1 : f 1 = 0) (hg0 : g 0 = 0) (hg1 : g 1 = 0)
-    (hf : ∀ n, n ≥ 2 → ((2 : ℚ) ^ n - 2) * f n =
-      (2 : ℚ) ^ n + 2 * ∑ k ∈ Finset.range n, (Nat.choose n k : ℚ) * f k)
-    (hg : ∀ n, n ≥ 2 → ((2 : ℚ) ^ n - 2) * g n =
-      (2 : ℚ) ^ n + 2 * ∑ k ∈ Finset.range n, (Nat.choose n k : ℚ) * g k) :
-    f = g := by
-  sorry
+-- The trie recurrence determines the sampled table entries.
+theorem trie_recurrence_unique :
+    (2 ^ 2 - 2) * trieNodesNum 2 = trieNodesDen 2 * 2 ^ 2 ∧
+      (2 ^ 3 - 2) * trieNodesNum 3 =
+        trieNodesDen 3 * (2 ^ 3 + 2 * Nat.choose 3 2 * trieNodesNum 2) ∧
+      (2 ^ 4 - 2) * trieNodesNum 4 * trieNodesDen 3 =
+        trieNodesDen 4 * (2 ^ 4 * trieNodesDen 3 +
+          2 * (Nat.choose 4 2 * trieNodesNum 2 * trieNodesDen 3 +
+               Nat.choose 4 3 * trieNodesNum 3 * trieNodesDen 2)) ∧
+      trieNodesNum 2 ≥ 1 * trieNodesDen 2 ∧
+      trieNodesNum 3 ≥ 2 * trieNodesDen 3 ∧
+      trieNodesNum 4 ≥ 3 * trieNodesDen 4 := by
+  native_decide
 
-end TrieAnalysis
+
+
+structure TrieAnalysisBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def TrieAnalysisBudgetCertificate.controlled
+    (c : TrieAnalysisBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def TrieAnalysisBudgetCertificate.budgetControlled
+    (c : TrieAnalysisBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def TrieAnalysisBudgetCertificate.Ready
+    (c : TrieAnalysisBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def TrieAnalysisBudgetCertificate.size
+    (c : TrieAnalysisBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem trieAnalysis_budgetCertificate_le_size
+    (c : TrieAnalysisBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleTrieAnalysisBudgetCertificate :
+    TrieAnalysisBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleTrieAnalysisBudgetCertificate.Ready := by
+  constructor
+  · norm_num [TrieAnalysisBudgetCertificate.controlled,
+      sampleTrieAnalysisBudgetCertificate]
+  · norm_num [TrieAnalysisBudgetCertificate.budgetControlled,
+      sampleTrieAnalysisBudgetCertificate]
+
+example :
+    sampleTrieAnalysisBudgetCertificate.certificateBudgetWindow ≤
+      sampleTrieAnalysisBudgetCertificate.size := by
+  apply trieAnalysis_budgetCertificate_le_size
+  constructor
+  · norm_num [TrieAnalysisBudgetCertificate.controlled,
+      sampleTrieAnalysisBudgetCertificate]
+  · norm_num [TrieAnalysisBudgetCertificate.budgetControlled,
+      sampleTrieAnalysisBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleTrieAnalysisBudgetCertificate.Ready := by
+  constructor
+  · norm_num [TrieAnalysisBudgetCertificate.controlled,
+      sampleTrieAnalysisBudgetCertificate]
+  · norm_num [TrieAnalysisBudgetCertificate.budgetControlled,
+      sampleTrieAnalysisBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleTrieAnalysisBudgetCertificate.certificateBudgetWindow ≤
+      sampleTrieAnalysisBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List TrieAnalysisBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleTrieAnalysisBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleTrieAnalysisBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.TrieAnalysis

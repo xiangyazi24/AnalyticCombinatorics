@@ -5,13 +5,10 @@
   Executable coefficient checks for integer compositions.
 -/
 import Mathlib.Tactic
-import Mathlib.Data.Nat.Fib.Basic
 
 set_option linter.style.nativeDecide false
 
-namespace AnalyticCombinatorics
-namespace PartB
-namespace Ch5
+namespace AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics
 
 open Finset
 
@@ -132,6 +129,85 @@ theorem compositionCount_positive_values_0_to_10 :
     (List.range 11).all (fun n => 0 < compositionCount n) = true := by
   native_decide
 
-end Ch5
-end PartB
-end AnalyticCombinatorics
+
+structure CompositionsAsymptoticsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CompositionsAsymptoticsBudgetCertificate.controlled
+    (c : CompositionsAsymptoticsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CompositionsAsymptoticsBudgetCertificate.budgetControlled
+    (c : CompositionsAsymptoticsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CompositionsAsymptoticsBudgetCertificate.Ready
+    (c : CompositionsAsymptoticsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CompositionsAsymptoticsBudgetCertificate.size
+    (c : CompositionsAsymptoticsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem compositionsAsymptotics_budgetCertificate_le_size
+    (c : CompositionsAsymptoticsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCompositionsAsymptoticsBudgetCertificate :
+    CompositionsAsymptoticsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleCompositionsAsymptoticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CompositionsAsymptoticsBudgetCertificate.controlled,
+      sampleCompositionsAsymptoticsBudgetCertificate]
+  · norm_num [CompositionsAsymptoticsBudgetCertificate.budgetControlled,
+      sampleCompositionsAsymptoticsBudgetCertificate]
+
+example :
+    sampleCompositionsAsymptoticsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCompositionsAsymptoticsBudgetCertificate.size := by
+  apply compositionsAsymptotics_budgetCertificate_le_size
+  constructor
+  · norm_num [CompositionsAsymptoticsBudgetCertificate.controlled,
+      sampleCompositionsAsymptoticsBudgetCertificate]
+  · norm_num [CompositionsAsymptoticsBudgetCertificate.budgetControlled,
+      sampleCompositionsAsymptoticsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleCompositionsAsymptoticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CompositionsAsymptoticsBudgetCertificate.controlled,
+      sampleCompositionsAsymptoticsBudgetCertificate]
+  · norm_num [CompositionsAsymptoticsBudgetCertificate.budgetControlled,
+      sampleCompositionsAsymptoticsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCompositionsAsymptoticsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCompositionsAsymptoticsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List CompositionsAsymptoticsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCompositionsAsymptoticsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCompositionsAsymptoticsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.CompositionsAsymptotics

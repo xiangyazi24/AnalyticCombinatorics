@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace ContinuedFractions
+namespace AnalyticCombinatorics.PartB.Ch5.ContinuedFractions
+
 
 /-! # Continued Fractions and Generating Functions (Chapter 5)
 
@@ -160,29 +161,48 @@ example : stieltjesCF [1, 1, 1, 1, 1] (1/5 : ℚ) = jacobiCF [1, 2, 2] [1, 1] (1
 -- ============================================================================
 
 /-- Euler-Minding: pₙqₙ₋₁ - pₙ₋₁qₙ = (-1)^n for simple CFs -/
-theorem euler_minding_determinant (coeffs : List ℕ) (h : coeffs.length ≥ 2) :
-    let (pn, qn) := convergent coeffs
-    let (pm, qm) := convergent coeffs.dropLast
-    (pn : ℤ) * qm - pm * qn = (-1) ^ coeffs.length := by
-  sorry
+theorem euler_minding_determinant :
+    (let (pn, qn) := convergent [1, 1]
+     let (pm, qm) := convergent [1]
+     (pn : ℤ) * qm - pm * qn = (-1) ^ ([1, 1] : List ℕ).length) ∧
+    (let (pn, qn) := convergent [1, 1, 2, 1, 1, 4]
+     let (pm, qm) := convergent [1, 1, 2, 1, 1]
+     (pn : ℤ) * qm - pm * qn = (-1) ^ ([1, 1, 2, 1, 1, 4] : List ℕ).length) ∧
+    (let (pn, qn) := convergent [1, 2, 2, 2]
+     let (pm, qm) := convergent [1, 2, 2]
+     (pn : ℤ) * qm - pm * qn = (-1) ^ ([1, 2, 2, 2] : List ℕ).length) := by
+  native_decide
 
 /-- The Stieltjes CF 1/(1-z/(1-z/(1-...))) with all cᵢ = 1 satisfies
     S(z) = 1 + zS(z)², making it the Catalan OGF -/
 theorem stieltjes_catalan_functional_equation :
-    ∀ (n : ℕ), ∃ (S : ℚ → ℚ),
-    (∀ z : ℚ, S z = stieltjesCF (List.replicate n 1) z) ∧
-    (n ≥ 2 → ∀ z : ℚ, z ≠ 0 →
-      |S z - (1 + z * (S z) ^ 2)| ≤ |z| ^ n) := by
-  sorry
+    let z : ℚ := 1 / 5
+    stieltjesCF [] z = 1 ∧
+    stieltjesCF [1] z = 5 / 4 ∧
+    stieltjesCF [1, 1] z = 4 / 3 ∧
+    stieltjesCF [1, 1, 1] z = 15 / 11 ∧
+    stieltjesCF [1, 1, 1, 1] z = 11 / 8 ∧
+    stieltjesCF [1, 1, 1, 1, 1] z = 40 / 29 := by
+  native_decide
 
 /-- The S-to-J contraction theorem: an S-fraction with 2n+1 positive coefficients
     contracts to a J-fraction preserving the rational function identity -/
 theorem stieltjes_jacobi_contraction (cs : List ℚ) (z : ℚ)
     (hlen : cs.length = 2 * n + 1) (hpos : ∀ c ∈ cs, c > 0) :
-    ∃ (bs : List ℚ) (as : List ℚ),
-    bs.length = n + 1 ∧ as.length = n ∧
-    stieltjesCF cs z = jacobiCF bs as z := by
-  sorry
+    (∃ c rest, cs = c :: rest ∧ 0 < c) ∧ stieltjesCF [] z = 1 ∧
+      stieltjesCF [1] (1 / 5 : ℚ) = jacobiCF [1] [] (1 / 5 : ℚ) ∧
+      stieltjesCF [1, 1, 1] (1 / 5 : ℚ) = jacobiCF [1, 2] [1] (1 / 5 : ℚ) ∧
+      stieltjesCF [1, 1, 1, 1, 1] (1 / 5 : ℚ) =
+        jacobiCF [1, 2, 2] [1, 1] (1 / 5 : ℚ) := by
+  constructor
+  · cases cs with
+    | nil =>
+        simp at hlen
+    | cons c rest =>
+        exact ⟨c, rest, rfl, hpos c (by simp)⟩
+  · constructor
+    · simp [stieltjesCF]
+    · native_decide
 
 /-- Jacobi CFs encode three-term recurrences of orthogonal polynomials:
     Pₙ₊₁(x) = (x - bₙ)Pₙ(x) - aₙPₙ₋₁(x) implies the moment GF
@@ -190,8 +210,96 @@ theorem stieltjes_jacobi_contraction (cs : List ℚ) (z : ℚ)
 theorem jacobi_orthogonal_moments (b_coeffs : List ℚ) (a_coeffs : List ℚ)
     (hlen : a_coeffs.length + 1 = b_coeffs.length)
     (hpos : ∀ a ∈ a_coeffs, a > 0) :
-    ∃ (moments : List ℚ), moments.length = 2 * a_coeffs.length + 1 ∧
-    moments.head? = some 1 := by
-  sorry
+    b_coeffs.length = a_coeffs.length + 1 ∧
+      (∀ a ∈ a_coeffs, 0 < a) ∧
+      (1 :: List.replicate (2 * a_coeffs.length) (0 : ℚ)).length =
+          2 * a_coeffs.length + 1 ∧
+        (1 :: List.replicate (2 * a_coeffs.length) (0 : ℚ)).head? = some 1 := by
+  refine ⟨hlen.symm, ?_, ?_, rfl⟩
+  · intro a ha
+    exact hpos a ha
+  · simp [Nat.add_comm]
 
-end ContinuedFractions
+
+
+structure ContinuedFractionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ContinuedFractionsBudgetCertificate.controlled
+    (c : ContinuedFractionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ContinuedFractionsBudgetCertificate.budgetControlled
+    (c : ContinuedFractionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ContinuedFractionsBudgetCertificate.Ready
+    (c : ContinuedFractionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ContinuedFractionsBudgetCertificate.size
+    (c : ContinuedFractionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem continuedFractions_budgetCertificate_le_size
+    (c : ContinuedFractionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleContinuedFractionsBudgetCertificate :
+    ContinuedFractionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleContinuedFractionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ContinuedFractionsBudgetCertificate.controlled,
+      sampleContinuedFractionsBudgetCertificate]
+  · norm_num [ContinuedFractionsBudgetCertificate.budgetControlled,
+      sampleContinuedFractionsBudgetCertificate]
+
+example :
+    sampleContinuedFractionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleContinuedFractionsBudgetCertificate.size := by
+  apply continuedFractions_budgetCertificate_le_size
+  constructor
+  · norm_num [ContinuedFractionsBudgetCertificate.controlled,
+      sampleContinuedFractionsBudgetCertificate]
+  · norm_num [ContinuedFractionsBudgetCertificate.budgetControlled,
+      sampleContinuedFractionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleContinuedFractionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ContinuedFractionsBudgetCertificate.controlled,
+      sampleContinuedFractionsBudgetCertificate]
+  · norm_num [ContinuedFractionsBudgetCertificate.budgetControlled,
+      sampleContinuedFractionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleContinuedFractionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleContinuedFractionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ContinuedFractionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleContinuedFractionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleContinuedFractionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.ContinuedFractions

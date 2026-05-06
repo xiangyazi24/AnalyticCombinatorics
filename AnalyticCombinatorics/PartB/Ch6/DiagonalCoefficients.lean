@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace DiagonalCoefficients
+namespace AnalyticCombinatorics.PartB.Ch6.DiagonalCoefficients
+
 
 /-!
   Finite coefficient tables for diagonals of multivariate generating functions,
@@ -151,4 +152,86 @@ theorem centralTrinomial_recurrence_2_11 :
           3 * (n - 1) * centralTrinomial (n - 2) := by
   native_decide
 
-end DiagonalCoefficients
+
+
+structure DiagonalCoefficientsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def DiagonalCoefficientsBudgetCertificate.controlled
+    (c : DiagonalCoefficientsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def DiagonalCoefficientsBudgetCertificate.budgetControlled
+    (c : DiagonalCoefficientsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def DiagonalCoefficientsBudgetCertificate.Ready
+    (c : DiagonalCoefficientsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def DiagonalCoefficientsBudgetCertificate.size
+    (c : DiagonalCoefficientsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem diagonalCoefficients_budgetCertificate_le_size
+    (c : DiagonalCoefficientsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleDiagonalCoefficientsBudgetCertificate :
+    DiagonalCoefficientsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleDiagonalCoefficientsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DiagonalCoefficientsBudgetCertificate.controlled,
+      sampleDiagonalCoefficientsBudgetCertificate]
+  · norm_num [DiagonalCoefficientsBudgetCertificate.budgetControlled,
+      sampleDiagonalCoefficientsBudgetCertificate]
+
+example :
+    sampleDiagonalCoefficientsBudgetCertificate.certificateBudgetWindow ≤
+      sampleDiagonalCoefficientsBudgetCertificate.size := by
+  apply diagonalCoefficients_budgetCertificate_le_size
+  constructor
+  · norm_num [DiagonalCoefficientsBudgetCertificate.controlled,
+      sampleDiagonalCoefficientsBudgetCertificate]
+  · norm_num [DiagonalCoefficientsBudgetCertificate.budgetControlled,
+      sampleDiagonalCoefficientsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleDiagonalCoefficientsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DiagonalCoefficientsBudgetCertificate.controlled,
+      sampleDiagonalCoefficientsBudgetCertificate]
+  · norm_num [DiagonalCoefficientsBudgetCertificate.budgetControlled,
+      sampleDiagonalCoefficientsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleDiagonalCoefficientsBudgetCertificate.certificateBudgetWindow ≤
+      sampleDiagonalCoefficientsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List DiagonalCoefficientsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleDiagonalCoefficientsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleDiagonalCoefficientsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.DiagonalCoefficients

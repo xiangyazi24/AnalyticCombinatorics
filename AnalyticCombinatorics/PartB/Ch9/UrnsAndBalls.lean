@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace UrnsAndBalls
+namespace AnalyticCombinatorics.PartB.Ch9.UrnsAndBalls
+
 
 section BallsIntoBins
 
@@ -167,4 +168,96 @@ example : multinomialTable ⟨2, by omega⟩ = multinomial2 4 2 2 := by native_d
 
 end Multinomials
 
-end UrnsAndBalls
+/-- Integer-scaled harmonic sample. -/
+theorem scaledHarmonic_seven :
+    scaledHarmonic 7 = 13068 := by
+  native_decide
+
+/-- Three-part multinomial sample. -/
+theorem multinomial3_six_balanced :
+    multinomial3 6 2 2 2 = 90 := by
+  native_decide
+
+
+
+structure UrnsAndBallsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def UrnsAndBallsBudgetCertificate.controlled
+    (c : UrnsAndBallsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def UrnsAndBallsBudgetCertificate.budgetControlled
+    (c : UrnsAndBallsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def UrnsAndBallsBudgetCertificate.Ready
+    (c : UrnsAndBallsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def UrnsAndBallsBudgetCertificate.size
+    (c : UrnsAndBallsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem urnsAndBalls_budgetCertificate_le_size
+    (c : UrnsAndBallsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleUrnsAndBallsBudgetCertificate :
+    UrnsAndBallsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleUrnsAndBallsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [UrnsAndBallsBudgetCertificate.controlled,
+      sampleUrnsAndBallsBudgetCertificate]
+  · norm_num [UrnsAndBallsBudgetCertificate.budgetControlled,
+      sampleUrnsAndBallsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleUrnsAndBallsBudgetCertificate.certificateBudgetWindow ≤
+      sampleUrnsAndBallsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleUrnsAndBallsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [UrnsAndBallsBudgetCertificate.controlled,
+      sampleUrnsAndBallsBudgetCertificate]
+  · norm_num [UrnsAndBallsBudgetCertificate.budgetControlled,
+      sampleUrnsAndBallsBudgetCertificate]
+
+example :
+    sampleUrnsAndBallsBudgetCertificate.certificateBudgetWindow ≤
+      sampleUrnsAndBallsBudgetCertificate.size := by
+  apply urnsAndBalls_budgetCertificate_le_size
+  constructor
+  · norm_num [UrnsAndBallsBudgetCertificate.controlled,
+      sampleUrnsAndBallsBudgetCertificate]
+  · norm_num [UrnsAndBallsBudgetCertificate.budgetControlled,
+      sampleUrnsAndBallsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List UrnsAndBallsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleUrnsAndBallsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleUrnsAndBallsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.UrnsAndBalls

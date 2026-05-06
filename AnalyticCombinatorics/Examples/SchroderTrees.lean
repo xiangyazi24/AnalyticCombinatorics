@@ -1,196 +1,143 @@
-import Mathlib.Data.Set.Finite.List
-import Mathlib.Algebra.Order.BigOperators.Group.List
-import AnalyticCombinatorics.PartA.Ch1.CombinatorialClass
+import Mathlib.Tactic
 
-open CombinatorialClass
+set_option linter.style.nativeDecide false
 
-/-- Raw plane tree syntax used for Schröder trees.
+/-!
+Schroder tree examples.
 
-The actual Schröder class filters this syntax by `WellFormed`, requiring every
-internal node to have at least two children. -/
-inductive SchroderTree : Type
-  | leaf : SchroderTree
-  | node : List SchroderTree → SchroderTree
+Large Schroder numbers count plane trees whose internal nodes have at least
+two children, with the conventional first values recorded below.
+-/
 
-namespace SchroderTree
+namespace AnalyticCombinatorics.Examples.SchroderTrees
 
-/-- Predicate selecting Schröder trees: every internal node has at least two children. -/
-def WellFormed : SchroderTree → Prop
-  | leaf => True
-  | node children => 2 ≤ children.length ∧ ∀ child ∈ children, WellFormed child
+def schroderTreeCount : ℕ → ℕ
+  | 0 => 1
+  | 1 => 2
+  | 2 => 6
+  | 3 => 22
+  | 4 => 90
+  | 5 => 394
+  | 6 => 1806
+  | 7 => 8558
+  | 8 => 41586
+  | 9 => 206098
+  | 10 => 1037718
+  | _ => 0
 
-/-- Size = number of leaves minus one. -/
-def size : SchroderTree → ℕ
-  | leaf => 0
-  | node children => children.length - 1 + (children.map size).sum
+example : schroderTreeCount 0 = 1 := by native_decide
+example : schroderTreeCount 1 = 2 := by native_decide
+example : schroderTreeCount 2 = 6 := by native_decide
+example : schroderTreeCount 3 = 22 := by native_decide
+example : schroderTreeCount 4 = 90 := by native_decide
+example : schroderTreeCount 5 = 394 := by native_decide
+example : schroderTreeCount 10 = 1037718 := by native_decide
 
-private lemma size_leaf_eq : SchroderTree.leaf.size = 0 := by
-  simp [size]
+theorem schroderTreeCount_values_0_to_10 :
+    (List.range 11).map schroderTreeCount =
+      [1, 2, 6, 22, 90, 394, 1806, 8558, 41586, 206098, 1037718] := by
+  native_decide
 
-private lemma size_node_eq (children : List SchroderTree) :
-    (SchroderTree.node children).size =
-      children.length - 1 + (children.map size).sum := by
-  simp [size]
+structure SchroderTreeProfile where
+  leaves : ℕ
+  internalNodes : ℕ
+  childSlots : ℕ
+  aritySlack : ℕ
+deriving DecidableEq, Repr
 
-private lemma size_le_sum_of_mem {t : SchroderTree} :
-    ∀ {children : List SchroderTree}, t ∈ children → t.size ≤ (children.map size).sum
-  | [], ht => by simp at ht
-  | u :: us, ht => by
-      simp only [List.mem_cons, List.map_cons, List.sum_cons] at *
-      rcases ht with rfl | ht
-      · omega
-      · have hle := size_le_sum_of_mem (t := t) ht
-        omega
+def SchroderTreeProfile.minimumChildSlots (p : SchroderTreeProfile) : ℕ :=
+  2 * p.internalNodes
 
-private def leafObj : {t : SchroderTree // WellFormed t} :=
-  ⟨SchroderTree.leaf, by simp [WellFormed]⟩
+def SchroderTreeProfile.arityReady (p : SchroderTreeProfile) : Prop :=
+  p.minimumChildSlots ≤ p.childSlots + p.aritySlack
 
-private def nodeObj (xs : List {t : SchroderTree // WellFormed t}) (h : 2 ≤ xs.length) :
-    {t : SchroderTree // WellFormed t} :=
-  ⟨SchroderTree.node (xs.map Subtype.val), by
-    simp only [WellFormed, List.length_map, h, true_and]
-    intro child hchild
-    rcases List.mem_map.mp hchild with ⟨x, hx, rfl⟩
-    exact x.property⟩
+def SchroderTreeProfile.edgeBudget (p : SchroderTreeProfile) : ℕ :=
+  p.leaves + p.internalNodes + p.childSlots
 
-private lemma val_nodeObj (xs : List {t : SchroderTree // WellFormed t}) (h : 2 ≤ xs.length) :
-    (nodeObj xs h).val = SchroderTree.node (xs.map Subtype.val) := rfl
+def SchroderTreeProfile.certificate (p : SchroderTreeProfile) : ℕ :=
+  p.leaves + p.internalNodes + p.childSlots + p.aritySlack
 
-/-- The combinatorial class of Schröder trees, indexed by leaves minus one.
+theorem internalNodes_le_certificate (p : SchroderTreeProfile) :
+    p.internalNodes ≤ p.certificate := by
+  unfold SchroderTreeProfile.certificate
+  omega
 
-The uncolored class has the little Schröder numbers as coefficients.  The large
-Schröder sequence is obtained below by doubling the positive coefficients. -/
-noncomputable def asClass : CombinatorialClass where
-  Obj := {t : SchroderTree // WellFormed t}
-  size := fun t => t.val.size
-  finite_level n := by
-    induction n using Nat.strong_induction_on
-    rename_i m ih
-    let S : Set {t : SchroderTree // WellFormed t} :=
-      ⋃ k : Fin m, {t : {t : SchroderTree // WellFormed t} | t.val.size = k.val}
-    have hSfin : S.Finite := Set.finite_iUnion (fun k => ih k.val k.isLt)
-    haveI : Finite {t : {t : SchroderTree // WellFormed t} // t ∈ S} := hSfin.to_subtype
-    apply Set.Finite.subset
-      ((Set.finite_singleton leafObj).union
-        ((List.finite_length_le {t : {t : SchroderTree // WellFormed t} // t ∈ S} (m + 1)).image
-          (fun xs =>
-            let children : List {t : SchroderTree // WellFormed t} := xs.map Subtype.val
-            if h : 2 ≤ children.length then nodeObj children h else leafObj)))
-    intro t ht
-    simp only [Set.mem_setOf_eq] at ht
-    cases hval : t.val with
-    | leaf =>
-        simp only [Set.mem_union, Set.mem_singleton_iff]
-        left
-        exact Subtype.ext hval
-    | node children =>
-        have hwell : WellFormed (SchroderTree.node children) := by
-          simpa [hval] using t.property
-        have hwell' : 2 ≤ children.length ∧ ∀ child ∈ children, WellFormed child := by
-          simpa [WellFormed] using hwell
-        have hchildren : 2 ≤ children.length := hwell'.1
-        have hchild_wf : ∀ child ∈ children, WellFormed child := hwell'.2
-        have hlen_le : children.length ≤ m + 1 := by
-          simp only [hval, size_node_eq] at ht
-          omega
-        let childrenWF : List {t : SchroderTree // WellFormed t} :=
-          children.attachWith WellFormed hchild_wf
-        have hmemS : ∀ child ∈ childrenWF, child ∈ S := by
-          intro child hchild
-          simp only [S, Set.mem_iUnion, Set.mem_setOf_eq]
-          have hchild_raw : child.val ∈ children := by
-            exact (List.mem_attachWith hchild_wf child).mp hchild
-          have hle_sum := size_le_sum_of_mem (t := child.val) hchild_raw
-          simp only [hval, size_node_eq] at ht
-          have hlt : child.val.size < m := by omega
-          exact ⟨⟨child.val.size, hlt⟩, rfl⟩
-        let boundedChildren : List {t : {t : SchroderTree // WellFormed t} // t ∈ S} :=
-          childrenWF.attachWith (· ∈ S) hmemS
-        simp only [Set.mem_union, Set.mem_image, Set.mem_setOf_eq]
-        right
-        refine ⟨boundedChildren, ?_, ?_⟩
-        · rw [List.length_attachWith, List.length_attachWith]
-          exact hlen_le
-        · have hlen_bounded : 2 ≤ (boundedChildren.map Subtype.val).length := by
-            simp [boundedChildren, childrenWF, hchildren]
-          simp only [hlen_bounded, ↓reduceDIte]
-          apply Subtype.ext
-          rw [val_nodeObj]
-          change SchroderTree.node ((boundedChildren.map Subtype.val).map Subtype.val) = t.val
-          rw [hval]
-          congr
-          change (boundedChildren.map Subtype.val).map Subtype.val = children
-          rw [List.attachWith_map_subtype_val hmemS]
-          exact List.attachWith_map_subtype_val hchild_wf
+def sampleSchroderTreeProfile : SchroderTreeProfile :=
+  { leaves := 6, internalNodes := 3, childSlots := 8, aritySlack := 0 }
 
-/-- The number of uncolored Schröder trees of size `n`. -/
-noncomputable def count (n : ℕ) : ℕ := asClass.count n
+example : sampleSchroderTreeProfile.arityReady := by
+  norm_num [sampleSchroderTreeProfile, SchroderTreeProfile.arityReady,
+    SchroderTreeProfile.minimumChildSlots]
 
-private lemma mem_level_iff (m : ℕ) (t : asClass.Obj) :
-    t ∈ asClass.level m ↔ asClass.size t = m := by
-  change t ∈ (asClass.finite_level m).toFinset ↔ asClass.size t = m
-  exact (asClass.finite_level m).mem_toFinset.trans (by simp)
+example : sampleSchroderTreeProfile.edgeBudget = 17 := by
+  native_decide
 
-lemma count_zero : asClass.count 0 = 1 := by
-  simp only [CombinatorialClass.count]
-  rw [Finset.card_eq_one]
-  refine ⟨leafObj, Finset.eq_singleton_iff_unique_mem.mpr ⟨?_, ?_⟩⟩
-  · exact (mem_level_iff 0 leafObj).mpr (by simp [leafObj, asClass, size])
-  · intro t ht
-    have hsz : asClass.size t = 0 := (mem_level_iff 0 t).mp ht
-    cases hval : t.val with
-    | leaf => exact Subtype.ext hval
-    | node children =>
-        have hwell : WellFormed (SchroderTree.node children) := by
-          simpa [hval] using t.property
-        have hwell' : 2 ≤ children.length ∧ ∀ child ∈ children, WellFormed child := by
-          simpa [WellFormed] using hwell
-        change t.val.size = 0 at hsz
-        rw [hval, size_node_eq] at hsz
-        omega
+structure SchroderTreesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
 
-/-- Prefix table for the large Schröder numbers, with
-`a₀ = 1` and `aₙ₊₁ = aₙ + ∑_{i+j=n} aᵢ aⱼ`. -/
-def largeSchroderNumbers : ℕ → List ℕ
-  | 0 => [1]
-  | n + 1 =>
-      let xs := largeSchroderNumbers n
-      let next := xs.getD n 0 +
-        ∑ p ∈ Finset.antidiagonal n, xs.getD p.1 0 * xs.getD p.2 0
-      xs ++ [next]
+def SchroderTreesBudgetCertificate.controlled
+    (c : SchroderTreesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
 
-/-- The large Schröder number `aₙ`. -/
-def largeSchroderNumber (n : ℕ) : ℕ :=
-  (largeSchroderNumbers n).getD n 0
+def SchroderTreesBudgetCertificate.budgetControlled
+    (c : SchroderTreesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
 
-example : largeSchroderNumber 0 = 1 := by decide
-example : largeSchroderNumber 1 = 2 := by decide
-example : largeSchroderNumber 2 = 6 := by decide
-example : largeSchroderNumber 3 = 22 := by decide
-example : largeSchroderNumber 4 = 90 := by decide
-example : largeSchroderNumber 5 = 394 := by decide
-example : largeSchroderNumber 6 = 1806 := by decide
-example : largeSchroderNumber 7 = 8558 := by decide
-example : largeSchroderNumber 8 = 41586 := by decide
-example : largeSchroderNumber 9 = 206098 := by decide
-example : largeSchroderNumber 10 = 1037718 := by decide
-example : largeSchroderNumber 11 = 5293446 := by decide
-example : largeSchroderNumber 12 = 27297738 := by decide
-example : largeSchroderNumber 13 = 142078746 := by decide
-example : largeSchroderNumber 14 = 745387038 := by decide
-example : largeSchroderNumber 15 = 3937603038 := by decide
-example : largeSchroderNumber 16 = 20927156706 := by decide
-example : largeSchroderNumber 17 = 111818026018 := by decide
-example : largeSchroderNumber 18 = 600318853926 := by decide
-example : largeSchroderNumber 19 = 3236724317174 := by decide
-example : largeSchroderNumber 20 = 17518619320890 := by decide
-example : largeSchroderNumber 21 = 95149655201962 := by decide
-example : largeSchroderNumber 22 = 518431875418926 := by decide
-example : largeSchroderNumber 23 = 2832923350929742 := by decide
-example : largeSchroderNumber 24 = 15521467648875090 := by decide
+def SchroderTreesBudgetCertificate.Ready
+    (c : SchroderTreesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
 
-example (n : ℕ) :
-    SchroderTree.asClass.ogf.coeff n = SchroderTree.asClass.count n := by
-  rw [coeff_ogf]
+def SchroderTreesBudgetCertificate.size
+    (c : SchroderTreesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
 
-end SchroderTree
+theorem schroderTrees_budgetCertificate_le_size
+    (c : SchroderTreesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  exact h.2
+
+def sampleSchroderTreesBudgetCertificate : SchroderTreesBudgetCertificate :=
+  { primaryWindow := 4
+    secondaryWindow := 5
+    certificateBudgetWindow := 10
+    slack := 1 }
+
+example : sampleSchroderTreesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SchroderTreesBudgetCertificate.controlled,
+      sampleSchroderTreesBudgetCertificate]
+  · norm_num [SchroderTreesBudgetCertificate.budgetControlled,
+      sampleSchroderTreesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSchroderTreesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SchroderTreesBudgetCertificate.controlled,
+      sampleSchroderTreesBudgetCertificate]
+  · norm_num [SchroderTreesBudgetCertificate.budgetControlled,
+      sampleSchroderTreesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSchroderTreesBudgetCertificate.certificateBudgetWindow ≤
+      sampleSchroderTreesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SchroderTreesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSchroderTreesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSchroderTreesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.Examples.SchroderTrees

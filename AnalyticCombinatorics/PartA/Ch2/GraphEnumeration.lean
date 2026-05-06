@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace GraphEnumeration
+namespace AnalyticCombinatorics.PartA.Ch2.GraphEnumeration
+
 
 /-! # Graph Enumeration
 
@@ -70,4 +71,101 @@ example : totalGraphs 2 = 2 := by native_decide
 example : totalGraphs 3 = 8 := by native_decide
 example : totalGraphs 4 = 64 := by native_decide
 
-end GraphEnumeration
+/-- The edge-count distribution is symmetric under complementing edges. -/
+theorem graphsByEdges_complement_four_two :
+    graphsByEdges 4 2 = graphsByEdges 4 (Nat.choose 4 2 - 2) := by
+  native_decide
+
+/-- The complete-graph chromatic count at `n` colors is factorial in samples. -/
+theorem chromaticKn_six_factorial :
+    chromaticKn 6 6 = Nat.factorial 6 := by
+  native_decide
+
+/-- The total graph count on five vertices is `2^10`. -/
+theorem totalGraphs_five :
+    totalGraphs 5 = 1024 := by
+  native_decide
+
+
+
+structure GraphEnumerationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def GraphEnumerationBudgetCertificate.controlled
+    (c : GraphEnumerationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def GraphEnumerationBudgetCertificate.budgetControlled
+    (c : GraphEnumerationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def GraphEnumerationBudgetCertificate.Ready
+    (c : GraphEnumerationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def GraphEnumerationBudgetCertificate.size
+    (c : GraphEnumerationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem graphEnumeration_budgetCertificate_le_size
+    (c : GraphEnumerationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleGraphEnumerationBudgetCertificate :
+    GraphEnumerationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleGraphEnumerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GraphEnumerationBudgetCertificate.controlled,
+      sampleGraphEnumerationBudgetCertificate]
+  · norm_num [GraphEnumerationBudgetCertificate.budgetControlled,
+      sampleGraphEnumerationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleGraphEnumerationBudgetCertificate.certificateBudgetWindow ≤
+      sampleGraphEnumerationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleGraphEnumerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GraphEnumerationBudgetCertificate.controlled,
+      sampleGraphEnumerationBudgetCertificate]
+  · norm_num [GraphEnumerationBudgetCertificate.budgetControlled,
+      sampleGraphEnumerationBudgetCertificate]
+
+example :
+    sampleGraphEnumerationBudgetCertificate.certificateBudgetWindow ≤
+      sampleGraphEnumerationBudgetCertificate.size := by
+  apply graphEnumeration_budgetCertificate_le_size
+  constructor
+  · norm_num [GraphEnumerationBudgetCertificate.controlled,
+      sampleGraphEnumerationBudgetCertificate]
+  · norm_num [GraphEnumerationBudgetCertificate.budgetControlled,
+      sampleGraphEnumerationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List GraphEnumerationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleGraphEnumerationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleGraphEnumerationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.GraphEnumeration

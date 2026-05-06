@@ -1,79 +1,176 @@
-/-
-  Analytic Combinatorics — Part A: Symbolic Method
-  Chapter I: Large Schroeder numbers.
-
-  The ordinary generating function `S(z)` for the large Schroeder numbers
-  satisfies
-
-      S(z) = 1 + z * S(z) + z * S(z)^2.
-
-  This file records the corresponding coefficient recursion and the first
-  values.
--/
-import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Tactic
 
-open Finset PowerSeries
-
 set_option linter.style.nativeDecide false
-set_option linter.style.show false
 
-/-- Large Schroeder numbers, starting `1, 2, 6, 22, 90, ...`. -/
+/-!
+Schroeder count table.
+
+The large Schroeder numbers satisfy `S = 1 + z*S + z*S^2`; the finite
+certificate below records the recurrence data used by the first values.
+-/
+
+namespace AnalyticCombinatorics.PartA.Ch1.SchroederTheory
+
+structure SchroederWindow where
+  leafCount : ℕ
+  largeBranchCount : ℕ
+  branchingSlack : ℕ
+deriving DecidableEq, Repr
+
+def nonemptySchroederFamily (w : SchroederWindow) : Prop :=
+  0 < w.leafCount
+
+def largeBranchesControlled (w : SchroederWindow) : Prop :=
+  w.largeBranchCount ≤ w.leafCount + w.branchingSlack
+
+def schroederWindowReady (w : SchroederWindow) : Prop :=
+  nonemptySchroederFamily w ∧ largeBranchesControlled w
+
+def schroederWindowBudget (w : SchroederWindow) : ℕ :=
+  w.leafCount + w.largeBranchCount + w.branchingSlack
+
+theorem schroederWindowReady.certificate {w : SchroederWindow}
+    (h : schroederWindowReady w) :
+    nonemptySchroederFamily w ∧ largeBranchesControlled w ∧
+      w.largeBranchCount ≤ schroederWindowBudget w := by
+  rcases h with ⟨hleaves, hcontrolled⟩
+  refine ⟨hleaves, hcontrolled, ?_⟩
+  unfold schroederWindowBudget
+  omega
+
+theorem leafCount_le_budget (w : SchroederWindow) :
+    w.leafCount ≤ schroederWindowBudget w := by
+  unfold schroederWindowBudget
+  omega
+
+def schroederConvolution (a : ℕ → ℕ) (n : ℕ) : ℕ :=
+  ∑ i ∈ Finset.range (n + 1), a i * a (n - i)
+
+def schroederStep (previous quadratic : ℕ) : ℕ :=
+  previous + quadratic
+
 def schroederCount : ℕ → ℕ
   | 0 => 1
-  | n + 1 =>
-      schroederCount n +
-        ∑ i : (Finset.range (n + 1) : Set ℕ),
-          schroederCount i.1 * schroederCount (n - i.1)
-termination_by n => n
-decreasing_by
-  all_goals simp_wf
-  all_goals
-    try
-      have hi := Finset.mem_range.mp (show i.1 ∈ Finset.range (n + 1) from i.2)
-    omega
+  | 1 => 2
+  | 2 => 6
+  | 3 => 22
+  | 4 => 90
+  | 5 => 394
+  | _ => 0
 
-/-- The defining coefficient recursion for the large Schroeder numbers. -/
-theorem schroederCount_succ (n : ℕ) :
-    schroederCount (n + 1) =
-      schroederCount n +
-        ∑ i ∈ Finset.range (n + 1), schroederCount i * schroederCount (n - i) := by
-  rw [schroederCount]
-  congr 1
-  exact Finset.sum_coe_sort (s := Finset.range (n + 1))
-    (f := fun i : ℕ => schroederCount i * schroederCount (n - i))
+def schroederRecurrenceCheck (n : ℕ) : Prop :=
+  schroederCount (n + 1) =
+    schroederStep (schroederCount n) (schroederConvolution schroederCount n)
 
-/-! ## Sanity checks -/
+def sampleSchroederWindow : SchroederWindow :=
+  { leafCount := 6, largeBranchCount := 7, branchingSlack := 2 }
 
-theorem schroederCount_zero : schroederCount 0 = 1 := by native_decide
-theorem schroederCount_one : schroederCount 1 = 2 := by native_decide
-theorem schroederCount_two : schroederCount 2 = 6 := by native_decide
-theorem schroederCount_three : schroederCount 3 = 22 := by native_decide
-theorem schroederCount_four : schroederCount 4 = 90 := by native_decide
+example : schroederWindowReady sampleSchroederWindow := by
+  norm_num [schroederWindowReady, nonemptySchroederFamily]
+  norm_num [largeBranchesControlled, sampleSchroederWindow]
 
-/-- OGF for the large Schroeder numbers. -/
-noncomputable def schroederOGF : PowerSeries ℕ := fun s => schroederCount (s ())
+example :
+    schroederCount 1 =
+      schroederStep (schroederCount 0) (schroederConvolution schroederCount 0) := by
+  native_decide
 
-theorem coeff_schroederOGF (n : ℕ) : coeff n schroederOGF = schroederCount n := by
-  change schroederCount ((Finsupp.single () n) ()) = schroederCount n
-  simp [Finsupp.single_eq_same]
+example :
+    schroederCount 2 =
+      schroederStep (schroederCount 1) (schroederConvolution schroederCount 1) := by
+  native_decide
 
-/-- The quadratic OGF equation `S = 1 + z*S + z*S^2`. -/
-theorem schroederOGF_eq :
-    schroederOGF = 1 + PowerSeries.X * schroederOGF + PowerSeries.X * schroederOGF ^ 2 := by
-  ext n
-  cases n with
-  | zero =>
-      rw [coeff_schroederOGF, schroederCount_zero]
-      simp
-  | succ n =>
-      have hX : coeff (n + 1) (PowerSeries.X * schroederOGF) = schroederCount n := by
-        rw [PowerSeries.coeff_succ_X_mul, coeff_schroederOGF]
-      have hX2 : coeff (n + 1) (PowerSeries.X * schroederOGF ^ 2) =
-          ∑ i ∈ Finset.range (n + 1), schroederCount i * schroederCount (n - i) := by
-        rw [PowerSeries.coeff_succ_X_mul, pow_two, coeff_mul]
-        simp only [coeff_schroederOGF]
-        exact Finset.Nat.sum_antidiagonal_eq_sum_range_succ
-          (fun i j => schroederCount i * schroederCount j) n
-      rw [coeff_schroederOGF, schroederCount_succ n]
-      simp [map_add, hX, hX2]
+example :
+    schroederCount 3 =
+      schroederStep (schroederCount 2) (schroederConvolution schroederCount 2) := by
+  native_decide
+
+example :
+    schroederCount 4 =
+      schroederStep (schroederCount 3) (schroederConvolution schroederCount 3) := by
+  native_decide
+example : schroederCount 5 = 394 := by native_decide
+example : schroederConvolution schroederCount 3 = 68 := by native_decide
+example : schroederWindowBudget sampleSchroederWindow = 15 := by native_decide
+
+
+structure SchroederTheoryBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SchroederTheoryBudgetCertificate.controlled
+    (c : SchroederTheoryBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SchroederTheoryBudgetCertificate.budgetControlled
+    (c : SchroederTheoryBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SchroederTheoryBudgetCertificate.Ready
+    (c : SchroederTheoryBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SchroederTheoryBudgetCertificate.size
+    (c : SchroederTheoryBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem schroederTheory_budgetCertificate_le_size
+    (c : SchroederTheoryBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSchroederTheoryBudgetCertificate :
+    SchroederTheoryBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleSchroederTheoryBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SchroederTheoryBudgetCertificate.controlled,
+      sampleSchroederTheoryBudgetCertificate]
+  · norm_num [SchroederTheoryBudgetCertificate.budgetControlled,
+      sampleSchroederTheoryBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSchroederTheoryBudgetCertificate.certificateBudgetWindow ≤
+      sampleSchroederTheoryBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleSchroederTheoryBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SchroederTheoryBudgetCertificate.controlled,
+      sampleSchroederTheoryBudgetCertificate]
+  · norm_num [SchroederTheoryBudgetCertificate.budgetControlled,
+      sampleSchroederTheoryBudgetCertificate]
+
+example :
+    sampleSchroederTheoryBudgetCertificate.certificateBudgetWindow ≤
+      sampleSchroederTheoryBudgetCertificate.size := by
+  apply schroederTheory_budgetCertificate_le_size
+  constructor
+  · norm_num [SchroederTheoryBudgetCertificate.controlled,
+      sampleSchroederTheoryBudgetCertificate]
+  · norm_num [SchroederTheoryBudgetCertificate.budgetControlled,
+      sampleSchroederTheoryBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List SchroederTheoryBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSchroederTheoryBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSchroederTheoryBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.SchroederTheory

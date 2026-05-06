@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace CombinatorialInequalities
+namespace AnalyticCombinatorics.PartA.Ch1.CombinatorialInequalities
+
 
 /-!
 Bounded computational checks for small combinatorial inequalities and
@@ -186,4 +187,86 @@ theorem fkg_boolean_square_and_or :
         eventCard bothCoordinatesEvent * eventCard atLeastOneEvent := by
   native_decide
 
-end CombinatorialInequalities
+
+
+structure CombinatorialInequalitiesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CombinatorialInequalitiesBudgetCertificate.controlled
+    (c : CombinatorialInequalitiesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CombinatorialInequalitiesBudgetCertificate.budgetControlled
+    (c : CombinatorialInequalitiesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CombinatorialInequalitiesBudgetCertificate.Ready
+    (c : CombinatorialInequalitiesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CombinatorialInequalitiesBudgetCertificate.size
+    (c : CombinatorialInequalitiesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem combinatorialInequalities_budgetCertificate_le_size
+    (c : CombinatorialInequalitiesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCombinatorialInequalitiesBudgetCertificate :
+    CombinatorialInequalitiesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleCombinatorialInequalitiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CombinatorialInequalitiesBudgetCertificate.controlled,
+      sampleCombinatorialInequalitiesBudgetCertificate]
+  · norm_num [CombinatorialInequalitiesBudgetCertificate.budgetControlled,
+      sampleCombinatorialInequalitiesBudgetCertificate]
+
+example :
+    sampleCombinatorialInequalitiesBudgetCertificate.certificateBudgetWindow ≤
+      sampleCombinatorialInequalitiesBudgetCertificate.size := by
+  apply combinatorialInequalities_budgetCertificate_le_size
+  constructor
+  · norm_num [CombinatorialInequalitiesBudgetCertificate.controlled,
+      sampleCombinatorialInequalitiesBudgetCertificate]
+  · norm_num [CombinatorialInequalitiesBudgetCertificate.budgetControlled,
+      sampleCombinatorialInequalitiesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleCombinatorialInequalitiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CombinatorialInequalitiesBudgetCertificate.controlled,
+      sampleCombinatorialInequalitiesBudgetCertificate]
+  · norm_num [CombinatorialInequalitiesBudgetCertificate.budgetControlled,
+      sampleCombinatorialInequalitiesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCombinatorialInequalitiesBudgetCertificate.certificateBudgetWindow ≤
+      sampleCombinatorialInequalitiesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List CombinatorialInequalitiesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCombinatorialInequalitiesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCombinatorialInequalitiesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.CombinatorialInequalities

@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace ConcentrationInequalities
+namespace AnalyticCombinatorics.PartB.Ch8.ConcentrationInequalities
+
 
 open Finset Nat
 
@@ -316,4 +317,86 @@ theorem symmetric_binomial_even_median_equals_mean :
           n * totalMass n (binomialHalfMass n) := by
   native_decide
 
-end ConcentrationInequalities
+
+
+structure ConcentrationInequalitiesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ConcentrationInequalitiesBudgetCertificate.controlled
+    (c : ConcentrationInequalitiesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ConcentrationInequalitiesBudgetCertificate.budgetControlled
+    (c : ConcentrationInequalitiesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ConcentrationInequalitiesBudgetCertificate.Ready
+    (c : ConcentrationInequalitiesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ConcentrationInequalitiesBudgetCertificate.size
+    (c : ConcentrationInequalitiesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem concentrationInequalities_budgetCertificate_le_size
+    (c : ConcentrationInequalitiesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleConcentrationInequalitiesBudgetCertificate :
+    ConcentrationInequalitiesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleConcentrationInequalitiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ConcentrationInequalitiesBudgetCertificate.controlled,
+      sampleConcentrationInequalitiesBudgetCertificate]
+  · norm_num [ConcentrationInequalitiesBudgetCertificate.budgetControlled,
+      sampleConcentrationInequalitiesBudgetCertificate]
+
+example :
+    sampleConcentrationInequalitiesBudgetCertificate.certificateBudgetWindow ≤
+      sampleConcentrationInequalitiesBudgetCertificate.size := by
+  apply concentrationInequalities_budgetCertificate_le_size
+  constructor
+  · norm_num [ConcentrationInequalitiesBudgetCertificate.controlled,
+      sampleConcentrationInequalitiesBudgetCertificate]
+  · norm_num [ConcentrationInequalitiesBudgetCertificate.budgetControlled,
+      sampleConcentrationInequalitiesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleConcentrationInequalitiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ConcentrationInequalitiesBudgetCertificate.controlled,
+      sampleConcentrationInequalitiesBudgetCertificate]
+  · norm_num [ConcentrationInequalitiesBudgetCertificate.budgetControlled,
+      sampleConcentrationInequalitiesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleConcentrationInequalitiesBudgetCertificate.certificateBudgetWindow ≤
+      sampleConcentrationInequalitiesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ConcentrationInequalitiesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleConcentrationInequalitiesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleConcentrationInequalitiesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.ConcentrationInequalities

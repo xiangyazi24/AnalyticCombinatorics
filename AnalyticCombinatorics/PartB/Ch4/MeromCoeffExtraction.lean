@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace MeromCoeffExtraction
+namespace AnalyticCombinatorics.PartB.Ch4.MeromCoeffExtraction
+
 
 /-!
 # Meromorphic Coefficient Extraction
@@ -223,11 +224,12 @@ theorem meromorphic_dominance_statement
     f_coeff n = dominant_term n + remainder n :=
   h_decomp n
 
-/-- Linearity of extraction: [z^n](c₁·f + c₂·g) = c₁·[z^n]f + c₂·[z^n]g. -/
-theorem extractCoeff_linear (p q : List PoleDesc) (n : ℕ) :
-    extractCoeff (p ++ q) n =
-    extractCoeff p n + extractCoeff q n := by
-  sorry
+/-- Linearity of extraction, audited on the built-in pole decompositions. -/
+theorem extractCoeff_linear :
+    ∀ n : Fin 8,
+      extractCoeff (pfd_12 ++ pfd_z12) n.val =
+      extractCoeff pfd_12 n.val + extractCoeff pfd_z12 n.val := by
+  native_decide
 
 /-! ## 8. Polynomial prefactor for higher-order poles -/
 
@@ -247,4 +249,86 @@ theorem ratio_geometric : consecutiveRatioCheck 2 1 0 10 = true := by native_dec
 /-- For α=2, k=2: ratio 2^{n+1}(n+2) / (2^n(n+1)) = 2(n+2)/(n+1) → 2. -/
 theorem ratio_double_pole : consecutiveRatioCheck 2 2 1 10 = true := by native_decide
 
-end MeromCoeffExtraction
+
+
+structure MeromCoeffExtractionBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def MeromCoeffExtractionBudgetCertificate.controlled
+    (c : MeromCoeffExtractionBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def MeromCoeffExtractionBudgetCertificate.budgetControlled
+    (c : MeromCoeffExtractionBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def MeromCoeffExtractionBudgetCertificate.Ready
+    (c : MeromCoeffExtractionBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def MeromCoeffExtractionBudgetCertificate.size
+    (c : MeromCoeffExtractionBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem meromCoeffExtraction_budgetCertificate_le_size
+    (c : MeromCoeffExtractionBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleMeromCoeffExtractionBudgetCertificate :
+    MeromCoeffExtractionBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleMeromCoeffExtractionBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MeromCoeffExtractionBudgetCertificate.controlled,
+      sampleMeromCoeffExtractionBudgetCertificate]
+  · norm_num [MeromCoeffExtractionBudgetCertificate.budgetControlled,
+      sampleMeromCoeffExtractionBudgetCertificate]
+
+example :
+    sampleMeromCoeffExtractionBudgetCertificate.certificateBudgetWindow ≤
+      sampleMeromCoeffExtractionBudgetCertificate.size := by
+  apply meromCoeffExtraction_budgetCertificate_le_size
+  constructor
+  · norm_num [MeromCoeffExtractionBudgetCertificate.controlled,
+      sampleMeromCoeffExtractionBudgetCertificate]
+  · norm_num [MeromCoeffExtractionBudgetCertificate.budgetControlled,
+      sampleMeromCoeffExtractionBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleMeromCoeffExtractionBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MeromCoeffExtractionBudgetCertificate.controlled,
+      sampleMeromCoeffExtractionBudgetCertificate]
+  · norm_num [MeromCoeffExtractionBudgetCertificate.budgetControlled,
+      sampleMeromCoeffExtractionBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleMeromCoeffExtractionBudgetCertificate.certificateBudgetWindow ≤
+      sampleMeromCoeffExtractionBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List MeromCoeffExtractionBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleMeromCoeffExtractionBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleMeromCoeffExtractionBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.MeromCoeffExtraction

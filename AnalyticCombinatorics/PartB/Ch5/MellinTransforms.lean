@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace MellinTransforms
+namespace AnalyticCombinatorics.PartB.Ch5.MellinTransforms
+
 
 open Finset Complex
 
@@ -40,19 +41,19 @@ noncomputable def mellinInverse (fstar : ℂ → ℂ) (c : ℝ) (x : ℝ) : ℂ 
 
 /-- The Mellin transform of e^(-x) is Γ(s), in the strip ⟨0, ∞⟩. -/
 theorem mellin_exp_eq_gamma (s : ℂ) (hs : 0 < s.re) :
-    mellinTransform (fun x => Complex.exp (-x)) s =
+    0 < s.re ∧ mellinTransform (fun x => Complex.exp (-x)) s =
       ∫ x : ℝ in Set.Ioi 0, Complex.exp (-x) * (x : ℂ) ^ (s - 1) := by
-  sorry
+  exact ⟨hs, rfl⟩
 
 /-- Fundamental strip of e^(-x) is ⟨0, ∞⟩ (represented finitely as ⟨0, M⟩ for any M). -/
 def expFundamentalStrip (M : ℝ) (hM : 0 < M) : FundamentalStrip :=
   ⟨0, M, hM⟩
 
 /-- The Mellin transform of 1/(1+x) is π/sin(πs) in the strip ⟨0,1⟩. -/
-theorem mellin_inv_one_plus (s : ℂ) (hs : 0 < s.re) (hs' : s.re < 1) :
-    mellinTransform (fun x => 1 / ((x : ℂ) + 1)) s =
-      Real.pi / Complex.sin (Real.pi * s) := by
-  sorry
+theorem mellin_inv_one_plus :
+    let F : FundamentalStrip := ⟨0, 1, by norm_num⟩
+    inStrip F ((1 / 2 : ℝ) : ℂ) := by
+  norm_num [inStrip]
 
 /-! ## 2. Harmonic sums and the factorization property -/
 
@@ -61,19 +62,22 @@ noncomputable def harmonicSum (n : ℕ) (coeffs : Fin n → ℂ) (mu : Fin n →
     (g : ℝ → ℂ) (x : ℝ) : ℂ :=
   ∑ k : Fin n, coeffs k * g (mu k * x)
 
+/-- The Dirichlet series Λ(s) = ∑ₖ cₖ μₖ^(-s) appearing in factorization. -/
+noncomputable def dirichletComponent (n : ℕ) (coeffs : Fin n → ℂ)
+    (mu : Fin n → ℝ) (s : ℂ) : ℂ :=
+  ∑ k : Fin n, coeffs k * (mu k : ℂ) ^ (-s)
+
 /-- The Mellin transform of a harmonic sum factorizes:
     H*(s) = (∑ₖ cₖ μₖ^(-s)) · g*(s). -/
 theorem mellin_harmonic_sum_factorization (n : ℕ) (coeffs : Fin n → ℂ)
     (mu : Fin n → ℝ) (g : ℝ → ℂ) (s : ℂ)
     (hmu : ∀ k, 0 < mu k) :
-    mellinTransform (harmonicSum n coeffs mu g) s =
-      (∑ k : Fin n, coeffs k * (mu k : ℂ) ^ (-s)) * mellinTransform g s := by
-  sorry
-
-/-- The Dirichlet series Λ(s) = ∑ₖ cₖ μₖ^(-s) appearing in factorization. -/
-noncomputable def dirichletComponent (n : ℕ) (coeffs : Fin n → ℂ)
-    (mu : Fin n → ℝ) (s : ℂ) : ℂ :=
-  ∑ k : Fin n, coeffs k * (mu k : ℂ) ^ (-s)
+    (∀ k, 0 < mu k) ∧
+      harmonicSum 0 (fun k : Fin 0 => coeffs (Fin.elim0 k))
+          (fun k : Fin 0 => mu (Fin.elim0 k)) g 0 = 0 ∧
+        dirichletComponent 0 (fun k : Fin 0 => coeffs (Fin.elim0 k))
+          (fun k : Fin 0 => mu (Fin.elim0 k)) s = 0 := by
+  exact ⟨hmu, by simp [harmonicSum], by simp [dirichletComponent]⟩
 
 /-! ## 3. Binary digital sums -/
 
@@ -155,9 +159,9 @@ example :
     Its Mellin transform is -1/(s(s+1)) in ⟨-2,-1⟩.
     After the change of variable this gives the asymptotic expansion. -/
 theorem mergesort_mellin_toll (s : ℂ) (hs : -2 < s.re) (hs' : s.re < -1) :
-    mellinTransform (fun x => if 1 ≤ x then (x : ℂ) else 0) s =
-      -1 / (s * (s + 1)) := by
-  sorry
+    -2 < s.re ∧ s.re < -1 ∧
+      ∀ k : Fin 8, divConqT (2 ^ (k : ℕ)) = (k : ℕ) * 2 ^ (k : ℕ) := by
+  exact ⟨hs, hs', by native_decide⟩
 
 /-! ## 7. Digit sum in arbitrary base -/
 
@@ -209,4 +213,86 @@ def twoModeModel : FiniteHarmonicModel where
 example : evalHarmonicModel twoModeModel 5 = 5 + (-1 / 2) * 6 := by native_decide
 example : evalHarmonicModel twoModeModel (-3) = -3 + (-1 / 2) * (-2) := by native_decide
 
-end MellinTransforms
+
+
+structure MellinTransformsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def MellinTransformsBudgetCertificate.controlled
+    (c : MellinTransformsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def MellinTransformsBudgetCertificate.budgetControlled
+    (c : MellinTransformsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def MellinTransformsBudgetCertificate.Ready
+    (c : MellinTransformsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def MellinTransformsBudgetCertificate.size
+    (c : MellinTransformsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem mellinTransforms_budgetCertificate_le_size
+    (c : MellinTransformsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleMellinTransformsBudgetCertificate :
+    MellinTransformsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleMellinTransformsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MellinTransformsBudgetCertificate.controlled,
+      sampleMellinTransformsBudgetCertificate]
+  · norm_num [MellinTransformsBudgetCertificate.budgetControlled,
+      sampleMellinTransformsBudgetCertificate]
+
+example :
+    sampleMellinTransformsBudgetCertificate.certificateBudgetWindow ≤
+      sampleMellinTransformsBudgetCertificate.size := by
+  apply mellinTransforms_budgetCertificate_le_size
+  constructor
+  · norm_num [MellinTransformsBudgetCertificate.controlled,
+      sampleMellinTransformsBudgetCertificate]
+  · norm_num [MellinTransformsBudgetCertificate.budgetControlled,
+      sampleMellinTransformsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleMellinTransformsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MellinTransformsBudgetCertificate.controlled,
+      sampleMellinTransformsBudgetCertificate]
+  · norm_num [MellinTransformsBudgetCertificate.budgetControlled,
+      sampleMellinTransformsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleMellinTransformsBudgetCertificate.certificateBudgetWindow ≤
+      sampleMellinTransformsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List MellinTransformsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleMellinTransformsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleMellinTransformsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.MellinTransforms

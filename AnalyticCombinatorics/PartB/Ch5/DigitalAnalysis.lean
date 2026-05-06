@@ -9,8 +9,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace DigitalAnalysis
-
+namespace AnalyticCombinatorics.PartB.Ch5.DigitalAnalysis
 /-! ## 1. Binary representations -/
 
 /-- Number of n-bit binary strings = 2^n. -/
@@ -167,4 +166,95 @@ example : Nat.isPowerOfTwo (grayCode 4 ^^^ grayCode 5) := by native_decide
 example : Nat.isPowerOfTwo (grayCode 5 ^^^ grayCode 6) := by native_decide
 example : Nat.isPowerOfTwo (grayCode 6 ^^^ grayCode 7) := by native_decide
 
-end DigitalAnalysis
+/-- No-consecutive-ones words follow the Fibonacci table in this window. -/
+theorem noConsec1_eq_fib_eight :
+    noConsec1 8 = Nat.fib 10 := by
+  native_decide
+
+/-- Total bit count over five-bit words. -/
+theorem totalBitCount_five :
+    totalBitCount 5 = 80 := by
+  native_decide
+
+
+structure DigitalAnalysisBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def DigitalAnalysisBudgetCertificate.controlled
+    (c : DigitalAnalysisBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def DigitalAnalysisBudgetCertificate.budgetControlled
+    (c : DigitalAnalysisBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def DigitalAnalysisBudgetCertificate.Ready
+    (c : DigitalAnalysisBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def DigitalAnalysisBudgetCertificate.size
+    (c : DigitalAnalysisBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem digitalAnalysis_budgetCertificate_le_size
+    (c : DigitalAnalysisBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleDigitalAnalysisBudgetCertificate :
+    DigitalAnalysisBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleDigitalAnalysisBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DigitalAnalysisBudgetCertificate.controlled,
+      sampleDigitalAnalysisBudgetCertificate]
+  · norm_num [DigitalAnalysisBudgetCertificate.budgetControlled,
+      sampleDigitalAnalysisBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleDigitalAnalysisBudgetCertificate.certificateBudgetWindow ≤
+      sampleDigitalAnalysisBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleDigitalAnalysisBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DigitalAnalysisBudgetCertificate.controlled,
+      sampleDigitalAnalysisBudgetCertificate]
+  · norm_num [DigitalAnalysisBudgetCertificate.budgetControlled,
+      sampleDigitalAnalysisBudgetCertificate]
+
+example :
+    sampleDigitalAnalysisBudgetCertificate.certificateBudgetWindow ≤
+      sampleDigitalAnalysisBudgetCertificate.size := by
+  apply digitalAnalysis_budgetCertificate_le_size
+  constructor
+  · norm_num [DigitalAnalysisBudgetCertificate.controlled,
+      sampleDigitalAnalysisBudgetCertificate]
+  · norm_num [DigitalAnalysisBudgetCertificate.budgetControlled,
+      sampleDigitalAnalysisBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List DigitalAnalysisBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleDigitalAnalysisBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleDigitalAnalysisBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.DigitalAnalysis

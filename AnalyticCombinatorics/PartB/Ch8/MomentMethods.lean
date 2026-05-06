@@ -2,6 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartB.Ch8.MomentMethods
+
 /-! # Chapter VIII -- moment methods
 
 Finite, computable certificates for the moment identities used in
@@ -9,7 +11,6 @@ asymptotic enumeration.  The statements are phrased with integer-scaled
 moments so that the checks reduce to exact arithmetic.
 -/
 
-namespace MomentMethods
 
 /-! ## 1. Binomial moments at `p = 1/2` -/
 
@@ -207,4 +208,86 @@ theorem uniform_central_odd_moments_zero_small :
       uniformCentralMomentScaledSum (n.val + 1) 5 = 0 := by
   native_decide
 
-end MomentMethods
+
+
+structure MomentMethodsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def MomentMethodsBudgetCertificate.controlled
+    (c : MomentMethodsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def MomentMethodsBudgetCertificate.budgetControlled
+    (c : MomentMethodsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def MomentMethodsBudgetCertificate.Ready
+    (c : MomentMethodsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def MomentMethodsBudgetCertificate.size
+    (c : MomentMethodsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem momentMethods_budgetCertificate_le_size
+    (c : MomentMethodsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleMomentMethodsBudgetCertificate :
+    MomentMethodsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleMomentMethodsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MomentMethodsBudgetCertificate.controlled,
+      sampleMomentMethodsBudgetCertificate]
+  · norm_num [MomentMethodsBudgetCertificate.budgetControlled,
+      sampleMomentMethodsBudgetCertificate]
+
+example :
+    sampleMomentMethodsBudgetCertificate.certificateBudgetWindow ≤
+      sampleMomentMethodsBudgetCertificate.size := by
+  apply momentMethods_budgetCertificate_le_size
+  constructor
+  · norm_num [MomentMethodsBudgetCertificate.controlled,
+      sampleMomentMethodsBudgetCertificate]
+  · norm_num [MomentMethodsBudgetCertificate.budgetControlled,
+      sampleMomentMethodsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleMomentMethodsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MomentMethodsBudgetCertificate.controlled,
+      sampleMomentMethodsBudgetCertificate]
+  · norm_num [MomentMethodsBudgetCertificate.budgetControlled,
+      sampleMomentMethodsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleMomentMethodsBudgetCertificate.certificateBudgetWindow ≤
+      sampleMomentMethodsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List MomentMethodsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleMomentMethodsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleMomentMethodsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.MomentMethods

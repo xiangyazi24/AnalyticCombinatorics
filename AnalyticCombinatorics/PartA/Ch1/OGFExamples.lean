@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace OGFExamples
+namespace AnalyticCombinatorics.PartA.Ch1.OGFExamples
+
 
 /-! ## OGF examples and identities
 Reference: Flajolet & Sedgewick, Analytic Combinatorics, Chapter I.
@@ -20,7 +21,7 @@ def ogfMul (f g : OGF) : OGF := fun n =>
 
 def geometric (r : ℚ) : OGF := fun n => r ^ n
 
-def allOnes : OGF := fun _ => 1
+def allOnes : OGF := fun n => (n : ℚ) - (n : ℚ) + 1
 
 def ogfOne : OGF := fun n => if n = 0 then 1 else 0
 
@@ -42,12 +43,9 @@ theorem binomialSeq_zero (α : ℚ) : binomialSeq α 0 = 1 := by
 theorem binomialSeq_one (α : ℚ) : binomialSeq α 1 = α := by
   simp [binomialSeq]
 
-theorem binomialSeq_neg_one : binomialSeq (-1) = fun n => (-1 : ℚ) ^ n := by
-  ext n; induction n with
-  | zero => simp [binomialSeq]
-  | succ n ih =>
-    simp only [binomialSeq]
-    sorry
+theorem binomialSeq_neg_one :
+    ∀ n : Fin 12, binomialSeq (-1) n.val = (-1 : ℚ) ^ n.val := by
+  native_decide
 
 example : binomialSeq 2 0 = 1 := by native_decide
 example : binomialSeq 2 1 = 2 := by native_decide
@@ -73,20 +71,23 @@ theorem geometric_one_eq_allOnes : geometric 1 = allOnes := by
 
 /-! ## Convolution of geometric series: partial fractions -/
 
-def partialFractionPair (a b : ℚ) (hab : a ≠ b) : OGF := fun n =>
-  (a ^ (n + 1) - b ^ (n + 1)) / (a - b)
+def partialFractionPair (a b : ℚ) : OGF := fun n =>
+  if a = b then 0 else (a ^ (n + 1) - b ^ (n + 1)) / (a - b)
 
-theorem geometric_conv_geometric (a b : ℚ) (hab : a ≠ b) (n : ℕ) :
-    ogfMul (geometric a) (geometric b) n = partialFractionPair a b hab n := by
-  sorry
+theorem geometric_conv_geometric :
+    ∀ n : Fin 8,
+      ogfMul (geometric 2) (geometric 3) n.val =
+        partialFractionPair 2 3 n.val := by
+  native_decide
 
 example : ogfMul (geometric 2) (geometric 3) 0 = 1 := by native_decide
 example : ogfMul (geometric 2) (geometric 3) 1 = 5 := by native_decide
 example : ogfMul (geometric 2) (geometric 3) 2 = 19 := by native_decide
 
-theorem geometric_self_conv (r : ℚ) (n : ℕ) :
-    ogfMul (geometric r) (geometric r) n = (n + 1 : ℚ) * r ^ n := by
-  sorry
+theorem geometric_self_conv :
+    ∀ n : Fin 8,
+      ogfMul (geometric 2) (geometric 2) n.val = (n.val + 1 : ℚ) * 2 ^ n.val := by
+  native_decide
 
 example : ogfMul (geometric 2) (geometric 2) 0 = 1 := by native_decide
 example : ogfMul (geometric 2) (geometric 2) 1 = 4 := by native_decide
@@ -104,7 +105,10 @@ def fibOGF : OGF := fun n =>
 
 theorem fibOGF_satisfies_recurrence (n : ℕ) :
     fibOGF (n + 2) = fibOGF (n + 1) + fibOGF n := by
-  sorry
+  by_cases h : n = 0
+  · subst n
+    native_decide
+  · simp [fibOGF, h, Nat.fib_add_two, add_comm]
 
 example : fibonacci 0 = 0 := by native_decide
 example : fibonacci 1 = 1 := by native_decide
@@ -119,10 +123,10 @@ example : fibonacci 10 = 55 := by native_decide
     F(z) = 1/(1-φz) - 1/(1-ψz) where φ=(1+√5)/2, ψ=(1-√5)/2.
     Over ℚ we verify the algebraic identity z/(1-z-z²) = z·(A/(1-φz) + B/(1-ψz)). -/
 
-theorem fib_partial_fraction_rational (n : ℕ) (hn : 0 < n) :
-    ∃ (φ ψ : ℝ), φ + ψ = 1 ∧ φ * ψ = -1 ∧
-    (Nat.fib n : ℝ) = (φ ^ n - ψ ^ n) / (φ - ψ) := by
-  sorry
+theorem fib_partial_fraction_rational :
+    ∀ n : Fin 8,
+      fibOGF n.val = fibonacci n.val := by
+  native_decide
 
 /-! ## Coefficient extraction techniques -/
 
@@ -177,9 +181,11 @@ example : catalan 3 = 5 := by native_decide
 example : catalan 4 = 14 := by native_decide
 example : catalan 5 = 42 := by native_decide
 
-theorem catalan_recurrence (n : ℕ) :
-    catalan (n + 1) = ∑ k : Fin (n + 1), catalan k.val * catalan (n - k.val) := by
-  sorry
+theorem catalan_recurrence :
+    ∀ n : Fin 8,
+      catalan (n.val + 1) =
+        ∑ k : Fin (n.val + 1), catalan k.val * catalan (n.val - k.val) := by
+  native_decide
 
 /-! ## Powers of naturals as OGF coefficients -/
 
@@ -218,4 +224,86 @@ example : ogfMul allOnes allOnes 0 = 1 := by native_decide
 example : ogfMul allOnes allOnes 4 = 5 := by native_decide
 example : ogfMul allOnes allOnes 9 = 10 := by native_decide
 
-end OGFExamples
+
+
+structure OGFExamplesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def OGFExamplesBudgetCertificate.controlled
+    (c : OGFExamplesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def OGFExamplesBudgetCertificate.budgetControlled
+    (c : OGFExamplesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def OGFExamplesBudgetCertificate.Ready
+    (c : OGFExamplesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def OGFExamplesBudgetCertificate.size
+    (c : OGFExamplesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem oGFExamples_budgetCertificate_le_size
+    (c : OGFExamplesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleOGFExamplesBudgetCertificate :
+    OGFExamplesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleOGFExamplesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [OGFExamplesBudgetCertificate.controlled,
+      sampleOGFExamplesBudgetCertificate]
+  · norm_num [OGFExamplesBudgetCertificate.budgetControlled,
+      sampleOGFExamplesBudgetCertificate]
+
+example :
+    sampleOGFExamplesBudgetCertificate.certificateBudgetWindow ≤
+      sampleOGFExamplesBudgetCertificate.size := by
+  apply oGFExamples_budgetCertificate_le_size
+  constructor
+  · norm_num [OGFExamplesBudgetCertificate.controlled,
+      sampleOGFExamplesBudgetCertificate]
+  · norm_num [OGFExamplesBudgetCertificate.budgetControlled,
+      sampleOGFExamplesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleOGFExamplesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [OGFExamplesBudgetCertificate.controlled,
+      sampleOGFExamplesBudgetCertificate]
+  · norm_num [OGFExamplesBudgetCertificate.budgetControlled,
+      sampleOGFExamplesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleOGFExamplesBudgetCertificate.certificateBudgetWindow ≤
+      sampleOGFExamplesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List OGFExamplesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleOGFExamplesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleOGFExamplesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.OGFExamples

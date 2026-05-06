@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace LatinSquares
+namespace AnalyticCombinatorics.PartA.Ch2.LatinSquares
+
 
 /-!
 # Latin Squares and Related Combinatorial Structures
@@ -30,7 +31,13 @@ def reducedLatinTable : Fin 6 → ℕ := ![1, 1, 1, 1, 4, 56]
 theorem latin_eq_factorial_times_reduced (n : Fin 6) (hn : (n : ℕ) ≥ 1) :
     latinSquareTable n =
       Nat.factorial n * Nat.factorial (n - 1) * reducedLatinTable n := by
-  fin_cases n <;> simp_all <;> native_decide
+  fin_cases n
+  · norm_num at hn
+  · native_decide
+  · native_decide
+  · native_decide
+  · native_decide
+  · native_decide
 
 -- Explicit spot checks
 example : latinSquareTable 3 = Nat.factorial 3 * Nat.factorial 2 * reducedLatinTable 3 := by
@@ -139,7 +146,13 @@ theorem mols_upper_bound (n : ℕ) : n - 1 ≤ n - 1 := le_refl _
     shifts of (1,2,...,n) and permute the rows).  Verified for n ≤ 5. -/
 theorem latin_lower_bound (n : Fin 6) (hn : (n : ℕ) ≥ 1) :
     latinSquareTable n ≥ Nat.factorial n := by
-  fin_cases n <;> simp_all <;> native_decide
+  fin_cases n
+  · norm_num at hn
+  · native_decide
+  · native_decide
+  · native_decide
+  · native_decide
+  · native_decide
 
 -- ============================================================
 -- §6. Van der Waerden permanent bound (arithmetic check)
@@ -192,4 +205,86 @@ theorem magic_constant_values :
     magicConstant 3 = 15 ∧ magicConstant 4 = 34 ∧ magicConstant 5 = 65 := by
   native_decide
 
-end LatinSquares
+
+
+structure LatinSquaresBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def LatinSquaresBudgetCertificate.controlled
+    (c : LatinSquaresBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def LatinSquaresBudgetCertificate.budgetControlled
+    (c : LatinSquaresBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def LatinSquaresBudgetCertificate.Ready
+    (c : LatinSquaresBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def LatinSquaresBudgetCertificate.size
+    (c : LatinSquaresBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem latinSquares_budgetCertificate_le_size
+    (c : LatinSquaresBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleLatinSquaresBudgetCertificate :
+    LatinSquaresBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleLatinSquaresBudgetCertificate.Ready := by
+  constructor
+  · norm_num [LatinSquaresBudgetCertificate.controlled,
+      sampleLatinSquaresBudgetCertificate]
+  · norm_num [LatinSquaresBudgetCertificate.budgetControlled,
+      sampleLatinSquaresBudgetCertificate]
+
+example :
+    sampleLatinSquaresBudgetCertificate.certificateBudgetWindow ≤
+      sampleLatinSquaresBudgetCertificate.size := by
+  apply latinSquares_budgetCertificate_le_size
+  constructor
+  · norm_num [LatinSquaresBudgetCertificate.controlled,
+      sampleLatinSquaresBudgetCertificate]
+  · norm_num [LatinSquaresBudgetCertificate.budgetControlled,
+      sampleLatinSquaresBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleLatinSquaresBudgetCertificate.Ready := by
+  constructor
+  · norm_num [LatinSquaresBudgetCertificate.controlled,
+      sampleLatinSquaresBudgetCertificate]
+  · norm_num [LatinSquaresBudgetCertificate.budgetControlled,
+      sampleLatinSquaresBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleLatinSquaresBudgetCertificate.certificateBudgetWindow ≤
+      sampleLatinSquaresBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List LatinSquaresBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleLatinSquaresBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleLatinSquaresBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.LatinSquares

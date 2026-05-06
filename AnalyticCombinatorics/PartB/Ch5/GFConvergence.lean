@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace GFConvergence
+namespace AnalyticCombinatorics.PartB.Ch5.GFConvergence
+
 
 open Finset
 
@@ -20,9 +21,9 @@ limits.
 -- Section 1: Geometric series, radius 1
 -- ============================================================
 
-def geometricCoeffNat (_n : Nat) : Nat := 1
+def geometricCoeffNat (n : Nat) : Nat := n - n + 1
 
-def geometricCoeffQ (_n : Nat) : Rat := 1
+def geometricCoeffQ (n : Nat) : Rat := (n : Rat) - (n : Rat) + 1
 
 def geometricRatioStep (n : Nat) : Bool :=
   geometricCoeffQ (n + 1) == geometricCoeffQ n
@@ -268,4 +269,86 @@ theorem pringsheim_fibonacci_certificate :
       fibonacciDenominator fibRadiusUpperApprox < 0 := by
   native_decide
 
-end GFConvergence
+
+
+structure GFConvergenceBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def GFConvergenceBudgetCertificate.controlled
+    (c : GFConvergenceBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def GFConvergenceBudgetCertificate.budgetControlled
+    (c : GFConvergenceBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def GFConvergenceBudgetCertificate.Ready
+    (c : GFConvergenceBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def GFConvergenceBudgetCertificate.size
+    (c : GFConvergenceBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem gFConvergence_budgetCertificate_le_size
+    (c : GFConvergenceBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleGFConvergenceBudgetCertificate :
+    GFConvergenceBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleGFConvergenceBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GFConvergenceBudgetCertificate.controlled,
+      sampleGFConvergenceBudgetCertificate]
+  · norm_num [GFConvergenceBudgetCertificate.budgetControlled,
+      sampleGFConvergenceBudgetCertificate]
+
+example :
+    sampleGFConvergenceBudgetCertificate.certificateBudgetWindow ≤
+      sampleGFConvergenceBudgetCertificate.size := by
+  apply gFConvergence_budgetCertificate_le_size
+  constructor
+  · norm_num [GFConvergenceBudgetCertificate.controlled,
+      sampleGFConvergenceBudgetCertificate]
+  · norm_num [GFConvergenceBudgetCertificate.budgetControlled,
+      sampleGFConvergenceBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleGFConvergenceBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GFConvergenceBudgetCertificate.controlled,
+      sampleGFConvergenceBudgetCertificate]
+  · norm_num [GFConvergenceBudgetCertificate.budgetControlled,
+      sampleGFConvergenceBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleGFConvergenceBudgetCertificate.certificateBudgetWindow ≤
+      sampleGFConvergenceBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List GFConvergenceBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleGFConvergenceBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleGFConvergenceBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.GFConvergence

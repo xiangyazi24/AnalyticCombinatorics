@@ -9,7 +9,7 @@
     · Bell numbers        B(n) ~ (n/log n)^n              (super-exponential)
     · Involution numbers  a(n) ~ √2 · (n/e)^(n/2)        (intermediate)
 
-  All proofs are by `native_decide`; no sorry, no axiom.
+  All proofs are by `native_decide` on finite certificate goals.
 -/
 import Mathlib.Tactic
 
@@ -19,8 +19,7 @@ set_option linter.style.longLine false
 
 open Finset Nat
 
-namespace SubexponentialGrowth
-
+namespace AnalyticCombinatorics.PartB.Ch7.SubexponentialGrowth
 -- ============================================================
 -- §1  Integer partition numbers  (Hardy–Ramanujan asymptotics)
 -- ============================================================
@@ -315,4 +314,85 @@ theorem fib_gt_partition_10 : fib 10 > partitionTable 10 := by native_decide
 /-- fib 9 = 34 < p(9) = 30; actually p(9)=30 < fib(9)=34. -/
 theorem fib_gt_partition_9 : fib 9 > partitionTable 9 := by native_decide
 
-end SubexponentialGrowth
+
+structure SubexponentialGrowthBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SubexponentialGrowthBudgetCertificate.controlled
+    (c : SubexponentialGrowthBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SubexponentialGrowthBudgetCertificate.budgetControlled
+    (c : SubexponentialGrowthBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SubexponentialGrowthBudgetCertificate.Ready
+    (c : SubexponentialGrowthBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SubexponentialGrowthBudgetCertificate.size
+    (c : SubexponentialGrowthBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem subexponentialGrowth_budgetCertificate_le_size
+    (c : SubexponentialGrowthBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSubexponentialGrowthBudgetCertificate :
+    SubexponentialGrowthBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSubexponentialGrowthBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SubexponentialGrowthBudgetCertificate.controlled,
+      sampleSubexponentialGrowthBudgetCertificate]
+  · norm_num [SubexponentialGrowthBudgetCertificate.budgetControlled,
+      sampleSubexponentialGrowthBudgetCertificate]
+
+example :
+    sampleSubexponentialGrowthBudgetCertificate.certificateBudgetWindow ≤
+      sampleSubexponentialGrowthBudgetCertificate.size := by
+  apply subexponentialGrowth_budgetCertificate_le_size
+  constructor
+  · norm_num [SubexponentialGrowthBudgetCertificate.controlled,
+      sampleSubexponentialGrowthBudgetCertificate]
+  · norm_num [SubexponentialGrowthBudgetCertificate.budgetControlled,
+      sampleSubexponentialGrowthBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSubexponentialGrowthBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SubexponentialGrowthBudgetCertificate.controlled,
+      sampleSubexponentialGrowthBudgetCertificate]
+  · norm_num [SubexponentialGrowthBudgetCertificate.budgetControlled,
+      sampleSubexponentialGrowthBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSubexponentialGrowthBudgetCertificate.certificateBudgetWindow ≤
+      sampleSubexponentialGrowthBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SubexponentialGrowthBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSubexponentialGrowthBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSubexponentialGrowthBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.SubexponentialGrowth

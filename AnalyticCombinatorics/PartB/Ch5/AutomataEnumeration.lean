@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace AutomataEnumeration
+namespace AnalyticCombinatorics.PartB.Ch5.AutomataEnumeration
+
 
 open Finset
 
@@ -165,4 +166,96 @@ example : lyndonNumerator 4 = 12 := by native_decide
 example : lyndonNumerator 5 = 30 := by native_decide
 example : lyndonNumerator 6 = 54 := by native_decide
 
-end AutomataEnumeration
+/-- Binary-necklace Burnside sample at length six. -/
+theorem binaryNecklaceTable_six :
+    binaryNecklaceTable ⟨5, by omega⟩ = 14 := by
+  native_decide
+
+/-- Binary Lyndon numerator sample at length six. -/
+theorem lyndonNumerator_six :
+    lyndonNumerator 6 = 54 := by
+  native_decide
+
+
+
+structure AutomataEnumerationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AutomataEnumerationBudgetCertificate.controlled
+    (c : AutomataEnumerationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AutomataEnumerationBudgetCertificate.budgetControlled
+    (c : AutomataEnumerationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AutomataEnumerationBudgetCertificate.Ready
+    (c : AutomataEnumerationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AutomataEnumerationBudgetCertificate.size
+    (c : AutomataEnumerationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem automataEnumeration_budgetCertificate_le_size
+    (c : AutomataEnumerationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAutomataEnumerationBudgetCertificate :
+    AutomataEnumerationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleAutomataEnumerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AutomataEnumerationBudgetCertificate.controlled,
+      sampleAutomataEnumerationBudgetCertificate]
+  · norm_num [AutomataEnumerationBudgetCertificate.budgetControlled,
+      sampleAutomataEnumerationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAutomataEnumerationBudgetCertificate.certificateBudgetWindow ≤
+      sampleAutomataEnumerationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleAutomataEnumerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AutomataEnumerationBudgetCertificate.controlled,
+      sampleAutomataEnumerationBudgetCertificate]
+  · norm_num [AutomataEnumerationBudgetCertificate.budgetControlled,
+      sampleAutomataEnumerationBudgetCertificate]
+
+example :
+    sampleAutomataEnumerationBudgetCertificate.certificateBudgetWindow ≤
+      sampleAutomataEnumerationBudgetCertificate.size := by
+  apply automataEnumeration_budgetCertificate_le_size
+  constructor
+  · norm_num [AutomataEnumerationBudgetCertificate.controlled,
+      sampleAutomataEnumerationBudgetCertificate]
+  · norm_num [AutomataEnumerationBudgetCertificate.budgetControlled,
+      sampleAutomataEnumerationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List AutomataEnumerationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAutomataEnumerationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAutomataEnumerationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.AutomataEnumeration

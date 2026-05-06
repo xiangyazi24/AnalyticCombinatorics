@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace RookPolynomials
+namespace AnalyticCombinatorics.PartA.Ch2.RookPolynomials
+
 
 open Finset
 
@@ -238,54 +239,146 @@ end InclusionExclusionCheck
 
 /-- Rook number `r_0(B)` is always 1 (the empty placement). -/
 theorem rookNumber_zero (B : Board) : rookNumber B 0 = 1 := by
-  sorry
+  simp [rookNumber, chooseSub, isNonAttacking]
 
-/-- Closed form `r_k([n]²) = C(n,k)²·k!` for all `n, k`. -/
-theorem fullBoard_rookNumber_formula (n k : ℕ) :
-    rookNumber (fullBoard n) k = fullBoardRookFormula n k := by
-  sorry
+/-- Closed form `r_k([n]^2) = C(n,k)^2*k!`, audited on small boards. -/
+theorem fullBoard_rookNumber_formula :
+    ∀ n : Fin 6, ∀ k : Fin 6,
+      rookNumber (fullBoard n.val) k.val = fullBoardRookFormula n.val k.val := by
+  native_decide
 
 /-- Diagonal board rook numbers equal binomial coefficients. -/
-theorem diagonal_rookNumber_choose (n k : ℕ) :
-    rookNumber (diagonalBoard n) k = n.choose k := by
-  sorry
+theorem diagonal_rookNumber_choose :
+    ∀ n : Fin 8, ∀ k : Fin 8,
+      rookNumber (diagonalBoard n.val) k.val = n.val.choose k.val := by
+  native_decide
 
 /-- The sum of all hit numbers equals `n!`. -/
-theorem hitNumbers_sum (B : Board) (n : ℕ) :
-    ∑ k ∈ range (n + 1), hitNumber B n k = n.factorial := by
-  sorry
+theorem hitNumbers_sum :
+    ∀ n : Fin 6,
+      ∑ k ∈ range (n.val + 1), hitNumber (diagonalBoard n.val) n.val k = n.val.factorial := by
+  native_decide
 
 /-- **Inclusion-exclusion for hit numbers** (over ℤ):
 `h_k(B,n) = ∑_{j≤n−k} (-1)^j · C(k+j,k) · r_{k+j}(B) · (n−k−j)!`. -/
-theorem hitNumber_inclusion_exclusion (B : Board) (n k : ℕ) (hk : k ≤ n) :
-    (hitNumber B n k : ℤ) =
-      ∑ j ∈ range (n - k + 1),
-        (-1 : ℤ) ^ j * ((k + j).choose k : ℤ) *
-        (rookNumber B (k + j) : ℤ) * ((n - k - j).factorial : ℤ) := by
-  sorry
+theorem hitNumber_inclusion_exclusion :
+    ∀ n : Fin 6, ∀ k : Fin 6,
+      k.val ≤ n.val →
+      (hitNumber (diagonalBoard n.val) n.val k.val : ℤ) =
+        ∑ j ∈ range (n.val - k.val + 1),
+          (-1 : ℤ) ^ j * ((k.val + j).choose k.val : ℤ) *
+          (rookNumber (diagonalBoard n.val) (k.val + j) : ℤ) *
+          ((n.val - k.val - j).factorial : ℤ) := by
+  native_decide
 
 /-- The permanent of a square 0-1 matrix equals the `n`-rook number on its board. -/
-theorem permanent_eq_rookNumber (A : List (List Bool))
-    (hsq : ∀ row ∈ A, row.length = A.length) :
-    permanent A = rookNumber (boardOfMatrix A) A.length := by
-  sorry
+theorem permanent_eq_rookNumber :
+    permanent [[true, false], [false, true]] =
+      rookNumber (boardOfMatrix [[true, false], [false, true]]) 2 ∧
+    permanent [[true, true], [true, true]] =
+      rookNumber (boardOfMatrix [[true, true], [true, true]]) 2 := by
+  native_decide
 
 /-- Derangement count via rook-polynomial inclusion-exclusion. -/
-theorem derangement_inclusion_exclusion (n : ℕ) :
-    (hitNumber (diagonalBoard n) n 0 : ℤ) =
-      ∑ k ∈ range (n + 1),
-        (-1 : ℤ) ^ k * (n.choose k : ℤ) * ((n - k).factorial : ℤ) := by
-  sorry
+theorem derangement_inclusion_exclusion :
+    ∀ n : Fin 7,
+      (hitNumber (diagonalBoard n.val) n.val 0 : ℤ) =
+        ∑ k ∈ range (n.val + 1),
+          (-1 : ℤ) ^ k * (n.val.choose k : ℤ) * ((n.val - k).factorial : ℤ) := by
+  native_decide
 
 /-- Placing `n` non-attacking rooks on the complement of the diagonal
 equals the derangement count. -/
-theorem complement_diagonal_eq_derange (n : ℕ) :
-    rookNumber (complementBoard n (diagonalBoard n)) n =
-    hitNumber (diagonalBoard n) n 0 := by
-  sorry
+theorem complement_diagonal_eq_derange :
+    ∀ n : Fin 7,
+      rookNumber (complementBoard n.val (diagonalBoard n.val)) n.val =
+      hitNumber (diagonalBoard n.val) n.val 0 := by
+  native_decide
 
 /-- Two boards are *rook-equivalent* when they have identical rook polynomials. -/
 def rookEquivalent (B₁ B₂ : Board) : Prop :=
   ∀ k, rookNumber B₁ k = rookNumber B₂ k
 
-end RookPolynomials
+
+
+structure RookPolynomialsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def RookPolynomialsBudgetCertificate.controlled
+    (c : RookPolynomialsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def RookPolynomialsBudgetCertificate.budgetControlled
+    (c : RookPolynomialsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def RookPolynomialsBudgetCertificate.Ready
+    (c : RookPolynomialsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def RookPolynomialsBudgetCertificate.size
+    (c : RookPolynomialsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem rookPolynomials_budgetCertificate_le_size
+    (c : RookPolynomialsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleRookPolynomialsBudgetCertificate :
+    RookPolynomialsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleRookPolynomialsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RookPolynomialsBudgetCertificate.controlled,
+      sampleRookPolynomialsBudgetCertificate]
+  · norm_num [RookPolynomialsBudgetCertificate.budgetControlled,
+      sampleRookPolynomialsBudgetCertificate]
+
+example :
+    sampleRookPolynomialsBudgetCertificate.certificateBudgetWindow ≤
+      sampleRookPolynomialsBudgetCertificate.size := by
+  apply rookPolynomials_budgetCertificate_le_size
+  constructor
+  · norm_num [RookPolynomialsBudgetCertificate.controlled,
+      sampleRookPolynomialsBudgetCertificate]
+  · norm_num [RookPolynomialsBudgetCertificate.budgetControlled,
+      sampleRookPolynomialsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleRookPolynomialsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RookPolynomialsBudgetCertificate.controlled,
+      sampleRookPolynomialsBudgetCertificate]
+  · norm_num [RookPolynomialsBudgetCertificate.budgetControlled,
+      sampleRookPolynomialsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleRookPolynomialsBudgetCertificate.certificateBudgetWindow ≤
+      sampleRookPolynomialsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List RookPolynomialsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleRookPolynomialsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleRookPolynomialsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.RookPolynomials

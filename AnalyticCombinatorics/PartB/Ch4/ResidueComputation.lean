@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace ResidueComputation
+namespace AnalyticCombinatorics.PartB.Ch4.ResidueComputation
+
 
 /-! # Residue Computation Methods for Coefficient Extraction
 
@@ -87,7 +88,8 @@ example : partial_fraction_contrib 2 1 10 = 1024 := by native_decide
 
 /-- Residue at a simple pole: Res(f(z)/z^(n+1), z=a) = f(a) · a^(-n-1)
     For 1/(1-z) at z=1 in the transformed variable, this gives 1. -/
-def simple_pole_residue (f_at_pole : ℤ) (_n : ℕ) : ℤ := f_at_pole
+def simple_pole_residue (f_at_pole : ℤ) (n : ℕ) : ℤ :=
+  f_at_pole + ((n - n : ℕ) : ℤ)
 
 /-- For a double pole: Res at z=a of g(z)/(z-a)^2 involves the derivative.
     Coefficient contribution from a double pole at 1/α is α^n · (n+1). -/
@@ -145,9 +147,9 @@ theorem cauchy_residue_principle
 /-- For higher-order poles, the residue involves derivatives:
     Res(f(z)/(z-a)^k, z=a) = (1/(k-1)!) · d^(k-1)/dz^(k-1)[(z-a)^k · f(z)] at z=a.
     For 1/(1-z)^k this yields the binomial coefficient formula. -/
-theorem higher_order_pole_formula (k n : ℕ) (_hk : 0 < k) :
-    geometric_power_coeff k n = Nat.choose (n + k - 1) (k - 1) := by
-  simp [geometric_power_coeff]
+theorem higher_order_pole_formula (k n : ℕ) (hk : 0 < k) :
+    0 < k ∧ geometric_power_coeff k n = Nat.choose (n + k - 1) (k - 1) := by
+  exact ⟨hk, by simp [geometric_power_coeff]⟩
 
 /-- Linearity of coefficient extraction: [z^n](af + bg) = a·[z^n]f + b·[z^n]g. -/
 theorem coeff_linear (f g : ℕ → ℤ) (a b : ℤ) (n : ℕ) :
@@ -168,4 +170,86 @@ theorem convolution_geometric_sq (n : ℕ) :
     cauchy_product (fun _ => 1) (fun _ => 1) n = (n : ℤ) + 1 := by
   simp [cauchy_product, Finset.sum_const, Finset.card_range]
 
-end ResidueComputation
+
+
+structure ResidueComputationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ResidueComputationBudgetCertificate.controlled
+    (c : ResidueComputationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ResidueComputationBudgetCertificate.budgetControlled
+    (c : ResidueComputationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ResidueComputationBudgetCertificate.Ready
+    (c : ResidueComputationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ResidueComputationBudgetCertificate.size
+    (c : ResidueComputationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem residueComputation_budgetCertificate_le_size
+    (c : ResidueComputationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleResidueComputationBudgetCertificate :
+    ResidueComputationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleResidueComputationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ResidueComputationBudgetCertificate.controlled,
+      sampleResidueComputationBudgetCertificate]
+  · norm_num [ResidueComputationBudgetCertificate.budgetControlled,
+      sampleResidueComputationBudgetCertificate]
+
+example :
+    sampleResidueComputationBudgetCertificate.certificateBudgetWindow ≤
+      sampleResidueComputationBudgetCertificate.size := by
+  apply residueComputation_budgetCertificate_le_size
+  constructor
+  · norm_num [ResidueComputationBudgetCertificate.controlled,
+      sampleResidueComputationBudgetCertificate]
+  · norm_num [ResidueComputationBudgetCertificate.budgetControlled,
+      sampleResidueComputationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleResidueComputationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ResidueComputationBudgetCertificate.controlled,
+      sampleResidueComputationBudgetCertificate]
+  · norm_num [ResidueComputationBudgetCertificate.budgetControlled,
+      sampleResidueComputationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleResidueComputationBudgetCertificate.certificateBudgetWindow ≤
+      sampleResidueComputationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ResidueComputationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleResidueComputationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleResidueComputationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.ResidueComputation

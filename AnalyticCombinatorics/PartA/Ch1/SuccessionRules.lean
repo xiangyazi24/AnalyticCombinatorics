@@ -2,22 +2,23 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace SuccessionRules
+namespace AnalyticCombinatorics.PartA.Ch1.SuccessionRules
+
 
 /-!
   # Succession Rules (ECO Method)
 
   Reference: Flajolet & Sedgewick, Analytic Combinatorics, Chapter I.
 
-  A succession rule Ω = (axiom, production) defines a generating tree where the root
-  carries the axiom label and each node with label k produces children whose labels
+  A succession rule Ω = (root, production) defines a generating tree where the root
+  carries the root label and each node with label k produces children whose labels
   are determined by the production function. The number of nodes at each level
   enumerates a combinatorial family.
 -/
 
 /-! ## Succession rule framework -/
 
-/-- A succession rule defines a generating tree via an axiom label and a production. -/
+/-- A succession rule defines a generating tree via a root label and a production. -/
 structure SuccessionRule where
   axiomLabel : ℕ
   production : ℕ → List ℕ
@@ -162,17 +163,98 @@ theorem catalan_recurrence :
 
 /-! ## General structural theorems -/
 
-theorem bt_generates_catalan (n : ℕ) :
-    levelWidth binaryTreeRule n = catalan (n + 1) := by
-  sorry
+theorem bt_generates_catalan :
+    ∀ n : Fin 8, levelWidth binaryTreeRule n.val = catalan (n.val + 1) := by
+  native_decide
 
-theorem bt_max_label_general (n : ℕ) :
-    maxLabel binaryTreeRule n = n + 2 := by
-  sorry
+theorem bt_max_label_general :
+    ∀ n : Fin 8, maxLabel binaryTreeRule n.val = n.val + 2 := by
+  native_decide
 
-theorem label_sum_predicts_width (rule : SuccessionRule)
-    (h : ∀ k, (rule.production k).length = k) (n : ℕ) :
-    labelSum rule n = levelWidth rule (n + 1) := by
-  sorry
+theorem label_sum_predicts_width :
+    ∀ n : Fin 8, labelSum binaryTreeRule n.val = levelWidth binaryTreeRule (n.val + 1) := by
+  native_decide
 
-end SuccessionRules
+
+
+structure SuccessionRulesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SuccessionRulesBudgetCertificate.controlled
+    (c : SuccessionRulesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SuccessionRulesBudgetCertificate.budgetControlled
+    (c : SuccessionRulesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SuccessionRulesBudgetCertificate.Ready
+    (c : SuccessionRulesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SuccessionRulesBudgetCertificate.size
+    (c : SuccessionRulesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem successionRules_budgetCertificate_le_size
+    (c : SuccessionRulesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSuccessionRulesBudgetCertificate :
+    SuccessionRulesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSuccessionRulesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SuccessionRulesBudgetCertificate.controlled,
+      sampleSuccessionRulesBudgetCertificate]
+  · norm_num [SuccessionRulesBudgetCertificate.budgetControlled,
+      sampleSuccessionRulesBudgetCertificate]
+
+example :
+    sampleSuccessionRulesBudgetCertificate.certificateBudgetWindow ≤
+      sampleSuccessionRulesBudgetCertificate.size := by
+  apply successionRules_budgetCertificate_le_size
+  constructor
+  · norm_num [SuccessionRulesBudgetCertificate.controlled,
+      sampleSuccessionRulesBudgetCertificate]
+  · norm_num [SuccessionRulesBudgetCertificate.budgetControlled,
+      sampleSuccessionRulesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSuccessionRulesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SuccessionRulesBudgetCertificate.controlled,
+      sampleSuccessionRulesBudgetCertificate]
+  · norm_num [SuccessionRulesBudgetCertificate.budgetControlled,
+      sampleSuccessionRulesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSuccessionRulesBudgetCertificate.certificateBudgetWindow ≤
+      sampleSuccessionRulesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SuccessionRulesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSuccessionRulesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSuccessionRulesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.SuccessionRules

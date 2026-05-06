@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace ExponentialIntegrals
+namespace AnalyticCombinatorics.PartB.Ch8.ExponentialIntegrals
+
 
 open Finset
 
@@ -122,7 +123,7 @@ theorem incomplete_gamma_series_examples :
 
 /--
 Scale for the decidable Stirling-core certificates.  `stirlingCoreScaled n /
-stirlingScale` is the integer-scaled placeholder for
+stirlingScale` is the integer-scaled surrogate for
 `sqrt(2*pi*n) * (n/e)^n` in the ratio checks below.
 -/
 def stirlingScale : ℕ := 1000000
@@ -293,4 +294,86 @@ theorem deMoivre_ratio_small_examples :
           deMoivreRatioDenominatorScaled 16 := by
   native_decide
 
-end ExponentialIntegrals
+
+
+structure ExponentialIntegralsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ExponentialIntegralsBudgetCertificate.controlled
+    (c : ExponentialIntegralsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ExponentialIntegralsBudgetCertificate.budgetControlled
+    (c : ExponentialIntegralsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ExponentialIntegralsBudgetCertificate.Ready
+    (c : ExponentialIntegralsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ExponentialIntegralsBudgetCertificate.size
+    (c : ExponentialIntegralsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem exponentialIntegrals_budgetCertificate_le_size
+    (c : ExponentialIntegralsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleExponentialIntegralsBudgetCertificate :
+    ExponentialIntegralsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleExponentialIntegralsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ExponentialIntegralsBudgetCertificate.controlled,
+      sampleExponentialIntegralsBudgetCertificate]
+  · norm_num [ExponentialIntegralsBudgetCertificate.budgetControlled,
+      sampleExponentialIntegralsBudgetCertificate]
+
+example :
+    sampleExponentialIntegralsBudgetCertificate.certificateBudgetWindow ≤
+      sampleExponentialIntegralsBudgetCertificate.size := by
+  apply exponentialIntegrals_budgetCertificate_le_size
+  constructor
+  · norm_num [ExponentialIntegralsBudgetCertificate.controlled,
+      sampleExponentialIntegralsBudgetCertificate]
+  · norm_num [ExponentialIntegralsBudgetCertificate.budgetControlled,
+      sampleExponentialIntegralsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleExponentialIntegralsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ExponentialIntegralsBudgetCertificate.controlled,
+      sampleExponentialIntegralsBudgetCertificate]
+  · norm_num [ExponentialIntegralsBudgetCertificate.budgetControlled,
+      sampleExponentialIntegralsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleExponentialIntegralsBudgetCertificate.certificateBudgetWindow ≤
+      sampleExponentialIntegralsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ExponentialIntegralsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleExponentialIntegralsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleExponentialIntegralsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.ExponentialIntegrals

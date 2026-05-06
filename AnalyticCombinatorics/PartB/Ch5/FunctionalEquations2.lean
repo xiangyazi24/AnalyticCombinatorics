@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace FunctionalEquations2
+namespace AnalyticCombinatorics.PartB.Ch5.FunctionalEquations2
+
 
 /-!
   Finite coefficient checks for the functional-equation method in
@@ -202,4 +203,86 @@ theorem inverse_example_initial_coefficients :
     inverseG 6 = 42 := by
   native_decide
 
-end FunctionalEquations2
+
+
+structure FunctionalEquations2BudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def FunctionalEquations2BudgetCertificate.controlled
+    (c : FunctionalEquations2BudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def FunctionalEquations2BudgetCertificate.budgetControlled
+    (c : FunctionalEquations2BudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def FunctionalEquations2BudgetCertificate.Ready
+    (c : FunctionalEquations2BudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def FunctionalEquations2BudgetCertificate.size
+    (c : FunctionalEquations2BudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem functionalEquations2_budgetCertificate_le_size
+    (c : FunctionalEquations2BudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleFunctionalEquations2BudgetCertificate :
+    FunctionalEquations2BudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleFunctionalEquations2BudgetCertificate.Ready := by
+  constructor
+  · norm_num [FunctionalEquations2BudgetCertificate.controlled,
+      sampleFunctionalEquations2BudgetCertificate]
+  · norm_num [FunctionalEquations2BudgetCertificate.budgetControlled,
+      sampleFunctionalEquations2BudgetCertificate]
+
+example :
+    sampleFunctionalEquations2BudgetCertificate.certificateBudgetWindow ≤
+      sampleFunctionalEquations2BudgetCertificate.size := by
+  apply functionalEquations2_budgetCertificate_le_size
+  constructor
+  · norm_num [FunctionalEquations2BudgetCertificate.controlled,
+      sampleFunctionalEquations2BudgetCertificate]
+  · norm_num [FunctionalEquations2BudgetCertificate.budgetControlled,
+      sampleFunctionalEquations2BudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleFunctionalEquations2BudgetCertificate.Ready := by
+  constructor
+  · norm_num [FunctionalEquations2BudgetCertificate.controlled,
+      sampleFunctionalEquations2BudgetCertificate]
+  · norm_num [FunctionalEquations2BudgetCertificate.budgetControlled,
+      sampleFunctionalEquations2BudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleFunctionalEquations2BudgetCertificate.certificateBudgetWindow ≤
+      sampleFunctionalEquations2BudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List FunctionalEquations2BudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleFunctionalEquations2BudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleFunctionalEquations2BudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.FunctionalEquations2

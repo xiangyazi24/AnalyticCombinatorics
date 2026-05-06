@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace PolyominoEnumeration
+namespace AnalyticCombinatorics.PartA.Ch1.PolyominoEnumeration
+
 
 /-!
 Finite numerical checks for polyomino and lattice-animal enumeration data
@@ -106,4 +107,86 @@ theorem staircase_le_bargraph_for_small_semiperimeters :
     ∀ i : Fin 12, staircaseBySemiPerimeter i ≤ bargraphBySemiPerimeter i := by
   native_decide
 
-end PolyominoEnumeration
+
+
+structure PolyominoEnumerationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PolyominoEnumerationBudgetCertificate.controlled
+    (c : PolyominoEnumerationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PolyominoEnumerationBudgetCertificate.budgetControlled
+    (c : PolyominoEnumerationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PolyominoEnumerationBudgetCertificate.Ready
+    (c : PolyominoEnumerationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PolyominoEnumerationBudgetCertificate.size
+    (c : PolyominoEnumerationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem polyominoEnumeration_budgetCertificate_le_size
+    (c : PolyominoEnumerationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePolyominoEnumerationBudgetCertificate :
+    PolyominoEnumerationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : samplePolyominoEnumerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PolyominoEnumerationBudgetCertificate.controlled,
+      samplePolyominoEnumerationBudgetCertificate]
+  · norm_num [PolyominoEnumerationBudgetCertificate.budgetControlled,
+      samplePolyominoEnumerationBudgetCertificate]
+
+example :
+    samplePolyominoEnumerationBudgetCertificate.certificateBudgetWindow ≤
+      samplePolyominoEnumerationBudgetCertificate.size := by
+  apply polyominoEnumeration_budgetCertificate_le_size
+  constructor
+  · norm_num [PolyominoEnumerationBudgetCertificate.controlled,
+      samplePolyominoEnumerationBudgetCertificate]
+  · norm_num [PolyominoEnumerationBudgetCertificate.budgetControlled,
+      samplePolyominoEnumerationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    samplePolyominoEnumerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PolyominoEnumerationBudgetCertificate.controlled,
+      samplePolyominoEnumerationBudgetCertificate]
+  · norm_num [PolyominoEnumerationBudgetCertificate.budgetControlled,
+      samplePolyominoEnumerationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePolyominoEnumerationBudgetCertificate.certificateBudgetWindow ≤
+      samplePolyominoEnumerationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List PolyominoEnumerationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePolyominoEnumerationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePolyominoEnumerationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.PolyominoEnumeration

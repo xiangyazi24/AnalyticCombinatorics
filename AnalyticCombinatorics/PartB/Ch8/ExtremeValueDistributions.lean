@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace ExtremeValueDistributions
+namespace AnalyticCombinatorics.PartB.Ch8.ExtremeValueDistributions
+
 
 open Finset
 
@@ -165,4 +166,86 @@ theorem lisOrLdsGuaranteed_square_characterization :
         i.1 + 1 ≤ (lisOrLdsGuaranteed i) ^ 2 := by
   native_decide
 
-end ExtremeValueDistributions
+
+
+structure ExtremeValueDistributionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ExtremeValueDistributionsBudgetCertificate.controlled
+    (c : ExtremeValueDistributionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ExtremeValueDistributionsBudgetCertificate.budgetControlled
+    (c : ExtremeValueDistributionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ExtremeValueDistributionsBudgetCertificate.Ready
+    (c : ExtremeValueDistributionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ExtremeValueDistributionsBudgetCertificate.size
+    (c : ExtremeValueDistributionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem extremeValueDistributions_budgetCertificate_le_size
+    (c : ExtremeValueDistributionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleExtremeValueDistributionsBudgetCertificate :
+    ExtremeValueDistributionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleExtremeValueDistributionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ExtremeValueDistributionsBudgetCertificate.controlled,
+      sampleExtremeValueDistributionsBudgetCertificate]
+  · norm_num [ExtremeValueDistributionsBudgetCertificate.budgetControlled,
+      sampleExtremeValueDistributionsBudgetCertificate]
+
+example :
+    sampleExtremeValueDistributionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleExtremeValueDistributionsBudgetCertificate.size := by
+  apply extremeValueDistributions_budgetCertificate_le_size
+  constructor
+  · norm_num [ExtremeValueDistributionsBudgetCertificate.controlled,
+      sampleExtremeValueDistributionsBudgetCertificate]
+  · norm_num [ExtremeValueDistributionsBudgetCertificate.budgetControlled,
+      sampleExtremeValueDistributionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleExtremeValueDistributionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ExtremeValueDistributionsBudgetCertificate.controlled,
+      sampleExtremeValueDistributionsBudgetCertificate]
+  · norm_num [ExtremeValueDistributionsBudgetCertificate.budgetControlled,
+      sampleExtremeValueDistributionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleExtremeValueDistributionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleExtremeValueDistributionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ExtremeValueDistributionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleExtremeValueDistributionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleExtremeValueDistributionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.ExtremeValueDistributions

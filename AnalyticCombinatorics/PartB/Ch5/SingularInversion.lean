@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace SingularInversion
+namespace AnalyticCombinatorics.PartB.Ch5.SingularInversion
+
 
 /-!
 # Singular Inversion and Implicit Function Asymptotics
@@ -184,4 +185,86 @@ theorem power_sum_s4_checks :
       powerSumPartial 4 12 < (11 : ℚ) / 10 := by
   native_decide
 
-end SingularInversion
+
+
+structure SingularInversionBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SingularInversionBudgetCertificate.controlled
+    (c : SingularInversionBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SingularInversionBudgetCertificate.budgetControlled
+    (c : SingularInversionBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SingularInversionBudgetCertificate.Ready
+    (c : SingularInversionBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SingularInversionBudgetCertificate.size
+    (c : SingularInversionBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem singularInversion_budgetCertificate_le_size
+    (c : SingularInversionBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSingularInversionBudgetCertificate :
+    SingularInversionBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSingularInversionBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SingularInversionBudgetCertificate.controlled,
+      sampleSingularInversionBudgetCertificate]
+  · norm_num [SingularInversionBudgetCertificate.budgetControlled,
+      sampleSingularInversionBudgetCertificate]
+
+example :
+    sampleSingularInversionBudgetCertificate.certificateBudgetWindow ≤
+      sampleSingularInversionBudgetCertificate.size := by
+  apply singularInversion_budgetCertificate_le_size
+  constructor
+  · norm_num [SingularInversionBudgetCertificate.controlled,
+      sampleSingularInversionBudgetCertificate]
+  · norm_num [SingularInversionBudgetCertificate.budgetControlled,
+      sampleSingularInversionBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSingularInversionBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SingularInversionBudgetCertificate.controlled,
+      sampleSingularInversionBudgetCertificate]
+  · norm_num [SingularInversionBudgetCertificate.budgetControlled,
+      sampleSingularInversionBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSingularInversionBudgetCertificate.certificateBudgetWindow ≤
+      sampleSingularInversionBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SingularInversionBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSingularInversionBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSingularInversionBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.SingularInversion

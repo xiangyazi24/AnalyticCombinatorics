@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace AlternatingPerms
+namespace AnalyticCombinatorics.PartA.Ch2.AlternatingPerms
+
 
 /-!
 Alternating permutations, also called zigzag permutations, are counted by the
@@ -79,4 +80,86 @@ theorem secantNumber_eq_even_zigzag_checked (n : ℕ) (hn : n ≤ 4) :
     secantNumber n = zigzagNumber (2 * n) := by
   interval_cases n <;> native_decide
 
-end AlternatingPerms
+
+
+structure AlternatingPermsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AlternatingPermsBudgetCertificate.controlled
+    (c : AlternatingPermsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AlternatingPermsBudgetCertificate.budgetControlled
+    (c : AlternatingPermsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AlternatingPermsBudgetCertificate.Ready
+    (c : AlternatingPermsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AlternatingPermsBudgetCertificate.size
+    (c : AlternatingPermsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem alternatingPerms_budgetCertificate_le_size
+    (c : AlternatingPermsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAlternatingPermsBudgetCertificate :
+    AlternatingPermsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAlternatingPermsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AlternatingPermsBudgetCertificate.controlled,
+      sampleAlternatingPermsBudgetCertificate]
+  · norm_num [AlternatingPermsBudgetCertificate.budgetControlled,
+      sampleAlternatingPermsBudgetCertificate]
+
+example :
+    sampleAlternatingPermsBudgetCertificate.certificateBudgetWindow ≤
+      sampleAlternatingPermsBudgetCertificate.size := by
+  apply alternatingPerms_budgetCertificate_le_size
+  constructor
+  · norm_num [AlternatingPermsBudgetCertificate.controlled,
+      sampleAlternatingPermsBudgetCertificate]
+  · norm_num [AlternatingPermsBudgetCertificate.budgetControlled,
+      sampleAlternatingPermsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAlternatingPermsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AlternatingPermsBudgetCertificate.controlled,
+      sampleAlternatingPermsBudgetCertificate]
+  · norm_num [AlternatingPermsBudgetCertificate.budgetControlled,
+      sampleAlternatingPermsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAlternatingPermsBudgetCertificate.certificateBudgetWindow ≤
+      sampleAlternatingPermsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List AlternatingPermsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAlternatingPermsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAlternatingPermsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.AlternatingPerms

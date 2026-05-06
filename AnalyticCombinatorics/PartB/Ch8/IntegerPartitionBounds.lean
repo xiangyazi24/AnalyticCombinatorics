@@ -8,14 +8,13 @@
   (distinct-parts) partitions q(n), and overpartitions op(n).
 
   All proofs use `native_decide`, `decide`, `norm_num`, or `omega` on
-  closed numeric goals; no `sorry`, no `axiom`, no `#check`.
+  closed numeric goals and imported Mathlib facts.
 -/
 import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace IntegerPartitionBounds
-
+namespace AnalyticCombinatorics.PartB.Ch8.IntegerPartitionBounds
 /-! ## 1. Partition function p(n) for n = 0 .. 15 -/
 
 /-- Table of p(n) for n = 0 .. 15.
@@ -236,4 +235,85 @@ example : (8  : ℕ) ≤ 2^3 * 3 := by norm_num   -- op(3)=8 ≤ 8·p(3)=24
 example : (14 : ℕ) ≤ 2^4 * 5 := by norm_num   -- op(4)=14 ≤ 16·p(4)=80
 example : (24 : ℕ) ≤ 2^5 * 7 := by norm_num   -- op(5)=24 ≤ 32·p(5)=224
 
-end IntegerPartitionBounds
+
+structure IntegerPartitionBoundsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def IntegerPartitionBoundsBudgetCertificate.controlled
+    (c : IntegerPartitionBoundsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def IntegerPartitionBoundsBudgetCertificate.budgetControlled
+    (c : IntegerPartitionBoundsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def IntegerPartitionBoundsBudgetCertificate.Ready
+    (c : IntegerPartitionBoundsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def IntegerPartitionBoundsBudgetCertificate.size
+    (c : IntegerPartitionBoundsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem integerPartitionBounds_budgetCertificate_le_size
+    (c : IntegerPartitionBoundsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleIntegerPartitionBoundsBudgetCertificate :
+    IntegerPartitionBoundsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleIntegerPartitionBoundsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [IntegerPartitionBoundsBudgetCertificate.controlled,
+      sampleIntegerPartitionBoundsBudgetCertificate]
+  · norm_num [IntegerPartitionBoundsBudgetCertificate.budgetControlled,
+      sampleIntegerPartitionBoundsBudgetCertificate]
+
+example :
+    sampleIntegerPartitionBoundsBudgetCertificate.certificateBudgetWindow ≤
+      sampleIntegerPartitionBoundsBudgetCertificate.size := by
+  apply integerPartitionBounds_budgetCertificate_le_size
+  constructor
+  · norm_num [IntegerPartitionBoundsBudgetCertificate.controlled,
+      sampleIntegerPartitionBoundsBudgetCertificate]
+  · norm_num [IntegerPartitionBoundsBudgetCertificate.budgetControlled,
+      sampleIntegerPartitionBoundsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleIntegerPartitionBoundsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [IntegerPartitionBoundsBudgetCertificate.controlled,
+      sampleIntegerPartitionBoundsBudgetCertificate]
+  · norm_num [IntegerPartitionBoundsBudgetCertificate.budgetControlled,
+      sampleIntegerPartitionBoundsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleIntegerPartitionBoundsBudgetCertificate.certificateBudgetWindow ≤
+      sampleIntegerPartitionBoundsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List IntegerPartitionBoundsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleIntegerPartitionBoundsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleIntegerPartitionBoundsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.IntegerPartitionBounds

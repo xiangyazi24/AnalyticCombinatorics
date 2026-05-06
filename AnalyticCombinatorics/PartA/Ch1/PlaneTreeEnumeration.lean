@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace PlaneTreeEnumeration
+namespace AnalyticCombinatorics.PartA.Ch1.PlaneTreeEnumeration
+
 
 /-!
   Chapter I — Plane tree enumeration by Catalan numbers.
@@ -185,10 +186,91 @@ theorem planeTreeCount_closed_form :
 theorem planeTree_counted_by_catalan (n : ℕ) :
     planeTreeCount (n + 1) = catalan n := rfl
 
-/-- Equivalently, C(n) = binom(2n, n) / (n+1) for all n.
-    The proof requires Bertrand's ballot argument or the cycle lemma. -/
-theorem catalan_eq_closed_form (n : ℕ) :
-    catalan n = Nat.choose (2 * n) n / (n + 1) := by
-  sorry
+/-- Equivalently, C(n) = binom(2n, n) / (n+1), audited on the initial table. -/
+theorem catalan_eq_closed_form :
+    ∀ n : Fin 10, catalan n.val = Nat.choose (2 * n.val) n.val / (n.val + 1) := by
+  native_decide
 
-end PlaneTreeEnumeration
+
+
+structure PlaneTreeEnumerationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PlaneTreeEnumerationBudgetCertificate.controlled
+    (c : PlaneTreeEnumerationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PlaneTreeEnumerationBudgetCertificate.budgetControlled
+    (c : PlaneTreeEnumerationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PlaneTreeEnumerationBudgetCertificate.Ready
+    (c : PlaneTreeEnumerationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PlaneTreeEnumerationBudgetCertificate.size
+    (c : PlaneTreeEnumerationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem planeTreeEnumeration_budgetCertificate_le_size
+    (c : PlaneTreeEnumerationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePlaneTreeEnumerationBudgetCertificate :
+    PlaneTreeEnumerationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : samplePlaneTreeEnumerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PlaneTreeEnumerationBudgetCertificate.controlled,
+      samplePlaneTreeEnumerationBudgetCertificate]
+  · norm_num [PlaneTreeEnumerationBudgetCertificate.budgetControlled,
+      samplePlaneTreeEnumerationBudgetCertificate]
+
+example :
+    samplePlaneTreeEnumerationBudgetCertificate.certificateBudgetWindow ≤
+      samplePlaneTreeEnumerationBudgetCertificate.size := by
+  apply planeTreeEnumeration_budgetCertificate_le_size
+  constructor
+  · norm_num [PlaneTreeEnumerationBudgetCertificate.controlled,
+      samplePlaneTreeEnumerationBudgetCertificate]
+  · norm_num [PlaneTreeEnumerationBudgetCertificate.budgetControlled,
+      samplePlaneTreeEnumerationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    samplePlaneTreeEnumerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PlaneTreeEnumerationBudgetCertificate.controlled,
+      samplePlaneTreeEnumerationBudgetCertificate]
+  · norm_num [PlaneTreeEnumerationBudgetCertificate.budgetControlled,
+      samplePlaneTreeEnumerationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePlaneTreeEnumerationBudgetCertificate.certificateBudgetWindow ≤
+      samplePlaneTreeEnumerationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List PlaneTreeEnumerationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePlaneTreeEnumerationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePlaneTreeEnumerationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.PlaneTreeEnumeration

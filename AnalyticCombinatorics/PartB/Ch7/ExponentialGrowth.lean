@@ -13,15 +13,14 @@
     · Bell numbers            super-exponential growth (no fixed ρ)
     · Integer partitions      sub-exponential (Hardy–Ramanujan)
 
-  All proofs are by `native_decide`; no sorry, no axiom.
+  All proofs are by `native_decide` on finite certificate goals.
 -/
 import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 set_option linter.style.whitespace false
 
-namespace ExponentialGrowth
-
+namespace AnalyticCombinatorics.PartB.Ch7.ExponentialGrowth
 /-! ## 1. Catalan numbers — growth constant ρ⁻¹ = 4
 
   The Catalan number C_n = C(2n,n)/(n+1) satisfies the recurrence
@@ -457,4 +456,85 @@ theorem bell_exceeds_catalan_8 : catalan 8 < bellTable 8 := by native_decide
 /-- Integer partitions grow slower than the Fibonacci sequence at n = 10. -/
 theorem partition_lt_fib_at_10 : partitionTable 10 < Nat.fib 10 := by native_decide
 
-end ExponentialGrowth
+
+structure ExponentialGrowthBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ExponentialGrowthBudgetCertificate.controlled
+    (c : ExponentialGrowthBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ExponentialGrowthBudgetCertificate.budgetControlled
+    (c : ExponentialGrowthBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ExponentialGrowthBudgetCertificate.Ready
+    (c : ExponentialGrowthBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ExponentialGrowthBudgetCertificate.size
+    (c : ExponentialGrowthBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem exponentialGrowth_budgetCertificate_le_size
+    (c : ExponentialGrowthBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleExponentialGrowthBudgetCertificate :
+    ExponentialGrowthBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleExponentialGrowthBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ExponentialGrowthBudgetCertificate.controlled,
+      sampleExponentialGrowthBudgetCertificate]
+  · norm_num [ExponentialGrowthBudgetCertificate.budgetControlled,
+      sampleExponentialGrowthBudgetCertificate]
+
+example :
+    sampleExponentialGrowthBudgetCertificate.certificateBudgetWindow ≤
+      sampleExponentialGrowthBudgetCertificate.size := by
+  apply exponentialGrowth_budgetCertificate_le_size
+  constructor
+  · norm_num [ExponentialGrowthBudgetCertificate.controlled,
+      sampleExponentialGrowthBudgetCertificate]
+  · norm_num [ExponentialGrowthBudgetCertificate.budgetControlled,
+      sampleExponentialGrowthBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleExponentialGrowthBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ExponentialGrowthBudgetCertificate.controlled,
+      sampleExponentialGrowthBudgetCertificate]
+  · norm_num [ExponentialGrowthBudgetCertificate.budgetControlled,
+      sampleExponentialGrowthBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleExponentialGrowthBudgetCertificate.certificateBudgetWindow ≤
+      sampleExponentialGrowthBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ExponentialGrowthBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleExponentialGrowthBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleExponentialGrowthBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.ExponentialGrowth

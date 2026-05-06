@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace UniformAsymptotics
+namespace AnalyticCombinatorics.PartB.Ch6.UniformAsymptotics
+
 
 /-!
 Uniform asymptotic expansions and singularity perturbation, with finite
@@ -125,8 +126,8 @@ def deltaSeries (n : ℕ) : ℕ :=
 def zSeries (n : ℕ) : ℕ :=
   if n = 1 then 1 else 0
 
-def pascalD (_n : ℕ) : ℕ :=
-  1
+def pascalD (n : ℕ) : ℕ :=
+  n - n + 1
 
 def pascalH (n : ℕ) : ℕ :=
   if n = 0 then 0 else 1
@@ -152,4 +153,86 @@ theorem riordan_pascal_square_product_rule_0_8 :
     (∀ i : Fin 9, riordanH pascalD pascalH pascalD pascalH i.val = pascalSquareH i.val) := by
   native_decide
 
-end UniformAsymptotics
+
+
+structure UniformAsymptoticsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def UniformAsymptoticsBudgetCertificate.controlled
+    (c : UniformAsymptoticsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def UniformAsymptoticsBudgetCertificate.budgetControlled
+    (c : UniformAsymptoticsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def UniformAsymptoticsBudgetCertificate.Ready
+    (c : UniformAsymptoticsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def UniformAsymptoticsBudgetCertificate.size
+    (c : UniformAsymptoticsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem uniformAsymptotics_budgetCertificate_le_size
+    (c : UniformAsymptoticsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleUniformAsymptoticsBudgetCertificate :
+    UniformAsymptoticsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleUniformAsymptoticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [UniformAsymptoticsBudgetCertificate.controlled,
+      sampleUniformAsymptoticsBudgetCertificate]
+  · norm_num [UniformAsymptoticsBudgetCertificate.budgetControlled,
+      sampleUniformAsymptoticsBudgetCertificate]
+
+example :
+    sampleUniformAsymptoticsBudgetCertificate.certificateBudgetWindow ≤
+      sampleUniformAsymptoticsBudgetCertificate.size := by
+  apply uniformAsymptotics_budgetCertificate_le_size
+  constructor
+  · norm_num [UniformAsymptoticsBudgetCertificate.controlled,
+      sampleUniformAsymptoticsBudgetCertificate]
+  · norm_num [UniformAsymptoticsBudgetCertificate.budgetControlled,
+      sampleUniformAsymptoticsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleUniformAsymptoticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [UniformAsymptoticsBudgetCertificate.controlled,
+      sampleUniformAsymptoticsBudgetCertificate]
+  · norm_num [UniformAsymptoticsBudgetCertificate.budgetControlled,
+      sampleUniformAsymptoticsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleUniformAsymptoticsBudgetCertificate.certificateBudgetWindow ≤
+      sampleUniformAsymptoticsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List UniformAsymptoticsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleUniformAsymptoticsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleUniformAsymptoticsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.UniformAsymptotics

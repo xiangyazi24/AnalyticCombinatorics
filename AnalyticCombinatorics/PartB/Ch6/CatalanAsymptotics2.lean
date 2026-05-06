@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace CatalanAsymptotics2
+namespace AnalyticCombinatorics.PartB.Ch6.CatalanAsymptotics2
+
 
 def catalan : Fin 13 → ℕ :=
   ![1, 1, 2, 5, 14, 42, 132, 429, 1430, 4862, 16796, 58786, 208012]
@@ -85,4 +86,86 @@ theorem ballot_relation :
         centralBinomial ⟨n.val + 1, by omega⟩ := by
   native_decide
 
-end CatalanAsymptotics2
+
+
+structure CatalanAsymptotics2BudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CatalanAsymptotics2BudgetCertificate.controlled
+    (c : CatalanAsymptotics2BudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CatalanAsymptotics2BudgetCertificate.budgetControlled
+    (c : CatalanAsymptotics2BudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CatalanAsymptotics2BudgetCertificate.Ready
+    (c : CatalanAsymptotics2BudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CatalanAsymptotics2BudgetCertificate.size
+    (c : CatalanAsymptotics2BudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem catalanAsymptotics2_budgetCertificate_le_size
+    (c : CatalanAsymptotics2BudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCatalanAsymptotics2BudgetCertificate :
+    CatalanAsymptotics2BudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleCatalanAsymptotics2BudgetCertificate.Ready := by
+  constructor
+  · norm_num [CatalanAsymptotics2BudgetCertificate.controlled,
+      sampleCatalanAsymptotics2BudgetCertificate]
+  · norm_num [CatalanAsymptotics2BudgetCertificate.budgetControlled,
+      sampleCatalanAsymptotics2BudgetCertificate]
+
+example :
+    sampleCatalanAsymptotics2BudgetCertificate.certificateBudgetWindow ≤
+      sampleCatalanAsymptotics2BudgetCertificate.size := by
+  apply catalanAsymptotics2_budgetCertificate_le_size
+  constructor
+  · norm_num [CatalanAsymptotics2BudgetCertificate.controlled,
+      sampleCatalanAsymptotics2BudgetCertificate]
+  · norm_num [CatalanAsymptotics2BudgetCertificate.budgetControlled,
+      sampleCatalanAsymptotics2BudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleCatalanAsymptotics2BudgetCertificate.Ready := by
+  constructor
+  · norm_num [CatalanAsymptotics2BudgetCertificate.controlled,
+      sampleCatalanAsymptotics2BudgetCertificate]
+  · norm_num [CatalanAsymptotics2BudgetCertificate.budgetControlled,
+      sampleCatalanAsymptotics2BudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCatalanAsymptotics2BudgetCertificate.certificateBudgetWindow ≤
+      sampleCatalanAsymptotics2BudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List CatalanAsymptotics2BudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCatalanAsymptotics2BudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCatalanAsymptotics2BudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.CatalanAsymptotics2

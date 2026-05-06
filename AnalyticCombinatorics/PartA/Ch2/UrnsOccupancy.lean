@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace UrnsOccupancy
+namespace AnalyticCombinatorics.PartA.Ch2.UrnsOccupancy
+
 
 /-- Total number of arrangements of `n` distinguishable balls into `m` distinguishable urns. -/
 def occupancyTotal (m n : ℕ) : ℕ := m ^ n
@@ -54,4 +55,86 @@ theorem emptyDenom_4_3 : expectedEmptyDenom 4 3 = 64 := by native_decide
 theorem emptyNumer_10_5 : expectedEmptyNumer 10 5 = 590490 := by native_decide
 theorem emptyDenom_10_5 : expectedEmptyDenom 10 5 = 100000 := by native_decide
 
-end UrnsOccupancy
+
+
+structure UrnsOccupancyBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def UrnsOccupancyBudgetCertificate.controlled
+    (c : UrnsOccupancyBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def UrnsOccupancyBudgetCertificate.budgetControlled
+    (c : UrnsOccupancyBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def UrnsOccupancyBudgetCertificate.Ready
+    (c : UrnsOccupancyBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def UrnsOccupancyBudgetCertificate.size
+    (c : UrnsOccupancyBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem urnsOccupancy_budgetCertificate_le_size
+    (c : UrnsOccupancyBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleUrnsOccupancyBudgetCertificate :
+    UrnsOccupancyBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleUrnsOccupancyBudgetCertificate.Ready := by
+  constructor
+  · norm_num [UrnsOccupancyBudgetCertificate.controlled,
+      sampleUrnsOccupancyBudgetCertificate]
+  · norm_num [UrnsOccupancyBudgetCertificate.budgetControlled,
+      sampleUrnsOccupancyBudgetCertificate]
+
+example :
+    sampleUrnsOccupancyBudgetCertificate.certificateBudgetWindow ≤
+      sampleUrnsOccupancyBudgetCertificate.size := by
+  apply urnsOccupancy_budgetCertificate_le_size
+  constructor
+  · norm_num [UrnsOccupancyBudgetCertificate.controlled,
+      sampleUrnsOccupancyBudgetCertificate]
+  · norm_num [UrnsOccupancyBudgetCertificate.budgetControlled,
+      sampleUrnsOccupancyBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleUrnsOccupancyBudgetCertificate.Ready := by
+  constructor
+  · norm_num [UrnsOccupancyBudgetCertificate.controlled,
+      sampleUrnsOccupancyBudgetCertificate]
+  · norm_num [UrnsOccupancyBudgetCertificate.budgetControlled,
+      sampleUrnsOccupancyBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleUrnsOccupancyBudgetCertificate.certificateBudgetWindow ≤
+      sampleUrnsOccupancyBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List UrnsOccupancyBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleUrnsOccupancyBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleUrnsOccupancyBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.UrnsOccupancy

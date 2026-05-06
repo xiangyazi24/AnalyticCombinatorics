@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace PhaseTransitions
+namespace AnalyticCombinatorics.PartB.Ch9.PhaseTransitions
+
 
 /-!
 # Phase Transitions in Random Graphs (Erdős–Rényi Theory)
@@ -153,7 +154,7 @@ example : ∀ n : Fin 10, 2 ≤ (n : ℕ) → cayleyTrees n < totalGraphs n := b
 --    At p = c/n with c > 1, a giant component of size ~ β·n emerges
 --    where β satisfies the fixed-point equation β = 1 - exp(-c·β).
 --    For c = 2: β ≈ 0.7968...
---    We verify an integer-arithmetic proxy: the equation 5*β ≈ 4 for β ≈ 4/5.
+--    We verify an integer-arithmetic check: the equation 5*β ≈ 4 for β ≈ 4/5.
 --    More precisely, 1 - e^{-1.6} ≈ 0.7981, so 5*(1 - e^{-1.6}) ≈ 3.99.
 --    In combinatorics, this manifests as: expected giant ≈ 4n/5 for c=2.
 --
@@ -186,4 +187,96 @@ example : 0 < cayleyTrees 1  := by native_decide
 example : 0 < totalGraphs 1  := by native_decide
 example : 0 < rootedTrees 1  := by native_decide
 
-end PhaseTransitions
+/-- Phase-transition hierarchy sample at five vertices. -/
+theorem cayley_lt_unicyclic_five :
+    cayleyTrees 5 < unicyclicTable ⟨5, by omega⟩ := by
+  native_decide
+
+/-- Expected edge count at the `c = 2` threshold sample. -/
+theorem threshold_edges_twenty :
+    Nat.choose 20 2 * 2 / 20 = 19 := by
+  native_decide
+
+
+
+structure PhaseTransitionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PhaseTransitionsBudgetCertificate.controlled
+    (c : PhaseTransitionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PhaseTransitionsBudgetCertificate.budgetControlled
+    (c : PhaseTransitionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PhaseTransitionsBudgetCertificate.Ready
+    (c : PhaseTransitionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PhaseTransitionsBudgetCertificate.size
+    (c : PhaseTransitionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem phaseTransitions_budgetCertificate_le_size
+    (c : PhaseTransitionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePhaseTransitionsBudgetCertificate :
+    PhaseTransitionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    samplePhaseTransitionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PhaseTransitionsBudgetCertificate.controlled,
+      samplePhaseTransitionsBudgetCertificate]
+  · norm_num [PhaseTransitionsBudgetCertificate.budgetControlled,
+      samplePhaseTransitionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePhaseTransitionsBudgetCertificate.certificateBudgetWindow ≤
+      samplePhaseTransitionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : samplePhaseTransitionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PhaseTransitionsBudgetCertificate.controlled,
+      samplePhaseTransitionsBudgetCertificate]
+  · norm_num [PhaseTransitionsBudgetCertificate.budgetControlled,
+      samplePhaseTransitionsBudgetCertificate]
+
+example :
+    samplePhaseTransitionsBudgetCertificate.certificateBudgetWindow ≤
+      samplePhaseTransitionsBudgetCertificate.size := by
+  apply phaseTransitions_budgetCertificate_le_size
+  constructor
+  · norm_num [PhaseTransitionsBudgetCertificate.controlled,
+      samplePhaseTransitionsBudgetCertificate]
+  · norm_num [PhaseTransitionsBudgetCertificate.budgetControlled,
+      samplePhaseTransitionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List PhaseTransitionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePhaseTransitionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePhaseTransitionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.PhaseTransitions

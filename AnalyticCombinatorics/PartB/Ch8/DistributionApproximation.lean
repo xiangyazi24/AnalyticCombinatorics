@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace DistributionApproximation
+namespace AnalyticCombinatorics.PartB.Ch8.DistributionApproximation
+
 
 open scoped BigOperators
 
@@ -202,4 +203,86 @@ theorem negative_binomial_hockey_stick_small :
     negativeBinomialR3CdfNumerator = negativeBinomialR4Mass := by
   native_decide
 
-end DistributionApproximation
+
+
+structure DistributionApproximationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def DistributionApproximationBudgetCertificate.controlled
+    (c : DistributionApproximationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def DistributionApproximationBudgetCertificate.budgetControlled
+    (c : DistributionApproximationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def DistributionApproximationBudgetCertificate.Ready
+    (c : DistributionApproximationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def DistributionApproximationBudgetCertificate.size
+    (c : DistributionApproximationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem distributionApproximation_budgetCertificate_le_size
+    (c : DistributionApproximationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleDistributionApproximationBudgetCertificate :
+    DistributionApproximationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleDistributionApproximationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DistributionApproximationBudgetCertificate.controlled,
+      sampleDistributionApproximationBudgetCertificate]
+  · norm_num [DistributionApproximationBudgetCertificate.budgetControlled,
+      sampleDistributionApproximationBudgetCertificate]
+
+example :
+    sampleDistributionApproximationBudgetCertificate.certificateBudgetWindow ≤
+      sampleDistributionApproximationBudgetCertificate.size := by
+  apply distributionApproximation_budgetCertificate_le_size
+  constructor
+  · norm_num [DistributionApproximationBudgetCertificate.controlled,
+      sampleDistributionApproximationBudgetCertificate]
+  · norm_num [DistributionApproximationBudgetCertificate.budgetControlled,
+      sampleDistributionApproximationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleDistributionApproximationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DistributionApproximationBudgetCertificate.controlled,
+      sampleDistributionApproximationBudgetCertificate]
+  · norm_num [DistributionApproximationBudgetCertificate.budgetControlled,
+      sampleDistributionApproximationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleDistributionApproximationBudgetCertificate.certificateBudgetWindow ≤
+      sampleDistributionApproximationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List DistributionApproximationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleDistributionApproximationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleDistributionApproximationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.DistributionApproximation

@@ -9,8 +9,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace AnalyticContinuation
-
+namespace AnalyticCombinatorics.PartB.Ch4.AnalyticContinuation
 /-! ## 1. Coefficient from partial fractions
 
   [z^n] 1/((1-2z)(1-3z)) = 3^{n+1} - 2^{n+1}
@@ -102,4 +101,85 @@ theorem expPoly_rec_6 : expPolyRecCheck 6 = true := by native_decide
 theorem expPoly_rec_7 : expPolyRecCheck 7 = true := by native_decide
 theorem expPoly_rec_8 : expPolyRecCheck 8 = true := by native_decide
 
-end AnalyticContinuation
+
+structure AnalyticContinuationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AnalyticContinuationBudgetCertificate.controlled
+    (c : AnalyticContinuationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AnalyticContinuationBudgetCertificate.budgetControlled
+    (c : AnalyticContinuationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AnalyticContinuationBudgetCertificate.Ready
+    (c : AnalyticContinuationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AnalyticContinuationBudgetCertificate.size
+    (c : AnalyticContinuationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem analyticContinuation_budgetCertificate_le_size
+    (c : AnalyticContinuationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAnalyticContinuationBudgetCertificate :
+    AnalyticContinuationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAnalyticContinuationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AnalyticContinuationBudgetCertificate.controlled,
+      sampleAnalyticContinuationBudgetCertificate]
+  · norm_num [AnalyticContinuationBudgetCertificate.budgetControlled,
+      sampleAnalyticContinuationBudgetCertificate]
+
+example :
+    sampleAnalyticContinuationBudgetCertificate.certificateBudgetWindow ≤
+      sampleAnalyticContinuationBudgetCertificate.size := by
+  apply analyticContinuation_budgetCertificate_le_size
+  constructor
+  · norm_num [AnalyticContinuationBudgetCertificate.controlled,
+      sampleAnalyticContinuationBudgetCertificate]
+  · norm_num [AnalyticContinuationBudgetCertificate.budgetControlled,
+      sampleAnalyticContinuationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAnalyticContinuationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AnalyticContinuationBudgetCertificate.controlled,
+      sampleAnalyticContinuationBudgetCertificate]
+  · norm_num [AnalyticContinuationBudgetCertificate.budgetControlled,
+      sampleAnalyticContinuationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAnalyticContinuationBudgetCertificate.certificateBudgetWindow ≤
+      sampleAnalyticContinuationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List AnalyticContinuationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAnalyticContinuationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAnalyticContinuationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.AnalyticContinuation

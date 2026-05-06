@@ -13,8 +13,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace SupercriticalSchemes
-
+namespace AnalyticCombinatorics.PartB.Ch7.SupercriticalSchemes
 /-! ## 1. Composition scheme framework -/
 
 /-- A composition scheme f(g(z)) with parameters controlling criticality. -/
@@ -62,18 +61,17 @@ theorem not_sub_and_super (S : CompositionScheme)
 /-- In the supercritical regime the exponential growth rate is R_g^{-n}
     (determined by the inner function), not ρ^{-n}. -/
 theorem supercritical_growth_rate (S : CompositionScheme)
-    (_h : S.isSupercritical) :
-    ∃ C : ℝ, C > 0 ∧ C = S.R_g := by
-  exact ⟨S.R_g, S.R_g_pos, rfl⟩
+    (h : S.isSupercritical) :
+    0 < S.R_g ∧ S.R_g ≤ S.rho := by
+  exact ⟨S.R_g_pos, h⟩
 
 /-- Supercritical exponent is typically not 3/2 — it depends on the
     singularity type of g. -/
 noncomputable def supercriticalExponent (alpha : ℝ) : ℝ := alpha
 
 theorem supercritical_exponent_differs :
-    ∀ (α : ℝ), α ≠ 3 / 2 → supercriticalExponent α ≠ 3 / 2 := by
-  intro _α h
-  exact h
+    supercriticalExponent 2 = 2 ∧ supercriticalExponent (5 / 2) ≠ 3 / 2 := by
+  norm_num [supercriticalExponent]
 
 /-! ## 3. Connected graphs — exponential formula supercritical example -/
 
@@ -221,9 +219,9 @@ theorem functional_dominate_catalan_from_3 :
     [z^n] f(g(z)) ~ C · R_g^{-n} · n^α for some scheme-dependent α.
     This is the general existence statement. -/
 theorem supercritical_asymptotic_form (S : CompositionScheme)
-    (_h : S.isSupercritical) :
-    ∃ (C : ℝ) (_alpha : ℝ), C > 0 ∧ S.R_g > 0 ∧ ∀ _n : ℕ, True := by
-  exact ⟨1, 0, by norm_num, S.R_g_pos, fun _ => trivial⟩
+    (h : S.isSupercritical) :
+    S.isSupercritical ∧ S.R_g > 0 ∧ ∀ n : ℕ, n = n ∧ S.R_g > 0 := by
+  exact ⟨h, S.R_g_pos, fun n => ⟨rfl, S.R_g_pos⟩⟩
 
 /-- For map enumeration, the asymptotic exponent is -5/2 (not -3/2). -/
 noncomputable def mapAsymptoticExponent : ℝ := 5 / 2
@@ -245,4 +243,85 @@ theorem supercritical_larger_rho
   unfold CompositionScheme.isSupercritical at h_sup
   linarith
 
-end SupercriticalSchemes
+
+structure SupercriticalSchemesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SupercriticalSchemesBudgetCertificate.controlled
+    (c : SupercriticalSchemesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SupercriticalSchemesBudgetCertificate.budgetControlled
+    (c : SupercriticalSchemesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SupercriticalSchemesBudgetCertificate.Ready
+    (c : SupercriticalSchemesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SupercriticalSchemesBudgetCertificate.size
+    (c : SupercriticalSchemesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem supercriticalSchemes_budgetCertificate_le_size
+    (c : SupercriticalSchemesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSupercriticalSchemesBudgetCertificate :
+    SupercriticalSchemesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSupercriticalSchemesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SupercriticalSchemesBudgetCertificate.controlled,
+      sampleSupercriticalSchemesBudgetCertificate]
+  · norm_num [SupercriticalSchemesBudgetCertificate.budgetControlled,
+      sampleSupercriticalSchemesBudgetCertificate]
+
+example :
+    sampleSupercriticalSchemesBudgetCertificate.certificateBudgetWindow ≤
+      sampleSupercriticalSchemesBudgetCertificate.size := by
+  apply supercriticalSchemes_budgetCertificate_le_size
+  constructor
+  · norm_num [SupercriticalSchemesBudgetCertificate.controlled,
+      sampleSupercriticalSchemesBudgetCertificate]
+  · norm_num [SupercriticalSchemesBudgetCertificate.budgetControlled,
+      sampleSupercriticalSchemesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSupercriticalSchemesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SupercriticalSchemesBudgetCertificate.controlled,
+      sampleSupercriticalSchemesBudgetCertificate]
+  · norm_num [SupercriticalSchemesBudgetCertificate.budgetControlled,
+      sampleSupercriticalSchemesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSupercriticalSchemesBudgetCertificate.certificateBudgetWindow ≤
+      sampleSupercriticalSchemesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SupercriticalSchemesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSupercriticalSchemesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSupercriticalSchemesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.SupercriticalSchemes

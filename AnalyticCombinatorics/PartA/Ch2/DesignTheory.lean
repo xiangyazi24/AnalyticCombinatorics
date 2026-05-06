@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace DesignTheory
+namespace AnalyticCombinatorics.PartA.Ch2.DesignTheory
+
 
 /-! # Combinatorial Design Theory (Ch II / Appendix)
 
@@ -132,4 +133,102 @@ example : 9 ≤ Nat.choose 5 2 := by native_decide
 /-- R(4,4) = 18 ≤ C(6,3) = 20. -/
 example : 18 ≤ Nat.choose 6 3 := by native_decide
 
-end DesignTheory
+/-- Block count of a `2-(v,k,lambda)` design after integer division. -/
+def bibdBlockCount (v k lambda : ℕ) : ℕ :=
+  lambda * v * (v - 1) / (k * (k - 1))
+
+theorem bibdBlockCount_fano :
+    bibdBlockCount 7 3 1 = 7 := by
+  native_decide
+
+/-- Projective-plane point count for order `q`. -/
+def projectivePlanePointCount (q : ℕ) : ℕ :=
+  q ^ 2 + q + 1
+
+theorem projectivePlanePointCount_four :
+    projectivePlanePointCount 4 = 21 := by
+  native_decide
+
+
+
+structure DesignTheoryBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def DesignTheoryBudgetCertificate.controlled
+    (c : DesignTheoryBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def DesignTheoryBudgetCertificate.budgetControlled
+    (c : DesignTheoryBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def DesignTheoryBudgetCertificate.Ready
+    (c : DesignTheoryBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def DesignTheoryBudgetCertificate.size
+    (c : DesignTheoryBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem designTheory_budgetCertificate_le_size
+    (c : DesignTheoryBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleDesignTheoryBudgetCertificate :
+    DesignTheoryBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleDesignTheoryBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DesignTheoryBudgetCertificate.controlled,
+      sampleDesignTheoryBudgetCertificate]
+  · norm_num [DesignTheoryBudgetCertificate.budgetControlled,
+      sampleDesignTheoryBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleDesignTheoryBudgetCertificate.certificateBudgetWindow ≤
+      sampleDesignTheoryBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleDesignTheoryBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DesignTheoryBudgetCertificate.controlled,
+      sampleDesignTheoryBudgetCertificate]
+  · norm_num [DesignTheoryBudgetCertificate.budgetControlled,
+      sampleDesignTheoryBudgetCertificate]
+
+example :
+    sampleDesignTheoryBudgetCertificate.certificateBudgetWindow ≤
+      sampleDesignTheoryBudgetCertificate.size := by
+  apply designTheory_budgetCertificate_le_size
+  constructor
+  · norm_num [DesignTheoryBudgetCertificate.controlled,
+      sampleDesignTheoryBudgetCertificate]
+  · norm_num [DesignTheoryBudgetCertificate.budgetControlled,
+      sampleDesignTheoryBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List DesignTheoryBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleDesignTheoryBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleDesignTheoryBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.DesignTheory

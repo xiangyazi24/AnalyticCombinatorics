@@ -17,8 +17,7 @@ set_option linter.style.nativeDecide false
 
 open Finset Nat
 
-namespace SetPartitions
-
+namespace AnalyticCombinatorics.PartA.Ch1.SetPartitions
 /-! ## 1. Stirling numbers of the second kind S(n,k) -/
 
 /-- Stirling numbers of the second kind: S(n,k) = number of partitions of [n]
@@ -268,4 +267,85 @@ theorem matchings_6 :
 theorem matchings_8 :
     Nat.factorial (2 * 4) / (2 ^ 4 * Nat.factorial 4) = 105 := by native_decide
 
-end SetPartitions
+
+structure SetPartitionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SetPartitionsBudgetCertificate.controlled
+    (c : SetPartitionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SetPartitionsBudgetCertificate.budgetControlled
+    (c : SetPartitionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SetPartitionsBudgetCertificate.Ready
+    (c : SetPartitionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SetPartitionsBudgetCertificate.size
+    (c : SetPartitionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem setPartitions_budgetCertificate_le_size
+    (c : SetPartitionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSetPartitionsBudgetCertificate :
+    SetPartitionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSetPartitionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SetPartitionsBudgetCertificate.controlled,
+      sampleSetPartitionsBudgetCertificate]
+  · norm_num [SetPartitionsBudgetCertificate.budgetControlled,
+      sampleSetPartitionsBudgetCertificate]
+
+example :
+    sampleSetPartitionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleSetPartitionsBudgetCertificate.size := by
+  apply setPartitions_budgetCertificate_le_size
+  constructor
+  · norm_num [SetPartitionsBudgetCertificate.controlled,
+      sampleSetPartitionsBudgetCertificate]
+  · norm_num [SetPartitionsBudgetCertificate.budgetControlled,
+      sampleSetPartitionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSetPartitionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SetPartitionsBudgetCertificate.controlled,
+      sampleSetPartitionsBudgetCertificate]
+  · norm_num [SetPartitionsBudgetCertificate.budgetControlled,
+      sampleSetPartitionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSetPartitionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleSetPartitionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SetPartitionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSetPartitionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSetPartitionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.SetPartitions

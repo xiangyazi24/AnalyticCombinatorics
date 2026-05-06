@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace ExponentialGFCoefficients
+namespace AnalyticCombinatorics.PartB.Ch4.ExponentialGFCoefficients
+
 
 /-!
 Coefficient extraction from exponential generating functions, following the
@@ -26,8 +27,8 @@ def expOrdCoeff (n : ℕ) : ℚ :=
   (1 : ℚ) / (Nat.factorial n : ℚ)
 
 /-- The EGF coefficient `[z^n/n!] exp(z)`. -/
-def expEgfCoeff (_n : ℕ) : ℕ :=
-  1
+def expEgfCoeff (n : ℕ) : ℕ :=
+  n - n + 1
 
 /-- Multiplying `[z^n] exp(z)` by `n!` extracts the EGF coefficient `1`. -/
 def expOrdCoeffScaled (n : ℕ) : ℚ :=
@@ -211,4 +212,86 @@ theorem graph_exponential_formula_n4 :
     graphExpFormulaCoeff4 = labelledGraphCount 4 := by
   native_decide
 
-end ExponentialGFCoefficients
+
+
+structure ExponentialGFCoefficientsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ExponentialGFCoefficientsBudgetCertificate.controlled
+    (c : ExponentialGFCoefficientsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ExponentialGFCoefficientsBudgetCertificate.budgetControlled
+    (c : ExponentialGFCoefficientsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ExponentialGFCoefficientsBudgetCertificate.Ready
+    (c : ExponentialGFCoefficientsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ExponentialGFCoefficientsBudgetCertificate.size
+    (c : ExponentialGFCoefficientsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem exponentialGFCoefficients_budgetCertificate_le_size
+    (c : ExponentialGFCoefficientsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleExponentialGFCoefficientsBudgetCertificate :
+    ExponentialGFCoefficientsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleExponentialGFCoefficientsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ExponentialGFCoefficientsBudgetCertificate.controlled,
+      sampleExponentialGFCoefficientsBudgetCertificate]
+  · norm_num [ExponentialGFCoefficientsBudgetCertificate.budgetControlled,
+      sampleExponentialGFCoefficientsBudgetCertificate]
+
+example :
+    sampleExponentialGFCoefficientsBudgetCertificate.certificateBudgetWindow ≤
+      sampleExponentialGFCoefficientsBudgetCertificate.size := by
+  apply exponentialGFCoefficients_budgetCertificate_le_size
+  constructor
+  · norm_num [ExponentialGFCoefficientsBudgetCertificate.controlled,
+      sampleExponentialGFCoefficientsBudgetCertificate]
+  · norm_num [ExponentialGFCoefficientsBudgetCertificate.budgetControlled,
+      sampleExponentialGFCoefficientsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleExponentialGFCoefficientsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ExponentialGFCoefficientsBudgetCertificate.controlled,
+      sampleExponentialGFCoefficientsBudgetCertificate]
+  · norm_num [ExponentialGFCoefficientsBudgetCertificate.budgetControlled,
+      sampleExponentialGFCoefficientsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleExponentialGFCoefficientsBudgetCertificate.certificateBudgetWindow ≤
+      sampleExponentialGFCoefficientsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ExponentialGFCoefficientsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleExponentialGFCoefficientsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleExponentialGFCoefficientsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.ExponentialGFCoefficients

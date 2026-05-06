@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace MatrixMethods
+namespace AnalyticCombinatorics.PartB.Ch4.MatrixMethods
+
 
 /-!
 Chapter IV matrix-method checks.
@@ -214,4 +215,96 @@ example : charPoly2Coeffs recurrence56Companion = ![6, -5, 1] := by native_decid
 example : minPoly23 2 = 0 := by native_decide
 example : minPoly23 3 = 0 := by native_decide
 
-end MatrixMethods
+/-- Cayley-Hamilton check for the first integer matrix sample. -/
+theorem cayleyHamilton2_intMatrixA :
+    cayleyHamilton2 intMatrixA = 0 := by
+  native_decide
+
+/-- Companion matrix characteristic coefficients for the Fibonacci recurrence. -/
+theorem charPoly2Coeffs_fibCompanionInt :
+    charPoly2Coeffs fibCompanionInt = ![-1, -1, 1] := by
+  native_decide
+
+
+
+structure MatrixMethodsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def MatrixMethodsBudgetCertificate.controlled
+    (c : MatrixMethodsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def MatrixMethodsBudgetCertificate.budgetControlled
+    (c : MatrixMethodsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def MatrixMethodsBudgetCertificate.Ready
+    (c : MatrixMethodsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def MatrixMethodsBudgetCertificate.size
+    (c : MatrixMethodsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem matrixMethods_budgetCertificate_le_size
+    (c : MatrixMethodsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleMatrixMethodsBudgetCertificate :
+    MatrixMethodsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleMatrixMethodsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MatrixMethodsBudgetCertificate.controlled,
+      sampleMatrixMethodsBudgetCertificate]
+  · norm_num [MatrixMethodsBudgetCertificate.budgetControlled,
+      sampleMatrixMethodsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleMatrixMethodsBudgetCertificate.certificateBudgetWindow ≤
+      sampleMatrixMethodsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleMatrixMethodsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MatrixMethodsBudgetCertificate.controlled,
+      sampleMatrixMethodsBudgetCertificate]
+  · norm_num [MatrixMethodsBudgetCertificate.budgetControlled,
+      sampleMatrixMethodsBudgetCertificate]
+
+example :
+    sampleMatrixMethodsBudgetCertificate.certificateBudgetWindow ≤
+      sampleMatrixMethodsBudgetCertificate.size := by
+  apply matrixMethods_budgetCertificate_le_size
+  constructor
+  · norm_num [MatrixMethodsBudgetCertificate.controlled,
+      sampleMatrixMethodsBudgetCertificate]
+  · norm_num [MatrixMethodsBudgetCertificate.budgetControlled,
+      sampleMatrixMethodsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List MatrixMethodsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleMatrixMethodsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleMatrixMethodsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.MatrixMethods

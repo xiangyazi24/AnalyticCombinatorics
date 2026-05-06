@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace PowerSeriesComposition
+namespace AnalyticCombinatorics.PartB.Ch7.PowerSeriesComposition
+
 
 open scoped BigOperators
 
@@ -156,4 +157,86 @@ theorem treeFunction_first_terms :
       [1, 1, 3 / 2, 8 / 3, 125 / 24] := by
   native_decide
 
-end PowerSeriesComposition
+
+
+structure PowerSeriesCompositionBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PowerSeriesCompositionBudgetCertificate.controlled
+    (c : PowerSeriesCompositionBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PowerSeriesCompositionBudgetCertificate.budgetControlled
+    (c : PowerSeriesCompositionBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PowerSeriesCompositionBudgetCertificate.Ready
+    (c : PowerSeriesCompositionBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PowerSeriesCompositionBudgetCertificate.size
+    (c : PowerSeriesCompositionBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem powerSeriesComposition_budgetCertificate_le_size
+    (c : PowerSeriesCompositionBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePowerSeriesCompositionBudgetCertificate :
+    PowerSeriesCompositionBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : samplePowerSeriesCompositionBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PowerSeriesCompositionBudgetCertificate.controlled,
+      samplePowerSeriesCompositionBudgetCertificate]
+  · norm_num [PowerSeriesCompositionBudgetCertificate.budgetControlled,
+      samplePowerSeriesCompositionBudgetCertificate]
+
+example :
+    samplePowerSeriesCompositionBudgetCertificate.certificateBudgetWindow ≤
+      samplePowerSeriesCompositionBudgetCertificate.size := by
+  apply powerSeriesComposition_budgetCertificate_le_size
+  constructor
+  · norm_num [PowerSeriesCompositionBudgetCertificate.controlled,
+      samplePowerSeriesCompositionBudgetCertificate]
+  · norm_num [PowerSeriesCompositionBudgetCertificate.budgetControlled,
+      samplePowerSeriesCompositionBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    samplePowerSeriesCompositionBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PowerSeriesCompositionBudgetCertificate.controlled,
+      samplePowerSeriesCompositionBudgetCertificate]
+  · norm_num [PowerSeriesCompositionBudgetCertificate.budgetControlled,
+      samplePowerSeriesCompositionBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePowerSeriesCompositionBudgetCertificate.certificateBudgetWindow ≤
+      samplePowerSeriesCompositionBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List PowerSeriesCompositionBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePowerSeriesCompositionBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePowerSeriesCompositionBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.PowerSeriesComposition

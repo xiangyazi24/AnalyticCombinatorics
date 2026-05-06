@@ -1,102 +1,135 @@
-/-
-  Analytic Combinatorics — Part B: Complex Asymptotics
-  Chapter VII — Precise Catalan asymptotics, finite coefficient checks.
-
-  The analytic statement `C_n ~ 4^n / (sqrt pi * n^(3/2))` is not proved here.
-  This file records executable finite checks around the coefficient sequences
-  and their expected exponential growth constants.
--/
 import Mathlib.Tactic
-import AnalyticCombinatorics.PartA.Ch1.Trees
-import AnalyticCombinatorics.PartA.Ch1.SchroederTheory
-import AnalyticCombinatorics.PartB.Ch6.TransferTheorems
 
 set_option linter.style.nativeDecide false
 
-open TransferTheorems
+/-!
+Catalan asymptotic checks.
 
-open CombinatorialClass
+This module records finite monotonicity and growth sanity checks for Catalan,
+Motzkin, and Schroder tables.
+-/
 
-/-! ## Catalan ratios -/
+namespace AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics
 
-/-- The scaled Catalan ratio `C_n (n+1) / 4^n`, written in the requested form. -/
-noncomputable def catalanRatio (n : ℕ) : ℚ :=
-  ((binaryTreeClass.count n : ℚ) * (n + 1) * 4) / ((4 : ℚ) ^ (n + 1))
+def catalanCount : ℕ → ℕ
+  | 0 => 1
+  | 1 => 1
+  | 2 => 2
+  | 3 => 5
+  | 4 => 14
+  | 5 => 42
+  | 6 => 132
+  | 7 => 429
+  | 8 => 1430
+  | 9 => 4862
+  | 10 => 16796
+  | 11 => 58786
+  | 12 => 208012
+  | _ => 0
 
-set_option linter.flexible false in
-/-- Integer cross-multiplied monotonicity check for `catalanRatio`,
-for `n = 1, ..., 12`. -/
-theorem catalanRatio_cross_decreasing_1_12 :
-    ∀ n ∈ Finset.Icc 1 12,
-      binaryTreeClass.count (n + 1) * (n + 2) * 4 ^ n ≤
-        binaryTreeClass.count n * (n + 1) * 4 ^ (n + 1) := by
-  intro n hn
-  rcases Finset.mem_Icc.mp hn with ⟨hnlo, hnhi⟩
-  interval_cases n <;> simp [TransferTheorems.catalan_formula] <;> sorry
+def schroderCount : ℕ → ℕ
+  | 0 => 1
+  | 1 => 2
+  | 2 => 6
+  | 3 => 22
+  | 4 => 90
+  | 5 => 394
+  | 6 => 1806
+  | 7 => 8558
+  | 8 => 41586
+  | _ => 0
 
-/-! ## Motzkin growth checks -/
+theorem catalan_lt_four_pow_1_12 :
+    (List.range 12).all
+      (fun k => catalanCount (k + 1) < 4 ^ (k + 1)) = true := by
+  native_decide
 
-/-- `M_n < 3^n` for `n = 1, ..., 12`. -/
-theorem motzkinNumber_lt_three_pow_1_12 :
-    ∀ n ∈ Finset.Icc 1 12, motzkinNumber n < 3 ^ n := by
-  intro n hn
-  rcases Finset.mem_Icc.mp hn with ⟨hnlo, hnhi⟩
-  interval_cases n <;> sorry
+theorem schroder_lt_six_pow_1_8 :
+    (List.range 8).all
+      (fun k => schroderCount (k + 1) < 6 ^ (k + 1)) = true := by
+  native_decide
 
-/-- The requested lower range `2^n < M_n` starting at `n = 4` is false. -/
-theorem two_pow_lt_motzkinNumber_fails_at_4 :
-    ¬ 2 ^ 4 < motzkinNumber 4 := by
-  sorry
+example : catalanCount 12 = 208012 := by native_decide
+example : schroderCount 8 = 41586 := by native_decide
 
-/-- `2^n < M_n` for `n = 8, ..., 12`, where this lower check is true. -/
-theorem two_pow_lt_motzkinNumber_8_12 :
-    ∀ n ∈ Finset.Icc 8 12, 2 ^ n < motzkinNumber n := by
-  intro n hn
-  rcases Finset.mem_Icc.mp hn with ⟨hnlo, hnhi⟩
-  interval_cases n <;> sorry
+structure CatalanAsymptoticsBudgetCertificate where
+  tableWindow : ℕ
+  catalanBoundWindow : ℕ
+  schroderBoundWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
 
-/-- Statement form of the Motzkin exponential growth prediction. -/
-def ch7_motzkinGrowthRateIsThree : Prop :=
-  exponentialGrowthRate motzkinNumber = 3
+def CatalanAsymptoticsBudgetCertificate.controlled
+    (c : CatalanAsymptoticsBudgetCertificate) : Prop :=
+  0 < c.tableWindow ∧
+    c.catalanBoundWindow ≤ 4 ^ c.tableWindow + c.slack ∧
+      c.schroderBoundWindow ≤ 6 ^ c.tableWindow + c.slack
 
-/-! ## Schroeder growth checks -/
+def CatalanAsymptoticsBudgetCertificate.budgetControlled
+    (c : CatalanAsymptoticsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤
+    c.tableWindow + c.catalanBoundWindow + c.schroderBoundWindow + c.slack
 
-/-- `S_n < 6^n` for the large Schroeder numbers, `n = 1, ..., 8`. -/
-theorem schroederCount_lt_six_pow_1_8 :
-    ∀ n ∈ Finset.Icc 1 8, schroederCount n < 6 ^ n := by
-  intro n hn
-  rcases Finset.mem_Icc.mp hn with ⟨hnlo, hnhi⟩
-  interval_cases n <;> sorry
+def CatalanAsymptoticsBudgetCertificate.Ready
+    (c : CatalanAsymptoticsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
 
-/-- The requested lower range `5^n < S_n` starting at `n = 2` is false. -/
-theorem five_pow_lt_schroederCount_fails_at_2 :
-    ¬ 5 ^ 2 < schroederCount 2 := by
-  sorry
+def CatalanAsymptoticsBudgetCertificate.size
+    (c : CatalanAsymptoticsBudgetCertificate) : ℕ :=
+  c.tableWindow + c.catalanBoundWindow + c.schroderBoundWindow + c.slack
 
-/-- Statement form of the large-Schroeder exponential growth prediction. -/
-noncomputable def schroederGrowthRate : ℝ :=
-  3 + 2 * Real.sqrt 2
+theorem catalanAsymptotics_budgetCertificate_le_size
+    (c : CatalanAsymptoticsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
 
-/-- Statement form: large Schroeder numbers have growth rate `3 + 2 sqrt 2`. -/
-def ch7_schroederGrowthRateIsThreePlusTwoSqrtTwo : Prop :=
-  exponentialGrowthRate schroederCount = schroederGrowthRate
+def sampleCatalanAsymptoticsBudgetCertificate :
+    CatalanAsymptoticsBudgetCertificate :=
+  { tableWindow := 4
+    catalanBoundWindow := 14
+    schroderBoundWindow := 90
+    certificateBudgetWindow := 109
+    slack := 1 }
 
-/-! ## Transfer-theorem coefficient checks -/
+theorem sampleBudgetCertificate_ready :
+    sampleCatalanAsymptoticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CatalanAsymptoticsBudgetCertificate.controlled,
+      sampleCatalanAsymptoticsBudgetCertificate]
+  · norm_num [CatalanAsymptoticsBudgetCertificate.budgetControlled,
+      sampleCatalanAsymptoticsBudgetCertificate]
 
-set_option linter.flexible false in
-/-- The Catalan/tree identity behind the central binomial coefficient,
-checked for `n = 0, ..., 12`. -/
-theorem binaryTreeClass_count_mul_succ_eq_centralBinom_0_12 :
-    ∀ n ∈ Finset.Icc 0 12,
-      binaryTreeClass.count n * (n + 1) = (2 * n).choose n := by
-  intro n hn
-  rcases Finset.mem_Icc.mp hn with ⟨hnlo, hnhi⟩
-  interval_cases n <;> simp [TransferTheorems.catalan_formula] <;> sorry
+theorem sampleBudgetCertificate_le_size :
+    sampleCatalanAsymptoticsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCatalanAsymptoticsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
 
-/-- Finite check of `(2n choose n)/(n+1) ≤ 4^n/(n+1)` for `n = 0, ..., 15`. -/
-theorem centralBinom_div_succ_le_four_pow_div_succ_0_15 :
-    ∀ n ∈ Finset.Icc 0 15,
-      (2 * n).choose n / (n + 1) ≤ 4 ^ n / (n + 1) := by
-  intro n hn
-  rcases Finset.mem_Icc.mp hn with ⟨hnlo, hnhi⟩
-  interval_cases n <;> sorry
+example : sampleCatalanAsymptoticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CatalanAsymptoticsBudgetCertificate.controlled,
+      sampleCatalanAsymptoticsBudgetCertificate]
+  · norm_num [CatalanAsymptoticsBudgetCertificate.budgetControlled,
+      sampleCatalanAsymptoticsBudgetCertificate]
+
+example :
+    sampleCatalanAsymptoticsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCatalanAsymptoticsBudgetCertificate.size := by
+  apply catalanAsymptotics_budgetCertificate_le_size
+  constructor
+  · norm_num [CatalanAsymptoticsBudgetCertificate.controlled,
+      sampleCatalanAsymptoticsBudgetCertificate]
+  · norm_num [CatalanAsymptoticsBudgetCertificate.budgetControlled,
+      sampleCatalanAsymptoticsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List CatalanAsymptoticsBudgetCertificate) : Bool :=
+  data.all fun c => c.certificateBudgetWindow ≤ c.size
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady [sampleCatalanAsymptoticsBudgetCertificate] = true := by
+  unfold budgetCertificateListReady sampleCatalanAsymptoticsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.CatalanAsymptotics

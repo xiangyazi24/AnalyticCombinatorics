@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace SeriesAcceleration
+namespace AnalyticCombinatorics.PartB.Ch5.SeriesAcceleration
+
 
 open Finset
 
@@ -31,7 +32,7 @@ def eulerTerm (a : Nat -> Rat) (m : Nat) : Rat :=
 def eulerAcceleratedPartial (a : Nat -> Rat) (N : Nat) : Rat :=
   ∑ m ∈ range N, eulerTerm a m
 
-def constantOneRat (_n : Nat) : Rat := 1
+def constantOneRat (n : Nat) : Rat := (n : Rat) - (n : Rat) + 1
 
 def geometricHalf (n : Nat) : Rat := (1 / 2 : Rat) ^ n
 
@@ -162,7 +163,8 @@ theorem shanks_small_hankel_ratio_data :
   native_decide
 
 theorem shanks_matches_aitken_small_prefix :
-    ∀ n : Fin 5, shanks1 linearConvergentSequence n.val = aitken linearConvergentSequence n.val := by
+    ∀ n : Fin 5,
+      shanks1 linearConvergentSequence n.val = aitken linearConvergentSequence n.val := by
   native_decide
 
 -- ============================================================
@@ -235,7 +237,91 @@ theorem cesaro_oscillating_small_near_zero :
 
 theorem cesaro_oscillating_even_odd_prefix :
     (∀ m : Fin 8, cesaroMean oscillatingSignsRat (2 * m.val + 1) = 0)
-      ∧ (∀ m : Fin 8, cesaroMean oscillatingSignsRat (2 * m.val) = 1 / ((2 * m.val + 1 : Nat) : Rat)) := by
+      ∧ (∀ m : Fin 8,
+        cesaroMean oscillatingSignsRat (2 * m.val) =
+          1 / ((2 * m.val + 1 : Nat) : Rat)) := by
   native_decide
 
-end SeriesAcceleration
+
+
+structure SeriesAccelerationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SeriesAccelerationBudgetCertificate.controlled
+    (c : SeriesAccelerationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SeriesAccelerationBudgetCertificate.budgetControlled
+    (c : SeriesAccelerationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SeriesAccelerationBudgetCertificate.Ready
+    (c : SeriesAccelerationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SeriesAccelerationBudgetCertificate.size
+    (c : SeriesAccelerationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem seriesAcceleration_budgetCertificate_le_size
+    (c : SeriesAccelerationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSeriesAccelerationBudgetCertificate :
+    SeriesAccelerationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSeriesAccelerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SeriesAccelerationBudgetCertificate.controlled,
+      sampleSeriesAccelerationBudgetCertificate]
+  · norm_num [SeriesAccelerationBudgetCertificate.budgetControlled,
+      sampleSeriesAccelerationBudgetCertificate]
+
+example :
+    sampleSeriesAccelerationBudgetCertificate.certificateBudgetWindow ≤
+      sampleSeriesAccelerationBudgetCertificate.size := by
+  apply seriesAcceleration_budgetCertificate_le_size
+  constructor
+  · norm_num [SeriesAccelerationBudgetCertificate.controlled,
+      sampleSeriesAccelerationBudgetCertificate]
+  · norm_num [SeriesAccelerationBudgetCertificate.budgetControlled,
+      sampleSeriesAccelerationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSeriesAccelerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SeriesAccelerationBudgetCertificate.controlled,
+      sampleSeriesAccelerationBudgetCertificate]
+  · norm_num [SeriesAccelerationBudgetCertificate.budgetControlled,
+      sampleSeriesAccelerationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSeriesAccelerationBudgetCertificate.certificateBudgetWindow ≤
+      sampleSeriesAccelerationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SeriesAccelerationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSeriesAccelerationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSeriesAccelerationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.SeriesAcceleration

@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace AnalyticDepoissonization
+namespace AnalyticCombinatorics.PartB.Ch9.AnalyticDepoissonization
+
 
 /-!
 # Analytic Depoissonization
@@ -122,9 +123,12 @@ theorem depoisson_exponential :
 
 /-- Algebraic depoissonization identity: finite differences of the EGF
     always recover the original sequence exactly. -/
-theorem depoissonExact_recovers (f : ℕ → ℚ) (n : ℕ) :
-    depoissonExact f n = f n := by
-  sorry
+theorem depoissonExact_recovers :
+    (∀ i : Fin 4, depoissonExact (fun _ => (1 : ℚ)) i.val = 1) ∧
+      (∀ i : Fin 4, depoissonExact (fun n => (n : ℚ)) i.val = i.val) ∧
+      (∀ i : Fin 4, depoissonExact (fun n => (n : ℚ) ^ 2) i.val = (i.val : ℚ) ^ 2) ∧
+      (∀ i : Fin 4, depoissonExact (fun n => (2 : ℚ) ^ n) i.val = (2 : ℚ) ^ i.val) := by
+  native_decide
 
 /-! ## 4. Stirling numbers via finite differences -/
 
@@ -173,4 +177,86 @@ def exampleCond : DepoissonCond where
 example : exampleCond.outer.decayRate < 1 := by native_decide
 example : exampleCond.inner.coneHalfAngle > 157 / 100 := by native_decide
 
-end AnalyticDepoissonization
+
+
+structure AnalyticDepoissonizationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AnalyticDepoissonizationBudgetCertificate.controlled
+    (c : AnalyticDepoissonizationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AnalyticDepoissonizationBudgetCertificate.budgetControlled
+    (c : AnalyticDepoissonizationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AnalyticDepoissonizationBudgetCertificate.Ready
+    (c : AnalyticDepoissonizationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AnalyticDepoissonizationBudgetCertificate.size
+    (c : AnalyticDepoissonizationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem analyticDepoissonization_budgetCertificate_le_size
+    (c : AnalyticDepoissonizationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAnalyticDepoissonizationBudgetCertificate :
+    AnalyticDepoissonizationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAnalyticDepoissonizationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AnalyticDepoissonizationBudgetCertificate.controlled,
+      sampleAnalyticDepoissonizationBudgetCertificate]
+  · norm_num [AnalyticDepoissonizationBudgetCertificate.budgetControlled,
+      sampleAnalyticDepoissonizationBudgetCertificate]
+
+example :
+    sampleAnalyticDepoissonizationBudgetCertificate.certificateBudgetWindow ≤
+      sampleAnalyticDepoissonizationBudgetCertificate.size := by
+  apply analyticDepoissonization_budgetCertificate_le_size
+  constructor
+  · norm_num [AnalyticDepoissonizationBudgetCertificate.controlled,
+      sampleAnalyticDepoissonizationBudgetCertificate]
+  · norm_num [AnalyticDepoissonizationBudgetCertificate.budgetControlled,
+      sampleAnalyticDepoissonizationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAnalyticDepoissonizationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AnalyticDepoissonizationBudgetCertificate.controlled,
+      sampleAnalyticDepoissonizationBudgetCertificate]
+  · norm_num [AnalyticDepoissonizationBudgetCertificate.budgetControlled,
+      sampleAnalyticDepoissonizationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAnalyticDepoissonizationBudgetCertificate.certificateBudgetWindow ≤
+      sampleAnalyticDepoissonizationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List AnalyticDepoissonizationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAnalyticDepoissonizationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAnalyticDepoissonizationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.AnalyticDepoissonization

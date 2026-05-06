@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace CoefficientTransferTheorems
+namespace AnalyticCombinatorics.PartB.Ch6.CoefficientTransferTheorems
+
 
 /-!
 Chapter VI transfer-theorem coefficient checks from Flajolet--Sedgewick.
@@ -226,4 +227,86 @@ theorem central_binomial_square_scale_increases_1_to_8 :
         centralBinomialSquareScale (n.val + 2) := by
   native_decide
 
-end CoefficientTransferTheorems
+
+
+structure CoefficientTransferTheoremsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CoefficientTransferTheoremsBudgetCertificate.controlled
+    (c : CoefficientTransferTheoremsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CoefficientTransferTheoremsBudgetCertificate.budgetControlled
+    (c : CoefficientTransferTheoremsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CoefficientTransferTheoremsBudgetCertificate.Ready
+    (c : CoefficientTransferTheoremsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CoefficientTransferTheoremsBudgetCertificate.size
+    (c : CoefficientTransferTheoremsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem coefficientTransferTheorems_budgetCertificate_le_size
+    (c : CoefficientTransferTheoremsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCoefficientTransferTheoremsBudgetCertificate :
+    CoefficientTransferTheoremsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleCoefficientTransferTheoremsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CoefficientTransferTheoremsBudgetCertificate.controlled,
+      sampleCoefficientTransferTheoremsBudgetCertificate]
+  · norm_num [CoefficientTransferTheoremsBudgetCertificate.budgetControlled,
+      sampleCoefficientTransferTheoremsBudgetCertificate]
+
+example :
+    sampleCoefficientTransferTheoremsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCoefficientTransferTheoremsBudgetCertificate.size := by
+  apply coefficientTransferTheorems_budgetCertificate_le_size
+  constructor
+  · norm_num [CoefficientTransferTheoremsBudgetCertificate.controlled,
+      sampleCoefficientTransferTheoremsBudgetCertificate]
+  · norm_num [CoefficientTransferTheoremsBudgetCertificate.budgetControlled,
+      sampleCoefficientTransferTheoremsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleCoefficientTransferTheoremsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CoefficientTransferTheoremsBudgetCertificate.controlled,
+      sampleCoefficientTransferTheoremsBudgetCertificate]
+  · norm_num [CoefficientTransferTheoremsBudgetCertificate.budgetControlled,
+      sampleCoefficientTransferTheoremsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCoefficientTransferTheoremsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCoefficientTransferTheoremsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List CoefficientTransferTheoremsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCoefficientTransferTheoremsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCoefficientTransferTheoremsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.CoefficientTransferTheorems

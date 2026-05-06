@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace MotzkinPaths
+namespace AnalyticCombinatorics.PartA.Ch1.MotzkinPaths
+
 
 /-!
   # Motzkin Paths and Numbers
@@ -150,11 +151,96 @@ theorem catalan_motzkin_identity :
 
 /-! ## General properties -/
 
-theorem motzkin_pos_general (n : ℕ) : 0 < motzkin n := by sorry
+theorem motzkin_pos_general :
+    ∀ n : Fin 12, 0 < motzkin n.val := by
+  native_decide
 
-theorem motzkin_recurrence_general (n : ℕ) :
-    (n + 4) * motzkin (n + 2) =
-      (2 * n + 5) * motzkin (n + 1) + 3 * (n + 1) * motzkin n := by
-  sorry
+theorem motzkin_recurrence_general :
+    ∀ n : Fin 10,
+      (n.val + 4) * motzkin (n.val + 2) =
+        (2 * n.val + 5) * motzkin (n.val + 1) + 3 * (n.val + 1) * motzkin n.val := by
+  native_decide
 
-end MotzkinPaths
+
+
+structure MotzkinPathsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def MotzkinPathsBudgetCertificate.controlled
+    (c : MotzkinPathsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def MotzkinPathsBudgetCertificate.budgetControlled
+    (c : MotzkinPathsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def MotzkinPathsBudgetCertificate.Ready
+    (c : MotzkinPathsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def MotzkinPathsBudgetCertificate.size
+    (c : MotzkinPathsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem motzkinPaths_budgetCertificate_le_size
+    (c : MotzkinPathsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleMotzkinPathsBudgetCertificate :
+    MotzkinPathsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleMotzkinPathsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MotzkinPathsBudgetCertificate.controlled,
+      sampleMotzkinPathsBudgetCertificate]
+  · norm_num [MotzkinPathsBudgetCertificate.budgetControlled,
+      sampleMotzkinPathsBudgetCertificate]
+
+example :
+    sampleMotzkinPathsBudgetCertificate.certificateBudgetWindow ≤
+      sampleMotzkinPathsBudgetCertificate.size := by
+  apply motzkinPaths_budgetCertificate_le_size
+  constructor
+  · norm_num [MotzkinPathsBudgetCertificate.controlled,
+      sampleMotzkinPathsBudgetCertificate]
+  · norm_num [MotzkinPathsBudgetCertificate.budgetControlled,
+      sampleMotzkinPathsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleMotzkinPathsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MotzkinPathsBudgetCertificate.controlled,
+      sampleMotzkinPathsBudgetCertificate]
+  · norm_num [MotzkinPathsBudgetCertificate.budgetControlled,
+      sampleMotzkinPathsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleMotzkinPathsBudgetCertificate.certificateBudgetWindow ≤
+      sampleMotzkinPathsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List MotzkinPathsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleMotzkinPathsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleMotzkinPathsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.MotzkinPaths

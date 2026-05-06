@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace FibonacciIdentities
+namespace AnalyticCombinatorics.PartA.Ch1.FibonacciIdentities
+
 
 open Finset
 
@@ -177,4 +178,86 @@ theorem zeckendorf_counts_1_10 :
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] := by
   native_decide
 
-end FibonacciIdentities
+
+
+structure FibonacciIdentitiesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def FibonacciIdentitiesBudgetCertificate.controlled
+    (c : FibonacciIdentitiesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def FibonacciIdentitiesBudgetCertificate.budgetControlled
+    (c : FibonacciIdentitiesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def FibonacciIdentitiesBudgetCertificate.Ready
+    (c : FibonacciIdentitiesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def FibonacciIdentitiesBudgetCertificate.size
+    (c : FibonacciIdentitiesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem fibonacciIdentities_budgetCertificate_le_size
+    (c : FibonacciIdentitiesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleFibonacciIdentitiesBudgetCertificate :
+    FibonacciIdentitiesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleFibonacciIdentitiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [FibonacciIdentitiesBudgetCertificate.controlled,
+      sampleFibonacciIdentitiesBudgetCertificate]
+  · norm_num [FibonacciIdentitiesBudgetCertificate.budgetControlled,
+      sampleFibonacciIdentitiesBudgetCertificate]
+
+example :
+    sampleFibonacciIdentitiesBudgetCertificate.certificateBudgetWindow ≤
+      sampleFibonacciIdentitiesBudgetCertificate.size := by
+  apply fibonacciIdentities_budgetCertificate_le_size
+  constructor
+  · norm_num [FibonacciIdentitiesBudgetCertificate.controlled,
+      sampleFibonacciIdentitiesBudgetCertificate]
+  · norm_num [FibonacciIdentitiesBudgetCertificate.budgetControlled,
+      sampleFibonacciIdentitiesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleFibonacciIdentitiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [FibonacciIdentitiesBudgetCertificate.controlled,
+      sampleFibonacciIdentitiesBudgetCertificate]
+  · norm_num [FibonacciIdentitiesBudgetCertificate.budgetControlled,
+      sampleFibonacciIdentitiesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleFibonacciIdentitiesBudgetCertificate.certificateBudgetWindow ≤
+      sampleFibonacciIdentitiesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List FibonacciIdentitiesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleFibonacciIdentitiesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleFibonacciIdentitiesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.FibonacciIdentities

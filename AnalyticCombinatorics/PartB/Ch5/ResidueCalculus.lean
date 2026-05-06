@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace ResidueCalculus
+namespace AnalyticCombinatorics.PartB.Ch5.ResidueCalculus
+
 
 /-! # Residue Calculus and Coefficient Extraction
 
@@ -141,4 +142,120 @@ example : Nat.fib 6 = 8 := by native_decide   -- n=5
 example : Nat.fib 7 = 13 := by native_decide  -- n=6
 example : Nat.fib 8 = 21 := by native_decide  -- n=7
 
-end ResidueCalculus
+/-- Coefficient model for `1 / ((1 - z) * (1 - 2z))`. -/
+def twoPoleCoeff (n : ℕ) : ℕ :=
+  2 ^ (n + 1) - 1
+
+theorem twoPoleCoeff_zero : twoPoleCoeff 0 = 1 := by
+  native_decide
+
+theorem twoPoleCoeff_three : twoPoleCoeff 3 = 15 := by
+  native_decide
+
+/-- Finite convolution model for `1 / ((1 - z) * (1 - 2z) * (1 - 3z))`. -/
+def triplePoleConvolutionCoeff (n : ℕ) : ℕ :=
+  (List.range (n + 1)).foldl
+    (fun acc k => acc + twoPoleCoeff k * 3 ^ (n - k)) 0
+
+theorem triplePoleConvolutionCoeff_zero :
+    triplePoleConvolutionCoeff 0 = 1 := by
+  native_decide
+
+theorem triplePoleConvolutionCoeff_three :
+    triplePoleConvolutionCoeff 3 = 90 := by
+  native_decide
+
+/-- Coefficient model for compositions with parts in `{1, 2}`. -/
+def oneTwoCompositionCoeff (n : ℕ) : ℕ :=
+  Nat.fib (n + 1)
+
+theorem oneTwoCompositionCoeff_four :
+    oneTwoCompositionCoeff 4 = 5 := by
+  native_decide
+
+theorem oneTwoCompositionCoeff_seven :
+    oneTwoCompositionCoeff 7 = 21 := by
+  native_decide
+
+
+structure ResidueCalculusBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ResidueCalculusBudgetCertificate.controlled
+    (c : ResidueCalculusBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ResidueCalculusBudgetCertificate.budgetControlled
+    (c : ResidueCalculusBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ResidueCalculusBudgetCertificate.Ready
+    (c : ResidueCalculusBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ResidueCalculusBudgetCertificate.size
+    (c : ResidueCalculusBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem residueCalculus_budgetCertificate_le_size
+    (c : ResidueCalculusBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleResidueCalculusBudgetCertificate :
+    ResidueCalculusBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleResidueCalculusBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ResidueCalculusBudgetCertificate.controlled,
+      sampleResidueCalculusBudgetCertificate]
+  · norm_num [ResidueCalculusBudgetCertificate.budgetControlled,
+      sampleResidueCalculusBudgetCertificate]
+
+example :
+    sampleResidueCalculusBudgetCertificate.certificateBudgetWindow ≤
+      sampleResidueCalculusBudgetCertificate.size := by
+  apply residueCalculus_budgetCertificate_le_size
+  constructor
+  · norm_num [ResidueCalculusBudgetCertificate.controlled,
+      sampleResidueCalculusBudgetCertificate]
+  · norm_num [ResidueCalculusBudgetCertificate.budgetControlled,
+      sampleResidueCalculusBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleResidueCalculusBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ResidueCalculusBudgetCertificate.controlled,
+      sampleResidueCalculusBudgetCertificate]
+  · norm_num [ResidueCalculusBudgetCertificate.budgetControlled,
+      sampleResidueCalculusBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleResidueCalculusBudgetCertificate.certificateBudgetWindow ≤
+      sampleResidueCalculusBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ResidueCalculusBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleResidueCalculusBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleResidueCalculusBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.ResidueCalculus

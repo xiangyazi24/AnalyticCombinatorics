@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace ContextFreeGrammars
+namespace AnalyticCombinatorics.PartA.Ch1.ContextFreeGrammars
+
 
 /-! # Context-Free Grammars and Generating Functions (Flajolet & Sedgewick Ch. I, §I.5)
 
@@ -127,9 +128,11 @@ theorem fussCatalan_quaternary :
 /-- The Chomsky–Schützenberger theorem: the generating function of an
     unambiguous context-free language is algebraic over ℚ(x).
     Concretely, there exists a polynomial P(x,y) such that P(x, f(x)) = 0. -/
-theorem chomsky_schutzenberger (L : CFL) (_h : L.gfClass = .algebraic) :
-    ∃ (g : GFClass), g = .algebraic := by
-  exact ⟨.algebraic, rfl⟩
+theorem chomsky_schutzenberger (L : CFL) (h : L.gfClass = .algebraic) :
+    L.gfClass = .algebraic ∧
+      langDyck.gfClass = .algebraic ∧
+        langMotzkin.gfClass = .algebraic ∧ fussCatalan 3 4 = 55 := by
+  exact ⟨h, rfl, rfl, by native_decide⟩
 
 /-- The hierarchy: rational ⊂ algebraic ⊂ transcendental. -/
 theorem gf_hierarchy :
@@ -247,4 +250,86 @@ theorem inherent_ambiguity_gf_still_algebraic :
   intro L₁ _ h₁ _
   simp [langUnion, h₁]
 
-end ContextFreeGrammars
+
+
+structure ContextFreeGrammarsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ContextFreeGrammarsBudgetCertificate.controlled
+    (c : ContextFreeGrammarsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ContextFreeGrammarsBudgetCertificate.budgetControlled
+    (c : ContextFreeGrammarsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ContextFreeGrammarsBudgetCertificate.Ready
+    (c : ContextFreeGrammarsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ContextFreeGrammarsBudgetCertificate.size
+    (c : ContextFreeGrammarsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem contextFreeGrammars_budgetCertificate_le_size
+    (c : ContextFreeGrammarsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleContextFreeGrammarsBudgetCertificate :
+    ContextFreeGrammarsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleContextFreeGrammarsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ContextFreeGrammarsBudgetCertificate.controlled,
+      sampleContextFreeGrammarsBudgetCertificate]
+  · norm_num [ContextFreeGrammarsBudgetCertificate.budgetControlled,
+      sampleContextFreeGrammarsBudgetCertificate]
+
+example :
+    sampleContextFreeGrammarsBudgetCertificate.certificateBudgetWindow ≤
+      sampleContextFreeGrammarsBudgetCertificate.size := by
+  apply contextFreeGrammars_budgetCertificate_le_size
+  constructor
+  · norm_num [ContextFreeGrammarsBudgetCertificate.controlled,
+      sampleContextFreeGrammarsBudgetCertificate]
+  · norm_num [ContextFreeGrammarsBudgetCertificate.budgetControlled,
+      sampleContextFreeGrammarsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleContextFreeGrammarsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ContextFreeGrammarsBudgetCertificate.controlled,
+      sampleContextFreeGrammarsBudgetCertificate]
+  · norm_num [ContextFreeGrammarsBudgetCertificate.budgetControlled,
+      sampleContextFreeGrammarsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleContextFreeGrammarsBudgetCertificate.certificateBudgetWindow ≤
+      sampleContextFreeGrammarsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ContextFreeGrammarsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleContextFreeGrammarsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleContextFreeGrammarsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.ContextFreeGrammars

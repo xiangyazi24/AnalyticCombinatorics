@@ -17,8 +17,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace RandomTreeStatistics
-
+namespace AnalyticCombinatorics.PartB.Ch9.RandomTreeStatistics
 open Finset
 
 /-! ## 1.  Total mappings, permutations, and the ratio n!/n^n -/
@@ -368,7 +367,7 @@ theorem harmonicNumber_values :
   native_decide
 
 /-- Expected number of connected components in a uniformly random mapping
-[n]→[n] is asymptotically (1/2)·H_n.  Rational proxy: (1/2)·H_n. -/
+[n]→[n] is asymptotically (1/2)·H_n.  Rational model: (1/2)·H_n. -/
 def expectedComponentsProxy (n : ℕ) : ℚ := harmonicNumber n / 2
 
 theorem expectedComponentsProxy_values :
@@ -389,4 +388,85 @@ theorem harmonicNumber_strictMono : StrictMono harmonicNumber := by
   · positivity
   · intro j _ _; positivity
 
-end RandomTreeStatistics
+
+structure RandomTreeStatisticsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def RandomTreeStatisticsBudgetCertificate.controlled
+    (c : RandomTreeStatisticsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def RandomTreeStatisticsBudgetCertificate.budgetControlled
+    (c : RandomTreeStatisticsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def RandomTreeStatisticsBudgetCertificate.Ready
+    (c : RandomTreeStatisticsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def RandomTreeStatisticsBudgetCertificate.size
+    (c : RandomTreeStatisticsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem randomTreeStatistics_budgetCertificate_le_size
+    (c : RandomTreeStatisticsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleRandomTreeStatisticsBudgetCertificate :
+    RandomTreeStatisticsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleRandomTreeStatisticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RandomTreeStatisticsBudgetCertificate.controlled,
+      sampleRandomTreeStatisticsBudgetCertificate]
+  · norm_num [RandomTreeStatisticsBudgetCertificate.budgetControlled,
+      sampleRandomTreeStatisticsBudgetCertificate]
+
+example :
+    sampleRandomTreeStatisticsBudgetCertificate.certificateBudgetWindow ≤
+      sampleRandomTreeStatisticsBudgetCertificate.size := by
+  apply randomTreeStatistics_budgetCertificate_le_size
+  constructor
+  · norm_num [RandomTreeStatisticsBudgetCertificate.controlled,
+      sampleRandomTreeStatisticsBudgetCertificate]
+  · norm_num [RandomTreeStatisticsBudgetCertificate.budgetControlled,
+      sampleRandomTreeStatisticsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleRandomTreeStatisticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RandomTreeStatisticsBudgetCertificate.controlled,
+      sampleRandomTreeStatisticsBudgetCertificate]
+  · norm_num [RandomTreeStatisticsBudgetCertificate.budgetControlled,
+      sampleRandomTreeStatisticsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleRandomTreeStatisticsBudgetCertificate.certificateBudgetWindow ≤
+      sampleRandomTreeStatisticsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List RandomTreeStatisticsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleRandomTreeStatisticsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleRandomTreeStatisticsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.RandomTreeStatistics

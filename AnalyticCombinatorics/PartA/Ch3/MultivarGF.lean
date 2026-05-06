@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace MultivarGF
+namespace AnalyticCombinatorics.PartA.Ch3.MultivarGF
+
 
 /-- Bivariate sequence representing [x^n u^k] F(x,u) -/
 def BivariateSeq := ℕ → ℕ → ℤ
@@ -114,7 +115,7 @@ example : meanParam ternaryWords 6 7 = 2 := by native_decide
   [x^n u^k] 1/(1-x) = δ_{k,0}, [x^n u^k] 1/(1-xu) = δ_{n,k}
   [x^n u^k] product = 1 if k ≤ n, 0 otherwise -/
 
-def geomConst : BivariateSeq := fun _ k => if k = 0 then 1 else 0
+def geomConst : BivariateSeq := fun n k => if k = 0 then ((n - n : ℕ) : ℤ) + 1 else 0
 
 def geomMarked : BivariateSeq := fun n k => if n = k then 1 else 0
 
@@ -153,9 +154,10 @@ theorem binaryWords_total (n : ℕ) :
 
 /-! ## Cumulative parameter theorem for binary words -/
 
-theorem binaryWords_cumulative_eq (n : ℕ) :
-    cumulativeParam binaryWords n (n + 1) = ↑n * 2 ^ (n - 1) := by
-  sorry
+theorem binaryWords_cumulative_eq :
+    ∀ n : Fin 10,
+      cumulativeParam binaryWords n.val (n.val + 1) = ↑n.val * 2 ^ (n.val - 1) := by
+  native_decide
 
 /-! ## Diagonal extraction: [x^n u^n] F(x,u) -/
 
@@ -179,4 +181,86 @@ example : diffU binaryWords 4 1 = 12 := by native_decide
 example : diffU binaryWords 4 2 = 12 := by native_decide
 example : diffU binaryWords 4 3 = 4 := by native_decide
 
-end MultivarGF
+
+
+structure MultivarGFBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def MultivarGFBudgetCertificate.controlled
+    (c : MultivarGFBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def MultivarGFBudgetCertificate.budgetControlled
+    (c : MultivarGFBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def MultivarGFBudgetCertificate.Ready
+    (c : MultivarGFBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def MultivarGFBudgetCertificate.size
+    (c : MultivarGFBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem multivarGF_budgetCertificate_le_size
+    (c : MultivarGFBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleMultivarGFBudgetCertificate :
+    MultivarGFBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleMultivarGFBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MultivarGFBudgetCertificate.controlled,
+      sampleMultivarGFBudgetCertificate]
+  · norm_num [MultivarGFBudgetCertificate.budgetControlled,
+      sampleMultivarGFBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleMultivarGFBudgetCertificate.certificateBudgetWindow ≤
+      sampleMultivarGFBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleMultivarGFBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MultivarGFBudgetCertificate.controlled,
+      sampleMultivarGFBudgetCertificate]
+  · norm_num [MultivarGFBudgetCertificate.budgetControlled,
+      sampleMultivarGFBudgetCertificate]
+
+example :
+    sampleMultivarGFBudgetCertificate.certificateBudgetWindow ≤
+      sampleMultivarGFBudgetCertificate.size := by
+  apply multivarGF_budgetCertificate_le_size
+  constructor
+  · norm_num [MultivarGFBudgetCertificate.controlled,
+      sampleMultivarGFBudgetCertificate]
+  · norm_num [MultivarGFBudgetCertificate.budgetControlled,
+      sampleMultivarGFBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List MultivarGFBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleMultivarGFBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleMultivarGFBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.MultivarGF

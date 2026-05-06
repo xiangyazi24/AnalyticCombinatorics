@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace CoefficientExtractionMethods
+namespace AnalyticCombinatorics.PartB.Ch4.CoefficientExtractionMethods
+
 
 /-!
 Methods for extracting coefficients from generating functions, following the
@@ -188,4 +189,86 @@ theorem geometricPowerK4_values :
 theorem geometricPowerK5_values :
     List.ofFn geometricPowerK5 = [1, 5, 15, 35, 70, 126] := by native_decide
 
-end CoefficientExtractionMethods
+
+
+structure CoefficientExtractionMethodsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CoefficientExtractionMethodsBudgetCertificate.controlled
+    (c : CoefficientExtractionMethodsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CoefficientExtractionMethodsBudgetCertificate.budgetControlled
+    (c : CoefficientExtractionMethodsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CoefficientExtractionMethodsBudgetCertificate.Ready
+    (c : CoefficientExtractionMethodsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CoefficientExtractionMethodsBudgetCertificate.size
+    (c : CoefficientExtractionMethodsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem coefficientExtractionMethods_budgetCertificate_le_size
+    (c : CoefficientExtractionMethodsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCoefficientExtractionMethodsBudgetCertificate :
+    CoefficientExtractionMethodsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleCoefficientExtractionMethodsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CoefficientExtractionMethodsBudgetCertificate.controlled,
+      sampleCoefficientExtractionMethodsBudgetCertificate]
+  · norm_num [CoefficientExtractionMethodsBudgetCertificate.budgetControlled,
+      sampleCoefficientExtractionMethodsBudgetCertificate]
+
+example :
+    sampleCoefficientExtractionMethodsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCoefficientExtractionMethodsBudgetCertificate.size := by
+  apply coefficientExtractionMethods_budgetCertificate_le_size
+  constructor
+  · norm_num [CoefficientExtractionMethodsBudgetCertificate.controlled,
+      sampleCoefficientExtractionMethodsBudgetCertificate]
+  · norm_num [CoefficientExtractionMethodsBudgetCertificate.budgetControlled,
+      sampleCoefficientExtractionMethodsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleCoefficientExtractionMethodsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CoefficientExtractionMethodsBudgetCertificate.controlled,
+      sampleCoefficientExtractionMethodsBudgetCertificate]
+  · norm_num [CoefficientExtractionMethodsBudgetCertificate.budgetControlled,
+      sampleCoefficientExtractionMethodsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCoefficientExtractionMethodsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCoefficientExtractionMethodsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List CoefficientExtractionMethodsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCoefficientExtractionMethodsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCoefficientExtractionMethodsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.CoefficientExtractionMethods

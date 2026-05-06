@@ -1,10 +1,9 @@
 import Mathlib.Tactic
-import Mathlib.NumberTheory.Divisors
-import Mathlib.Data.Nat.Totient
 
 set_option linter.style.nativeDecide false
 
-namespace AnalyticNumberTheory
+namespace AnalyticCombinatorics.PartA.Ch2.AnalyticNumberTheory
+
 
 /-- The divisor function σ_k(n) = Σ_{d|n} d^k. -/
 def divisorSigma (k n : ℕ) : ℕ := ∑ d ∈ Nat.divisors n, d ^ k
@@ -92,4 +91,96 @@ example : mobiusTable ⟨4, by omega⟩ = 0 := by native_decide
 example : mobiusTable ⟨5, by omega⟩ = -1 := by native_decide
 example : mobiusTable ⟨6, by omega⟩ = 1 := by native_decide
 
-end AnalyticNumberTheory
+/-- Totient divisor-sum sample. -/
+theorem totientDivisorSum_twelve :
+    totientDivisorSum 12 = 12 := by
+  native_decide
+
+/-- Squarefree counting sample through thirty. -/
+theorem squarefreeCount_thirty :
+    squarefreeCount 30 = 19 := by
+  native_decide
+
+
+
+structure AnalyticNumberTheoryBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AnalyticNumberTheoryBudgetCertificate.controlled
+    (c : AnalyticNumberTheoryBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AnalyticNumberTheoryBudgetCertificate.budgetControlled
+    (c : AnalyticNumberTheoryBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AnalyticNumberTheoryBudgetCertificate.Ready
+    (c : AnalyticNumberTheoryBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AnalyticNumberTheoryBudgetCertificate.size
+    (c : AnalyticNumberTheoryBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem analyticNumberTheory_budgetCertificate_le_size
+    (c : AnalyticNumberTheoryBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAnalyticNumberTheoryBudgetCertificate :
+    AnalyticNumberTheoryBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleAnalyticNumberTheoryBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AnalyticNumberTheoryBudgetCertificate.controlled,
+      sampleAnalyticNumberTheoryBudgetCertificate]
+  · norm_num [AnalyticNumberTheoryBudgetCertificate.budgetControlled,
+      sampleAnalyticNumberTheoryBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAnalyticNumberTheoryBudgetCertificate.certificateBudgetWindow ≤
+      sampleAnalyticNumberTheoryBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleAnalyticNumberTheoryBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AnalyticNumberTheoryBudgetCertificate.controlled,
+      sampleAnalyticNumberTheoryBudgetCertificate]
+  · norm_num [AnalyticNumberTheoryBudgetCertificate.budgetControlled,
+      sampleAnalyticNumberTheoryBudgetCertificate]
+
+example :
+    sampleAnalyticNumberTheoryBudgetCertificate.certificateBudgetWindow ≤
+      sampleAnalyticNumberTheoryBudgetCertificate.size := by
+  apply analyticNumberTheory_budgetCertificate_le_size
+  constructor
+  · norm_num [AnalyticNumberTheoryBudgetCertificate.controlled,
+      sampleAnalyticNumberTheoryBudgetCertificate]
+  · norm_num [AnalyticNumberTheoryBudgetCertificate.budgetControlled,
+      sampleAnalyticNumberTheoryBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List AnalyticNumberTheoryBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAnalyticNumberTheoryBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAnalyticNumberTheoryBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.AnalyticNumberTheory

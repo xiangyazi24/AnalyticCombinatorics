@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace DigitalTreeAnalysis
+namespace AnalyticCombinatorics.PartB.Ch9.DigitalTreeAnalysis
+
 
 /-!
 # Digital Tree Analysis
@@ -215,4 +216,86 @@ theorem bucketOverflowNumerator_table_values :
         List.map (bucketOverflowNumerator 3) [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] := by
   native_decide
 
-end DigitalTreeAnalysis
+
+
+structure DigitalTreeAnalysisBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def DigitalTreeAnalysisBudgetCertificate.controlled
+    (c : DigitalTreeAnalysisBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def DigitalTreeAnalysisBudgetCertificate.budgetControlled
+    (c : DigitalTreeAnalysisBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def DigitalTreeAnalysisBudgetCertificate.Ready
+    (c : DigitalTreeAnalysisBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def DigitalTreeAnalysisBudgetCertificate.size
+    (c : DigitalTreeAnalysisBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem digitalTreeAnalysis_budgetCertificate_le_size
+    (c : DigitalTreeAnalysisBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleDigitalTreeAnalysisBudgetCertificate :
+    DigitalTreeAnalysisBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleDigitalTreeAnalysisBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DigitalTreeAnalysisBudgetCertificate.controlled,
+      sampleDigitalTreeAnalysisBudgetCertificate]
+  · norm_num [DigitalTreeAnalysisBudgetCertificate.budgetControlled,
+      sampleDigitalTreeAnalysisBudgetCertificate]
+
+example :
+    sampleDigitalTreeAnalysisBudgetCertificate.certificateBudgetWindow ≤
+      sampleDigitalTreeAnalysisBudgetCertificate.size := by
+  apply digitalTreeAnalysis_budgetCertificate_le_size
+  constructor
+  · norm_num [DigitalTreeAnalysisBudgetCertificate.controlled,
+      sampleDigitalTreeAnalysisBudgetCertificate]
+  · norm_num [DigitalTreeAnalysisBudgetCertificate.budgetControlled,
+      sampleDigitalTreeAnalysisBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleDigitalTreeAnalysisBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DigitalTreeAnalysisBudgetCertificate.controlled,
+      sampleDigitalTreeAnalysisBudgetCertificate]
+  · norm_num [DigitalTreeAnalysisBudgetCertificate.budgetControlled,
+      sampleDigitalTreeAnalysisBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleDigitalTreeAnalysisBudgetCertificate.certificateBudgetWindow ≤
+      sampleDigitalTreeAnalysisBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List DigitalTreeAnalysisBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleDigitalTreeAnalysisBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleDigitalTreeAnalysisBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.DigitalTreeAnalysis

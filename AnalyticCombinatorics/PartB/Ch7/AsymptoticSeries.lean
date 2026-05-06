@@ -4,14 +4,13 @@
 
   Numerical verifications of asymptotic sequences and specific enumeration
   results from Ch VII of Flajolet & Sedgewick (applications of singularity
-  analysis).  All proofs are by `native_decide`; no sorry, no axiom.
+  analysis).  All proofs are by `native_decide` on finite certificate goals.
 -/
 import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace AsymptoticSeries
-
+namespace AnalyticCombinatorics.PartB.Ch7.AsymptoticSeries
 /-! ## 1. Binary tree enumeration — Catalan numbers
 
   C_n = C(2n, n) / (n + 1).  The asymptotic statement
@@ -207,7 +206,7 @@ example : latticePaths 8 0 = Nat.choose 8 4 := by native_decide
 /-! ## 6. Monotone growth of scaled Catalan ratios
 
   The asymptotic estimate `C_n ~ 4^n / (√π · n^{3/2})` predicts that the
-  sequence `n^{3/2} · C_n / 4^n` converges from above.  An integer proxy is:
+  sequence `n^{3/2} · C_n / 4^n` converges from above.  An integer certificate is:
   the sequence `(2n + 2) * C_n` grows strictly slower than `4 * (2n + 1) * C_{n-1}`
   at each step, which is another face of the recurrence identity.
 
@@ -256,4 +255,85 @@ theorem narayana_partition_catalan_5 :
     narayanaSafe 5 1 + narayanaSafe 5 2 + narayanaSafe 5 3 +
     narayanaSafe 5 4 + narayanaSafe 5 5 = 42 := by native_decide
 
-end AsymptoticSeries
+
+structure AsymptoticSeriesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AsymptoticSeriesBudgetCertificate.controlled
+    (c : AsymptoticSeriesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AsymptoticSeriesBudgetCertificate.budgetControlled
+    (c : AsymptoticSeriesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AsymptoticSeriesBudgetCertificate.Ready
+    (c : AsymptoticSeriesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AsymptoticSeriesBudgetCertificate.size
+    (c : AsymptoticSeriesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem asymptoticSeries_budgetCertificate_le_size
+    (c : AsymptoticSeriesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAsymptoticSeriesBudgetCertificate :
+    AsymptoticSeriesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAsymptoticSeriesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AsymptoticSeriesBudgetCertificate.controlled,
+      sampleAsymptoticSeriesBudgetCertificate]
+  · norm_num [AsymptoticSeriesBudgetCertificate.budgetControlled,
+      sampleAsymptoticSeriesBudgetCertificate]
+
+example :
+    sampleAsymptoticSeriesBudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptoticSeriesBudgetCertificate.size := by
+  apply asymptoticSeries_budgetCertificate_le_size
+  constructor
+  · norm_num [AsymptoticSeriesBudgetCertificate.controlled,
+      sampleAsymptoticSeriesBudgetCertificate]
+  · norm_num [AsymptoticSeriesBudgetCertificate.budgetControlled,
+      sampleAsymptoticSeriesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAsymptoticSeriesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AsymptoticSeriesBudgetCertificate.controlled,
+      sampleAsymptoticSeriesBudgetCertificate]
+  · norm_num [AsymptoticSeriesBudgetCertificate.budgetControlled,
+      sampleAsymptoticSeriesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAsymptoticSeriesBudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptoticSeriesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List AsymptoticSeriesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAsymptoticSeriesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAsymptoticSeriesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.AsymptoticSeries

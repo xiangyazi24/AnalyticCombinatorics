@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace SaddlePointPartitions
+namespace AnalyticCombinatorics.PartB.Ch8.SaddlePointPartitions
+
 
 /-!
 Computable checks around the partition examples from the saddle-point chapter.
@@ -344,4 +345,86 @@ theorem selfConjugatePartitionCount_values_0_12 :
     selfConjugatePartitionCount 12 = 3 := by
   native_decide
 
-end SaddlePointPartitions
+
+
+structure SaddlePointPartitionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SaddlePointPartitionsBudgetCertificate.controlled
+    (c : SaddlePointPartitionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SaddlePointPartitionsBudgetCertificate.budgetControlled
+    (c : SaddlePointPartitionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SaddlePointPartitionsBudgetCertificate.Ready
+    (c : SaddlePointPartitionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SaddlePointPartitionsBudgetCertificate.size
+    (c : SaddlePointPartitionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem saddlePointPartitions_budgetCertificate_le_size
+    (c : SaddlePointPartitionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSaddlePointPartitionsBudgetCertificate :
+    SaddlePointPartitionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSaddlePointPartitionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SaddlePointPartitionsBudgetCertificate.controlled,
+      sampleSaddlePointPartitionsBudgetCertificate]
+  · norm_num [SaddlePointPartitionsBudgetCertificate.budgetControlled,
+      sampleSaddlePointPartitionsBudgetCertificate]
+
+example :
+    sampleSaddlePointPartitionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleSaddlePointPartitionsBudgetCertificate.size := by
+  apply saddlePointPartitions_budgetCertificate_le_size
+  constructor
+  · norm_num [SaddlePointPartitionsBudgetCertificate.controlled,
+      sampleSaddlePointPartitionsBudgetCertificate]
+  · norm_num [SaddlePointPartitionsBudgetCertificate.budgetControlled,
+      sampleSaddlePointPartitionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSaddlePointPartitionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SaddlePointPartitionsBudgetCertificate.controlled,
+      sampleSaddlePointPartitionsBudgetCertificate]
+  · norm_num [SaddlePointPartitionsBudgetCertificate.budgetControlled,
+      sampleSaddlePointPartitionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSaddlePointPartitionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleSaddlePointPartitionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SaddlePointPartitionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSaddlePointPartitionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSaddlePointPartitionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.SaddlePointPartitions

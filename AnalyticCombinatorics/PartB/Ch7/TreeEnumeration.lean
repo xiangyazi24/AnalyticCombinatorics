@@ -10,8 +10,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace TreeEnumeration
-
+namespace AnalyticCombinatorics.PartB.Ch7.TreeEnumeration
 /-! ## 1. Labelled rooted trees — Cayley's formula: n^{n-1} -/
 
 /-- Number of labelled rooted trees on n vertices. -/
@@ -136,4 +135,85 @@ theorem cayley_unrooted_values :
     [cayleyUnrooted 2, cayleyUnrooted 3, cayleyUnrooted 4, cayleyUnrooted 5, cayleyUnrooted 6] =
     [1, 3, 16, 125, 1296] := by native_decide
 
-end TreeEnumeration
+
+structure TreeEnumerationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def TreeEnumerationBudgetCertificate.controlled
+    (c : TreeEnumerationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def TreeEnumerationBudgetCertificate.budgetControlled
+    (c : TreeEnumerationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def TreeEnumerationBudgetCertificate.Ready
+    (c : TreeEnumerationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def TreeEnumerationBudgetCertificate.size
+    (c : TreeEnumerationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem treeEnumeration_budgetCertificate_le_size
+    (c : TreeEnumerationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleTreeEnumerationBudgetCertificate :
+    TreeEnumerationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleTreeEnumerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [TreeEnumerationBudgetCertificate.controlled,
+      sampleTreeEnumerationBudgetCertificate]
+  · norm_num [TreeEnumerationBudgetCertificate.budgetControlled,
+      sampleTreeEnumerationBudgetCertificate]
+
+example :
+    sampleTreeEnumerationBudgetCertificate.certificateBudgetWindow ≤
+      sampleTreeEnumerationBudgetCertificate.size := by
+  apply treeEnumeration_budgetCertificate_le_size
+  constructor
+  · norm_num [TreeEnumerationBudgetCertificate.controlled,
+      sampleTreeEnumerationBudgetCertificate]
+  · norm_num [TreeEnumerationBudgetCertificate.budgetControlled,
+      sampleTreeEnumerationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleTreeEnumerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [TreeEnumerationBudgetCertificate.controlled,
+      sampleTreeEnumerationBudgetCertificate]
+  · norm_num [TreeEnumerationBudgetCertificate.budgetControlled,
+      sampleTreeEnumerationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleTreeEnumerationBudgetCertificate.certificateBudgetWindow ≤
+      sampleTreeEnumerationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List TreeEnumerationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleTreeEnumerationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleTreeEnumerationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.TreeEnumeration

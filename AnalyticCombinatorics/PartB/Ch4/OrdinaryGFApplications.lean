@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace OrdinaryGFApplications
+namespace AnalyticCombinatorics.PartB.Ch4.OrdinaryGFApplications
+
 
 /-!
 Finite, computable checks for ordinary generating function applications
@@ -213,4 +214,106 @@ example :
       catalanNumber n = catalanFromBallot n := by
   native_decide
 
-end OrdinaryGFApplications
+/-- Composition count sample extracted from the OGF model. -/
+theorem compositionCount_eight :
+    compositionCount 8 = 128 := by
+  native_decide
+
+/-- Weak ballot number sample. -/
+theorem weakBallotNumber_four_four :
+    weakBallotNumber 4 4 = 14 := by
+  native_decide
+
+/-- Derangement-number sample for the ordinary generating function checks. -/
+theorem derangementNumber_eight :
+    derangementNumber 8 = 14833 := by
+  native_decide
+
+/-- Catalan ballot extraction sample. -/
+theorem catalanFromBallot_seven :
+    catalanFromBallot 7 = 429 := by
+  native_decide
+
+
+
+structure OrdinaryGFApplicationsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def OrdinaryGFApplicationsBudgetCertificate.controlled
+    (c : OrdinaryGFApplicationsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def OrdinaryGFApplicationsBudgetCertificate.budgetControlled
+    (c : OrdinaryGFApplicationsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def OrdinaryGFApplicationsBudgetCertificate.Ready
+    (c : OrdinaryGFApplicationsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def OrdinaryGFApplicationsBudgetCertificate.size
+    (c : OrdinaryGFApplicationsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem ordinaryGFApplications_budgetCertificate_le_size
+    (c : OrdinaryGFApplicationsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleOrdinaryGFApplicationsBudgetCertificate :
+    OrdinaryGFApplicationsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleOrdinaryGFApplicationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [OrdinaryGFApplicationsBudgetCertificate.controlled,
+      sampleOrdinaryGFApplicationsBudgetCertificate]
+  · norm_num [OrdinaryGFApplicationsBudgetCertificate.budgetControlled,
+      sampleOrdinaryGFApplicationsBudgetCertificate]
+
+example :
+    sampleOrdinaryGFApplicationsBudgetCertificate.certificateBudgetWindow ≤
+      sampleOrdinaryGFApplicationsBudgetCertificate.size := by
+  apply ordinaryGFApplications_budgetCertificate_le_size
+  constructor
+  · norm_num [OrdinaryGFApplicationsBudgetCertificate.controlled,
+      sampleOrdinaryGFApplicationsBudgetCertificate]
+  · norm_num [OrdinaryGFApplicationsBudgetCertificate.budgetControlled,
+      sampleOrdinaryGFApplicationsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleOrdinaryGFApplicationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [OrdinaryGFApplicationsBudgetCertificate.controlled,
+      sampleOrdinaryGFApplicationsBudgetCertificate]
+  · norm_num [OrdinaryGFApplicationsBudgetCertificate.budgetControlled,
+      sampleOrdinaryGFApplicationsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleOrdinaryGFApplicationsBudgetCertificate.certificateBudgetWindow ≤
+      sampleOrdinaryGFApplicationsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List OrdinaryGFApplicationsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleOrdinaryGFApplicationsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleOrdinaryGFApplicationsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.OrdinaryGFApplications

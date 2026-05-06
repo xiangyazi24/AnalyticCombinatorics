@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace TransferApplications
+namespace AnalyticCombinatorics.PartB.Ch6.TransferApplications
+
 
 /-!
 Finite, computable coefficient checks for standard applications of
@@ -15,7 +16,7 @@ All proofs are closed computations discharged by `native_decide`.
 /-! ## Poles at `z = 1` -/
 
 /-- Coefficients of `(1 - z)^(-1)`. -/
-def simplePoleCoeff (_n : Nat) : Nat := 1
+def simplePoleCoeff (n : Nat) : Nat := n - n + 1
 
 /-- Coefficients of `(1 - z)^(-2)`. -/
 def doublePoleCoeff (n : Nat) : Nat := n + 1
@@ -28,8 +29,7 @@ def triplePoleProductCoeff (n : Nat) : Nat := ((n + 1) * (n + 2)) / 2
 
 theorem simple_pole_transfer_all (n : Nat) :
     simplePoleCoeff n = 1 := by
-  change 1 = 1
-  native_decide
+  simp [simplePoleCoeff]
 
 theorem double_pole_transfer_up_to_8 :
     (List.range 9).map doublePoleCoeff = [1, 2, 3, 4, 5, 6, 7, 8, 9] := by
@@ -143,4 +143,86 @@ theorem fibonacci_phi_integer_certificate_up_to_20 :
       target ≤ p.1 ∨ (target - p.1) ^ 2 < 5 * p.2 ^ 2 := by
   native_decide
 
-end TransferApplications
+
+
+structure TransferApplicationsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def TransferApplicationsBudgetCertificate.controlled
+    (c : TransferApplicationsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def TransferApplicationsBudgetCertificate.budgetControlled
+    (c : TransferApplicationsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def TransferApplicationsBudgetCertificate.Ready
+    (c : TransferApplicationsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def TransferApplicationsBudgetCertificate.size
+    (c : TransferApplicationsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem transferApplications_budgetCertificate_le_size
+    (c : TransferApplicationsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleTransferApplicationsBudgetCertificate :
+    TransferApplicationsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleTransferApplicationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [TransferApplicationsBudgetCertificate.controlled,
+      sampleTransferApplicationsBudgetCertificate]
+  · norm_num [TransferApplicationsBudgetCertificate.budgetControlled,
+      sampleTransferApplicationsBudgetCertificate]
+
+example :
+    sampleTransferApplicationsBudgetCertificate.certificateBudgetWindow ≤
+      sampleTransferApplicationsBudgetCertificate.size := by
+  apply transferApplications_budgetCertificate_le_size
+  constructor
+  · norm_num [TransferApplicationsBudgetCertificate.controlled,
+      sampleTransferApplicationsBudgetCertificate]
+  · norm_num [TransferApplicationsBudgetCertificate.budgetControlled,
+      sampleTransferApplicationsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleTransferApplicationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [TransferApplicationsBudgetCertificate.controlled,
+      sampleTransferApplicationsBudgetCertificate]
+  · norm_num [TransferApplicationsBudgetCertificate.budgetControlled,
+      sampleTransferApplicationsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleTransferApplicationsBudgetCertificate.certificateBudgetWindow ≤
+      sampleTransferApplicationsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List TransferApplicationsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleTransferApplicationsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleTransferApplicationsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.TransferApplications

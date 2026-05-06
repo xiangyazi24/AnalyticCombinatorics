@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace SingularityAnalysisBasics
+namespace AnalyticCombinatorics.PartB.Ch4.SingularityAnalysisBasics
+
 
 /-!
 Basic singularity analysis tools from Chapter IV of Analytic Combinatorics.
@@ -200,4 +201,86 @@ theorem three_halves_central_binom_relation_small :
         ((2 * n.val + 1 : ℕ) : ℚ) *
           ((Nat.choose (2 * n.val) n.val : ℚ) / (4 ^ n.val : ℕ)) := by native_decide
 
-end SingularityAnalysisBasics
+
+
+structure SingularityAnalysisBasicsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SingularityAnalysisBasicsBudgetCertificate.controlled
+    (c : SingularityAnalysisBasicsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SingularityAnalysisBasicsBudgetCertificate.budgetControlled
+    (c : SingularityAnalysisBasicsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SingularityAnalysisBasicsBudgetCertificate.Ready
+    (c : SingularityAnalysisBasicsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SingularityAnalysisBasicsBudgetCertificate.size
+    (c : SingularityAnalysisBasicsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem singularityAnalysisBasics_budgetCertificate_le_size
+    (c : SingularityAnalysisBasicsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSingularityAnalysisBasicsBudgetCertificate :
+    SingularityAnalysisBasicsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSingularityAnalysisBasicsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SingularityAnalysisBasicsBudgetCertificate.controlled,
+      sampleSingularityAnalysisBasicsBudgetCertificate]
+  · norm_num [SingularityAnalysisBasicsBudgetCertificate.budgetControlled,
+      sampleSingularityAnalysisBasicsBudgetCertificate]
+
+example :
+    sampleSingularityAnalysisBasicsBudgetCertificate.certificateBudgetWindow ≤
+      sampleSingularityAnalysisBasicsBudgetCertificate.size := by
+  apply singularityAnalysisBasics_budgetCertificate_le_size
+  constructor
+  · norm_num [SingularityAnalysisBasicsBudgetCertificate.controlled,
+      sampleSingularityAnalysisBasicsBudgetCertificate]
+  · norm_num [SingularityAnalysisBasicsBudgetCertificate.budgetControlled,
+      sampleSingularityAnalysisBasicsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSingularityAnalysisBasicsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SingularityAnalysisBasicsBudgetCertificate.controlled,
+      sampleSingularityAnalysisBasicsBudgetCertificate]
+  · norm_num [SingularityAnalysisBasicsBudgetCertificate.budgetControlled,
+      sampleSingularityAnalysisBasicsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSingularityAnalysisBasicsBudgetCertificate.certificateBudgetWindow ≤
+      sampleSingularityAnalysisBasicsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SingularityAnalysisBasicsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSingularityAnalysisBasicsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSingularityAnalysisBasicsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.SingularityAnalysisBasics

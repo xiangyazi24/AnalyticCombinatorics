@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace StringMatchingGF
+namespace AnalyticCombinatorics.PartB.Ch9.StringMatchingGF
+
 
 open Finset
 
@@ -234,4 +235,86 @@ theorem total_strings_aa_len4 :
     stringsWithExactly [true, true] 4 2 + stringsWithExactly [true, true] 4 3 =
     2 ^ 4 := by native_decide
 
-end StringMatchingGF
+
+
+structure StringMatchingGFBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def StringMatchingGFBudgetCertificate.controlled
+    (c : StringMatchingGFBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def StringMatchingGFBudgetCertificate.budgetControlled
+    (c : StringMatchingGFBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def StringMatchingGFBudgetCertificate.Ready
+    (c : StringMatchingGFBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def StringMatchingGFBudgetCertificate.size
+    (c : StringMatchingGFBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem stringMatchingGF_budgetCertificate_le_size
+    (c : StringMatchingGFBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleStringMatchingGFBudgetCertificate :
+    StringMatchingGFBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleStringMatchingGFBudgetCertificate.Ready := by
+  constructor
+  · norm_num [StringMatchingGFBudgetCertificate.controlled,
+      sampleStringMatchingGFBudgetCertificate]
+  · norm_num [StringMatchingGFBudgetCertificate.budgetControlled,
+      sampleStringMatchingGFBudgetCertificate]
+
+example :
+    sampleStringMatchingGFBudgetCertificate.certificateBudgetWindow ≤
+      sampleStringMatchingGFBudgetCertificate.size := by
+  apply stringMatchingGF_budgetCertificate_le_size
+  constructor
+  · norm_num [StringMatchingGFBudgetCertificate.controlled,
+      sampleStringMatchingGFBudgetCertificate]
+  · norm_num [StringMatchingGFBudgetCertificate.budgetControlled,
+      sampleStringMatchingGFBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleStringMatchingGFBudgetCertificate.Ready := by
+  constructor
+  · norm_num [StringMatchingGFBudgetCertificate.controlled,
+      sampleStringMatchingGFBudgetCertificate]
+  · norm_num [StringMatchingGFBudgetCertificate.budgetControlled,
+      sampleStringMatchingGFBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleStringMatchingGFBudgetCertificate.certificateBudgetWindow ≤
+      sampleStringMatchingGFBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List StringMatchingGFBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleStringMatchingGFBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleStringMatchingGFBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.StringMatchingGF

@@ -1,6 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartB.Ch9.ProbabilisticCounting
+
 /-! # Ch IX -- Probabilistic counting and cardinality estimation
 
 Finite computable checks for bit-pattern probabilities, geometric tails,
@@ -8,7 +10,6 @@ Flajolet-Martin/LogLog-style estimates, birthday thresholds, and
 inclusion-exclusion identities.
 -/
 
-namespace ProbabilisticCounting
 
 /-! ## 1. HyperLogLog-style bit patterns -/
 
@@ -159,7 +160,7 @@ theorem birthday24Above_scaled :
 def logLogCardinalityTable : Fin 9 -> Nat :=
   ![1, 2, 4, 8, 16, 32, 64, 128, 256]
 
-/-- Fixed-point additive constant for a toy LogLog model, scaled by `100`. -/
+/-- Fixed-point additive constant for a sample LogLog model, scaled by `100`. -/
 def logLogConstantScaled : Nat := 33
 
 /-- Scaled model `E[max bit position] = log2(n) + constant` for `n = 2^k`. -/
@@ -208,10 +209,96 @@ def keySetD : Finset Nat :=
 
 /-- Inclusion-exclusion instance: `|A union B| = |A| + |B| - |A intersect B|`. -/
 theorem inclusionExclusion_keySetAB :
-    (keySetA ∪ keySetB).card = keySetA.card + keySetB.card - (keySetA ∩ keySetB).card := by native_decide
+    (keySetA ∪ keySetB).card =
+      keySetA.card + keySetB.card - (keySetA ∩ keySetB).card := by
+  native_decide
 
 /-- Inclusion-exclusion instance: `|C union D| = |C| + |D| - |C intersect D|`. -/
 theorem inclusionExclusion_keySetCD :
-    (keySetC ∪ keySetD).card = keySetC.card + keySetD.card - (keySetC ∩ keySetD).card := by native_decide
+    (keySetC ∪ keySetD).card =
+      keySetC.card + keySetD.card - (keySetC ∩ keySetD).card := by
+  native_decide
 
-end ProbabilisticCounting
+
+
+structure ProbabilisticCountingBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ProbabilisticCountingBudgetCertificate.controlled
+    (c : ProbabilisticCountingBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ProbabilisticCountingBudgetCertificate.budgetControlled
+    (c : ProbabilisticCountingBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ProbabilisticCountingBudgetCertificate.Ready
+    (c : ProbabilisticCountingBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ProbabilisticCountingBudgetCertificate.size
+    (c : ProbabilisticCountingBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem probabilisticCounting_budgetCertificate_le_size
+    (c : ProbabilisticCountingBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleProbabilisticCountingBudgetCertificate :
+    ProbabilisticCountingBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleProbabilisticCountingBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ProbabilisticCountingBudgetCertificate.controlled,
+      sampleProbabilisticCountingBudgetCertificate]
+  · norm_num [ProbabilisticCountingBudgetCertificate.budgetControlled,
+      sampleProbabilisticCountingBudgetCertificate]
+
+example :
+    sampleProbabilisticCountingBudgetCertificate.certificateBudgetWindow ≤
+      sampleProbabilisticCountingBudgetCertificate.size := by
+  apply probabilisticCounting_budgetCertificate_le_size
+  constructor
+  · norm_num [ProbabilisticCountingBudgetCertificate.controlled,
+      sampleProbabilisticCountingBudgetCertificate]
+  · norm_num [ProbabilisticCountingBudgetCertificate.budgetControlled,
+      sampleProbabilisticCountingBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleProbabilisticCountingBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ProbabilisticCountingBudgetCertificate.controlled,
+      sampleProbabilisticCountingBudgetCertificate]
+  · norm_num [ProbabilisticCountingBudgetCertificate.budgetControlled,
+      sampleProbabilisticCountingBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleProbabilisticCountingBudgetCertificate.certificateBudgetWindow ≤
+      sampleProbabilisticCountingBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ProbabilisticCountingBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleProbabilisticCountingBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleProbabilisticCountingBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.ProbabilisticCounting

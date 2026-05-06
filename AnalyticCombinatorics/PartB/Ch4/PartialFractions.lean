@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace PartialFractions
+namespace AnalyticCombinatorics.PartB.Ch4.PartialFractions
+
 
 /-!
 Finite coefficient checks for several rational generating functions obtained from
@@ -109,4 +110,86 @@ theorem fib_table_recurrence :
         fibTable ⟨n.val + 1, by omega⟩ + fibTable ⟨n.val, by omega⟩ := by
   native_decide
 
-end PartialFractions
+
+
+structure PartialFractionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PartialFractionsBudgetCertificate.controlled
+    (c : PartialFractionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PartialFractionsBudgetCertificate.budgetControlled
+    (c : PartialFractionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PartialFractionsBudgetCertificate.Ready
+    (c : PartialFractionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PartialFractionsBudgetCertificate.size
+    (c : PartialFractionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem partialFractions_budgetCertificate_le_size
+    (c : PartialFractionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePartialFractionsBudgetCertificate :
+    PartialFractionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : samplePartialFractionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PartialFractionsBudgetCertificate.controlled,
+      samplePartialFractionsBudgetCertificate]
+  · norm_num [PartialFractionsBudgetCertificate.budgetControlled,
+      samplePartialFractionsBudgetCertificate]
+
+example :
+    samplePartialFractionsBudgetCertificate.certificateBudgetWindow ≤
+      samplePartialFractionsBudgetCertificate.size := by
+  apply partialFractions_budgetCertificate_le_size
+  constructor
+  · norm_num [PartialFractionsBudgetCertificate.controlled,
+      samplePartialFractionsBudgetCertificate]
+  · norm_num [PartialFractionsBudgetCertificate.budgetControlled,
+      samplePartialFractionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    samplePartialFractionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PartialFractionsBudgetCertificate.controlled,
+      samplePartialFractionsBudgetCertificate]
+  · norm_num [PartialFractionsBudgetCertificate.budgetControlled,
+      samplePartialFractionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePartialFractionsBudgetCertificate.certificateBudgetWindow ≤
+      samplePartialFractionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List PartialFractionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePartialFractionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePartialFractionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.PartialFractions

@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace SchroederPaths
+namespace AnalyticCombinatorics.PartB.Ch7.SchroederPaths
+
 
 /-!
   Chapter VII executable tables for Schroeder paths and nearby lattice paths.
@@ -151,4 +152,86 @@ theorem areaDistribution_support_bound :
       (n : ℕ) * (n : ℕ) < (a : ℕ) → areaDistribution n a = 0 := by
   native_decide
 
-end SchroederPaths
+
+
+structure SchroederPathsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SchroederPathsBudgetCertificate.controlled
+    (c : SchroederPathsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SchroederPathsBudgetCertificate.budgetControlled
+    (c : SchroederPathsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SchroederPathsBudgetCertificate.Ready
+    (c : SchroederPathsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SchroederPathsBudgetCertificate.size
+    (c : SchroederPathsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem schroederPaths_budgetCertificate_le_size
+    (c : SchroederPathsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSchroederPathsBudgetCertificate :
+    SchroederPathsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSchroederPathsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SchroederPathsBudgetCertificate.controlled,
+      sampleSchroederPathsBudgetCertificate]
+  · norm_num [SchroederPathsBudgetCertificate.budgetControlled,
+      sampleSchroederPathsBudgetCertificate]
+
+example :
+    sampleSchroederPathsBudgetCertificate.certificateBudgetWindow ≤
+      sampleSchroederPathsBudgetCertificate.size := by
+  apply schroederPaths_budgetCertificate_le_size
+  constructor
+  · norm_num [SchroederPathsBudgetCertificate.controlled,
+      sampleSchroederPathsBudgetCertificate]
+  · norm_num [SchroederPathsBudgetCertificate.budgetControlled,
+      sampleSchroederPathsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSchroederPathsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SchroederPathsBudgetCertificate.controlled,
+      sampleSchroederPathsBudgetCertificate]
+  · norm_num [SchroederPathsBudgetCertificate.budgetControlled,
+      sampleSchroederPathsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSchroederPathsBudgetCertificate.certificateBudgetWindow ≤
+      sampleSchroederPathsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SchroederPathsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSchroederPathsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSchroederPathsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.SchroederPaths

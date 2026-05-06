@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace BinomialTransforms
+namespace AnalyticCombinatorics.PartA.Ch1.BinomialTransforms
+
 
 /-!
 Finite-table checks for binomial transforms and Pascal-triangle identities.
@@ -132,4 +133,86 @@ theorem upper_summation_r1_1_10 :
         upperSum 1 (i.val + 1) = (i.val + 1) * (i.val + 2) / 2 := by
   native_decide
 
-end BinomialTransforms
+
+
+structure BinomialTransformsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def BinomialTransformsBudgetCertificate.controlled
+    (c : BinomialTransformsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def BinomialTransformsBudgetCertificate.budgetControlled
+    (c : BinomialTransformsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def BinomialTransformsBudgetCertificate.Ready
+    (c : BinomialTransformsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def BinomialTransformsBudgetCertificate.size
+    (c : BinomialTransformsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem binomialTransforms_budgetCertificate_le_size
+    (c : BinomialTransformsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleBinomialTransformsBudgetCertificate :
+    BinomialTransformsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleBinomialTransformsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [BinomialTransformsBudgetCertificate.controlled,
+      sampleBinomialTransformsBudgetCertificate]
+  · norm_num [BinomialTransformsBudgetCertificate.budgetControlled,
+      sampleBinomialTransformsBudgetCertificate]
+
+example :
+    sampleBinomialTransformsBudgetCertificate.certificateBudgetWindow ≤
+      sampleBinomialTransformsBudgetCertificate.size := by
+  apply binomialTransforms_budgetCertificate_le_size
+  constructor
+  · norm_num [BinomialTransformsBudgetCertificate.controlled,
+      sampleBinomialTransformsBudgetCertificate]
+  · norm_num [BinomialTransformsBudgetCertificate.budgetControlled,
+      sampleBinomialTransformsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleBinomialTransformsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [BinomialTransformsBudgetCertificate.controlled,
+      sampleBinomialTransformsBudgetCertificate]
+  · norm_num [BinomialTransformsBudgetCertificate.budgetControlled,
+      sampleBinomialTransformsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleBinomialTransformsBudgetCertificate.certificateBudgetWindow ≤
+      sampleBinomialTransformsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List BinomialTransformsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleBinomialTransformsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleBinomialTransformsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.BinomialTransforms

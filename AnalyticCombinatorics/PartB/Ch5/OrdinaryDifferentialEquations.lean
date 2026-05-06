@@ -8,8 +8,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace OrdinaryDifferentialEquations
-
+namespace AnalyticCombinatorics.PartB.Ch5.OrdinaryDifferentialEquations
 /-! ## 1. Catalan numbers -/
 
 /-- Catalan numbers C(0)..C(10). -/
@@ -151,4 +150,96 @@ example :
           derangementTable ⟨n, by omega⟩ + 1 := by
   native_decide
 
-end OrdinaryDifferentialEquations
+/-- Motzkin table sample. -/
+theorem motzkinTable_nine :
+    motzkinTable 9 = 835 := by
+  native_decide
+
+/-- Derangement table sample. -/
+theorem derangementTable_eight :
+    derangementTable 8 = 14833 := by
+  native_decide
+
+
+structure OrdinaryDifferentialEquationsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def OrdinaryDifferentialEquationsBudgetCertificate.controlled
+    (c : OrdinaryDifferentialEquationsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def OrdinaryDifferentialEquationsBudgetCertificate.budgetControlled
+    (c : OrdinaryDifferentialEquationsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def OrdinaryDifferentialEquationsBudgetCertificate.Ready
+    (c : OrdinaryDifferentialEquationsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def OrdinaryDifferentialEquationsBudgetCertificate.size
+    (c : OrdinaryDifferentialEquationsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem ordinaryDifferentialEquations_budgetCertificate_le_size
+    (c : OrdinaryDifferentialEquationsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleOrdinaryDifferentialEquationsBudgetCertificate :
+    OrdinaryDifferentialEquationsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleOrdinaryDifferentialEquationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [OrdinaryDifferentialEquationsBudgetCertificate.controlled,
+      sampleOrdinaryDifferentialEquationsBudgetCertificate]
+  · norm_num [OrdinaryDifferentialEquationsBudgetCertificate.budgetControlled,
+      sampleOrdinaryDifferentialEquationsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleOrdinaryDifferentialEquationsBudgetCertificate.certificateBudgetWindow ≤
+      sampleOrdinaryDifferentialEquationsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleOrdinaryDifferentialEquationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [OrdinaryDifferentialEquationsBudgetCertificate.controlled,
+      sampleOrdinaryDifferentialEquationsBudgetCertificate]
+  · norm_num [OrdinaryDifferentialEquationsBudgetCertificate.budgetControlled,
+      sampleOrdinaryDifferentialEquationsBudgetCertificate]
+
+example :
+    sampleOrdinaryDifferentialEquationsBudgetCertificate.certificateBudgetWindow ≤
+      sampleOrdinaryDifferentialEquationsBudgetCertificate.size := by
+  apply ordinaryDifferentialEquations_budgetCertificate_le_size
+  constructor
+  · norm_num [OrdinaryDifferentialEquationsBudgetCertificate.controlled,
+      sampleOrdinaryDifferentialEquationsBudgetCertificate]
+  · norm_num [OrdinaryDifferentialEquationsBudgetCertificate.budgetControlled,
+      sampleOrdinaryDifferentialEquationsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady
+    (data : List OrdinaryDifferentialEquationsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleOrdinaryDifferentialEquationsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleOrdinaryDifferentialEquationsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.OrdinaryDifferentialEquations

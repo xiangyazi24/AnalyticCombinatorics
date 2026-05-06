@@ -14,8 +14,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace AsymptoticMethods
-
+namespace AnalyticCombinatorics.PartB.Ch6.AsymptoticMethods
 /-! ## 1. Darboux's method — coefficient extraction from algebraic functions
 
 For (1-4z)^{-1/2}: [z^n] = C(2n,n). Asymptotic growth ~ 4^n/√(πn).
@@ -180,4 +179,128 @@ example : (42 : ℕ) < 132 := by native_decide
 /-- C(6) < C(7). -/
 example : (132 : ℕ) < 429 := by native_decide
 
-end AsymptoticMethods
+/-- Central binomial coefficient, the coefficient of `(1 - 4z)^(-1/2)`. -/
+def centralBinomialCoeff (n : ℕ) : ℕ :=
+  Nat.choose (2 * n) n
+
+theorem centralBinomialCoeff_five :
+    centralBinomialCoeff 5 = 252 := by
+  native_decide
+
+theorem centralBinomialCoeff_recurrence_sample :
+    centralBinomialCoeff 6 * 6 = centralBinomialCoeff 5 * 22 := by
+  native_decide
+
+/-- Catalan coefficient model used by the supercritical sequence schema. -/
+def catalanCoeff (n : ℕ) : ℕ :=
+  Nat.choose (2 * n) n / (n + 1)
+
+theorem catalanCoeff_six :
+    catalanCoeff 6 = 132 := by
+  native_decide
+
+theorem catalanCoeff_ratio_sample :
+    catalanCoeff 7 * 8 = catalanCoeff 6 * 26 := by
+  native_decide
+
+/-- Dominant-pole closed form for `1 / ((1 - 2z) * (1 - 3z))`. -/
+def dominantPairCoeff (n : ℕ) : ℕ :=
+  3 ^ (n + 1) - 2 ^ (n + 1)
+
+theorem dominantPairCoeff_five :
+    dominantPairCoeff 5 = 665 := by
+  native_decide
+
+theorem dominantPairCoeff_eight :
+    dominantPairCoeff 8 = 19171 := by
+  native_decide
+
+/-- Exact harmonic-prefix sample used for logarithmic singularity checks. -/
+def harmonicPrefixFive : ℚ :=
+  (1 : ℚ) + 1 / 2 + 1 / 3 + 1 / 4 + 1 / 5
+
+theorem harmonicPrefixFive_value :
+    harmonicPrefixFive = 137 / 60 := by
+  native_decide
+
+structure AsymptoticMethodsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AsymptoticMethodsBudgetCertificate.controlled
+    (c : AsymptoticMethodsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AsymptoticMethodsBudgetCertificate.budgetControlled
+    (c : AsymptoticMethodsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AsymptoticMethodsBudgetCertificate.Ready
+    (c : AsymptoticMethodsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AsymptoticMethodsBudgetCertificate.size
+    (c : AsymptoticMethodsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem asymptoticMethods_budgetCertificate_le_size
+    (c : AsymptoticMethodsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAsymptoticMethodsBudgetCertificate :
+    AsymptoticMethodsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAsymptoticMethodsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AsymptoticMethodsBudgetCertificate.controlled,
+      sampleAsymptoticMethodsBudgetCertificate]
+  · norm_num [AsymptoticMethodsBudgetCertificate.budgetControlled,
+      sampleAsymptoticMethodsBudgetCertificate]
+
+example :
+    sampleAsymptoticMethodsBudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptoticMethodsBudgetCertificate.size := by
+  apply asymptoticMethods_budgetCertificate_le_size
+  constructor
+  · norm_num [AsymptoticMethodsBudgetCertificate.controlled,
+      sampleAsymptoticMethodsBudgetCertificate]
+  · norm_num [AsymptoticMethodsBudgetCertificate.budgetControlled,
+      sampleAsymptoticMethodsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAsymptoticMethodsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AsymptoticMethodsBudgetCertificate.controlled,
+      sampleAsymptoticMethodsBudgetCertificate]
+  · norm_num [AsymptoticMethodsBudgetCertificate.budgetControlled,
+      sampleAsymptoticMethodsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAsymptoticMethodsBudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptoticMethodsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List AsymptoticMethodsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAsymptoticMethodsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAsymptoticMethodsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.AsymptoticMethods

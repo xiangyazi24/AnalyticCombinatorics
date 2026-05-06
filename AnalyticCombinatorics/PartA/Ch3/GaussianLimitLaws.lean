@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace GaussianLimitLaws
+namespace AnalyticCombinatorics.PartA.Ch3.GaussianLimitLaws
+
 
 /-!
 # Gaussian limit-law checks for Chapter III parameters
@@ -158,4 +159,86 @@ theorem bst_depth_variance_table_monotone :
       bstDepthVarianceEntry i ≤ bstDepthVarianceEntry ((i : ℕ) + 1) := by
   native_decide
 
-end GaussianLimitLaws
+
+
+structure GaussianLimitLawsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def GaussianLimitLawsBudgetCertificate.controlled
+    (c : GaussianLimitLawsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def GaussianLimitLawsBudgetCertificate.budgetControlled
+    (c : GaussianLimitLawsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def GaussianLimitLawsBudgetCertificate.Ready
+    (c : GaussianLimitLawsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def GaussianLimitLawsBudgetCertificate.size
+    (c : GaussianLimitLawsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem gaussianLimitLaws_budgetCertificate_le_size
+    (c : GaussianLimitLawsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleGaussianLimitLawsBudgetCertificate :
+    GaussianLimitLawsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleGaussianLimitLawsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GaussianLimitLawsBudgetCertificate.controlled,
+      sampleGaussianLimitLawsBudgetCertificate]
+  · norm_num [GaussianLimitLawsBudgetCertificate.budgetControlled,
+      sampleGaussianLimitLawsBudgetCertificate]
+
+example :
+    sampleGaussianLimitLawsBudgetCertificate.certificateBudgetWindow ≤
+      sampleGaussianLimitLawsBudgetCertificate.size := by
+  apply gaussianLimitLaws_budgetCertificate_le_size
+  constructor
+  · norm_num [GaussianLimitLawsBudgetCertificate.controlled,
+      sampleGaussianLimitLawsBudgetCertificate]
+  · norm_num [GaussianLimitLawsBudgetCertificate.budgetControlled,
+      sampleGaussianLimitLawsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleGaussianLimitLawsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GaussianLimitLawsBudgetCertificate.controlled,
+      sampleGaussianLimitLawsBudgetCertificate]
+  · norm_num [GaussianLimitLawsBudgetCertificate.budgetControlled,
+      sampleGaussianLimitLawsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleGaussianLimitLawsBudgetCertificate.certificateBudgetWindow ≤
+      sampleGaussianLimitLawsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List GaussianLimitLawsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleGaussianLimitLawsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleGaussianLimitLawsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.GaussianLimitLaws

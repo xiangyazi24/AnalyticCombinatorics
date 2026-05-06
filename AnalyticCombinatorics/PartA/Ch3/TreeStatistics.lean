@@ -2,9 +2,10 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch3.TreeStatistics
+
 open Finset Nat
 
-namespace TreeStatistics
 
 /-! # Statistics on Trees — Chapter III (Flajolet & Sedgewick)
 
@@ -349,4 +350,86 @@ theorem avlPlusOne_consistent :
     ∀ h : Fin 10, avlMinNodes h + 1 = avlPlusOne h := by
   native_decide
 
-end TreeStatistics
+
+
+structure TreeStatisticsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def TreeStatisticsBudgetCertificate.controlled
+    (c : TreeStatisticsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def TreeStatisticsBudgetCertificate.budgetControlled
+    (c : TreeStatisticsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def TreeStatisticsBudgetCertificate.Ready
+    (c : TreeStatisticsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def TreeStatisticsBudgetCertificate.size
+    (c : TreeStatisticsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem treeStatistics_budgetCertificate_le_size
+    (c : TreeStatisticsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleTreeStatisticsBudgetCertificate :
+    TreeStatisticsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleTreeStatisticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [TreeStatisticsBudgetCertificate.controlled,
+      sampleTreeStatisticsBudgetCertificate]
+  · norm_num [TreeStatisticsBudgetCertificate.budgetControlled,
+      sampleTreeStatisticsBudgetCertificate]
+
+example :
+    sampleTreeStatisticsBudgetCertificate.certificateBudgetWindow ≤
+      sampleTreeStatisticsBudgetCertificate.size := by
+  apply treeStatistics_budgetCertificate_le_size
+  constructor
+  · norm_num [TreeStatisticsBudgetCertificate.controlled,
+      sampleTreeStatisticsBudgetCertificate]
+  · norm_num [TreeStatisticsBudgetCertificate.budgetControlled,
+      sampleTreeStatisticsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleTreeStatisticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [TreeStatisticsBudgetCertificate.controlled,
+      sampleTreeStatisticsBudgetCertificate]
+  · norm_num [TreeStatisticsBudgetCertificate.budgetControlled,
+      sampleTreeStatisticsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleTreeStatisticsBudgetCertificate.certificateBudgetWindow ≤
+      sampleTreeStatisticsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List TreeStatisticsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleTreeStatisticsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleTreeStatisticsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.TreeStatistics

@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace PolygonTriangulations
+namespace AnalyticCombinatorics.PartB.Ch7.PolygonTriangulations
+
 
 /-!
   Chapter VII executable checks around polygon triangulations.
@@ -178,4 +179,86 @@ theorem noncrossing_partition_values_0_to_6 :
     [1, 1, 2, 5, 14, 42, 132] := by
   native_decide
 
-end PolygonTriangulations
+
+
+structure PolygonTriangulationsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PolygonTriangulationsBudgetCertificate.controlled
+    (c : PolygonTriangulationsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PolygonTriangulationsBudgetCertificate.budgetControlled
+    (c : PolygonTriangulationsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PolygonTriangulationsBudgetCertificate.Ready
+    (c : PolygonTriangulationsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PolygonTriangulationsBudgetCertificate.size
+    (c : PolygonTriangulationsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem polygonTriangulations_budgetCertificate_le_size
+    (c : PolygonTriangulationsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePolygonTriangulationsBudgetCertificate :
+    PolygonTriangulationsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : samplePolygonTriangulationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PolygonTriangulationsBudgetCertificate.controlled,
+      samplePolygonTriangulationsBudgetCertificate]
+  · norm_num [PolygonTriangulationsBudgetCertificate.budgetControlled,
+      samplePolygonTriangulationsBudgetCertificate]
+
+example :
+    samplePolygonTriangulationsBudgetCertificate.certificateBudgetWindow ≤
+      samplePolygonTriangulationsBudgetCertificate.size := by
+  apply polygonTriangulations_budgetCertificate_le_size
+  constructor
+  · norm_num [PolygonTriangulationsBudgetCertificate.controlled,
+      samplePolygonTriangulationsBudgetCertificate]
+  · norm_num [PolygonTriangulationsBudgetCertificate.budgetControlled,
+      samplePolygonTriangulationsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    samplePolygonTriangulationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PolygonTriangulationsBudgetCertificate.controlled,
+      samplePolygonTriangulationsBudgetCertificate]
+  · norm_num [PolygonTriangulationsBudgetCertificate.budgetControlled,
+      samplePolygonTriangulationsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePolygonTriangulationsBudgetCertificate.certificateBudgetWindow ≤
+      samplePolygonTriangulationsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List PolygonTriangulationsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePolygonTriangulationsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePolygonTriangulationsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.PolygonTriangulations

@@ -2,9 +2,10 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch3.SpecialSequences
+
 open Finset Nat
 
-namespace SpecialSequences
 
 /-!
 # Special integer sequences
@@ -216,4 +217,94 @@ example :
       choose 9 8 * absEulerEven 4 * tangentCoeff 0 := by
   native_decide
 
-end SpecialSequences
+
+
+structure SpecialSequencesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SpecialSequencesBudgetCertificate.controlled
+    (c : SpecialSequencesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SpecialSequencesBudgetCertificate.budgetControlled
+    (c : SpecialSequencesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SpecialSequencesBudgetCertificate.Ready
+    (c : SpecialSequencesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SpecialSequencesBudgetCertificate.size
+    (c : SpecialSequencesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem specialSequences_budgetCertificate_le_size
+    (c : SpecialSequencesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSpecialSequencesBudgetCertificate :
+    SpecialSequencesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleSpecialSequencesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SpecialSequencesBudgetCertificate.controlled,
+      sampleSpecialSequencesBudgetCertificate]
+  · norm_num [SpecialSequencesBudgetCertificate.budgetControlled,
+      sampleSpecialSequencesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSpecialSequencesBudgetCertificate.certificateBudgetWindow ≤
+      sampleSpecialSequencesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleSpecialSequencesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SpecialSequencesBudgetCertificate.controlled,
+      sampleSpecialSequencesBudgetCertificate]
+  · norm_num [SpecialSequencesBudgetCertificate.budgetControlled,
+      sampleSpecialSequencesBudgetCertificate]
+
+example :
+    sampleSpecialSequencesBudgetCertificate.certificateBudgetWindow ≤
+      sampleSpecialSequencesBudgetCertificate.size := by
+  apply specialSequences_budgetCertificate_le_size
+  constructor
+  · norm_num [SpecialSequencesBudgetCertificate.controlled,
+      sampleSpecialSequencesBudgetCertificate]
+  · norm_num [SpecialSequencesBudgetCertificate.budgetControlled,
+      sampleSpecialSequencesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleSpecialSequencesBudgetCertificate_ready :
+    sampleSpecialSequencesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SpecialSequencesBudgetCertificate.controlled,
+      sampleSpecialSequencesBudgetCertificate]
+  · norm_num [SpecialSequencesBudgetCertificate.budgetControlled,
+      sampleSpecialSequencesBudgetCertificate]
+
+def budgetCertificateListReady (data : List SpecialSequencesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSpecialSequencesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSpecialSequencesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.SpecialSequences

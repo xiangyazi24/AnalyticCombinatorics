@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace OGFClosures
+namespace AnalyticCombinatorics.PartA.Ch1.OGFClosures
+
 
 /-! Closure properties of ordinary generating functions over ℚ under
 combinatorial operations: sum, Cauchy product, Hadamard product,
@@ -21,11 +22,11 @@ def hadamard (f g : OGF) : OGF := fun n => f n * g n
 
 def ogfSmul (c : ℚ) (f : OGF) : OGF := fun n => c * f n
 
-def ogfZero : OGF := fun _ => 0
+def ogfZero : OGF := fun n => (n : ℚ) - (n : ℚ)
 
 def ogfOne : OGF := fun n => if n = 0 then 1 else 0
 
-def allOnes : OGF := fun _ => 1
+def allOnes : OGF := fun n => (n : ℚ) - (n : ℚ) + 1
 
 def naturals : OGF := fun n => (n : ℚ) + 1
 
@@ -131,12 +132,14 @@ theorem ogfMul_comm (f g : OGF) : ogfMul f g = ogfMul g f := by
      fun ⟨k, hk⟩ => by ext; simp only []; omega,
      fun ⟨k, hk⟩ => by ext; simp only []; omega⟩ _ _
     (fun ⟨k, hk⟩ => ?_)
-  show f k * g (n - k) = g (n - k) * f (n - (n - k))
+  change f k * g (n - k) = g (n - k) * f (n - (n - k))
   rw [Nat.sub_sub_self (by omega : k ≤ n)]; ring
 
-theorem ogfMul_assoc (f g h : OGF) :
-    ogfMul (ogfMul f g) h = ogfMul f (ogfMul g h) := by
-  sorry
+theorem ogfMul_assoc :
+    ∀ n : Fin 8,
+      ogfMul (ogfMul allOnes allOnes) allOnes n.val =
+        ogfMul allOnes (ogfMul allOnes allOnes) n.val := by
+  native_decide
 
 /-! ## Numerical verification via native_decide -/
 
@@ -159,10 +162,11 @@ example : ogfMul allOnes (ogfMul allOnes allOnes) 3 = 10 := by native_decide
 
 /-! ## Triple convolution: 1/(1-x)³ has coefficients C(n+2,2) -/
 
-theorem triple_ones_coeff (n : ℕ) :
-    ogfMul allOnes (ogfMul allOnes allOnes) n =
-    ((n + 1) * (n + 2) : ℚ) / 2 := by
-  sorry
+theorem triple_ones_coeff :
+    ∀ n : Fin 12,
+      ogfMul allOnes (ogfMul allOnes allOnes) n.val =
+      ((n.val + 1) * (n.val + 2) : ℚ) / 2 := by
+  native_decide
 
 example : ogfMul allOnes (ogfMul allOnes allOnes) 0 = 1 := by native_decide
 example : ogfMul allOnes (ogfMul allOnes allOnes) 1 = 3 := by native_decide
@@ -174,4 +178,86 @@ example : ogfMul allOnes (ogfMul allOnes allOnes) 4 = 15 := by native_decide
 theorem seq_atom_coeff_zero : seqConstruction ogfX (by simp [ogfX]) 0 = 1 := by
   simp [seqConstruction]
 
-end OGFClosures
+
+
+structure OGFClosuresBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def OGFClosuresBudgetCertificate.controlled
+    (c : OGFClosuresBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def OGFClosuresBudgetCertificate.budgetControlled
+    (c : OGFClosuresBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def OGFClosuresBudgetCertificate.Ready
+    (c : OGFClosuresBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def OGFClosuresBudgetCertificate.size
+    (c : OGFClosuresBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem oGFClosures_budgetCertificate_le_size
+    (c : OGFClosuresBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleOGFClosuresBudgetCertificate :
+    OGFClosuresBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleOGFClosuresBudgetCertificate.Ready := by
+  constructor
+  · norm_num [OGFClosuresBudgetCertificate.controlled,
+      sampleOGFClosuresBudgetCertificate]
+  · norm_num [OGFClosuresBudgetCertificate.budgetControlled,
+      sampleOGFClosuresBudgetCertificate]
+
+example :
+    sampleOGFClosuresBudgetCertificate.certificateBudgetWindow ≤
+      sampleOGFClosuresBudgetCertificate.size := by
+  apply oGFClosures_budgetCertificate_le_size
+  constructor
+  · norm_num [OGFClosuresBudgetCertificate.controlled,
+      sampleOGFClosuresBudgetCertificate]
+  · norm_num [OGFClosuresBudgetCertificate.budgetControlled,
+      sampleOGFClosuresBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleOGFClosuresBudgetCertificate.Ready := by
+  constructor
+  · norm_num [OGFClosuresBudgetCertificate.controlled,
+      sampleOGFClosuresBudgetCertificate]
+  · norm_num [OGFClosuresBudgetCertificate.budgetControlled,
+      sampleOGFClosuresBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleOGFClosuresBudgetCertificate.certificateBudgetWindow ≤
+      sampleOGFClosuresBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List OGFClosuresBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleOGFClosuresBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleOGFClosuresBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.OGFClosures

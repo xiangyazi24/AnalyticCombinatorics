@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace StirlingApproximation
+namespace AnalyticCombinatorics.PartB.Ch8.StirlingApproximation
+
 
 /-!
   Chapter VIII saddle-point numerics: finite, decidable checks around
@@ -239,4 +240,86 @@ theorem doubleFactorial_identity_examples :
         Nat.factorial (2 * 12) / (2^12 * Nat.factorial 12) := by
   native_decide
 
-end StirlingApproximation
+
+
+structure StirlingApproximationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def StirlingApproximationBudgetCertificate.controlled
+    (c : StirlingApproximationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def StirlingApproximationBudgetCertificate.budgetControlled
+    (c : StirlingApproximationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def StirlingApproximationBudgetCertificate.Ready
+    (c : StirlingApproximationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def StirlingApproximationBudgetCertificate.size
+    (c : StirlingApproximationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem stirlingApproximation_budgetCertificate_le_size
+    (c : StirlingApproximationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleStirlingApproximationBudgetCertificate :
+    StirlingApproximationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleStirlingApproximationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [StirlingApproximationBudgetCertificate.controlled,
+      sampleStirlingApproximationBudgetCertificate]
+  · norm_num [StirlingApproximationBudgetCertificate.budgetControlled,
+      sampleStirlingApproximationBudgetCertificate]
+
+example :
+    sampleStirlingApproximationBudgetCertificate.certificateBudgetWindow ≤
+      sampleStirlingApproximationBudgetCertificate.size := by
+  apply stirlingApproximation_budgetCertificate_le_size
+  constructor
+  · norm_num [StirlingApproximationBudgetCertificate.controlled,
+      sampleStirlingApproximationBudgetCertificate]
+  · norm_num [StirlingApproximationBudgetCertificate.budgetControlled,
+      sampleStirlingApproximationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleStirlingApproximationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [StirlingApproximationBudgetCertificate.controlled,
+      sampleStirlingApproximationBudgetCertificate]
+  · norm_num [StirlingApproximationBudgetCertificate.budgetControlled,
+      sampleStirlingApproximationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleStirlingApproximationBudgetCertificate.certificateBudgetWindow ≤
+      sampleStirlingApproximationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List StirlingApproximationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleStirlingApproximationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleStirlingApproximationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.StirlingApproximation

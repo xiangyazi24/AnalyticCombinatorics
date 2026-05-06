@@ -2,9 +2,10 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch1.PolynomialMethods
+
 open Finset
 
-namespace PolynomialMethods
 
 /-!
 # Polynomial Methods in Generating Functions (Chapter I)
@@ -206,4 +207,86 @@ example : Nat.factorial 12 ≤ 4 ^ 6 * (Nat.factorial 6) ^ 2 := by native_decide
 example : Nat.factorial 14 ≤ 4 ^ 7 * (Nat.factorial 7) ^ 2 := by native_decide
 example : Nat.factorial 16 ≤ 4 ^ 8 * (Nat.factorial 8) ^ 2 := by native_decide
 
-end PolynomialMethods
+
+
+structure PolynomialMethodsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PolynomialMethodsBudgetCertificate.controlled
+    (c : PolynomialMethodsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PolynomialMethodsBudgetCertificate.budgetControlled
+    (c : PolynomialMethodsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PolynomialMethodsBudgetCertificate.Ready
+    (c : PolynomialMethodsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PolynomialMethodsBudgetCertificate.size
+    (c : PolynomialMethodsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem polynomialMethods_budgetCertificate_le_size
+    (c : PolynomialMethodsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePolynomialMethodsBudgetCertificate :
+    PolynomialMethodsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : samplePolynomialMethodsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PolynomialMethodsBudgetCertificate.controlled,
+      samplePolynomialMethodsBudgetCertificate]
+  · norm_num [PolynomialMethodsBudgetCertificate.budgetControlled,
+      samplePolynomialMethodsBudgetCertificate]
+
+example :
+    samplePolynomialMethodsBudgetCertificate.certificateBudgetWindow ≤
+      samplePolynomialMethodsBudgetCertificate.size := by
+  apply polynomialMethods_budgetCertificate_le_size
+  constructor
+  · norm_num [PolynomialMethodsBudgetCertificate.controlled,
+      samplePolynomialMethodsBudgetCertificate]
+  · norm_num [PolynomialMethodsBudgetCertificate.budgetControlled,
+      samplePolynomialMethodsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    samplePolynomialMethodsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PolynomialMethodsBudgetCertificate.controlled,
+      samplePolynomialMethodsBudgetCertificate]
+  · norm_num [PolynomialMethodsBudgetCertificate.budgetControlled,
+      samplePolynomialMethodsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePolynomialMethodsBudgetCertificate.certificateBudgetWindow ≤
+      samplePolynomialMethodsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List PolynomialMethodsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePolynomialMethodsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePolynomialMethodsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.PolynomialMethods

@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace SteepestDescent
+namespace AnalyticCombinatorics.PartB.Ch5.SteepestDescent
+
 
 /-!
   Chapter V: steepest descent and stationary phase.
@@ -215,4 +216,86 @@ theorem catalan_asymptotic_ratio_bounds :
       catalanRatioPerThousand i < 1000 := by
   native_decide
 
-end SteepestDescent
+
+
+structure SteepestDescentBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SteepestDescentBudgetCertificate.controlled
+    (c : SteepestDescentBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SteepestDescentBudgetCertificate.budgetControlled
+    (c : SteepestDescentBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SteepestDescentBudgetCertificate.Ready
+    (c : SteepestDescentBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SteepestDescentBudgetCertificate.size
+    (c : SteepestDescentBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem steepestDescent_budgetCertificate_le_size
+    (c : SteepestDescentBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSteepestDescentBudgetCertificate :
+    SteepestDescentBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSteepestDescentBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SteepestDescentBudgetCertificate.controlled,
+      sampleSteepestDescentBudgetCertificate]
+  · norm_num [SteepestDescentBudgetCertificate.budgetControlled,
+      sampleSteepestDescentBudgetCertificate]
+
+example :
+    sampleSteepestDescentBudgetCertificate.certificateBudgetWindow ≤
+      sampleSteepestDescentBudgetCertificate.size := by
+  apply steepestDescent_budgetCertificate_le_size
+  constructor
+  · norm_num [SteepestDescentBudgetCertificate.controlled,
+      sampleSteepestDescentBudgetCertificate]
+  · norm_num [SteepestDescentBudgetCertificate.budgetControlled,
+      sampleSteepestDescentBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSteepestDescentBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SteepestDescentBudgetCertificate.controlled,
+      sampleSteepestDescentBudgetCertificate]
+  · norm_num [SteepestDescentBudgetCertificate.budgetControlled,
+      sampleSteepestDescentBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSteepestDescentBudgetCertificate.certificateBudgetWindow ≤
+      sampleSteepestDescentBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SteepestDescentBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSteepestDescentBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSteepestDescentBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.SteepestDescent

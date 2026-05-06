@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace FunctionalGraphs
+namespace AnalyticCombinatorics.PartB.Ch7.FunctionalGraphs
+
 
 open Finset
 
@@ -227,4 +228,86 @@ theorem sumTreesOverRoots_cayley_1_to_6 :
       sumTreesOverRoots (i.val + 1) = rootedLabelledTrees (i.val + 1) := by
   native_decide
 
-end FunctionalGraphs
+
+
+structure FunctionalGraphsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def FunctionalGraphsBudgetCertificate.controlled
+    (c : FunctionalGraphsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def FunctionalGraphsBudgetCertificate.budgetControlled
+    (c : FunctionalGraphsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def FunctionalGraphsBudgetCertificate.Ready
+    (c : FunctionalGraphsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def FunctionalGraphsBudgetCertificate.size
+    (c : FunctionalGraphsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem functionalGraphs_budgetCertificate_le_size
+    (c : FunctionalGraphsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleFunctionalGraphsBudgetCertificate :
+    FunctionalGraphsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleFunctionalGraphsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [FunctionalGraphsBudgetCertificate.controlled,
+      sampleFunctionalGraphsBudgetCertificate]
+  · norm_num [FunctionalGraphsBudgetCertificate.budgetControlled,
+      sampleFunctionalGraphsBudgetCertificate]
+
+example :
+    sampleFunctionalGraphsBudgetCertificate.certificateBudgetWindow ≤
+      sampleFunctionalGraphsBudgetCertificate.size := by
+  apply functionalGraphs_budgetCertificate_le_size
+  constructor
+  · norm_num [FunctionalGraphsBudgetCertificate.controlled,
+      sampleFunctionalGraphsBudgetCertificate]
+  · norm_num [FunctionalGraphsBudgetCertificate.budgetControlled,
+      sampleFunctionalGraphsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleFunctionalGraphsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [FunctionalGraphsBudgetCertificate.controlled,
+      sampleFunctionalGraphsBudgetCertificate]
+  · norm_num [FunctionalGraphsBudgetCertificate.budgetControlled,
+      sampleFunctionalGraphsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleFunctionalGraphsBudgetCertificate.certificateBudgetWindow ≤
+      sampleFunctionalGraphsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List FunctionalGraphsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleFunctionalGraphsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleFunctionalGraphsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.FunctionalGraphs

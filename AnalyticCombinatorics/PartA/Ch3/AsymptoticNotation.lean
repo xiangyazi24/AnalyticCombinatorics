@@ -3,7 +3,8 @@ import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 set_option linter.style.longLine false
 
-namespace AsymptoticNotation
+namespace AnalyticCombinatorics.PartA.Ch3.AsymptoticNotation
+
 
 /-! # Asymptotic Notation and Growth Rate Comparisons
 
@@ -55,10 +56,14 @@ example : pow3Table 9 = 19683 := by native_decide
 /-! ## 2. Exponential Dominates Polynomial: 2^n > n^3 for n ≥ 10 -/
 
 /-- n^3 for n = 0..15. -/
-def cube : Fin 16 → ℕ := ![0, 1, 8, 27, 64, 125, 216, 343, 512, 729, 1000, 1331, 1728, 2197, 2744, 3375]
+def cube : Fin 16 → ℕ :=
+  ![0, 1, 8, 27, 64, 125, 216, 343,
+    512, 729, 1000, 1331, 1728, 2197, 2744, 3375]
 
 /-- 2^n for n = 0..15. -/
-def pow2_16 : Fin 16 → ℕ := ![1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768]
+def pow2_16 : Fin 16 → ℕ :=
+  ![1, 2, 4, 8, 16, 32, 64, 128,
+    256, 512, 1024, 2048, 4096, 8192, 16384, 32768]
 
 /-- 2^n > n^3 for n = 10..15. -/
 example : ∀ i : Fin 6, pow2_16 ⟨i.val + 10, by omega⟩ > cube ⟨i.val + 10, by omega⟩ := by
@@ -89,7 +94,9 @@ example : pow2_16 7 > sqr 7 := by native_decide
 /-! ## 3. Polynomial Hierarchy: n^3 > n^2 > n -/
 
 /-- n^4 for n = 0..15. -/
-def fourth : Fin 16 → ℕ := ![0, 1, 16, 81, 256, 625, 1296, 2401, 4096, 6561, 10000, 14641, 20736, 28561, 38416, 50625]
+def fourth : Fin 16 → ℕ :=
+  ![0, 1, 16, 81, 256, 625, 1296, 2401,
+    4096, 6561, 10000, 14641, 20736, 28561, 38416, 50625]
 
 -- n^3 > n^2 + n for n = 2..10, equivalently n^3 - n^2 > n (but we avoid ℕ subtraction).
 -- We verify n^3 > n^2 + n directly.
@@ -237,4 +244,96 @@ example : fib 10 < cube 10 := by native_decide
 example : pow2_16 10 > cube 10 := by native_decide
 example : factTable 10 > pow2Table 10 := by native_decide
 
-end AsymptoticNotation
+/-- Catalan growth sample below the `4^n` scale. -/
+theorem catalan_nine_lt_pow4_nine :
+    catalan 9 < pow4 9 := by
+  native_decide
+
+/-- Fibonacci growth sample below the cubic scale at ten. -/
+theorem fib_ten_lt_cube_ten :
+    fib 10 < cube 10 := by
+  native_decide
+
+
+
+structure AsymptoticNotationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AsymptoticNotationBudgetCertificate.controlled
+    (c : AsymptoticNotationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AsymptoticNotationBudgetCertificate.budgetControlled
+    (c : AsymptoticNotationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AsymptoticNotationBudgetCertificate.Ready
+    (c : AsymptoticNotationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AsymptoticNotationBudgetCertificate.size
+    (c : AsymptoticNotationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem asymptoticNotation_budgetCertificate_le_size
+    (c : AsymptoticNotationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAsymptoticNotationBudgetCertificate :
+    AsymptoticNotationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleAsymptoticNotationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AsymptoticNotationBudgetCertificate.controlled,
+      sampleAsymptoticNotationBudgetCertificate]
+  · norm_num [AsymptoticNotationBudgetCertificate.budgetControlled,
+      sampleAsymptoticNotationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAsymptoticNotationBudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptoticNotationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleAsymptoticNotationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AsymptoticNotationBudgetCertificate.controlled,
+      sampleAsymptoticNotationBudgetCertificate]
+  · norm_num [AsymptoticNotationBudgetCertificate.budgetControlled,
+      sampleAsymptoticNotationBudgetCertificate]
+
+example :
+    sampleAsymptoticNotationBudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptoticNotationBudgetCertificate.size := by
+  apply asymptoticNotation_budgetCertificate_le_size
+  constructor
+  · norm_num [AsymptoticNotationBudgetCertificate.controlled,
+      sampleAsymptoticNotationBudgetCertificate]
+  · norm_num [AsymptoticNotationBudgetCertificate.budgetControlled,
+      sampleAsymptoticNotationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List AsymptoticNotationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAsymptoticNotationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAsymptoticNotationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.AsymptoticNotation

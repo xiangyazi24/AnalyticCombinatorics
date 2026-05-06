@@ -19,8 +19,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace MellinHarmonicSums
-
+namespace AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums
 /-! ## 1. Harmonic numbers H_n -/
 
 /-- The n-th harmonic number H_n = Σ_{k=1}^n 1/k, computed as a rational. -/
@@ -113,4 +112,85 @@ theorem binaryDigits_fifteen : binaryDigits 15 = 4 := by native_decide
 
 theorem binaryDigits_sixteen : binaryDigits 16 = 5 := by native_decide
 
-end MellinHarmonicSums
+
+structure MellinHarmonicSumsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def MellinHarmonicSumsBudgetCertificate.controlled
+    (c : MellinHarmonicSumsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def MellinHarmonicSumsBudgetCertificate.budgetControlled
+    (c : MellinHarmonicSumsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def MellinHarmonicSumsBudgetCertificate.Ready
+    (c : MellinHarmonicSumsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def MellinHarmonicSumsBudgetCertificate.size
+    (c : MellinHarmonicSumsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem mellinHarmonicSums_budgetCertificate_le_size
+    (c : MellinHarmonicSumsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleMellinHarmonicSumsBudgetCertificate :
+    MellinHarmonicSumsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleMellinHarmonicSumsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MellinHarmonicSumsBudgetCertificate.controlled,
+      sampleMellinHarmonicSumsBudgetCertificate]
+  · norm_num [MellinHarmonicSumsBudgetCertificate.budgetControlled,
+      sampleMellinHarmonicSumsBudgetCertificate]
+
+example :
+    sampleMellinHarmonicSumsBudgetCertificate.certificateBudgetWindow ≤
+      sampleMellinHarmonicSumsBudgetCertificate.size := by
+  apply mellinHarmonicSums_budgetCertificate_le_size
+  constructor
+  · norm_num [MellinHarmonicSumsBudgetCertificate.controlled,
+      sampleMellinHarmonicSumsBudgetCertificate]
+  · norm_num [MellinHarmonicSumsBudgetCertificate.budgetControlled,
+      sampleMellinHarmonicSumsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleMellinHarmonicSumsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MellinHarmonicSumsBudgetCertificate.controlled,
+      sampleMellinHarmonicSumsBudgetCertificate]
+  · norm_num [MellinHarmonicSumsBudgetCertificate.budgetControlled,
+      sampleMellinHarmonicSumsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleMellinHarmonicSumsBudgetCertificate.certificateBudgetWindow ≤
+      sampleMellinHarmonicSumsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List MellinHarmonicSumsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleMellinHarmonicSumsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleMellinHarmonicSumsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.MellinHarmonicSums

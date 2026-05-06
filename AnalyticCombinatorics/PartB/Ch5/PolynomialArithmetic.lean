@@ -2,9 +2,10 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartB.Ch5.PolynomialArithmetic
+
 open Finset Nat
 
-namespace PolynomialArithmetic
 
 /-! # Polynomial Arithmetic and Enumeration — Chapter V
 
@@ -405,4 +406,101 @@ example : 1 * 2 = 2 := by norm_num  -- e_2
 example : -(1 + 2 : ℤ) = -3 := by norm_num
 example : (1 * 2 : ℤ) = 2  := by norm_num
 
-end PolynomialArithmetic
+/-- Vieta first elementary symmetric sample. -/
+theorem vieta_first_symmetric_sample :
+    (1 + 2 : ℤ) = 3 := by
+  norm_num
+
+/-- Vieta second elementary symmetric sample. -/
+theorem vieta_second_symmetric_sample :
+    (1 * 2 : ℤ) = 2 := by
+  norm_num
+
+/-- A polynomial coefficient arithmetic sample used by the finite checks. -/
+theorem polynomial_coefficient_sample :
+    (3 : ℤ) ^ 2 - 2 * 3 + 1 = 4 := by
+  norm_num
+
+
+
+structure PolynomialArithmeticBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PolynomialArithmeticBudgetCertificate.controlled
+    (c : PolynomialArithmeticBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PolynomialArithmeticBudgetCertificate.budgetControlled
+    (c : PolynomialArithmeticBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PolynomialArithmeticBudgetCertificate.Ready
+    (c : PolynomialArithmeticBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PolynomialArithmeticBudgetCertificate.size
+    (c : PolynomialArithmeticBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem polynomialArithmetic_budgetCertificate_le_size
+    (c : PolynomialArithmeticBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePolynomialArithmeticBudgetCertificate :
+    PolynomialArithmeticBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    samplePolynomialArithmeticBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PolynomialArithmeticBudgetCertificate.controlled,
+      samplePolynomialArithmeticBudgetCertificate]
+  · norm_num [PolynomialArithmeticBudgetCertificate.budgetControlled,
+      samplePolynomialArithmeticBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePolynomialArithmeticBudgetCertificate.certificateBudgetWindow ≤
+      samplePolynomialArithmeticBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : samplePolynomialArithmeticBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PolynomialArithmeticBudgetCertificate.controlled,
+      samplePolynomialArithmeticBudgetCertificate]
+  · norm_num [PolynomialArithmeticBudgetCertificate.budgetControlled,
+      samplePolynomialArithmeticBudgetCertificate]
+
+example :
+    samplePolynomialArithmeticBudgetCertificate.certificateBudgetWindow ≤
+      samplePolynomialArithmeticBudgetCertificate.size := by
+  apply polynomialArithmetic_budgetCertificate_le_size
+  constructor
+  · norm_num [PolynomialArithmeticBudgetCertificate.controlled,
+      samplePolynomialArithmeticBudgetCertificate]
+  · norm_num [PolynomialArithmeticBudgetCertificate.budgetControlled,
+      samplePolynomialArithmeticBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List PolynomialArithmeticBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePolynomialArithmeticBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePolynomialArithmeticBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.PolynomialArithmetic

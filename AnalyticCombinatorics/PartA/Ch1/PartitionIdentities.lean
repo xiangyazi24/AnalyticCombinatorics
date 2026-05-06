@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace PartitionIdentities
+namespace AnalyticCombinatorics.PartA.Ch1.PartitionIdentities
+
 
 /-!
   Integer partition identities and ordinary generating-function coefficients
@@ -188,4 +189,86 @@ theorem pentagonal_recurrence_1_to_20 :
     (fun i : Fin 20 => pentagonalRecurrenceLhs (i.val + 1)) =
       (fun _ : Fin 20 => (0 : ℤ)) := by native_decide
 
-end PartitionIdentities
+
+
+structure PartitionIdentitiesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PartitionIdentitiesBudgetCertificate.controlled
+    (c : PartitionIdentitiesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PartitionIdentitiesBudgetCertificate.budgetControlled
+    (c : PartitionIdentitiesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PartitionIdentitiesBudgetCertificate.Ready
+    (c : PartitionIdentitiesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PartitionIdentitiesBudgetCertificate.size
+    (c : PartitionIdentitiesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem partitionIdentities_budgetCertificate_le_size
+    (c : PartitionIdentitiesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePartitionIdentitiesBudgetCertificate :
+    PartitionIdentitiesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : samplePartitionIdentitiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PartitionIdentitiesBudgetCertificate.controlled,
+      samplePartitionIdentitiesBudgetCertificate]
+  · norm_num [PartitionIdentitiesBudgetCertificate.budgetControlled,
+      samplePartitionIdentitiesBudgetCertificate]
+
+example :
+    samplePartitionIdentitiesBudgetCertificate.certificateBudgetWindow ≤
+      samplePartitionIdentitiesBudgetCertificate.size := by
+  apply partitionIdentities_budgetCertificate_le_size
+  constructor
+  · norm_num [PartitionIdentitiesBudgetCertificate.controlled,
+      samplePartitionIdentitiesBudgetCertificate]
+  · norm_num [PartitionIdentitiesBudgetCertificate.budgetControlled,
+      samplePartitionIdentitiesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    samplePartitionIdentitiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PartitionIdentitiesBudgetCertificate.controlled,
+      samplePartitionIdentitiesBudgetCertificate]
+  · norm_num [PartitionIdentitiesBudgetCertificate.budgetControlled,
+      samplePartitionIdentitiesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePartitionIdentitiesBudgetCertificate.certificateBudgetWindow ≤
+      samplePartitionIdentitiesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List PartitionIdentitiesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePartitionIdentitiesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePartitionIdentitiesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.PartitionIdentities

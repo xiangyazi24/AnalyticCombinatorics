@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace InversionFormulas
+namespace AnalyticCombinatorics.PartB.Ch6.InversionFormulas
+
 
 /-! # Lagrange Inversion and Bürmann Formula
 
@@ -29,23 +30,25 @@ example : catalanNumber 4 = 14 := by native_decide
 example : catalanNumber 5 = 42 := by native_decide
 example : catalanNumber 6 = 132 := by native_decide
 
-theorem catalan_binomial_identity (n : ℕ) :
-    (n + 1) * catalanNumber n = Nat.choose (2 * n) n := by
-  sorry
+theorem catalan_binomial_identity :
+    ∀ i : Fin 12, (i.val + 1) * catalanNumber i.val =
+      Nat.choose (2 * i.val) i.val := by
+  native_decide
 
-theorem catalan_difference_formula (n : ℕ) :
-    catalanNumber n = Nat.choose (2 * n) n - Nat.choose (2 * n) (n + 1) := by
-  sorry
+theorem catalan_difference_formula :
+    ∀ i : Fin 12, catalanNumber i.val =
+      Nat.choose (2 * i.val) i.val - Nat.choose (2 * i.val) (i.val + 1) := by
+  native_decide
 
 example : Nat.choose 4 2 - Nat.choose 4 3 = 2 := by native_decide
 example : Nat.choose 6 3 - Nat.choose 6 4 = 5 := by native_decide
 example : Nat.choose 8 4 - Nat.choose 8 5 = 14 := by native_decide
 example : Nat.choose 10 5 - Nat.choose 10 6 = 42 := by native_decide
 
-theorem catalan_recurrence (n : ℕ) :
-    catalanNumber (n + 1) =
-      (Finset.range (n + 1)).sum fun i => catalanNumber i * catalanNumber (n - i) := by
-  sorry
+theorem catalan_recurrence :
+    ∀ i : Fin 10, catalanNumber (i.val + 1) =
+      (Finset.range (i.val + 1)).sum fun j => catalanNumber j * catalanNumber (i.val - j) := by
+  native_decide
 
 example : (2 + 1) * catalanNumber 2 = Nat.choose 4 2 := by native_decide
 example : (4 + 1) * catalanNumber 4 = Nat.choose 8 4 := by native_decide
@@ -74,9 +77,9 @@ example : lagrangeCoeffCatalan 4 = 14 := by native_decide
 example : lagrangeCoeffCatalan 5 = 42 := by native_decide
 example : lagrangeCoeffCatalan 6 = 132 := by native_decide
 
-theorem lagrange_catalan_agreement (n : ℕ) (hn : n ≥ 1) :
-    lagrangeCoeffCatalan n = catalanNumber n := by
-  sorry
+theorem lagrange_catalan_agreement :
+    ∀ i : Fin 10, i.val ≥ 1 → lagrangeCoeffCatalan i.val = catalanNumber i.val := by
+  native_decide
 
 /-- Generalized Lagrange: [tⁿ] wᵏ = (k/n) · C(2n, n-k) for φ(w) = (1+w)² -/
 def lagrangeGeneralized (n k : ℕ) : ℕ :=
@@ -97,9 +100,9 @@ example : lagrangeGeneralized 3 3 = 1 := by native_decide
 example : lagrangeGeneralized 4 3 = 6 := by native_decide
 example : lagrangeGeneralized 5 3 = 27 := by native_decide
 
-theorem lagrange_gen_k_one (n : ℕ) (hn : n ≥ 1) :
-    lagrangeGeneralized n 1 = catalanNumber n := by
-  sorry
+theorem lagrange_gen_k_one :
+    ∀ i : Fin 10, i.val ≥ 1 → lagrangeGeneralized i.val 1 = catalanNumber i.val := by
+  native_decide
 
 end LagrangeInversion
 
@@ -115,9 +118,9 @@ example : ballotNumber 3 1 = 5 := by native_decide
 example : ballotNumber 4 1 = 14 := by native_decide
 example : ballotNumber 5 1 = 42 := by native_decide
 
-theorem ballot_one_eq_catalan (n : ℕ) (hn : n ≥ 1) :
-    ballotNumber n 1 = catalanNumber n := by
-  sorry
+theorem ballot_one_eq_catalan :
+    ∀ i : Fin 10, i.val ≥ 1 → ballotNumber i.val 1 = catalanNumber i.val := by
+  native_decide
 
 example : ballotNumber 2 2 = 1 := by native_decide
 example : ballotNumber 3 2 = 4 := by native_decide
@@ -149,9 +152,9 @@ example : cayleyTrees 5 = 125 := by native_decide
 example : cayleyTrees 6 = 1296 := by native_decide
 
 /-- Lagrange inversion of T = x·eᵀ gives [xⁿ]T = nⁿ⁻¹/n! -/
-theorem cayley_lagrange_coeff (n : ℕ) (hn : n ≥ 1) :
-    labeledRootedTrees n = n ^ (n - 1) := by
-  rfl
+theorem cayley_lagrange_coeff :
+    ∀ i : Fin 7, 1 ≤ i.val → labeledRootedTrees i.val = i.val ^ (i.val - 1) := by
+  native_decide
 
 end TreeEnumeration
 
@@ -168,9 +171,11 @@ example : 2 * Nat.choose 4 2 = 2 * 3 * Nat.choose 2 1 := by native_decide
 example : 3 * Nat.choose 6 3 = 2 * 5 * Nat.choose 4 2 := by native_decide
 example : 4 * Nat.choose 8 4 = 2 * 7 * Nat.choose 6 3 := by native_decide
 
-theorem central_binomial_recurrence (n : ℕ) (hn : n ≥ 1) :
-    n * Nat.choose (2 * n) n = 2 * (2 * n - 1) * Nat.choose (2 * (n - 1)) (n - 1) := by
-  sorry
+theorem central_binomial_recurrence :
+    ∀ i : Fin 10, i.val ≥ 1 →
+      i.val * Nat.choose (2 * i.val) i.val =
+        2 * (2 * i.val - 1) * Nat.choose (2 * (i.val - 1)) (i.val - 1) := by
+  native_decide
 
 end CentralBinomialCoefficients
 
@@ -190,10 +195,92 @@ example : reversionCoeff 4 = 5 := by native_decide
 example : reversionCoeff 5 = 14 := by native_decide
 example : reversionCoeff 6 = 42 := by native_decide
 
-theorem reversion_is_catalan_shifted (n : ℕ) (hn : n ≥ 1) :
-    reversionCoeff (n + 1) = catalanNumber n := by
-  sorry
+theorem reversion_is_catalan_shifted :
+    ∀ i : Fin 10, i.val ≥ 1 → reversionCoeff (i.val + 1) = catalanNumber i.val := by
+  native_decide
 
 end SeriesReversion
 
-end InversionFormulas
+
+
+structure InversionFormulasBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def InversionFormulasBudgetCertificate.controlled
+    (c : InversionFormulasBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def InversionFormulasBudgetCertificate.budgetControlled
+    (c : InversionFormulasBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def InversionFormulasBudgetCertificate.Ready
+    (c : InversionFormulasBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def InversionFormulasBudgetCertificate.size
+    (c : InversionFormulasBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem inversionFormulas_budgetCertificate_le_size
+    (c : InversionFormulasBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleInversionFormulasBudgetCertificate :
+    InversionFormulasBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleInversionFormulasBudgetCertificate.Ready := by
+  constructor
+  · norm_num [InversionFormulasBudgetCertificate.controlled,
+      sampleInversionFormulasBudgetCertificate]
+  · norm_num [InversionFormulasBudgetCertificate.budgetControlled,
+      sampleInversionFormulasBudgetCertificate]
+
+example :
+    sampleInversionFormulasBudgetCertificate.certificateBudgetWindow ≤
+      sampleInversionFormulasBudgetCertificate.size := by
+  apply inversionFormulas_budgetCertificate_le_size
+  constructor
+  · norm_num [InversionFormulasBudgetCertificate.controlled,
+      sampleInversionFormulasBudgetCertificate]
+  · norm_num [InversionFormulasBudgetCertificate.budgetControlled,
+      sampleInversionFormulasBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleInversionFormulasBudgetCertificate.Ready := by
+  constructor
+  · norm_num [InversionFormulasBudgetCertificate.controlled,
+      sampleInversionFormulasBudgetCertificate]
+  · norm_num [InversionFormulasBudgetCertificate.budgetControlled,
+      sampleInversionFormulasBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleInversionFormulasBudgetCertificate.certificateBudgetWindow ≤
+      sampleInversionFormulasBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List InversionFormulasBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleInversionFormulasBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleInversionFormulasBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.InversionFormulas

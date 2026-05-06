@@ -15,8 +15,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace BranchingProcesses
-
+namespace AnalyticCombinatorics.PartB.Ch9.BranchingProcesses
 open Finset
 
 /-! ## 1.  Catalan numbers -/
@@ -309,7 +308,7 @@ theorem quadratic_roots :
 The dominant singularity is at z = 1/4.
 The asymptotic is C_n ~ 4^n / (n^{3/2} · √π).
 
-Rational proxy: C_n / (4^n / n) for small n (checks growth rate). -/
+Rational check: C_n / (4^n / n) for small n (checks growth rate). -/
 def catalanRatio (n : ℕ) : ℚ :=
   if n = 0 then 1
   else (catalan n : ℚ) * n / 4 ^ n
@@ -377,4 +376,85 @@ theorem perfectTreeIPL_superlinear :
     perfectTreeIPL 5 > 2 * perfectTreeIPL 4 := by
   native_decide
 
-end BranchingProcesses
+
+structure BranchingProcessesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def BranchingProcessesBudgetCertificate.controlled
+    (c : BranchingProcessesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def BranchingProcessesBudgetCertificate.budgetControlled
+    (c : BranchingProcessesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def BranchingProcessesBudgetCertificate.Ready
+    (c : BranchingProcessesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def BranchingProcessesBudgetCertificate.size
+    (c : BranchingProcessesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem branchingProcesses_budgetCertificate_le_size
+    (c : BranchingProcessesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleBranchingProcessesBudgetCertificate :
+    BranchingProcessesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleBranchingProcessesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [BranchingProcessesBudgetCertificate.controlled,
+      sampleBranchingProcessesBudgetCertificate]
+  · norm_num [BranchingProcessesBudgetCertificate.budgetControlled,
+      sampleBranchingProcessesBudgetCertificate]
+
+example :
+    sampleBranchingProcessesBudgetCertificate.certificateBudgetWindow ≤
+      sampleBranchingProcessesBudgetCertificate.size := by
+  apply branchingProcesses_budgetCertificate_le_size
+  constructor
+  · norm_num [BranchingProcessesBudgetCertificate.controlled,
+      sampleBranchingProcessesBudgetCertificate]
+  · norm_num [BranchingProcessesBudgetCertificate.budgetControlled,
+      sampleBranchingProcessesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleBranchingProcessesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [BranchingProcessesBudgetCertificate.controlled,
+      sampleBranchingProcessesBudgetCertificate]
+  · norm_num [BranchingProcessesBudgetCertificate.budgetControlled,
+      sampleBranchingProcessesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleBranchingProcessesBudgetCertificate.certificateBudgetWindow ≤
+      sampleBranchingProcessesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List BranchingProcessesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleBranchingProcessesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleBranchingProcessesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.BranchingProcesses

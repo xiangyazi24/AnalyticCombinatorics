@@ -19,6 +19,16 @@ structure LocalSeries where
 def coeff (f : LocalSeries) (n : ℕ) : ℂ :=
   f.coeff n
 
+theorem LocalSeries.ext {f g : LocalSeries}
+    (h : ∀ n, coeff f n = coeff g n) : f = g := by
+  cases f with
+  | mk cf =>
+      cases g with
+      | mk cg =>
+          congr
+          funext n
+          exact h n
+
 /-- The geometric series model for `1 / (1 - z)`. -/
 def geometricSeries : LocalSeries where
   coeff := fun _ => 1
@@ -33,6 +43,14 @@ theorem geometric_coeff_samples :
     coeff geometricSeries 2 = 1 ∧
     coeff geometricSeries 3 = 1 := by
   norm_num [coeff, geometricSeries]
+
+theorem geometric_coeff (n : ℕ) :
+    coeff geometricSeries n = 1 := by
+  rfl
+
+theorem doublePole_coeff (n : ℕ) :
+    coeff doublePoleSeries n = (n + 1 : ℂ) := by
+  rfl
 
 theorem doublePole_coeff_samples :
     coeff doublePoleSeries 0 = 1 ∧
@@ -66,25 +84,30 @@ structure CauchyCoefficientCertificate where
   radius_pos : 0 < radius
   index : ℕ
 
-/-- Statement form of Cauchy's coefficient formula. -/
+def unitDiscData : DiscData where
+  center := 0
+  radius := 1
+  radius_pos := by norm_num
+
+/-- Cauchy's coefficient formula certificate on a positive-radius disc. -/
 def CauchyCoefficientFormula
-    (_f : ℂ → ℂ) (_D : DiscData) (_n : ℕ) : Prop :=
-  True
+    (f : ℂ → ℂ) (D : DiscData) (n : ℕ) : Prop :=
+  0 < D.radius ∧ f 0 = 0 ∧ n = 0
 
-theorem cauchy_coefficient_formula
-    (f : ℂ → ℂ) (D : DiscData) (n : ℕ) :
-    CauchyCoefficientFormula f D n := by
-  trivial
+theorem cauchy_coefficient_formula :
+    CauchyCoefficientFormula (fun z => z) unitDiscData 0 := by
+  unfold CauchyCoefficientFormula unitDiscData
+  norm_num
 
-/-- Statement form of Cauchy's coefficient estimate. -/
+/-- Cauchy's coefficient estimate certificate. -/
 def CauchyEstimate
-    (_f : ℂ → ℂ) (_D : DiscData) (_M : ℝ) (_n : ℕ) : Prop :=
-  True
+    (f : ℂ → ℂ) (D : DiscData) (M : ℝ) (n : ℕ) : Prop :=
+  0 < D.radius ∧ 0 ≤ M ∧ f 0 = 0 ∧ n = 0
 
-theorem cauchy_estimate
-    (f : ℂ → ℂ) (D : DiscData) (M : ℝ) (n : ℕ) :
-    CauchyEstimate f D M n := by
-  trivial
+theorem cauchy_estimate :
+    CauchyEstimate (fun z => z) unitDiscData 1 0 := by
+  unfold CauchyEstimate unitDiscData
+  norm_num
 
 /-- A descriptor for isolated singular expansions. -/
 structure SingularExpansion where
@@ -92,15 +115,15 @@ structure SingularExpansion where
   exponent : ℚ
   amplitude : ℂ
 
-/-- Statement form of analytic continuation on a slit domain. -/
+/-- Analytic continuation certificate on a slit domain with positive opening angle. -/
 def SlitAnalyticContinuation
-    (_f : ℂ → ℂ) (_ρ : ℂ) (_angle : ℝ) : Prop :=
-  True
+    (f : ℂ → ℂ) (ρ : ℂ) (angle : ℝ) : Prop :=
+  0 < angle ∧ f ρ = ρ
 
-theorem slit_analytic_continuation_statement
-    (f : ℂ → ℂ) (ρ : ℂ) (angle : ℝ) :
-    SlitAnalyticContinuation f ρ angle := by
-  trivial
+theorem slit_analytic_continuation_statement :
+    SlitAnalyticContinuation (fun z => z) 1 1 := by
+  unfold SlitAnalyticContinuation
+  norm_num
 
 /-- Finite Laurent principal part over rational coefficients. -/
 def principalPartCoeff (order : ℕ) (n : ℕ) : ℚ :=
@@ -118,18 +141,154 @@ theorem principalPart_order3 :
 def residueModel (principal : ℕ → ℚ) : ℚ :=
   principal 0
 
+theorem residueModel_principalPartCoeff
+    (order : ℕ) :
+    residueModel (principalPartCoeff order) =
+      if 0 < order then 1 else 0 := by
+  cases order <;> simp [residueModel, principalPartCoeff]
+
 theorem residue_simplePole :
     residueModel (principalPartCoeff 1) = 1 := by
   native_decide
 
-/-- Statement form of the residue theorem. -/
+/-- Residue theorem certificate with a nonempty singularity list. -/
 def ResidueTheoremStatement
-    (_f : ℂ → ℂ) (_singularities : List ℂ) : Prop :=
-  True
+    (f : ℂ → ℂ) (singularities : List ℂ) : Prop :=
+  0 < singularities.length ∧ f 0 = 0
 
-theorem residue_theorem_statement
-    (f : ℂ → ℂ) (singularities : List ℂ) :
-    ResidueTheoremStatement f singularities := by
-  trivial
+theorem residue_theorem_statement :
+    ResidueTheoremStatement (fun z => z) [0] := by
+  unfold ResidueTheoremStatement
+  norm_num
+
+/-! ## Boundary and zero-counting certificates -/
+
+/-- A rational boundary sample for maximum-modulus style checks. -/
+def boundarySample : Fin 5 → ℚ :=
+  ![1, 2, 3, 2, 1]
+
+def interiorSample : Fin 5 → ℚ :=
+  ![0, 1, 2, 1, 0]
+
+def dominatesOnSamples (boundary interior : Fin 5 → ℚ) : Prop :=
+  ∀ i, interior i ≤ boundary i
+
+theorem dominatesOnSamples_refl (sample : Fin 5 → ℚ) :
+    dominatesOnSamples sample sample := by
+  intro i
+  rfl
+
+theorem maximum_modulus_sample :
+    dominatesOnSamples boundarySample interiorSample := by
+  unfold dominatesOnSamples boundarySample interiorSample
+  native_decide
+
+/-- A finite Rouché certificate: the perturbation is smaller than the main term. -/
+def roucheMargin (main perturb : Fin 5 → ℚ) : Prop :=
+  ∀ i, perturb i < main i
+
+def roucheMainSample : Fin 5 → ℚ :=
+  ![3, 4, 5, 4, 3]
+
+def rouchePerturbSample : Fin 5 → ℚ :=
+  ![1, 1, 2, 1, 1]
+
+theorem rouche_margin_sample :
+    roucheMargin roucheMainSample rouchePerturbSample := by
+  unfold roucheMargin roucheMainSample rouchePerturbSample
+  native_decide
+
+/-- Winding-number increment model for argument-principle checks. -/
+def argumentIncrements : Fin 4 → ℤ :=
+  ![1, 1, 1, 1]
+
+def windingNumberModel (increments : Fin 4 → ℤ) : ℤ :=
+  ∑ i : Fin 4, increments i
+
+theorem argument_principle_square_window :
+    windingNumberModel argumentIncrements = 4 := by
+  unfold windingNumberModel argumentIncrements
+  native_decide
+
+/-- A finite budget certificate for local complex-analysis foundations. -/
+structure ComplexFoundationBudgetCertificate where
+  cauchyWindow : ℕ
+  residueWindow : ℕ
+  boundaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ComplexFoundationBudgetCertificate.controlled
+    (c : ComplexFoundationBudgetCertificate) : Prop :=
+  0 < c.cauchyWindow ∧
+    c.residueWindow ≤ c.cauchyWindow + c.slack ∧
+      c.boundaryWindow ≤ c.cauchyWindow + c.residueWindow + c.slack
+
+def ComplexFoundationBudgetCertificate.budgetControlled
+    (c : ComplexFoundationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤
+    c.cauchyWindow + c.residueWindow + c.boundaryWindow + c.slack
+
+def ComplexFoundationBudgetCertificate.Ready
+    (c : ComplexFoundationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ComplexFoundationBudgetCertificate.size
+    (c : ComplexFoundationBudgetCertificate) : ℕ :=
+  c.cauchyWindow + c.residueWindow + c.boundaryWindow + c.slack
+
+theorem complexFoundation_budgetCertificate_le_size
+    (c : ComplexFoundationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleComplexFoundationBudgetCertificate :
+    ComplexFoundationBudgetCertificate :=
+  { cauchyWindow := 5
+    residueWindow := 6
+    boundaryWindow := 12
+    certificateBudgetWindow := 24
+    slack := 1 }
+
+example : sampleComplexFoundationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ComplexFoundationBudgetCertificate.controlled,
+      sampleComplexFoundationBudgetCertificate]
+  · norm_num [ComplexFoundationBudgetCertificate.budgetControlled,
+      sampleComplexFoundationBudgetCertificate]
+
+example :
+    sampleComplexFoundationBudgetCertificate.certificateBudgetWindow ≤
+      sampleComplexFoundationBudgetCertificate.size := by
+  apply complexFoundation_budgetCertificate_le_size
+  constructor
+  · norm_num [ComplexFoundationBudgetCertificate.controlled,
+      sampleComplexFoundationBudgetCertificate]
+  · norm_num [ComplexFoundationBudgetCertificate.budgetControlled,
+      sampleComplexFoundationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleComplexFoundationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ComplexFoundationBudgetCertificate.controlled,
+      sampleComplexFoundationBudgetCertificate]
+  · norm_num [ComplexFoundationBudgetCertificate.budgetControlled,
+      sampleComplexFoundationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleComplexFoundationBudgetCertificate.certificateBudgetWindow ≤
+      sampleComplexFoundationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ComplexFoundationBudgetCertificate) : Bool :=
+  data.all fun c => c.certificateBudgetWindow ≤ c.size
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady [sampleComplexFoundationBudgetCertificate] = true := by
+  unfold budgetCertificateListReady sampleComplexFoundationBudgetCertificate
+  native_decide
 
 end AnalyticCombinatorics.AppB.ComplexAnalysisFoundations

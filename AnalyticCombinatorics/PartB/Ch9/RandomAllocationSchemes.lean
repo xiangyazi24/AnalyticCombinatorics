@@ -2,9 +2,10 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartB.Ch9.RandomAllocationSchemes
+
 open Finset Nat
 
-namespace RandomAllocationSchemes
 
 /-!
   Analytic Combinatorics — Part B
@@ -217,4 +218,86 @@ theorem poissonApprox_sum_1_3 :
     poissonApproxPMF 1 0 3 + poissonApproxPMF 1 1 3 +
     poissonApproxPMF 1 2 3 + poissonApproxPMF 1 3 3 = 1 := by native_decide
 
-end RandomAllocationSchemes
+
+
+structure RandomAllocationSchemesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def RandomAllocationSchemesBudgetCertificate.controlled
+    (c : RandomAllocationSchemesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def RandomAllocationSchemesBudgetCertificate.budgetControlled
+    (c : RandomAllocationSchemesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def RandomAllocationSchemesBudgetCertificate.Ready
+    (c : RandomAllocationSchemesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def RandomAllocationSchemesBudgetCertificate.size
+    (c : RandomAllocationSchemesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem randomAllocationSchemes_budgetCertificate_le_size
+    (c : RandomAllocationSchemesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleRandomAllocationSchemesBudgetCertificate :
+    RandomAllocationSchemesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleRandomAllocationSchemesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RandomAllocationSchemesBudgetCertificate.controlled,
+      sampleRandomAllocationSchemesBudgetCertificate]
+  · norm_num [RandomAllocationSchemesBudgetCertificate.budgetControlled,
+      sampleRandomAllocationSchemesBudgetCertificate]
+
+example :
+    sampleRandomAllocationSchemesBudgetCertificate.certificateBudgetWindow ≤
+      sampleRandomAllocationSchemesBudgetCertificate.size := by
+  apply randomAllocationSchemes_budgetCertificate_le_size
+  constructor
+  · norm_num [RandomAllocationSchemesBudgetCertificate.controlled,
+      sampleRandomAllocationSchemesBudgetCertificate]
+  · norm_num [RandomAllocationSchemesBudgetCertificate.budgetControlled,
+      sampleRandomAllocationSchemesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleRandomAllocationSchemesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RandomAllocationSchemesBudgetCertificate.controlled,
+      sampleRandomAllocationSchemesBudgetCertificate]
+  · norm_num [RandomAllocationSchemesBudgetCertificate.budgetControlled,
+      sampleRandomAllocationSchemesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleRandomAllocationSchemesBudgetCertificate.certificateBudgetWindow ≤
+      sampleRandomAllocationSchemesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List RandomAllocationSchemesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleRandomAllocationSchemesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleRandomAllocationSchemesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.RandomAllocationSchemes

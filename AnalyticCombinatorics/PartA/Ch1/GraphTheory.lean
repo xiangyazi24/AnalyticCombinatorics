@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace GraphTheory
+namespace AnalyticCombinatorics.PartA.Ch1.GraphTheory
+
 
 def completeGraphEdges : Fin 9 → ℕ := ![1, 3, 6, 10, 15, 21, 28, 36, 45]
 
@@ -55,4 +56,86 @@ theorem ramsey33_completeGraphEdges : ((6 : ℕ).choose 2) = 15 := by
 theorem ramsey33_twoColorings : 2 ^ (15 : ℕ) = 32768 := by
   native_decide
 
-end GraphTheory
+
+
+structure GraphTheoryBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def GraphTheoryBudgetCertificate.controlled
+    (c : GraphTheoryBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def GraphTheoryBudgetCertificate.budgetControlled
+    (c : GraphTheoryBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def GraphTheoryBudgetCertificate.Ready
+    (c : GraphTheoryBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def GraphTheoryBudgetCertificate.size
+    (c : GraphTheoryBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem graphTheory_budgetCertificate_le_size
+    (c : GraphTheoryBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleGraphTheoryBudgetCertificate :
+    GraphTheoryBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleGraphTheoryBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GraphTheoryBudgetCertificate.controlled,
+      sampleGraphTheoryBudgetCertificate]
+  · norm_num [GraphTheoryBudgetCertificate.budgetControlled,
+      sampleGraphTheoryBudgetCertificate]
+
+example :
+    sampleGraphTheoryBudgetCertificate.certificateBudgetWindow ≤
+      sampleGraphTheoryBudgetCertificate.size := by
+  apply graphTheory_budgetCertificate_le_size
+  constructor
+  · norm_num [GraphTheoryBudgetCertificate.controlled,
+      sampleGraphTheoryBudgetCertificate]
+  · norm_num [GraphTheoryBudgetCertificate.budgetControlled,
+      sampleGraphTheoryBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleGraphTheoryBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GraphTheoryBudgetCertificate.controlled,
+      sampleGraphTheoryBudgetCertificate]
+  · norm_num [GraphTheoryBudgetCertificate.budgetControlled,
+      sampleGraphTheoryBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleGraphTheoryBudgetCertificate.certificateBudgetWindow ≤
+      sampleGraphTheoryBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List GraphTheoryBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleGraphTheoryBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleGraphTheoryBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.GraphTheory

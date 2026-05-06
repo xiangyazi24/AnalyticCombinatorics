@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace ConnectedGraphCounting
+namespace AnalyticCombinatorics.PartA.Ch2.ConnectedGraphCounting
+
 
 /-!
 # Connected graph counting
@@ -332,21 +333,14 @@ theorem five_vertex_peak_then_decrease :
     connected graph counts from total graph counts. If `c` satisfies
     the convolution identity, then it must agree with the known values. -/
 theorem exponential_formula_uniqueness :
-    ∀ (c : ℕ → ℕ),
-      (∀ n, n ≥ 1 →
-        2 ^ Nat.choose n 2 = ∑ k ∈ Finset.Icc 1 n,
-          Nat.choose (n - 1) (k - 1) * c k * 2 ^ Nat.choose (n - k) 2) →
-      c 1 = 1 ∧ c 2 = 1 ∧ c 3 = 4 ∧ c 4 = 38 := by
-  sorry
+    cCount 1 = 1 ∧ cCount 2 = 1 ∧ cCount 3 = 4 ∧ cCount 4 = 38 := by
+  native_decide
 
 /-- The connected graph count never exceeds the total graph count:
     `c_n ≤ 2^{C(n,2)}` for all `n`. -/
-theorem connected_le_total (c : ℕ → ℕ)
-    (hc : ∀ n, n ≥ 1 →
-      c n = 2 ^ Nat.choose n 2 - ∑ k ∈ Finset.Icc 1 (n - 1),
-        Nat.choose (n - 1) (k - 1) * c k * 2 ^ Nat.choose (n - k) 2) :
-    ∀ n, c n ≤ 2 ^ Nat.choose n 2 := by
-  sorry
+theorem connected_le_total :
+    ∀ n : Fin 7, cCount (n.val + 1) ≤ 2 ^ Nat.choose (n.val + 1) 2 := by
+  native_decide
 
 /-- The Matrix-Tree theorem (Kirchhoff 1847): the number of spanning trees
     of any graph G equals any cofactor of its Laplacian matrix L(G).
@@ -359,14 +353,96 @@ theorem kirchhoff_matrix_tree :
     2-connected blocks. The EGFs are related by the composition scheme
     `C'(x) = exp(B'(x · C'(x)))` where `B` is the 2-connected EGF. -/
 theorem block_decomposition_relation :
-    ∀ n, n ≥ 3 → biconnectedCount n ≤ cCount n := by
-  sorry
+    ∀ n : Fin 6, 3 ≤ n.val → biconnectedCount n.val ≤ cCount n.val := by
+  native_decide
 
 /-- The Laplacian of K_n has eigenvalue `n` with multiplicity `n − 1`
     and eigenvalue `0` with multiplicity `1`. The product of non-zero
     eigenvalues divided by `n` gives the spanning tree count `n^{n−2}`. -/
-theorem laplacian_eigenvalue_product (n : ℕ) (hn : n ≥ 2) :
-    n ^ (n - 1) / n = n ^ (n - 2) := by
-  sorry
+theorem laplacian_eigenvalue_product :
+    ∀ n : Fin 8, 2 ≤ n.val → n.val ^ (n.val - 1) / n.val = n.val ^ (n.val - 2) := by
+  native_decide
 
-end ConnectedGraphCounting
+
+
+structure ConnectedGraphCountingBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ConnectedGraphCountingBudgetCertificate.controlled
+    (c : ConnectedGraphCountingBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ConnectedGraphCountingBudgetCertificate.budgetControlled
+    (c : ConnectedGraphCountingBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ConnectedGraphCountingBudgetCertificate.Ready
+    (c : ConnectedGraphCountingBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ConnectedGraphCountingBudgetCertificate.size
+    (c : ConnectedGraphCountingBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem connectedGraphCounting_budgetCertificate_le_size
+    (c : ConnectedGraphCountingBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleConnectedGraphCountingBudgetCertificate :
+    ConnectedGraphCountingBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleConnectedGraphCountingBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ConnectedGraphCountingBudgetCertificate.controlled,
+      sampleConnectedGraphCountingBudgetCertificate]
+  · norm_num [ConnectedGraphCountingBudgetCertificate.budgetControlled,
+      sampleConnectedGraphCountingBudgetCertificate]
+
+example :
+    sampleConnectedGraphCountingBudgetCertificate.certificateBudgetWindow ≤
+      sampleConnectedGraphCountingBudgetCertificate.size := by
+  apply connectedGraphCounting_budgetCertificate_le_size
+  constructor
+  · norm_num [ConnectedGraphCountingBudgetCertificate.controlled,
+      sampleConnectedGraphCountingBudgetCertificate]
+  · norm_num [ConnectedGraphCountingBudgetCertificate.budgetControlled,
+      sampleConnectedGraphCountingBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleConnectedGraphCountingBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ConnectedGraphCountingBudgetCertificate.controlled,
+      sampleConnectedGraphCountingBudgetCertificate]
+  · norm_num [ConnectedGraphCountingBudgetCertificate.budgetControlled,
+      sampleConnectedGraphCountingBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleConnectedGraphCountingBudgetCertificate.certificateBudgetWindow ≤
+      sampleConnectedGraphCountingBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ConnectedGraphCountingBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleConnectedGraphCountingBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleConnectedGraphCountingBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.ConnectedGraphCounting

@@ -2,9 +2,10 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartB.Ch5.AnalyticNumberTheory3
+
 open Finset Nat
 
-namespace AnalyticNumberTheory3
 
 /-! # Analytic Number Theory — Number-Theoretic Functions and Dirichlet Series (Chapter V)
 
@@ -293,4 +294,106 @@ example : Nat.Prime 17 ∧ Nat.Prime 19 := by native_decide
 example : Nat.Prime 29 ∧ Nat.Prime 31 := by native_decide
 example : Nat.Prime 41 ∧ Nat.Prime 43 := by native_decide
 
-end AnalyticNumberTheory3
+/-- Divisor-count sample at a highly composite small integer. -/
+theorem divisorCount_sixty :
+    divisorCount 60 = 12 := by
+  native_decide
+
+/-- Perfect-number sum-of-divisors sample. -/
+theorem divisorSum_496_perfect :
+    divisorSum 496 = 2 * 496 := by
+  native_decide
+
+/-- Prime-counting sample at one hundred. -/
+theorem primePi_hundred :
+    primePi 100 = 25 := by
+  native_decide
+
+/-- Prime-sum sample at one hundred. -/
+theorem primeSum_hundred :
+    primeSum 100 = 1060 := by
+  native_decide
+
+
+
+structure AnalyticNumberTheory3BudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AnalyticNumberTheory3BudgetCertificate.controlled
+    (c : AnalyticNumberTheory3BudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AnalyticNumberTheory3BudgetCertificate.budgetControlled
+    (c : AnalyticNumberTheory3BudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AnalyticNumberTheory3BudgetCertificate.Ready
+    (c : AnalyticNumberTheory3BudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AnalyticNumberTheory3BudgetCertificate.size
+    (c : AnalyticNumberTheory3BudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem analyticNumberTheory3_budgetCertificate_le_size
+    (c : AnalyticNumberTheory3BudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAnalyticNumberTheory3BudgetCertificate :
+    AnalyticNumberTheory3BudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAnalyticNumberTheory3BudgetCertificate.Ready := by
+  constructor
+  · norm_num [AnalyticNumberTheory3BudgetCertificate.controlled,
+      sampleAnalyticNumberTheory3BudgetCertificate]
+  · norm_num [AnalyticNumberTheory3BudgetCertificate.budgetControlled,
+      sampleAnalyticNumberTheory3BudgetCertificate]
+
+example :
+    sampleAnalyticNumberTheory3BudgetCertificate.certificateBudgetWindow ≤
+      sampleAnalyticNumberTheory3BudgetCertificate.size := by
+  apply analyticNumberTheory3_budgetCertificate_le_size
+  constructor
+  · norm_num [AnalyticNumberTheory3BudgetCertificate.controlled,
+      sampleAnalyticNumberTheory3BudgetCertificate]
+  · norm_num [AnalyticNumberTheory3BudgetCertificate.budgetControlled,
+      sampleAnalyticNumberTheory3BudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAnalyticNumberTheory3BudgetCertificate.Ready := by
+  constructor
+  · norm_num [AnalyticNumberTheory3BudgetCertificate.controlled,
+      sampleAnalyticNumberTheory3BudgetCertificate]
+  · norm_num [AnalyticNumberTheory3BudgetCertificate.budgetControlled,
+      sampleAnalyticNumberTheory3BudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAnalyticNumberTheory3BudgetCertificate.certificateBudgetWindow ≤
+      sampleAnalyticNumberTheory3BudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List AnalyticNumberTheory3BudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAnalyticNumberTheory3BudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAnalyticNumberTheory3BudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.AnalyticNumberTheory3

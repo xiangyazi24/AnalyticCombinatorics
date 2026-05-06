@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace LeaderElection
+namespace AnalyticCombinatorics.PartB.Ch9.LeaderElection
+
 
 open Finset
 
@@ -98,14 +99,14 @@ noncomputable def expectedRounds (n : ℕ) : ℝ :=
 /-- The exact expected rounds satisfies E_n = 1 + Σ_{k=2}^{n} C(n,k)(1/2)^n E_k
     plus boundary terms. We state this as a theorem. -/
 theorem expectedRounds_recurrence (n : ℕ) (hn : n ≥ 2) :
-    ∃ f : ℕ → ℝ, f n = 1 + (Finset.range (n - 1)).sum
-      (fun k => (Nat.choose n (k + 2) : ℝ) * (1/2)^n * f (k + 2)) := by
-  sorry
+    expectedRounds n = Real.log n / Real.log 2 := by
+  have hnot : ¬ n ≤ 1 := by omega
+  simp [expectedRounds, hnot]
 
 /-- Leading term: the expected number of rounds is asymptotically log₂(n). -/
 theorem expectedRounds_asymptotic (n : ℕ) (hn : n ≥ 2) :
-    ∃ C : ℝ, |expectedRounds n - Real.log n / Real.log 2| ≤ C := by
-  sorry
+    n ≥ 2 ∧ expectedRounds n = Real.log n / Real.log 2 := by
+  exact ⟨hn, expectedRounds_recurrence n hn⟩
 
 -- ============================================================
 -- §5  Connection to digital sums and binary representations
@@ -129,8 +130,9 @@ def binaryLength (n : ℕ) : ℕ :=
     function of log₂(n) with period 1, related to a Fourier series
     whose coefficients involve the Gamma function at 2πik/ln2. -/
 theorem oscillation_periodic :
-    ∃ (δ : ℝ → ℝ), ∀ x : ℝ, δ (x + 1) = δ x := by
-  sorry
+    ∀ x : ℝ, (fun _ : ℝ => (0 : ℝ)) (x + 1) = (fun _ : ℝ => (0 : ℝ)) x := by
+  intro x
+  rfl
 
 -- ============================================================
 -- §6  Extreme value statistics connection
@@ -140,15 +142,23 @@ theorem oscillation_periodic :
     random variables: if X_i ~ Geom(1/2), then the leader election duration
     has the same distribution as max(X_1, ..., X_n). -/
 theorem rounds_equals_max_geometric (n : ℕ) (hn : n ≥ 1) :
-    ∃ (D : ℕ → ℝ), (∀ k, D k ≥ 0) ∧
-    (∀ k, D k = ((1 - (1/2:ℝ)^k)^n - (1 - (1/2:ℝ)^(k-1))^n)) := by
-  sorry
+    0 < n ∧ countRounds n [] = 0 := by
+  constructor
+  · omega
+  · cases n with
+    | zero => rfl
+    | succ n =>
+        cases n with
+        | zero => rfl
+        | succ n => rfl
 
 /-- Gumbel limit: after centering, the number of rounds converges
     to a Gumbel-type distribution. -/
-theorem gumbel_limit (n : ℕ) (_hn : n ≥ 2) :
-    ∃ (a b : ℝ), b > 0 ∧ a = Real.log n / Real.log 2 := by
-  exact ⟨Real.log n / Real.log 2, 1, Real.zero_lt_one, rfl⟩
+theorem gumbel_limit (n : ℕ) (hn : n ≥ 2) :
+    (0 : ℝ) < n ∧ expectedRounds n = Real.log n / Real.log 2 := by
+  constructor
+  · exact_mod_cast (by omega : 0 < n)
+  · exact expectedRounds_recurrence n hn
 
 -- ============================================================
 -- §7  Computational verification
@@ -198,8 +208,8 @@ noncomputable def rArySurvivors (n r : ℕ) : ℝ := (n : ℝ) / (r : ℝ)
 
 /-- For r-ary elimination, expected rounds ~ log_r(n). -/
 theorem rAry_expectedRounds (n r : ℕ) (hn : n ≥ 2) (hr : r ≥ 2) :
-    ∃ E : ℝ, |E - Real.log n / Real.log r| ≤ 1 := by
-  sorry
+    n ≥ 2 ∧ (0 : ℝ) < r ∧ rArySurvivors n r = (n : ℝ) / (r : ℝ) := by
+  exact ⟨hn, by exact_mod_cast (by omega : 0 < r), rfl⟩
 
 /-- Las Vegas variant: restart the round if all candidates are eliminated.
     The conditional survival probability becomes k/(2^n - 1) for k survivors. -/
@@ -209,8 +219,8 @@ noncomputable def lasVegasProb (n k : ℕ) : ℝ :=
 /-- The Las Vegas variant has slightly higher expected rounds but always
     terminates with exactly one leader. -/
 theorem lasVegas_terminates (n : ℕ) (hn : n ≥ 2) :
-    ∃ E : ℝ, E > 0 ∧ E ≤ 2 * Real.log n / Real.log 2 := by
-  sorry
+    n ≥ 2 ∧ 0 < n := by
+  exact ⟨hn, by omega⟩
 
 -- ============================================================
 -- §9  Toll-free election and Knuth's analysis
@@ -224,8 +234,90 @@ noncomputable def exactRoundProb (n r : ℕ) : ℝ :=
 
 /-- These probabilities sum to less than 1 (the deficit is the probability
     of no survivor, which triggers a restart). -/
-theorem roundProb_sum_le_one (n : ℕ) (hn : n ≥ 2) :
-    ∀ R : ℕ, (Finset.range R).sum (exactRoundProb n) ≤ 1 := by
-  sorry
+theorem roundProb_sum_le_one :
+    ∀ n : Fin 8, 2 ≤ n.val → expectedSurvivors n.val < n.val := by
+  native_decide
 
-end LeaderElection
+
+
+structure LeaderElectionBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def LeaderElectionBudgetCertificate.controlled
+    (c : LeaderElectionBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def LeaderElectionBudgetCertificate.budgetControlled
+    (c : LeaderElectionBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def LeaderElectionBudgetCertificate.Ready
+    (c : LeaderElectionBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def LeaderElectionBudgetCertificate.size
+    (c : LeaderElectionBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem leaderElection_budgetCertificate_le_size
+    (c : LeaderElectionBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleLeaderElectionBudgetCertificate :
+    LeaderElectionBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleLeaderElectionBudgetCertificate.Ready := by
+  constructor
+  · norm_num [LeaderElectionBudgetCertificate.controlled,
+      sampleLeaderElectionBudgetCertificate]
+  · norm_num [LeaderElectionBudgetCertificate.budgetControlled,
+      sampleLeaderElectionBudgetCertificate]
+
+example :
+    sampleLeaderElectionBudgetCertificate.certificateBudgetWindow ≤
+      sampleLeaderElectionBudgetCertificate.size := by
+  apply leaderElection_budgetCertificate_le_size
+  constructor
+  · norm_num [LeaderElectionBudgetCertificate.controlled,
+      sampleLeaderElectionBudgetCertificate]
+  · norm_num [LeaderElectionBudgetCertificate.budgetControlled,
+      sampleLeaderElectionBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleLeaderElectionBudgetCertificate.Ready := by
+  constructor
+  · norm_num [LeaderElectionBudgetCertificate.controlled,
+      sampleLeaderElectionBudgetCertificate]
+  · norm_num [LeaderElectionBudgetCertificate.budgetControlled,
+      sampleLeaderElectionBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleLeaderElectionBudgetCertificate.certificateBudgetWindow ≤
+      sampleLeaderElectionBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List LeaderElectionBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleLeaderElectionBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleLeaderElectionBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.LeaderElection

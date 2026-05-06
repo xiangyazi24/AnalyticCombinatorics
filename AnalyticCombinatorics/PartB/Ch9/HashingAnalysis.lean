@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace HashingAnalysis
+namespace AnalyticCombinatorics.PartB.Ch9.HashingAnalysis
+
 
 open Finset
 
@@ -197,4 +198,96 @@ example : expectedOccupancyFraction 10 10 = 6513215599 / 10000000000 := by
 example : 65 / 100 < expectedOccupancyFraction 10 10 := by native_decide
 example : expectedOccupancyFraction 10 10 < 66 / 100 := by native_decide
 
-end HashingAnalysis
+/-- Expected empty-bin sample for ten balls in ten bins. -/
+theorem expectedEmptyBins_ten_ten :
+    expectedEmptyBins 10 10 = 3486784401 / 1000000000 := by
+  native_decide
+
+/-- Expected occupancy fraction sample for ten balls in ten bins. -/
+theorem expectedOccupancyFraction_ten_ten :
+    expectedOccupancyFraction 10 10 = 6513215599 / 10000000000 := by
+  native_decide
+
+
+
+structure HashingAnalysisBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def HashingAnalysisBudgetCertificate.controlled
+    (c : HashingAnalysisBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def HashingAnalysisBudgetCertificate.budgetControlled
+    (c : HashingAnalysisBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def HashingAnalysisBudgetCertificate.Ready
+    (c : HashingAnalysisBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def HashingAnalysisBudgetCertificate.size
+    (c : HashingAnalysisBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem hashingAnalysis_budgetCertificate_le_size
+    (c : HashingAnalysisBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleHashingAnalysisBudgetCertificate :
+    HashingAnalysisBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleHashingAnalysisBudgetCertificate.Ready := by
+  constructor
+  · norm_num [HashingAnalysisBudgetCertificate.controlled,
+      sampleHashingAnalysisBudgetCertificate]
+  · norm_num [HashingAnalysisBudgetCertificate.budgetControlled,
+      sampleHashingAnalysisBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleHashingAnalysisBudgetCertificate.certificateBudgetWindow ≤
+      sampleHashingAnalysisBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleHashingAnalysisBudgetCertificate.Ready := by
+  constructor
+  · norm_num [HashingAnalysisBudgetCertificate.controlled,
+      sampleHashingAnalysisBudgetCertificate]
+  · norm_num [HashingAnalysisBudgetCertificate.budgetControlled,
+      sampleHashingAnalysisBudgetCertificate]
+
+example :
+    sampleHashingAnalysisBudgetCertificate.certificateBudgetWindow ≤
+      sampleHashingAnalysisBudgetCertificate.size := by
+  apply hashingAnalysis_budgetCertificate_le_size
+  constructor
+  · norm_num [HashingAnalysisBudgetCertificate.controlled,
+      sampleHashingAnalysisBudgetCertificate]
+  · norm_num [HashingAnalysisBudgetCertificate.budgetControlled,
+      sampleHashingAnalysisBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List HashingAnalysisBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleHashingAnalysisBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleHashingAnalysisBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.HashingAnalysis

@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace AnalyticUrns
+namespace AnalyticCombinatorics.PartB.Ch9.AnalyticUrns
+
 
 /-!
 # Analytic urn models and Pólya-type processes
@@ -164,7 +165,7 @@ end Occupancy
 section MaximumLoad
 
 /--
-Integer proxy for the balanced maximum load scale
+Integer certificate for the balanced maximum load scale
 `log n / log (log n)`, using base-2 natural-number logarithms.
 -/
 def maximumLoadLogLogScale (n : ℕ) : ℕ :=
@@ -213,4 +214,86 @@ theorem multinomial_partition_table_checks :
 
 end MultinomialCoefficients
 
-end AnalyticUrns
+
+
+structure AnalyticUrnsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AnalyticUrnsBudgetCertificate.controlled
+    (c : AnalyticUrnsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AnalyticUrnsBudgetCertificate.budgetControlled
+    (c : AnalyticUrnsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AnalyticUrnsBudgetCertificate.Ready
+    (c : AnalyticUrnsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AnalyticUrnsBudgetCertificate.size
+    (c : AnalyticUrnsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem analyticUrns_budgetCertificate_le_size
+    (c : AnalyticUrnsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAnalyticUrnsBudgetCertificate :
+    AnalyticUrnsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAnalyticUrnsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AnalyticUrnsBudgetCertificate.controlled,
+      sampleAnalyticUrnsBudgetCertificate]
+  · norm_num [AnalyticUrnsBudgetCertificate.budgetControlled,
+      sampleAnalyticUrnsBudgetCertificate]
+
+example :
+    sampleAnalyticUrnsBudgetCertificate.certificateBudgetWindow ≤
+      sampleAnalyticUrnsBudgetCertificate.size := by
+  apply analyticUrns_budgetCertificate_le_size
+  constructor
+  · norm_num [AnalyticUrnsBudgetCertificate.controlled,
+      sampleAnalyticUrnsBudgetCertificate]
+  · norm_num [AnalyticUrnsBudgetCertificate.budgetControlled,
+      sampleAnalyticUrnsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAnalyticUrnsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AnalyticUrnsBudgetCertificate.controlled,
+      sampleAnalyticUrnsBudgetCertificate]
+  · norm_num [AnalyticUrnsBudgetCertificate.budgetControlled,
+      sampleAnalyticUrnsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAnalyticUrnsBudgetCertificate.certificateBudgetWindow ≤
+      sampleAnalyticUrnsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List AnalyticUrnsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAnalyticUrnsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAnalyticUrnsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.AnalyticUrns

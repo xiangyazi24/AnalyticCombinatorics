@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace SubexponentialSequences
+namespace AnalyticCombinatorics.PartB.Ch6.SubexponentialSequences
+
 
 /-!
 Subexponential sequences and their asymptotics, following the Chapter VI
@@ -60,7 +61,9 @@ theorem partition_ratios_above_one_n_5_19 :
     ∀ i : Fin 15, partitionRatioDenominator i < partitionRatioNumerator i := by native_decide
 
 theorem partition_ratios_below_eight_fifths_n_5_19 :
-    ∀ i : Fin 15, 5 * partitionRatioNumerator i < 8 * partitionRatioDenominator i := by native_decide
+    ∀ i : Fin 15,
+      5 * partitionRatioNumerator i < 8 * partitionRatioDenominator i := by
+  native_decide
 
 /-- Each checked ratio has gap from `1` no larger than the first checked ratio `11/7`. -/
 theorem partition_ratio_gap_no_worse_than_first_n_5_19 :
@@ -187,4 +190,86 @@ theorem bell_lt_factorial_3_9 :
       let n := i.val + 3
       bellSmall n < Nat.factorial n := by native_decide
 
-end SubexponentialSequences
+
+
+structure SubexponentialSequencesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SubexponentialSequencesBudgetCertificate.controlled
+    (c : SubexponentialSequencesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SubexponentialSequencesBudgetCertificate.budgetControlled
+    (c : SubexponentialSequencesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SubexponentialSequencesBudgetCertificate.Ready
+    (c : SubexponentialSequencesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SubexponentialSequencesBudgetCertificate.size
+    (c : SubexponentialSequencesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem subexponentialSequences_budgetCertificate_le_size
+    (c : SubexponentialSequencesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSubexponentialSequencesBudgetCertificate :
+    SubexponentialSequencesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSubexponentialSequencesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SubexponentialSequencesBudgetCertificate.controlled,
+      sampleSubexponentialSequencesBudgetCertificate]
+  · norm_num [SubexponentialSequencesBudgetCertificate.budgetControlled,
+      sampleSubexponentialSequencesBudgetCertificate]
+
+example :
+    sampleSubexponentialSequencesBudgetCertificate.certificateBudgetWindow ≤
+      sampleSubexponentialSequencesBudgetCertificate.size := by
+  apply subexponentialSequences_budgetCertificate_le_size
+  constructor
+  · norm_num [SubexponentialSequencesBudgetCertificate.controlled,
+      sampleSubexponentialSequencesBudgetCertificate]
+  · norm_num [SubexponentialSequencesBudgetCertificate.budgetControlled,
+      sampleSubexponentialSequencesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSubexponentialSequencesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SubexponentialSequencesBudgetCertificate.controlled,
+      sampleSubexponentialSequencesBudgetCertificate]
+  · norm_num [SubexponentialSequencesBudgetCertificate.budgetControlled,
+      sampleSubexponentialSequencesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSubexponentialSequencesBudgetCertificate.certificateBudgetWindow ≤
+      sampleSubexponentialSequencesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SubexponentialSequencesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSubexponentialSequencesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSubexponentialSequencesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.SubexponentialSequences

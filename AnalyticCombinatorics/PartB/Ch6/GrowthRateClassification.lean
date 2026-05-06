@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace GrowthRateClassification
+namespace AnalyticCombinatorics.PartB.Ch6.GrowthRateClassification
+
 
 /-!
 Finite numerical checks for growth-rate classes suggested by singularity type.
@@ -115,4 +116,96 @@ example : ∀ n : Fin 4,
     ¬ (catalanTable ⟨(n : ℕ) + 5, by omega⟩ < 2 ^ ((n : ℕ) + 5)) := by
   native_decide
 
-end GrowthRateClassification
+/-- Partition-number sample at fifteen. -/
+theorem partitionTable_fifteen :
+    partitionTable ⟨15, by omega⟩ = 176 := by
+  native_decide
+
+/-- Catalan-number table sample at ten. -/
+theorem catalanTable_ten :
+    catalanTable ⟨10, by omega⟩ = 16796 := by
+  native_decide
+
+
+
+structure GrowthRateClassificationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def GrowthRateClassificationBudgetCertificate.controlled
+    (c : GrowthRateClassificationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def GrowthRateClassificationBudgetCertificate.budgetControlled
+    (c : GrowthRateClassificationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def GrowthRateClassificationBudgetCertificate.Ready
+    (c : GrowthRateClassificationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def GrowthRateClassificationBudgetCertificate.size
+    (c : GrowthRateClassificationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem growthRateClassification_budgetCertificate_le_size
+    (c : GrowthRateClassificationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleGrowthRateClassificationBudgetCertificate :
+    GrowthRateClassificationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleGrowthRateClassificationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GrowthRateClassificationBudgetCertificate.controlled,
+      sampleGrowthRateClassificationBudgetCertificate]
+  · norm_num [GrowthRateClassificationBudgetCertificate.budgetControlled,
+      sampleGrowthRateClassificationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleGrowthRateClassificationBudgetCertificate.certificateBudgetWindow ≤
+      sampleGrowthRateClassificationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleGrowthRateClassificationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GrowthRateClassificationBudgetCertificate.controlled,
+      sampleGrowthRateClassificationBudgetCertificate]
+  · norm_num [GrowthRateClassificationBudgetCertificate.budgetControlled,
+      sampleGrowthRateClassificationBudgetCertificate]
+
+example :
+    sampleGrowthRateClassificationBudgetCertificate.certificateBudgetWindow ≤
+      sampleGrowthRateClassificationBudgetCertificate.size := by
+  apply growthRateClassification_budgetCertificate_le_size
+  constructor
+  · norm_num [GrowthRateClassificationBudgetCertificate.controlled,
+      sampleGrowthRateClassificationBudgetCertificate]
+  · norm_num [GrowthRateClassificationBudgetCertificate.budgetControlled,
+      sampleGrowthRateClassificationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List GrowthRateClassificationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleGrowthRateClassificationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleGrowthRateClassificationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.GrowthRateClassification

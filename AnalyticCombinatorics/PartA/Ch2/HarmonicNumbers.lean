@@ -1,5 +1,7 @@
 import Mathlib.Tactic
 
+namespace AnalyticCombinatorics.PartA.Ch2.HarmonicNumbers
+
 open Finset
 
 set_option linter.style.nativeDecide false
@@ -126,3 +128,86 @@ theorem unsignedStirling1_row_sum_five :
 theorem unsignedStirling1_row_sum_six :
     ∑ k ∈ Finset.range (6 + 1), unsignedStirling1 6 k = (6).factorial := by
   native_decide
+
+
+structure HarmonicNumbersBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def HarmonicNumbersBudgetCertificate.controlled
+    (c : HarmonicNumbersBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def HarmonicNumbersBudgetCertificate.budgetControlled
+    (c : HarmonicNumbersBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def HarmonicNumbersBudgetCertificate.Ready
+    (c : HarmonicNumbersBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def HarmonicNumbersBudgetCertificate.size
+    (c : HarmonicNumbersBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem harmonicNumbers_budgetCertificate_le_size
+    (c : HarmonicNumbersBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleHarmonicNumbersBudgetCertificate :
+    HarmonicNumbersBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleHarmonicNumbersBudgetCertificate.Ready := by
+  constructor
+  · norm_num [HarmonicNumbersBudgetCertificate.controlled,
+      sampleHarmonicNumbersBudgetCertificate]
+  · norm_num [HarmonicNumbersBudgetCertificate.budgetControlled,
+      sampleHarmonicNumbersBudgetCertificate]
+
+example :
+    sampleHarmonicNumbersBudgetCertificate.certificateBudgetWindow ≤
+      sampleHarmonicNumbersBudgetCertificate.size := by
+  apply harmonicNumbers_budgetCertificate_le_size
+  constructor
+  · norm_num [HarmonicNumbersBudgetCertificate.controlled,
+      sampleHarmonicNumbersBudgetCertificate]
+  · norm_num [HarmonicNumbersBudgetCertificate.budgetControlled,
+      sampleHarmonicNumbersBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleHarmonicNumbersBudgetCertificate.Ready := by
+  constructor
+  · norm_num [HarmonicNumbersBudgetCertificate.controlled,
+      sampleHarmonicNumbersBudgetCertificate]
+  · norm_num [HarmonicNumbersBudgetCertificate.budgetControlled,
+      sampleHarmonicNumbersBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleHarmonicNumbersBudgetCertificate.certificateBudgetWindow ≤
+      sampleHarmonicNumbersBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List HarmonicNumbersBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleHarmonicNumbersBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleHarmonicNumbersBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.HarmonicNumbers

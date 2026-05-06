@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace PeriodicCoefficients
+namespace AnalyticCombinatorics.PartB.Ch4.PeriodicCoefficients
+
 
 /-!
   Chapter IV theme: bounded executable tables for periodic fluctuations in
@@ -221,4 +222,86 @@ theorem ruler_sequence_odd_entries_zero :
     ∀ i : Fin 8, rulerSmall (2 * (i : ℕ) + 1) = 0 := by
   native_decide
 
-end PeriodicCoefficients
+
+
+structure PeriodicCoefficientsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PeriodicCoefficientsBudgetCertificate.controlled
+    (c : PeriodicCoefficientsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PeriodicCoefficientsBudgetCertificate.budgetControlled
+    (c : PeriodicCoefficientsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PeriodicCoefficientsBudgetCertificate.Ready
+    (c : PeriodicCoefficientsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PeriodicCoefficientsBudgetCertificate.size
+    (c : PeriodicCoefficientsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem periodicCoefficients_budgetCertificate_le_size
+    (c : PeriodicCoefficientsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePeriodicCoefficientsBudgetCertificate :
+    PeriodicCoefficientsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : samplePeriodicCoefficientsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PeriodicCoefficientsBudgetCertificate.controlled,
+      samplePeriodicCoefficientsBudgetCertificate]
+  · norm_num [PeriodicCoefficientsBudgetCertificate.budgetControlled,
+      samplePeriodicCoefficientsBudgetCertificate]
+
+example :
+    samplePeriodicCoefficientsBudgetCertificate.certificateBudgetWindow ≤
+      samplePeriodicCoefficientsBudgetCertificate.size := by
+  apply periodicCoefficients_budgetCertificate_le_size
+  constructor
+  · norm_num [PeriodicCoefficientsBudgetCertificate.controlled,
+      samplePeriodicCoefficientsBudgetCertificate]
+  · norm_num [PeriodicCoefficientsBudgetCertificate.budgetControlled,
+      samplePeriodicCoefficientsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    samplePeriodicCoefficientsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PeriodicCoefficientsBudgetCertificate.controlled,
+      samplePeriodicCoefficientsBudgetCertificate]
+  · norm_num [PeriodicCoefficientsBudgetCertificate.budgetControlled,
+      samplePeriodicCoefficientsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePeriodicCoefficientsBudgetCertificate.certificateBudgetWindow ≤
+      samplePeriodicCoefficientsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List PeriodicCoefficientsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePeriodicCoefficientsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePeriodicCoefficientsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.PeriodicCoefficients

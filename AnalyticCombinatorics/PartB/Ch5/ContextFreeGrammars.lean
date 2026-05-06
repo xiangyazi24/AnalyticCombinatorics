@@ -10,8 +10,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace ContextFreeGrammars
-
+namespace AnalyticCombinatorics.PartB.Ch5.ContextFreeGrammars
 /-! ## 1. Dyck language — Catalan numbers -/
 
 /-- The n-th Catalan number: C(2n,n)/(n+1). Counts balanced parenthesizations
@@ -126,4 +125,96 @@ example : catalanN 6 = Nat.choose 12 6 - Nat.choose 12 5 := by native_decide
 example : catalanN 7 = Nat.choose 14 7 - Nat.choose 14 6 := by native_decide
 example : catalanN 8 = Nat.choose 16 8 - Nat.choose 16 7 := by native_decide
 
-end ContextFreeGrammars
+/-- Large Schroeder-number table sample. -/
+theorem schroederTable_six :
+    schroederTable 6 = 1806 := by
+  native_decide
+
+/-- Narayana row-sum sample for semilength five. -/
+theorem narayana_row_five_sum :
+    narayana 5 1 + narayana 5 2 + narayana 5 3 +
+      narayana 5 4 + narayana 5 5 = 42 := by
+  native_decide
+
+
+structure ContextFreeGrammarsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ContextFreeGrammarsBudgetCertificate.controlled
+    (c : ContextFreeGrammarsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ContextFreeGrammarsBudgetCertificate.budgetControlled
+    (c : ContextFreeGrammarsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ContextFreeGrammarsBudgetCertificate.Ready
+    (c : ContextFreeGrammarsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ContextFreeGrammarsBudgetCertificate.size
+    (c : ContextFreeGrammarsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem contextFreeGrammars_budgetCertificate_le_size
+    (c : ContextFreeGrammarsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleContextFreeGrammarsBudgetCertificate :
+    ContextFreeGrammarsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleContextFreeGrammarsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ContextFreeGrammarsBudgetCertificate.controlled,
+      sampleContextFreeGrammarsBudgetCertificate]
+  · norm_num [ContextFreeGrammarsBudgetCertificate.budgetControlled,
+      sampleContextFreeGrammarsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleContextFreeGrammarsBudgetCertificate.certificateBudgetWindow ≤
+      sampleContextFreeGrammarsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleContextFreeGrammarsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ContextFreeGrammarsBudgetCertificate.controlled,
+      sampleContextFreeGrammarsBudgetCertificate]
+  · norm_num [ContextFreeGrammarsBudgetCertificate.budgetControlled,
+      sampleContextFreeGrammarsBudgetCertificate]
+
+example :
+    sampleContextFreeGrammarsBudgetCertificate.certificateBudgetWindow ≤
+      sampleContextFreeGrammarsBudgetCertificate.size := by
+  apply contextFreeGrammars_budgetCertificate_le_size
+  constructor
+  · norm_num [ContextFreeGrammarsBudgetCertificate.controlled,
+      sampleContextFreeGrammarsBudgetCertificate]
+  · norm_num [ContextFreeGrammarsBudgetCertificate.budgetControlled,
+      sampleContextFreeGrammarsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List ContextFreeGrammarsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleContextFreeGrammarsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleContextFreeGrammarsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.ContextFreeGrammars

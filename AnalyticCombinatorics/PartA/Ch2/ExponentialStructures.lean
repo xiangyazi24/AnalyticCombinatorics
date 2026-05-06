@@ -2,6 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch2.ExponentialStructures
+
 /-!
 # Exponential Structures — EGF computations and labelled structure counts
 
@@ -16,7 +18,6 @@ exponential formula for labelled combinatorial structures:
 6. Compositional identities for exponential generating functions
 -/
 
-namespace ExponentialStructures
 
 /-! ## 1. Connected labelled graphs -/
 
@@ -97,4 +98,86 @@ example : 4 ^ 3 = 4 * 4 ^ 2 := by native_decide
 example : 5 ^ 4 = 5 * 5 ^ 3 := by native_decide
 example : 6 ^ 5 = 6 * 6 ^ 4 := by native_decide
 
-end ExponentialStructures
+
+
+structure ExponentialStructuresBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ExponentialStructuresBudgetCertificate.controlled
+    (c : ExponentialStructuresBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ExponentialStructuresBudgetCertificate.budgetControlled
+    (c : ExponentialStructuresBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ExponentialStructuresBudgetCertificate.Ready
+    (c : ExponentialStructuresBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ExponentialStructuresBudgetCertificate.size
+    (c : ExponentialStructuresBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem exponentialStructures_budgetCertificate_le_size
+    (c : ExponentialStructuresBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleExponentialStructuresBudgetCertificate :
+    ExponentialStructuresBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleExponentialStructuresBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ExponentialStructuresBudgetCertificate.controlled,
+      sampleExponentialStructuresBudgetCertificate]
+  · norm_num [ExponentialStructuresBudgetCertificate.budgetControlled,
+      sampleExponentialStructuresBudgetCertificate]
+
+example :
+    sampleExponentialStructuresBudgetCertificate.certificateBudgetWindow ≤
+      sampleExponentialStructuresBudgetCertificate.size := by
+  apply exponentialStructures_budgetCertificate_le_size
+  constructor
+  · norm_num [ExponentialStructuresBudgetCertificate.controlled,
+      sampleExponentialStructuresBudgetCertificate]
+  · norm_num [ExponentialStructuresBudgetCertificate.budgetControlled,
+      sampleExponentialStructuresBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleExponentialStructuresBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ExponentialStructuresBudgetCertificate.controlled,
+      sampleExponentialStructuresBudgetCertificate]
+  · norm_num [ExponentialStructuresBudgetCertificate.budgetControlled,
+      sampleExponentialStructuresBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleExponentialStructuresBudgetCertificate.certificateBudgetWindow ≤
+      sampleExponentialStructuresBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ExponentialStructuresBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleExponentialStructuresBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleExponentialStructuresBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.ExponentialStructures

@@ -10,8 +10,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace FormalPowerSeriesOps
-
+namespace AnalyticCombinatorics.PartB.Ch4.FormalPowerSeries
 /-! ## 1. Exponential series coefficients -/
 
 /-- Coefficients of exp(z) = ∑ z^n / n! -/
@@ -98,4 +97,85 @@ theorem deriv_exp_5 : fpsDerivCoeff expCoeff 5 = expCoeff 5 := by native_decide
 
 theorem deriv_exp_6 : fpsDerivCoeff expCoeff 6 = expCoeff 6 := by native_decide
 
-end FormalPowerSeriesOps
+
+structure FormalPowerSeriesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def FormalPowerSeriesBudgetCertificate.controlled
+    (c : FormalPowerSeriesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def FormalPowerSeriesBudgetCertificate.budgetControlled
+    (c : FormalPowerSeriesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def FormalPowerSeriesBudgetCertificate.Ready
+    (c : FormalPowerSeriesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def FormalPowerSeriesBudgetCertificate.size
+    (c : FormalPowerSeriesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem formalPowerSeries_budgetCertificate_le_size
+    (c : FormalPowerSeriesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleFormalPowerSeriesBudgetCertificate :
+    FormalPowerSeriesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleFormalPowerSeriesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [FormalPowerSeriesBudgetCertificate.controlled,
+      sampleFormalPowerSeriesBudgetCertificate]
+  · norm_num [FormalPowerSeriesBudgetCertificate.budgetControlled,
+      sampleFormalPowerSeriesBudgetCertificate]
+
+example :
+    sampleFormalPowerSeriesBudgetCertificate.certificateBudgetWindow ≤
+      sampleFormalPowerSeriesBudgetCertificate.size := by
+  apply formalPowerSeries_budgetCertificate_le_size
+  constructor
+  · norm_num [FormalPowerSeriesBudgetCertificate.controlled,
+      sampleFormalPowerSeriesBudgetCertificate]
+  · norm_num [FormalPowerSeriesBudgetCertificate.budgetControlled,
+      sampleFormalPowerSeriesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleFormalPowerSeriesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [FormalPowerSeriesBudgetCertificate.controlled,
+      sampleFormalPowerSeriesBudgetCertificate]
+  · norm_num [FormalPowerSeriesBudgetCertificate.budgetControlled,
+      sampleFormalPowerSeriesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleFormalPowerSeriesBudgetCertificate.certificateBudgetWindow ≤
+      sampleFormalPowerSeriesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List FormalPowerSeriesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleFormalPowerSeriesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleFormalPowerSeriesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.FormalPowerSeries

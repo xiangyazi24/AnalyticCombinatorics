@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace TreeHeightAsymptotics
+namespace AnalyticCombinatorics.PartB.Ch7.TreeHeightAsymptotics
+
 
 /-!
   Analytic Combinatorics — Part B: Complex Asymptotics
@@ -159,4 +160,86 @@ theorem binary_de_bruijn_count_table :
     binaryDeBruijnCountTable = ![1, 1, 2, 16, 2048, 67108864, 144115188075855872] := by
   native_decide
 
-end TreeHeightAsymptotics
+
+
+structure TreeHeightAsymptoticsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def TreeHeightAsymptoticsBudgetCertificate.controlled
+    (c : TreeHeightAsymptoticsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def TreeHeightAsymptoticsBudgetCertificate.budgetControlled
+    (c : TreeHeightAsymptoticsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def TreeHeightAsymptoticsBudgetCertificate.Ready
+    (c : TreeHeightAsymptoticsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def TreeHeightAsymptoticsBudgetCertificate.size
+    (c : TreeHeightAsymptoticsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem treeHeightAsymptotics_budgetCertificate_le_size
+    (c : TreeHeightAsymptoticsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleTreeHeightAsymptoticsBudgetCertificate :
+    TreeHeightAsymptoticsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleTreeHeightAsymptoticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [TreeHeightAsymptoticsBudgetCertificate.controlled,
+      sampleTreeHeightAsymptoticsBudgetCertificate]
+  · norm_num [TreeHeightAsymptoticsBudgetCertificate.budgetControlled,
+      sampleTreeHeightAsymptoticsBudgetCertificate]
+
+example :
+    sampleTreeHeightAsymptoticsBudgetCertificate.certificateBudgetWindow ≤
+      sampleTreeHeightAsymptoticsBudgetCertificate.size := by
+  apply treeHeightAsymptotics_budgetCertificate_le_size
+  constructor
+  · norm_num [TreeHeightAsymptoticsBudgetCertificate.controlled,
+      sampleTreeHeightAsymptoticsBudgetCertificate]
+  · norm_num [TreeHeightAsymptoticsBudgetCertificate.budgetControlled,
+      sampleTreeHeightAsymptoticsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleTreeHeightAsymptoticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [TreeHeightAsymptoticsBudgetCertificate.controlled,
+      sampleTreeHeightAsymptoticsBudgetCertificate]
+  · norm_num [TreeHeightAsymptoticsBudgetCertificate.budgetControlled,
+      sampleTreeHeightAsymptoticsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleTreeHeightAsymptoticsBudgetCertificate.certificateBudgetWindow ≤
+      sampleTreeHeightAsymptoticsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List TreeHeightAsymptoticsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleTreeHeightAsymptoticsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleTreeHeightAsymptoticsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.TreeHeightAsymptotics

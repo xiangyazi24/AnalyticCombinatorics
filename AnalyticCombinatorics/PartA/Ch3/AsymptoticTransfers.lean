@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace AsymptoticTransfers
+namespace AnalyticCombinatorics.PartA.Ch3.AsymptoticTransfers
+
 
 /-!
 # Ch III -- finite checks for asymptotic transfers and limit laws
@@ -12,7 +13,7 @@ Berry-Esseen denominators, characteristic-function moment extraction, small
 tree-parameter variances, and OGF/EGF coefficient normalization.
 -/
 
-/-! ## Hwang quasi-power toy instances -/
+/-! ## Hwang quasi-power sample instances -/
 
 /-- Sizes `1, ..., 8` for bounded quasi-power checks. -/
 def quasiPowerSizes : Fin 8 → ℕ := ![1, 2, 3, 4, 5, 6, 7, 8]
@@ -165,4 +166,86 @@ theorem cayley_lifted_ogf_is_factorial_scaled :
         factorialsOneToEight i * cayleyEgfNumerators i := by
   native_decide
 
-end AsymptoticTransfers
+
+
+structure AsymptoticTransfersBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AsymptoticTransfersBudgetCertificate.controlled
+    (c : AsymptoticTransfersBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AsymptoticTransfersBudgetCertificate.budgetControlled
+    (c : AsymptoticTransfersBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AsymptoticTransfersBudgetCertificate.Ready
+    (c : AsymptoticTransfersBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AsymptoticTransfersBudgetCertificate.size
+    (c : AsymptoticTransfersBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem asymptoticTransfers_budgetCertificate_le_size
+    (c : AsymptoticTransfersBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAsymptoticTransfersBudgetCertificate :
+    AsymptoticTransfersBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAsymptoticTransfersBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AsymptoticTransfersBudgetCertificate.controlled,
+      sampleAsymptoticTransfersBudgetCertificate]
+  · norm_num [AsymptoticTransfersBudgetCertificate.budgetControlled,
+      sampleAsymptoticTransfersBudgetCertificate]
+
+example :
+    sampleAsymptoticTransfersBudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptoticTransfersBudgetCertificate.size := by
+  apply asymptoticTransfers_budgetCertificate_le_size
+  constructor
+  · norm_num [AsymptoticTransfersBudgetCertificate.controlled,
+      sampleAsymptoticTransfersBudgetCertificate]
+  · norm_num [AsymptoticTransfersBudgetCertificate.budgetControlled,
+      sampleAsymptoticTransfersBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAsymptoticTransfersBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AsymptoticTransfersBudgetCertificate.controlled,
+      sampleAsymptoticTransfersBudgetCertificate]
+  · norm_num [AsymptoticTransfersBudgetCertificate.budgetControlled,
+      sampleAsymptoticTransfersBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAsymptoticTransfersBudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptoticTransfersBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List AsymptoticTransfersBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAsymptoticTransfersBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAsymptoticTransfersBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.AsymptoticTransfers

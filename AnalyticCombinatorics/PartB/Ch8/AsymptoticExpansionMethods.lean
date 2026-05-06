@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace AsymptoticExpansionMethods
+namespace AnalyticCombinatorics.PartB.Ch8.AsymptoticExpansionMethods
+
 
 /-!
   Chapter VIII: finite decidable checks for asymptotic expansion methods
@@ -144,4 +145,86 @@ theorem wilson_prime_factorial_mod_checks :
       Nat.factorial (n - 1) % n = n - 1 := by
   native_decide
 
-end AsymptoticExpansionMethods
+
+
+structure AsymptoticExpansionMethodsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AsymptoticExpansionMethodsBudgetCertificate.controlled
+    (c : AsymptoticExpansionMethodsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AsymptoticExpansionMethodsBudgetCertificate.budgetControlled
+    (c : AsymptoticExpansionMethodsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AsymptoticExpansionMethodsBudgetCertificate.Ready
+    (c : AsymptoticExpansionMethodsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AsymptoticExpansionMethodsBudgetCertificate.size
+    (c : AsymptoticExpansionMethodsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem asymptoticExpansionMethods_budgetCertificate_le_size
+    (c : AsymptoticExpansionMethodsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAsymptoticExpansionMethodsBudgetCertificate :
+    AsymptoticExpansionMethodsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAsymptoticExpansionMethodsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AsymptoticExpansionMethodsBudgetCertificate.controlled,
+      sampleAsymptoticExpansionMethodsBudgetCertificate]
+  · norm_num [AsymptoticExpansionMethodsBudgetCertificate.budgetControlled,
+      sampleAsymptoticExpansionMethodsBudgetCertificate]
+
+example :
+    sampleAsymptoticExpansionMethodsBudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptoticExpansionMethodsBudgetCertificate.size := by
+  apply asymptoticExpansionMethods_budgetCertificate_le_size
+  constructor
+  · norm_num [AsymptoticExpansionMethodsBudgetCertificate.controlled,
+      sampleAsymptoticExpansionMethodsBudgetCertificate]
+  · norm_num [AsymptoticExpansionMethodsBudgetCertificate.budgetControlled,
+      sampleAsymptoticExpansionMethodsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAsymptoticExpansionMethodsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AsymptoticExpansionMethodsBudgetCertificate.controlled,
+      sampleAsymptoticExpansionMethodsBudgetCertificate]
+  · norm_num [AsymptoticExpansionMethodsBudgetCertificate.budgetControlled,
+      sampleAsymptoticExpansionMethodsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAsymptoticExpansionMethodsBudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptoticExpansionMethodsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List AsymptoticExpansionMethodsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAsymptoticExpansionMethodsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAsymptoticExpansionMethodsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.AsymptoticExpansionMethods

@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace EGFApplications
+namespace AnalyticCombinatorics.PartA.Ch2.EGFApplications
+
 
 open Finset
 
@@ -183,4 +184,86 @@ theorem cycleSetPartition_permutations_seven :
     (∑ k ∈ Finset.range 8, unsignedStirling1 7 k) = Nat.factorial 7 := by
   native_decide
 
-end EGFApplications
+
+
+structure EGFApplicationsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def EGFApplicationsBudgetCertificate.controlled
+    (c : EGFApplicationsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def EGFApplicationsBudgetCertificate.budgetControlled
+    (c : EGFApplicationsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def EGFApplicationsBudgetCertificate.Ready
+    (c : EGFApplicationsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def EGFApplicationsBudgetCertificate.size
+    (c : EGFApplicationsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem eGFApplications_budgetCertificate_le_size
+    (c : EGFApplicationsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleEGFApplicationsBudgetCertificate :
+    EGFApplicationsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleEGFApplicationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [EGFApplicationsBudgetCertificate.controlled,
+      sampleEGFApplicationsBudgetCertificate]
+  · norm_num [EGFApplicationsBudgetCertificate.budgetControlled,
+      sampleEGFApplicationsBudgetCertificate]
+
+example :
+    sampleEGFApplicationsBudgetCertificate.certificateBudgetWindow ≤
+      sampleEGFApplicationsBudgetCertificate.size := by
+  apply eGFApplications_budgetCertificate_le_size
+  constructor
+  · norm_num [EGFApplicationsBudgetCertificate.controlled,
+      sampleEGFApplicationsBudgetCertificate]
+  · norm_num [EGFApplicationsBudgetCertificate.budgetControlled,
+      sampleEGFApplicationsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleEGFApplicationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [EGFApplicationsBudgetCertificate.controlled,
+      sampleEGFApplicationsBudgetCertificate]
+  · norm_num [EGFApplicationsBudgetCertificate.budgetControlled,
+      sampleEGFApplicationsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleEGFApplicationsBudgetCertificate.certificateBudgetWindow ≤
+      sampleEGFApplicationsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List EGFApplicationsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleEGFApplicationsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleEGFApplicationsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.EGFApplications

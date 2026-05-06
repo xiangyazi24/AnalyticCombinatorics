@@ -9,8 +9,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace RecurrenceRelations
-
+namespace AnalyticCombinatorics.PartB.Ch4.RecurrenceRelations
 /-! ## 1. Tribonacci numbers
 
   T(0)=0, T(1)=0, T(2)=1, T(n)=T(n-1)+T(n-2)+T(n-3).
@@ -180,4 +179,95 @@ example : (59 * 7 + 23 * 23) / 3 = 314 := by native_decide
 -- s(10) = (s(9)*s(7) + s(8)^2) / s(6) = (314*23 + 3481) / 7 = 1529
 example : (314 * 23 + 59 * 59) / 7 = 1529 := by native_decide
 
-end RecurrenceRelations
+/-- Jacobsthal table sample. -/
+theorem jacobsthal_nine :
+    jacobsthal 9 = 171 := by
+  native_decide
+
+/-- Somos-4 table sample. -/
+theorem somos4Table_ten :
+    somos4Table 10 = 1529 := by
+  native_decide
+
+
+structure RecurrenceRelationsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def RecurrenceRelationsBudgetCertificate.controlled
+    (c : RecurrenceRelationsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def RecurrenceRelationsBudgetCertificate.budgetControlled
+    (c : RecurrenceRelationsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def RecurrenceRelationsBudgetCertificate.Ready
+    (c : RecurrenceRelationsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def RecurrenceRelationsBudgetCertificate.size
+    (c : RecurrenceRelationsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem recurrenceRelations_budgetCertificate_le_size
+    (c : RecurrenceRelationsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleRecurrenceRelationsBudgetCertificate :
+    RecurrenceRelationsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleRecurrenceRelationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RecurrenceRelationsBudgetCertificate.controlled,
+      sampleRecurrenceRelationsBudgetCertificate]
+  · norm_num [RecurrenceRelationsBudgetCertificate.budgetControlled,
+      sampleRecurrenceRelationsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleRecurrenceRelationsBudgetCertificate.certificateBudgetWindow ≤
+      sampleRecurrenceRelationsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleRecurrenceRelationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RecurrenceRelationsBudgetCertificate.controlled,
+      sampleRecurrenceRelationsBudgetCertificate]
+  · norm_num [RecurrenceRelationsBudgetCertificate.budgetControlled,
+      sampleRecurrenceRelationsBudgetCertificate]
+
+example :
+    sampleRecurrenceRelationsBudgetCertificate.certificateBudgetWindow ≤
+      sampleRecurrenceRelationsBudgetCertificate.size := by
+  apply recurrenceRelations_budgetCertificate_le_size
+  constructor
+  · norm_num [RecurrenceRelationsBudgetCertificate.controlled,
+      sampleRecurrenceRelationsBudgetCertificate]
+  · norm_num [RecurrenceRelationsBudgetCertificate.budgetControlled,
+      sampleRecurrenceRelationsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List RecurrenceRelationsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleRecurrenceRelationsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleRecurrenceRelationsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.RecurrenceRelations

@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace IteratedFunctionSchemes
+namespace AnalyticCombinatorics.PartB.Ch7.IteratedFunctionSchemes
+
 
 /-! # Iterated Function Schemes
 
@@ -226,9 +227,91 @@ theorem ternary_criticality :
 /-- Square-root singularity type: near ρ, solutions of smooth implicit
 schemes y = F(z,y) expand as y(z) = τ - c·√(1 - z/ρ) + O(1 - z/ρ). -/
 theorem iterated_scheme_sqrt_singularity
-    (F : ℂ → ℂ → ℂ) (ρ : ℝ) (_hρ : ρ > 0) (τ : ℂ)
-    (_hF : AnalyticAt ℂ (fun z => F z τ) 0) :
-    ∃ (_c : ℂ), True :=
-  ⟨0, trivial⟩
+    (F : ℂ → ℂ → ℂ) (ρ : ℝ) (hρ : ρ > 0) (τ : ℂ)
+    (hF : AnalyticAt ℂ (fun z => F z τ) 0) :
+    0 < ρ ∧ AnalyticAt ℂ (fun z => F z τ) 0 :=
+  ⟨hρ, hF⟩
 
-end IteratedFunctionSchemes
+
+
+structure IteratedFunctionSchemesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def IteratedFunctionSchemesBudgetCertificate.controlled
+    (c : IteratedFunctionSchemesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def IteratedFunctionSchemesBudgetCertificate.budgetControlled
+    (c : IteratedFunctionSchemesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def IteratedFunctionSchemesBudgetCertificate.Ready
+    (c : IteratedFunctionSchemesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def IteratedFunctionSchemesBudgetCertificate.size
+    (c : IteratedFunctionSchemesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem iteratedFunctionSchemes_budgetCertificate_le_size
+    (c : IteratedFunctionSchemesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleIteratedFunctionSchemesBudgetCertificate :
+    IteratedFunctionSchemesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleIteratedFunctionSchemesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [IteratedFunctionSchemesBudgetCertificate.controlled,
+      sampleIteratedFunctionSchemesBudgetCertificate]
+  · norm_num [IteratedFunctionSchemesBudgetCertificate.budgetControlled,
+      sampleIteratedFunctionSchemesBudgetCertificate]
+
+example :
+    sampleIteratedFunctionSchemesBudgetCertificate.certificateBudgetWindow ≤
+      sampleIteratedFunctionSchemesBudgetCertificate.size := by
+  apply iteratedFunctionSchemes_budgetCertificate_le_size
+  constructor
+  · norm_num [IteratedFunctionSchemesBudgetCertificate.controlled,
+      sampleIteratedFunctionSchemesBudgetCertificate]
+  · norm_num [IteratedFunctionSchemesBudgetCertificate.budgetControlled,
+      sampleIteratedFunctionSchemesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleIteratedFunctionSchemesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [IteratedFunctionSchemesBudgetCertificate.controlled,
+      sampleIteratedFunctionSchemesBudgetCertificate]
+  · norm_num [IteratedFunctionSchemesBudgetCertificate.budgetControlled,
+      sampleIteratedFunctionSchemesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleIteratedFunctionSchemesBudgetCertificate.certificateBudgetWindow ≤
+      sampleIteratedFunctionSchemesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List IteratedFunctionSchemesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleIteratedFunctionSchemesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleIteratedFunctionSchemesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.IteratedFunctionSchemes

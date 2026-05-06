@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace EntropyInformation
+namespace AnalyticCombinatorics.PartB.Ch9.EntropyInformation
+
 
 /-!
 # Chapter IX: Information Theory and Combinatorial Entropy
@@ -109,4 +110,125 @@ example : 2 + 1 + 1 = 2 ^ 2 := by native_decide
 /-- Lengths {1,2,3,4,4}, L=4: 8+4+2+1+1 = 16 = 2^4 (complete code) -/
 example : 8 + 4 + 2 + 1 + 1 = 2 ^ 4 := by native_decide
 
-end EntropyInformation
+/-- Three-part multinomial coefficient model. -/
+def multinomialThree (a b c : ℕ) : ℕ :=
+  Nat.factorial (a + b + c) /
+    (Nat.factorial a * Nat.factorial b * Nat.factorial c)
+
+theorem multinomialThree_211 :
+    multinomialThree 2 1 1 = 12 := by
+  native_decide
+
+theorem multinomialThree_321 :
+    multinomialThree 3 2 1 = 60 := by
+  native_decide
+
+/-- Number of weak types for sample size `n` and alphabet size `k + 1`. -/
+def typeCount (n k : ℕ) : ℕ :=
+  Nat.choose (n + k) k
+
+theorem typeCount_binary_ten :
+    typeCount 10 1 = 11 := by
+  native_decide
+
+theorem typeCount_ternary_five :
+    typeCount 5 2 = 21 := by
+  native_decide
+
+/-- Integer Kraft contribution after clearing denominators by `2^maxLen`. -/
+def kraftContribution (maxLen len : ℕ) : ℕ :=
+  2 ^ (maxLen - len)
+
+def kraftSum (maxLen : ℕ) (lengths : List ℕ) : ℕ :=
+  lengths.foldl (fun acc len => acc + kraftContribution maxLen len) 0
+
+theorem kraftSum_complete_code :
+    kraftSum 3 [1, 2, 3, 3] = 2 ^ 3 := by
+  native_decide
+
+theorem kraftSum_short_code :
+    kraftSum 2 [1, 2, 2] = 2 ^ 2 := by
+  native_decide
+
+
+structure EntropyInformationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def EntropyInformationBudgetCertificate.controlled
+    (c : EntropyInformationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def EntropyInformationBudgetCertificate.budgetControlled
+    (c : EntropyInformationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def EntropyInformationBudgetCertificate.Ready
+    (c : EntropyInformationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def EntropyInformationBudgetCertificate.size
+    (c : EntropyInformationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem entropyInformation_budgetCertificate_le_size
+    (c : EntropyInformationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleEntropyInformationBudgetCertificate :
+    EntropyInformationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleEntropyInformationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [EntropyInformationBudgetCertificate.controlled,
+      sampleEntropyInformationBudgetCertificate]
+  · norm_num [EntropyInformationBudgetCertificate.budgetControlled,
+      sampleEntropyInformationBudgetCertificate]
+
+example :
+    sampleEntropyInformationBudgetCertificate.certificateBudgetWindow ≤
+      sampleEntropyInformationBudgetCertificate.size := by
+  apply entropyInformation_budgetCertificate_le_size
+  constructor
+  · norm_num [EntropyInformationBudgetCertificate.controlled,
+      sampleEntropyInformationBudgetCertificate]
+  · norm_num [EntropyInformationBudgetCertificate.budgetControlled,
+      sampleEntropyInformationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleEntropyInformationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [EntropyInformationBudgetCertificate.controlled,
+      sampleEntropyInformationBudgetCertificate]
+  · norm_num [EntropyInformationBudgetCertificate.budgetControlled,
+      sampleEntropyInformationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleEntropyInformationBudgetCertificate.certificateBudgetWindow ≤
+      sampleEntropyInformationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List EntropyInformationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleEntropyInformationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleEntropyInformationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.EntropyInformation

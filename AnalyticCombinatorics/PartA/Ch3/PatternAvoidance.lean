@@ -2,6 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch3.PatternAvoidance
+
 /-! # Ch III/VII — Pattern Avoidance in Permutations
 
 This file formalizes basic enumerative results on pattern-avoiding permutations
@@ -14,7 +16,6 @@ from Flajolet & Sedgewick's *Analytic Combinatorics* (Chapters I, III, VII):
 - **Separable permutations** (avoiding 2413 and 3142, counted by Schröder numbers)
 -/
 
-namespace PatternAvoidance
 
 /-! ## 1. Permutations avoiding a length-3 pattern (Catalan numbers)
 
@@ -179,4 +180,97 @@ example : 513 * 100 / 103 = 498 := by native_decide  -- 4.98, still far from 9 (
 -- Baxter ratio baxterTable[7]/baxterTable[6] = 2074/422 (approaches 8)
 example : 2074 * 100 / 422 = 491 := by native_decide  -- 4.91, approaching 8 slowly
 
-end PatternAvoidance
+/-- Narayana row sum sample for size five. -/
+theorem narayana_row_five_sum :
+    narayana 5 1 + narayana 5 2 + narayana 5 3 +
+      narayana 5 4 + narayana 5 5 = 42 := by
+  native_decide
+
+/-- Separable permutations are strictly fewer than Baxter permutations at size five. -/
+theorem separable_lt_baxter_five :
+    separableTable 4 < baxterTable 5 := by
+  native_decide
+
+
+
+structure PatternAvoidanceBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PatternAvoidanceBudgetCertificate.controlled
+    (c : PatternAvoidanceBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PatternAvoidanceBudgetCertificate.budgetControlled
+    (c : PatternAvoidanceBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PatternAvoidanceBudgetCertificate.Ready
+    (c : PatternAvoidanceBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PatternAvoidanceBudgetCertificate.size
+    (c : PatternAvoidanceBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem patternAvoidance_budgetCertificate_le_size
+    (c : PatternAvoidanceBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePatternAvoidanceBudgetCertificate :
+    PatternAvoidanceBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    samplePatternAvoidanceBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PatternAvoidanceBudgetCertificate.controlled,
+      samplePatternAvoidanceBudgetCertificate]
+  · norm_num [PatternAvoidanceBudgetCertificate.budgetControlled,
+      samplePatternAvoidanceBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePatternAvoidanceBudgetCertificate.certificateBudgetWindow ≤
+      samplePatternAvoidanceBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : samplePatternAvoidanceBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PatternAvoidanceBudgetCertificate.controlled,
+      samplePatternAvoidanceBudgetCertificate]
+  · norm_num [PatternAvoidanceBudgetCertificate.budgetControlled,
+      samplePatternAvoidanceBudgetCertificate]
+
+example :
+    samplePatternAvoidanceBudgetCertificate.certificateBudgetWindow ≤
+      samplePatternAvoidanceBudgetCertificate.size := by
+  apply patternAvoidance_budgetCertificate_le_size
+  constructor
+  · norm_num [PatternAvoidanceBudgetCertificate.controlled,
+      samplePatternAvoidanceBudgetCertificate]
+  · norm_num [PatternAvoidanceBudgetCertificate.budgetControlled,
+      samplePatternAvoidanceBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List PatternAvoidanceBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePatternAvoidanceBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePatternAvoidanceBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.PatternAvoidance

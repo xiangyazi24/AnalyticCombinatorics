@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace EulerMaclaurin
+namespace AnalyticCombinatorics.PartB.Ch5.EulerMaclaurin
+
 
 /-!
 Finite numerical tables related to Euler-Maclaurin summation and the
@@ -94,4 +95,86 @@ theorem gregory_leibniz_partial_sums_alternate :
         gregoryLeibnizNumerators 2 * gregoryLeibnizDenominators 3 := by
   native_decide
 
-end EulerMaclaurin
+
+
+structure EulerMaclaurinBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def EulerMaclaurinBudgetCertificate.controlled
+    (c : EulerMaclaurinBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def EulerMaclaurinBudgetCertificate.budgetControlled
+    (c : EulerMaclaurinBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def EulerMaclaurinBudgetCertificate.Ready
+    (c : EulerMaclaurinBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def EulerMaclaurinBudgetCertificate.size
+    (c : EulerMaclaurinBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem eulerMaclaurin_budgetCertificate_le_size
+    (c : EulerMaclaurinBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleEulerMaclaurinBudgetCertificate :
+    EulerMaclaurinBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleEulerMaclaurinBudgetCertificate.Ready := by
+  constructor
+  · norm_num [EulerMaclaurinBudgetCertificate.controlled,
+      sampleEulerMaclaurinBudgetCertificate]
+  · norm_num [EulerMaclaurinBudgetCertificate.budgetControlled,
+      sampleEulerMaclaurinBudgetCertificate]
+
+example :
+    sampleEulerMaclaurinBudgetCertificate.certificateBudgetWindow ≤
+      sampleEulerMaclaurinBudgetCertificate.size := by
+  apply eulerMaclaurin_budgetCertificate_le_size
+  constructor
+  · norm_num [EulerMaclaurinBudgetCertificate.controlled,
+      sampleEulerMaclaurinBudgetCertificate]
+  · norm_num [EulerMaclaurinBudgetCertificate.budgetControlled,
+      sampleEulerMaclaurinBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleEulerMaclaurinBudgetCertificate.Ready := by
+  constructor
+  · norm_num [EulerMaclaurinBudgetCertificate.controlled,
+      sampleEulerMaclaurinBudgetCertificate]
+  · norm_num [EulerMaclaurinBudgetCertificate.budgetControlled,
+      sampleEulerMaclaurinBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleEulerMaclaurinBudgetCertificate.certificateBudgetWindow ≤
+      sampleEulerMaclaurinBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List EulerMaclaurinBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleEulerMaclaurinBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleEulerMaclaurinBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.EulerMaclaurin

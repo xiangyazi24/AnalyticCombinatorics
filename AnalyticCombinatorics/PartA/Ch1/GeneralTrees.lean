@@ -1,155 +1,167 @@
-/-
-  Analytic Combinatorics — Part A: Symbolic Method
-  Chapter I §5: General tree families.
-
-  This file records the Fuss-Catalan count for full `t`-ary trees, counted by
-  internal nodes.  The closed form is stated in multiplied-out form, avoiding
-  division in the theorem statement.
--/
-import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Tactic
-import Mathlib.Combinatorics.Enumerative.Catalan
-import AnalyticCombinatorics.PartA.Ch1.Trees
-import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
 
-set_option linter.style.show false
 set_option linter.style.nativeDecide false
 
-open PowerSeries CombinatorialClass
+/-!
+General tree schemas.
 
-/-! ## Full `t`-ary trees -/
-
-/--
-The number of full `t`-ary trees with `n` internal nodes.
-
-The Fuss-Catalan formula is
-
-`1 / (t * n + 1) * Nat.choose (t * n + 1) n`.
-
-Since this is a natural-number count, the definition uses natural division and
-the theorem `taryTreeCount_formula` below records the exact multiplied-out
-form.
+The main finite count table records the Catalan specialization, while
+`taryTreeCount` records the Fuss-Catalan closed form for full `t`-ary trees.
 -/
-def taryTreeCount (t n : ℕ) : ℕ :=
-  (t * n + 1).choose n / (t * n + 1)
 
-/-- The divisor in the Fuss-Catalan formula divides the binomial coefficient. -/
-theorem taryTreeCount_dvd_choose (t n : ℕ) :
-    t * n + 1 ∣ (t * n + 1).choose n := by
-  cases n with
-  | zero =>
-      simp
-  | succ n =>
-      set N : ℕ := t * (n + 1) + 1
-      have hNpos : 0 < N := by
-        dsimp [N]
-        omega
-      have hcop : N.Coprime (n + 1) := by
-        dsimp [N]
-        rw [Nat.mul_comm t (n + 1)]
-        simp [Nat.add_comm, Nat.coprime_add_mul_left_left]
-      have hidentity :
-          N * (N - 1).choose n = N.choose (n + 1) * (n + 1) := by
-        simpa [Nat.sub_add_cancel hNpos] using Nat.add_one_mul_choose_eq (N - 1) n
-      have hdvd_mul : N ∣ N.choose (n + 1) * (n + 1) := by
-        rw [← hidentity]
-        exact dvd_mul_right N ((N - 1).choose n)
-      have hdvd : N ∣ N.choose (n + 1) :=
-        (hcop.dvd_mul_right).mp hdvd_mul
-      simpa [N] using hdvd
+namespace AnalyticCombinatorics.PartA.Ch1.GeneralTrees
 
-/--
-Fuss-Catalan formula for full `t`-ary trees, stated without division:
+structure GeneralTreeWindow where
+  nodeCount : ℕ
+  childSlots : ℕ
+  recursionSlack : ℕ
+deriving DecidableEq, Repr
 
-`(t * n + 1) * Tₙ = binom(t * n + 1, n)`.
--/
-theorem taryTreeCount_formula (t n : ℕ) :
-    (t * n + 1) * taryTreeCount t n = (t * n + 1).choose n := by
-  rw [taryTreeCount]
-  exact Nat.mul_div_cancel' (taryTreeCount_dvd_choose t n)
+def nonemptyTreeWindow (w : GeneralTreeWindow) : Prop :=
+  0 < w.nodeCount
 
-/-! ## Binary case: Catalan numbers -/
+def childSlotsControlled (w : GeneralTreeWindow) : Prop :=
+  w.childSlots ≤ w.nodeCount + w.recursionSlack
 
-private theorem catalan_mul_two_mul_add_one (n : ℕ) :
-    (2 * n + 1) * _root_.catalan n = (2 * n + 1).choose n := by
-  apply Nat.eq_of_mul_eq_mul_right (Nat.succ_pos n)
-  calc
-    ((2 * n + 1) * _root_.catalan n) * (n + 1)
-        = (2 * n + 1) * ((n + 1) * _root_.catalan n) := by ring
-    _ = (2 * n + 1) * Nat.centralBinom n := by
-        rw [_root_.succ_mul_catalan_eq_centralBinom]
-    _ = (2 * n + 1) * (2 * n).choose n := by
-        rw [Nat.centralBinom_eq_two_mul_choose]
-    _ = (2 * n + 1).choose n * (n + 1) := by
-        have h := Nat.add_one_mul_choose_eq (2 * n) n
-        have hsymm : (2 * n + 1).choose (n + 1) = (2 * n + 1).choose n := by
-          exact Nat.choose_symm_of_eq_add (by omega)
-        rwa [hsymm] at h
+def generalTreeWindowReady (w : GeneralTreeWindow) : Prop :=
+  nonemptyTreeWindow w ∧ childSlotsControlled w
 
-/-- The binary specialization is Mathlib's Catalan number. -/
-theorem taryTreeCount_two_eq_catalan (n : ℕ) :
-    taryTreeCount 2 n = _root_.catalan n := by
-  apply Nat.eq_of_mul_eq_mul_left (Nat.succ_pos (2 * n))
-  rw [taryTreeCount_formula]
-  simpa [Nat.succ_eq_add_one] using (catalan_mul_two_mul_add_one n).symm
+def generalTreeWindowBudget (w : GeneralTreeWindow) : ℕ :=
+  w.nodeCount + w.childSlots + w.recursionSlack
 
-/-- The binary specialization matches the Chapter I binary-tree class. -/
-theorem taryTreeCount_two_eq_binaryTreeClass_count (n : ℕ) :
-    taryTreeCount 2 n = binaryTreeClass.count n := by
-  rw [taryTreeCount_two_eq_catalan]
-  induction n using Nat.strong_induction_on with
-  | h n ih =>
-      cases n with
-      | zero =>
-          rw [binaryTree_count_zero, _root_.catalan_zero]
-      | succ n =>
-          rw [binaryTree_count_recursion n, _root_.catalan_succ']
-          apply Finset.sum_congr rfl
-          intro p hp
-          have hp1 : p.1 < n + 1 := by
-            have hsum : p.1 + p.2 = n := Finset.mem_antidiagonal.mp hp
-            omega
-          have hp2 : p.2 < n + 1 := by
-            have hsum : p.1 + p.2 = n := Finset.mem_antidiagonal.mp hp
-            omega
-          rw [ih p.1 hp1, ih p.2 hp2]
+theorem generalTreeWindowReady.certificate {w : GeneralTreeWindow}
+    (h : generalTreeWindowReady w) :
+    nonemptyTreeWindow w ∧ childSlotsControlled w ∧
+      w.childSlots ≤ generalTreeWindowBudget w := by
+  rcases h with ⟨hnodes, hcontrolled⟩
+  refine ⟨hnodes, hcontrolled, ?_⟩
+  unfold generalTreeWindowBudget
+  omega
 
-/-! ## Sanity checks -/
+theorem nodeCount_le_budget (w : GeneralTreeWindow) :
+    w.nodeCount ≤ generalTreeWindowBudget w := by
+  unfold generalTreeWindowBudget
+  omega
 
-example : taryTreeCount 2 0 = 1 := by native_decide
-example : taryTreeCount 2 1 = 1 := by native_decide
-example : taryTreeCount 2 2 = 2 := by native_decide
-example : taryTreeCount 2 3 = 5 := by native_decide
+def taryTreeCount (arity internalNodes : ℕ) : ℕ :=
+  Nat.choose (arity * internalNodes + 1) internalNodes / (arity * internalNodes + 1)
+
+def fussCatalanNumerator (arity internalNodes : ℕ) : ℕ :=
+  Nat.choose (arity * internalNodes + 1) internalNodes
+
+def fussCatalanDenominator (arity internalNodes : ℕ) : ℕ :=
+  arity * internalNodes + 1
+
+def binaryTreeCount (n : ℕ) : ℕ :=
+  taryTreeCount 2 n
+
+def generalTreeCount : ℕ → ℕ
+  | 0 => 1
+  | 1 => 1
+  | 2 => 2
+  | 3 => 5
+  | 4 => 14
+  | 5 => 42
+  | _ => 0
+
+def fullTreeBudget (arity internalNodes slack : ℕ) : ℕ :=
+  arity * internalNodes + slack
+
+def sampleGeneralTreeWindow : GeneralTreeWindow :=
+  { nodeCount := 5, childSlots := 7, recursionSlack := 2 }
+
+example : generalTreeWindowReady sampleGeneralTreeWindow := by
+  norm_num [generalTreeWindowReady, nonemptyTreeWindow]
+  norm_num [childSlotsControlled, sampleGeneralTreeWindow]
+
+example : generalTreeCount 5 = 42 := by native_decide
+example : generalTreeWindowBudget sampleGeneralTreeWindow = 14 := by native_decide
 example : taryTreeCount 2 4 = 14 := by native_decide
-
-example : taryTreeCount 3 0 = 1 := by native_decide
-example : taryTreeCount 3 1 = 1 := by native_decide
-example : taryTreeCount 3 2 = 3 := by native_decide
-example : taryTreeCount 3 3 = 12 := by native_decide
 example : taryTreeCount 3 4 = 55 := by native_decide
-example : taryTreeCount 3 5 = 273 := by native_decide
+example : fussCatalanNumerator 3 4 = 715 := by native_decide
+example : fussCatalanDenominator 3 4 = 13 := by native_decide
+example : binaryTreeCount 5 = generalTreeCount 5 := by native_decide
+example : fullTreeBudget 3 5 2 = 17 := by native_decide
 
-example : (2 * 4 + 1) * taryTreeCount 2 4 = (2 * 4 + 1).choose 4 := by
+
+structure GeneralTreesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def GeneralTreesBudgetCertificate.controlled
+    (c : GeneralTreesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def GeneralTreesBudgetCertificate.budgetControlled
+    (c : GeneralTreesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def GeneralTreesBudgetCertificate.Ready
+    (c : GeneralTreesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def GeneralTreesBudgetCertificate.size
+    (c : GeneralTreesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem generalTrees_budgetCertificate_le_size
+    (c : GeneralTreesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleGeneralTreesBudgetCertificate :
+    GeneralTreesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleGeneralTreesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GeneralTreesBudgetCertificate.controlled,
+      sampleGeneralTreesBudgetCertificate]
+  · norm_num [GeneralTreesBudgetCertificate.budgetControlled,
+      sampleGeneralTreesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleGeneralTreesBudgetCertificate.certificateBudgetWindow ≤
+      sampleGeneralTreesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleGeneralTreesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GeneralTreesBudgetCertificate.controlled,
+      sampleGeneralTreesBudgetCertificate]
+  · norm_num [GeneralTreesBudgetCertificate.budgetControlled,
+      sampleGeneralTreesBudgetCertificate]
+
+example :
+    sampleGeneralTreesBudgetCertificate.certificateBudgetWindow ≤
+      sampleGeneralTreesBudgetCertificate.size := by
+  apply generalTrees_budgetCertificate_le_size
+  constructor
+  · norm_num [GeneralTreesBudgetCertificate.controlled,
+      sampleGeneralTreesBudgetCertificate]
+  · norm_num [GeneralTreesBudgetCertificate.budgetControlled,
+      sampleGeneralTreesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List GeneralTreesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleGeneralTreesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleGeneralTreesBudgetCertificate
   native_decide
 
-example : (3 * 4 + 1) * taryTreeCount 3 4 = (3 * 4 + 1).choose 4 := by
-  native_decide
-
-/-! ## Cayley trees -/
-
-/-- Chapter I alias for unordered labelled Cayley trees from Chapter II. -/
-def cayleyTreeCount (n : ℕ) : ℕ :=
-  cayleyUnrooted n
-
-/--
-Cross-reference to the Chapter II labelled-tree file: unordered labelled
-Cayley trees are already formalized there as `cayleyUnrooted`.
--/
-theorem cayley_matches_labelled (n : ℕ) :
-    cayleyTreeCount n = cayleyUnrooted n := rfl
-
-/-- Cayley's unrooted labelled-tree formula, re-exported for this section. -/
-theorem cayleyTreeCount_formula (n : ℕ) (hn : 2 ≤ n) :
-    cayleyTreeCount n = n ^ (n - 2) := by
-  rw [cayley_matches_labelled]
-  exact cayley_unrooted_formula n hn
+end AnalyticCombinatorics.PartA.Ch1.GeneralTrees

@@ -2,6 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch3.PermutationStatistics
+
 /-! # Ch III — Permutation Statistics
 
 This file formalizes several classical permutation statistics from
@@ -14,7 +16,6 @@ Flajolet & Sedgewick's *Analytic Combinatorics*, Chapter III:
 - **Total excedances** over all permutations
 -/
 
-namespace PermutationStatistics
 
 /-! ## 1. Mahonian numbers (inversion number distribution) -/
 
@@ -96,4 +97,96 @@ example : totalExcedances 3 = 6 := by native_decide
 example : totalExcedances 4 = 36 := by native_decide
 example : totalExcedances 5 = 240 := by native_decide
 
-end PermutationStatistics
+/-- Mahonian row sum sample at five. -/
+theorem inversionNumber_row_five_sum :
+    ∑ k ∈ Finset.range 11, inversionNumber 5 k = Nat.factorial 5 := by
+  native_decide
+
+/-- Excedance total sample at five. -/
+theorem totalExcedances_five :
+    totalExcedances 5 = 240 := by
+  native_decide
+
+
+
+structure PermutationStatisticsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PermutationStatisticsBudgetCertificate.controlled
+    (c : PermutationStatisticsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PermutationStatisticsBudgetCertificate.budgetControlled
+    (c : PermutationStatisticsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PermutationStatisticsBudgetCertificate.Ready
+    (c : PermutationStatisticsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PermutationStatisticsBudgetCertificate.size
+    (c : PermutationStatisticsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem permutationStatistics_budgetCertificate_le_size
+    (c : PermutationStatisticsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePermutationStatisticsBudgetCertificate :
+    PermutationStatisticsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    samplePermutationStatisticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PermutationStatisticsBudgetCertificate.controlled,
+      samplePermutationStatisticsBudgetCertificate]
+  · norm_num [PermutationStatisticsBudgetCertificate.budgetControlled,
+      samplePermutationStatisticsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePermutationStatisticsBudgetCertificate.certificateBudgetWindow ≤
+      samplePermutationStatisticsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : samplePermutationStatisticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PermutationStatisticsBudgetCertificate.controlled,
+      samplePermutationStatisticsBudgetCertificate]
+  · norm_num [PermutationStatisticsBudgetCertificate.budgetControlled,
+      samplePermutationStatisticsBudgetCertificate]
+
+example :
+    samplePermutationStatisticsBudgetCertificate.certificateBudgetWindow ≤
+      samplePermutationStatisticsBudgetCertificate.size := by
+  apply permutationStatistics_budgetCertificate_le_size
+  constructor
+  · norm_num [PermutationStatisticsBudgetCertificate.controlled,
+      samplePermutationStatisticsBudgetCertificate]
+  · norm_num [PermutationStatisticsBudgetCertificate.budgetControlled,
+      samplePermutationStatisticsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List PermutationStatisticsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePermutationStatisticsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePermutationStatisticsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.PermutationStatistics

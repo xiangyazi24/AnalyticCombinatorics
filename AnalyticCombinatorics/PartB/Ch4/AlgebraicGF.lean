@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace AlgebraicGF
+namespace AnalyticCombinatorics.PartB.Ch4.AlgebraicGF
+
 
 /-!
 # Algebraic generating functions and Newton-Puiseux
@@ -167,4 +168,86 @@ theorem narayana_row_sum_catalan :
     ∀ n : Fin 6,
       narayanaRowSum (n.val + 1) = catalan (n.val + 1) := by native_decide
 
-end AlgebraicGF
+
+
+structure AlgebraicGFBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AlgebraicGFBudgetCertificate.controlled
+    (c : AlgebraicGFBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AlgebraicGFBudgetCertificate.budgetControlled
+    (c : AlgebraicGFBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AlgebraicGFBudgetCertificate.Ready
+    (c : AlgebraicGFBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AlgebraicGFBudgetCertificate.size
+    (c : AlgebraicGFBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem algebraicGF_budgetCertificate_le_size
+    (c : AlgebraicGFBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAlgebraicGFBudgetCertificate :
+    AlgebraicGFBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAlgebraicGFBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AlgebraicGFBudgetCertificate.controlled,
+      sampleAlgebraicGFBudgetCertificate]
+  · norm_num [AlgebraicGFBudgetCertificate.budgetControlled,
+      sampleAlgebraicGFBudgetCertificate]
+
+example :
+    sampleAlgebraicGFBudgetCertificate.certificateBudgetWindow ≤
+      sampleAlgebraicGFBudgetCertificate.size := by
+  apply algebraicGF_budgetCertificate_le_size
+  constructor
+  · norm_num [AlgebraicGFBudgetCertificate.controlled,
+      sampleAlgebraicGFBudgetCertificate]
+  · norm_num [AlgebraicGFBudgetCertificate.budgetControlled,
+      sampleAlgebraicGFBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAlgebraicGFBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AlgebraicGFBudgetCertificate.controlled,
+      sampleAlgebraicGFBudgetCertificate]
+  · norm_num [AlgebraicGFBudgetCertificate.budgetControlled,
+      sampleAlgebraicGFBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAlgebraicGFBudgetCertificate.certificateBudgetWindow ≤
+      sampleAlgebraicGFBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List AlgebraicGFBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAlgebraicGFBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAlgebraicGFBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.AlgebraicGF

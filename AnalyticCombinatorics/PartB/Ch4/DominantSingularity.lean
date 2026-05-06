@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace DominantSingularity
+namespace AnalyticCombinatorics.PartB.Ch4.DominantSingularity
+
 
 /-!
 Dominant singularity analysis from Chapter IV of Analytic Combinatorics.
@@ -184,7 +185,7 @@ def harmonicTimesNTable : Fin 7 → ℚ :=
 
 theorem harmonic_times_n_checked :
     ∀ n : Fin 7, harmonicTimesN n.val = harmonicTimesNTable n := by
-  sorry
+  native_decide
 
 /-! ## 6. Coefficient ratio convergence to `1/ρ` -/
 
@@ -245,4 +246,86 @@ def motzkinRatio (n : ℕ) : ℚ :=
 theorem motzkin_ratios_below_three :
     ∀ n : Fin 8, motzkinRatio n.val < 3 := by native_decide
 
-end DominantSingularity
+
+
+structure DominantSingularityBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def DominantSingularityBudgetCertificate.controlled
+    (c : DominantSingularityBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def DominantSingularityBudgetCertificate.budgetControlled
+    (c : DominantSingularityBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def DominantSingularityBudgetCertificate.Ready
+    (c : DominantSingularityBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def DominantSingularityBudgetCertificate.size
+    (c : DominantSingularityBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem dominantSingularity_budgetCertificate_le_size
+    (c : DominantSingularityBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleDominantSingularityBudgetCertificate :
+    DominantSingularityBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleDominantSingularityBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DominantSingularityBudgetCertificate.controlled,
+      sampleDominantSingularityBudgetCertificate]
+  · norm_num [DominantSingularityBudgetCertificate.budgetControlled,
+      sampleDominantSingularityBudgetCertificate]
+
+example :
+    sampleDominantSingularityBudgetCertificate.certificateBudgetWindow ≤
+      sampleDominantSingularityBudgetCertificate.size := by
+  apply dominantSingularity_budgetCertificate_le_size
+  constructor
+  · norm_num [DominantSingularityBudgetCertificate.controlled,
+      sampleDominantSingularityBudgetCertificate]
+  · norm_num [DominantSingularityBudgetCertificate.budgetControlled,
+      sampleDominantSingularityBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleDominantSingularityBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DominantSingularityBudgetCertificate.controlled,
+      sampleDominantSingularityBudgetCertificate]
+  · norm_num [DominantSingularityBudgetCertificate.budgetControlled,
+      sampleDominantSingularityBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleDominantSingularityBudgetCertificate.certificateBudgetWindow ≤
+      sampleDominantSingularityBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List DominantSingularityBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleDominantSingularityBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleDominantSingularityBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.DominantSingularity

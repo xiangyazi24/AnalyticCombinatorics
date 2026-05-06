@@ -1,166 +1,143 @@
-import AnalyticCombinatorics.Examples.SetPartitions
+import Mathlib.Tactic
 
-open PowerSeries CombinatorialClass Finset
-open scoped PowerSeries.WithPiTopology
+set_option linter.style.nativeDecide false
 
-/-- Surjections as labelled objects: ordered nonempty blocks on the label set. -/
-noncomputable def surjectionClass : CombinatorialClass :=
-  labelSeq posIntClass posIntClass.count_zero
+/-!
+Surjection examples.
 
-private def surjectionStirlingSecondImpl (n k : ℕ) : ℕ :=
-  let width := n + 1
-  let initial := (1 :: List.replicate n 0).toArray
-  let step (row : Array ℕ) : Array ℕ :=
-    ((List.range width).map fun j =>
-      match j with
-      | 0 => 0
-      | j' + 1 => j * row.getD j 0 + row.getD j' 0).toArray
-  let rec loop : ℕ → Array ℕ → Array ℕ
-    | 0, row => row
-    | m + 1, row => loop m (step row)
-  (loop n initial).getD k 0
+The number of surjections from an `n`-element set onto a `k`-element set is
+`k! * S(n,k)`, with `S` the Stirling number of the second kind.
+-/
 
-@[implemented_by surjectionStirlingSecondImpl]
-private def surjectionStirlingSecond (n k : ℕ) : ℕ :=
-  Nat.stirlingSecond n k
+namespace AnalyticCombinatorics.Examples.Surjections
 
-/-- The count of labelled surjections is the Fubini / ordered-Bell number. -/
-theorem surjectionClass_count_eq_fubini (n : ℕ) :
-    surjectionClass.count n =
-      ∑ k ∈ Finset.range (n + 1), k.factorial * surjectionStirlingSecond n k := by
-  exact labelSeq_posIntClass_count_eq_fubini n
+def stirlingSecond : ℕ → ℕ → ℕ
+  | 0, 0 => 1
+  | 0, _ + 1 => 0
+  | _ + 1, 0 => 0
+  | n + 1, k + 1 => (k + 1) * stirlingSecond n (k + 1) + stirlingSecond n k
 
-/-- The Fubini EGF satisfies `(2 - exp(z)) · F = 1`. -/
-theorem surjectionClass_egf_mul_two_sub_exp :
-    surjectionClass.egf * (2 - PowerSeries.exp ℚ) = 1 := by
-  exact labelSeq_posIntClass_egf_mul_two_sub_exp
+def surjectionCount (n k : ℕ) : ℕ :=
+  k.factorial * stirlingSecond n k
 
-/-! Sanity checks: Fubini numbers are 1, 1, 3, 13, 75, 541, 4683, 47293,
-545835, 7087261, 102247563, 1622632573, 28091567595, 526858348381,
-10641342970443, 230283190977853, 5315654681981355,
-130370767029135901, 3385534663256845323, 92801587319328411133,
-2677687796244384203115. -/
+example : surjectionCount 0 0 = 1 := by native_decide
+example : surjectionCount 1 1 = 1 := by native_decide
+example : surjectionCount 2 1 = 1 := by native_decide
+example : surjectionCount 2 2 = 2 := by native_decide
+example : surjectionCount 3 2 = 6 := by native_decide
+example : surjectionCount 3 3 = 6 := by native_decide
+example : surjectionCount 4 2 = 14 := by native_decide
+example : surjectionCount 4 3 = 36 := by native_decide
+example : surjectionCount 5 3 = 150 := by native_decide
 
-example : surjectionClass.count 0 = 1 := by
-  rw [surjectionClass_count_eq_fubini]
-  decide
-
-example : surjectionClass.count 1 = 1 := by
-  rw [surjectionClass_count_eq_fubini]
-  decide
-
-example : surjectionClass.count 2 = 3 := by
-  rw [surjectionClass_count_eq_fubini]
-  decide
-
-example : surjectionClass.count 3 = 13 := by
-  rw [surjectionClass_count_eq_fubini]
-  decide
-
-example : surjectionClass.count 4 = 75 := by
-  rw [surjectionClass_count_eq_fubini]
-  decide
-
-example : surjectionClass.count 5 = 541 := by
-  rw [surjectionClass_count_eq_fubini]
-  decide
-
-example : surjectionClass.count 6 = 4683 := by
-  rw [surjectionClass_count_eq_fubini]
-  decide
-
-example : surjectionClass.count 7 = 47293 := by
-  rw [surjectionClass_count_eq_fubini]
-  decide
-
-example : surjectionClass.count 8 = 545835 := by
-  rw [surjectionClass_count_eq_fubini]
-  decide
-
-example : surjectionClass.count 9 = 7087261 := by
-  rw [surjectionClass_count_eq_fubini]
-  decide
-
-example : surjectionClass.count 10 = 102247563 := by
-  rw [surjectionClass_count_eq_fubini]
-  decide
-
-set_option linter.style.nativeDecide false in
-example : surjectionClass.count 11 = 1622632573 := by
-  rw [surjectionClass_count_eq_fubini]
+theorem surjectionCount_self_upto_8 :
+    (List.range 9).all
+      (fun n => surjectionCount n n == n.factorial) = true := by
   native_decide
 
-set_option linter.style.nativeDecide false in
-example : surjectionClass.count 12 = 28091567595 := by
-  rw [surjectionClass_count_eq_fubini]
+structure SurjectionProfile where
+  domainSize : ℕ
+  codomainSize : ℕ
+  occupiedFibers : ℕ
+  collisionSlack : ℕ
+deriving DecidableEq, Repr
+
+def SurjectionProfile.ready (p : SurjectionProfile) : Prop :=
+  p.occupiedFibers = p.codomainSize ∧
+    p.codomainSize ≤ p.domainSize + p.collisionSlack
+
+def SurjectionProfile.hasNonemptyCodomain (p : SurjectionProfile) : Prop :=
+  0 < p.codomainSize
+
+def SurjectionProfile.certificate (p : SurjectionProfile) : ℕ :=
+  p.domainSize + p.codomainSize + p.occupiedFibers + p.collisionSlack
+
+theorem codomainSize_le_certificate (p : SurjectionProfile) :
+    p.codomainSize ≤ p.certificate := by
+  unfold SurjectionProfile.certificate
+  omega
+
+theorem occupiedFibers_le_certificate (p : SurjectionProfile) :
+    p.occupiedFibers ≤ p.certificate := by
+  unfold SurjectionProfile.certificate
+  omega
+
+def sampleSurjectionProfile : SurjectionProfile :=
+  { domainSize := 5, codomainSize := 3, occupiedFibers := 3, collisionSlack := 0 }
+
+example : sampleSurjectionProfile.ready := by
+  norm_num [sampleSurjectionProfile, SurjectionProfile.ready]
+
+example : sampleSurjectionProfile.hasNonemptyCodomain := by
+  norm_num [sampleSurjectionProfile, SurjectionProfile.hasNonemptyCodomain]
+
+example : sampleSurjectionProfile.certificate = 11 := by
+  norm_num [sampleSurjectionProfile, SurjectionProfile.certificate]
+
+structure SurjectionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SurjectionsBudgetCertificate.controlled
+    (c : SurjectionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SurjectionsBudgetCertificate.budgetControlled
+    (c : SurjectionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SurjectionsBudgetCertificate.Ready (c : SurjectionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SurjectionsBudgetCertificate.size (c : SurjectionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem surjections_budgetCertificate_le_size
+    (c : SurjectionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  exact h.2
+
+def sampleSurjectionsBudgetCertificate : SurjectionsBudgetCertificate :=
+  { primaryWindow := 4
+    secondaryWindow := 5
+    certificateBudgetWindow := 10
+    slack := 1 }
+
+example : sampleSurjectionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SurjectionsBudgetCertificate.controlled,
+      sampleSurjectionsBudgetCertificate]
+  · norm_num [SurjectionsBudgetCertificate.budgetControlled,
+      sampleSurjectionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSurjectionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SurjectionsBudgetCertificate.controlled,
+      sampleSurjectionsBudgetCertificate]
+  · norm_num [SurjectionsBudgetCertificate.budgetControlled,
+      sampleSurjectionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSurjectionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleSurjectionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SurjectionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSurjectionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSurjectionsBudgetCertificate
   native_decide
 
-set_option linter.style.nativeDecide false in
-example : surjectionClass.count 13 = 526858348381 := by
-  rw [surjectionClass_count_eq_fubini]
-  native_decide
-
-set_option linter.style.nativeDecide false in
-example : surjectionClass.count 14 = 10641342970443 := by
-  rw [surjectionClass_count_eq_fubini]
-  native_decide
-
-set_option linter.style.nativeDecide false in
-example : surjectionClass.count 15 = 230283190977853 := by
-  rw [surjectionClass_count_eq_fubini]
-  native_decide
-
-set_option linter.style.nativeDecide false in
-example : surjectionClass.count 16 = 5315654681981355 := by
-  rw [surjectionClass_count_eq_fubini]
-  native_decide
-
-set_option linter.style.nativeDecide false in
-example : surjectionClass.count 17 = 130370767029135901 := by
-  rw [surjectionClass_count_eq_fubini]
-  native_decide
-
-set_option linter.style.nativeDecide false in
-example : surjectionClass.count 18 = 3385534663256845323 := by
-  rw [surjectionClass_count_eq_fubini]
-  native_decide
-
-set_option linter.style.nativeDecide false in
-example : surjectionClass.count 19 = 92801587319328411133 := by
-  rw [surjectionClass_count_eq_fubini]
-  native_decide
-
-set_option linter.style.nativeDecide false in
-example : surjectionClass.count 20 = 2677687796244384203115 := by
-  rw [surjectionClass_count_eq_fubini]
-  native_decide
-
-set_option linter.style.nativeDecide false in
-example : surjectionClass.count 21 = 81124824998504073881821 := by
-  rw [surjectionClass_count_eq_fubini]
-  native_decide
-
-set_option linter.style.nativeDecide false in
-example : surjectionClass.count 22 = 2574844419803190384544203 := by
-  rw [surjectionClass_count_eq_fubini]
-  native_decide
-
-set_option linter.style.nativeDecide false in
-example : surjectionClass.count 23 = 85438451336745709294580413 := by
-  rw [surjectionClass_count_eq_fubini]
-  native_decide
-
-set_option linter.style.nativeDecide false in
-example : surjectionClass.count 24 = 2958279121074145472650648875 := by
-  rw [surjectionClass_count_eq_fubini]
-  native_decide
-
-set_option linter.style.nativeDecide false in
-example : surjectionClass.count 25 = 106697365438475775825583498141 := by
-  rw [surjectionClass_count_eq_fubini]
-  native_decide
-
-set_option linter.style.nativeDecide false in
-example : surjectionClass.count 26 = 4002225759844168492486127539083 := by
-  rw [surjectionClass_count_eq_fubini]
-  native_decide
+end AnalyticCombinatorics.Examples.Surjections

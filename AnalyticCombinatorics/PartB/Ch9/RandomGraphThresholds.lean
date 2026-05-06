@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace RandomGraphThresholds
+namespace AnalyticCombinatorics.PartB.Ch9.RandomGraphThresholds
+
 
 /-!
 # Random graph thresholds
@@ -116,4 +117,86 @@ theorem chromatic_greedy_bounds_correct :
     (forall d : Fin 10, chromaticGreedyBounds d = (d : Nat) + 1) := by
   native_decide
 
-end RandomGraphThresholds
+
+
+structure RandomGraphThresholdsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def RandomGraphThresholdsBudgetCertificate.controlled
+    (c : RandomGraphThresholdsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def RandomGraphThresholdsBudgetCertificate.budgetControlled
+    (c : RandomGraphThresholdsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def RandomGraphThresholdsBudgetCertificate.Ready
+    (c : RandomGraphThresholdsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def RandomGraphThresholdsBudgetCertificate.size
+    (c : RandomGraphThresholdsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem randomGraphThresholds_budgetCertificate_le_size
+    (c : RandomGraphThresholdsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleRandomGraphThresholdsBudgetCertificate :
+    RandomGraphThresholdsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleRandomGraphThresholdsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RandomGraphThresholdsBudgetCertificate.controlled,
+      sampleRandomGraphThresholdsBudgetCertificate]
+  · norm_num [RandomGraphThresholdsBudgetCertificate.budgetControlled,
+      sampleRandomGraphThresholdsBudgetCertificate]
+
+example :
+    sampleRandomGraphThresholdsBudgetCertificate.certificateBudgetWindow ≤
+      sampleRandomGraphThresholdsBudgetCertificate.size := by
+  apply randomGraphThresholds_budgetCertificate_le_size
+  constructor
+  · norm_num [RandomGraphThresholdsBudgetCertificate.controlled,
+      sampleRandomGraphThresholdsBudgetCertificate]
+  · norm_num [RandomGraphThresholdsBudgetCertificate.budgetControlled,
+      sampleRandomGraphThresholdsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleRandomGraphThresholdsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RandomGraphThresholdsBudgetCertificate.controlled,
+      sampleRandomGraphThresholdsBudgetCertificate]
+  · norm_num [RandomGraphThresholdsBudgetCertificate.budgetControlled,
+      sampleRandomGraphThresholdsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleRandomGraphThresholdsBudgetCertificate.certificateBudgetWindow ≤
+      sampleRandomGraphThresholdsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List RandomGraphThresholdsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleRandomGraphThresholdsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleRandomGraphThresholdsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.RandomGraphThresholds

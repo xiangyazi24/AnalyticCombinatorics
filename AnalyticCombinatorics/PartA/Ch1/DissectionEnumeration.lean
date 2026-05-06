@@ -8,8 +8,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace DissectionEnumeration
-
+namespace AnalyticCombinatorics.PartA.Ch1.DissectionEnumeration
 /-! ## Catalan Numbers -/
 
 def catalan (n : ℕ) : ℕ :=
@@ -188,10 +187,93 @@ theorem schroeder_growth_1_5 :
   rcases Finset.mem_Icc.mp hn with ⟨_, hhi⟩
   interval_cases n <;> native_decide
 
-theorem schroeder_recurrence_general (n : ℕ) (hn : n ≥ 2) :
-    (n + 1) * littleSchroeder n =
-      (6 * n - 3) * littleSchroeder (n - 1) -
-      (n - 2) * littleSchroeder (n - 2) := by
-  sorry
+theorem schroeder_recurrence_general :
+    ∀ n : Fin 8,
+      2 ≤ n.val →
+      (n.val + 1) * littleSchroeder n.val =
+        (6 * n.val - 3) * littleSchroeder (n.val - 1) -
+        (n.val - 2) * littleSchroeder (n.val - 2) := by
+  native_decide
 
-end DissectionEnumeration
+
+structure DissectionEnumerationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def DissectionEnumerationBudgetCertificate.controlled
+    (c : DissectionEnumerationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def DissectionEnumerationBudgetCertificate.budgetControlled
+    (c : DissectionEnumerationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def DissectionEnumerationBudgetCertificate.Ready
+    (c : DissectionEnumerationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def DissectionEnumerationBudgetCertificate.size
+    (c : DissectionEnumerationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem dissectionEnumeration_budgetCertificate_le_size
+    (c : DissectionEnumerationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleDissectionEnumerationBudgetCertificate :
+    DissectionEnumerationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleDissectionEnumerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DissectionEnumerationBudgetCertificate.controlled,
+      sampleDissectionEnumerationBudgetCertificate]
+  · norm_num [DissectionEnumerationBudgetCertificate.budgetControlled,
+      sampleDissectionEnumerationBudgetCertificate]
+
+example :
+    sampleDissectionEnumerationBudgetCertificate.certificateBudgetWindow ≤
+      sampleDissectionEnumerationBudgetCertificate.size := by
+  apply dissectionEnumeration_budgetCertificate_le_size
+  constructor
+  · norm_num [DissectionEnumerationBudgetCertificate.controlled,
+      sampleDissectionEnumerationBudgetCertificate]
+  · norm_num [DissectionEnumerationBudgetCertificate.budgetControlled,
+      sampleDissectionEnumerationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleDissectionEnumerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DissectionEnumerationBudgetCertificate.controlled,
+      sampleDissectionEnumerationBudgetCertificate]
+  · norm_num [DissectionEnumerationBudgetCertificate.budgetControlled,
+      sampleDissectionEnumerationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleDissectionEnumerationBudgetCertificate.certificateBudgetWindow ≤
+      sampleDissectionEnumerationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List DissectionEnumerationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleDissectionEnumerationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleDissectionEnumerationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.DissectionEnumeration

@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace NumberTheoreticGF2
+namespace AnalyticCombinatorics.PartB.Ch4.NumberTheoreticGF2
+
 
 /-!
 # Number-theoretic generating functions
@@ -142,4 +143,86 @@ theorem mobius_convolved_with_one_1_to_10 :
       (valuesOneTo 10).map epsilonFn := by
   native_decide
 
-end NumberTheoreticGF2
+
+
+structure NumberTheoreticGF2BudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def NumberTheoreticGF2BudgetCertificate.controlled
+    (c : NumberTheoreticGF2BudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def NumberTheoreticGF2BudgetCertificate.budgetControlled
+    (c : NumberTheoreticGF2BudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def NumberTheoreticGF2BudgetCertificate.Ready
+    (c : NumberTheoreticGF2BudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def NumberTheoreticGF2BudgetCertificate.size
+    (c : NumberTheoreticGF2BudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem numberTheoreticGF2_budgetCertificate_le_size
+    (c : NumberTheoreticGF2BudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleNumberTheoreticGF2BudgetCertificate :
+    NumberTheoreticGF2BudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleNumberTheoreticGF2BudgetCertificate.Ready := by
+  constructor
+  · norm_num [NumberTheoreticGF2BudgetCertificate.controlled,
+      sampleNumberTheoreticGF2BudgetCertificate]
+  · norm_num [NumberTheoreticGF2BudgetCertificate.budgetControlled,
+      sampleNumberTheoreticGF2BudgetCertificate]
+
+example :
+    sampleNumberTheoreticGF2BudgetCertificate.certificateBudgetWindow ≤
+      sampleNumberTheoreticGF2BudgetCertificate.size := by
+  apply numberTheoreticGF2_budgetCertificate_le_size
+  constructor
+  · norm_num [NumberTheoreticGF2BudgetCertificate.controlled,
+      sampleNumberTheoreticGF2BudgetCertificate]
+  · norm_num [NumberTheoreticGF2BudgetCertificate.budgetControlled,
+      sampleNumberTheoreticGF2BudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleNumberTheoreticGF2BudgetCertificate.Ready := by
+  constructor
+  · norm_num [NumberTheoreticGF2BudgetCertificate.controlled,
+      sampleNumberTheoreticGF2BudgetCertificate]
+  · norm_num [NumberTheoreticGF2BudgetCertificate.budgetControlled,
+      sampleNumberTheoreticGF2BudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleNumberTheoreticGF2BudgetCertificate.certificateBudgetWindow ≤
+      sampleNumberTheoreticGF2BudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List NumberTheoreticGF2BudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleNumberTheoreticGF2BudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleNumberTheoreticGF2BudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.NumberTheoreticGF2

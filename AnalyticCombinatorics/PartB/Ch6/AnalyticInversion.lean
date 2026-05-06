@@ -13,8 +13,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace AnalyticInversion
-
+namespace AnalyticCombinatorics.PartB.Ch6.AnalyticInversion
 -- ============================================================
 -- §1  Transfer from (1-z)^{-α}: exact coefficient formulas
 -- ============================================================
@@ -297,4 +296,105 @@ example : 5 * derangementTable ⟨4, by omega⟩ = derangementTable ⟨5, by ome
 example : 7 * derangementTable ⟨6, by omega⟩ = derangementTable ⟨7, by omega⟩ + 1 := by
   native_decide   -- 7*265=1855=1854+1 ✓
 
-end AnalyticInversion
+/-- Standard-scale coefficient sample for exponent three. -/
+theorem invScale_three_ten :
+    invScale 3 10 = 66 := by
+  native_decide
+
+/-- Catalan singularity table sample. -/
+theorem catalan_ten :
+    catalan 10 = 16796 := by
+  native_decide
+
+/-- Motzkin singularity table sample. -/
+theorem motzkinTable_ten :
+    motzkinTable 10 = 2188 := by
+  native_decide
+
+/-- Derangement transfer table sample. -/
+theorem derangementTable_eight :
+    derangementTable 8 = 14833 := by
+  native_decide
+
+
+structure AnalyticInversionBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AnalyticInversionBudgetCertificate.controlled
+    (c : AnalyticInversionBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AnalyticInversionBudgetCertificate.budgetControlled
+    (c : AnalyticInversionBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AnalyticInversionBudgetCertificate.Ready
+    (c : AnalyticInversionBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AnalyticInversionBudgetCertificate.size
+    (c : AnalyticInversionBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem analyticInversion_budgetCertificate_le_size
+    (c : AnalyticInversionBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAnalyticInversionBudgetCertificate :
+    AnalyticInversionBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAnalyticInversionBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AnalyticInversionBudgetCertificate.controlled,
+      sampleAnalyticInversionBudgetCertificate]
+  · norm_num [AnalyticInversionBudgetCertificate.budgetControlled,
+      sampleAnalyticInversionBudgetCertificate]
+
+example :
+    sampleAnalyticInversionBudgetCertificate.certificateBudgetWindow ≤
+      sampleAnalyticInversionBudgetCertificate.size := by
+  apply analyticInversion_budgetCertificate_le_size
+  constructor
+  · norm_num [AnalyticInversionBudgetCertificate.controlled,
+      sampleAnalyticInversionBudgetCertificate]
+  · norm_num [AnalyticInversionBudgetCertificate.budgetControlled,
+      sampleAnalyticInversionBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAnalyticInversionBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AnalyticInversionBudgetCertificate.controlled,
+      sampleAnalyticInversionBudgetCertificate]
+  · norm_num [AnalyticInversionBudgetCertificate.budgetControlled,
+      sampleAnalyticInversionBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAnalyticInversionBudgetCertificate.certificateBudgetWindow ≤
+      sampleAnalyticInversionBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List AnalyticInversionBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAnalyticInversionBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAnalyticInversionBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.AnalyticInversion

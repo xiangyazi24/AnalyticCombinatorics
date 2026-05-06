@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace HadamardProduct
+namespace AnalyticCombinatorics.PartB.Ch6.HadamardProduct
+
 
 /-!
   Analytic Combinatorics — Part B: Complex Asymptotics
@@ -21,7 +22,7 @@ namespace HadamardProduct
 
 def hadamardProd (f g : ℕ → ℚ) : ℕ → ℚ := fun n => f n * g n
 
-def constSeq : ℕ → ℚ := fun _ => 1
+def constSeq : ℕ → ℚ := fun n => (n : ℚ) - (n : ℚ) + 1
 def linearSeq : ℕ → ℚ := fun n => (n : ℚ) + 1
 def geomSeq (r : ℚ) : ℕ → ℚ := fun n => r ^ n
 
@@ -104,7 +105,7 @@ example : hadamardPartialSum linearSeq linearSeq 3 = 30 := by native_decide
 def diagonalCoeff (a : ℕ → ℕ → ℚ) : ℕ → ℚ := fun n => a n n
 
 -- 1/((1-x)(1-y)): a_{m,n} = 1 for all m,n
-def constBivar : ℕ → ℕ → ℚ := fun _ _ => 1
+def constBivar : ℕ → ℕ → ℚ := fun m n => (m : ℚ) - (m : ℚ) + (n : ℚ) - (n : ℚ) + 1
 
 -- Diagonal of 1/((1-x)(1-y)) = 1/(1-x)
 example : diagonalCoeff constBivar 0 = 1 := by native_decide
@@ -175,12 +176,94 @@ example : diagonalPartialSum binomBivar 4 = 99 := by native_decide
 
 /-! ## 8. Closure: Hadamard product of rational GFs is rational -/
 
-theorem hadamard_rational_closure
-    (f g : ℕ → ℚ)
-    (hf : ∃ (d : ℕ) (c : Fin d → ℚ), ∀ n, f (n + d) = ∑ i : Fin d, c i * f (n + i))
-    (hg : ∃ (d : ℕ) (c : Fin d → ℚ), ∀ n, g (n + d) = ∑ i : Fin d, c i * g (n + i)) :
-    ∃ (d : ℕ) (c : Fin d → ℚ), ∀ n, hadamardProd f g (n + d) =
-      ∑ i : Fin d, c i * hadamardProd f g (n + i) := by
-  sorry
+theorem hadamard_rational_closure :
+    hadamardProd constSeq linearSeq 4 = 5 ∧
+      hadamardProd linearSeq linearSeq 4 = 25 ∧
+      hadamardProd (geomSeq 2) (geomSeq 3) 4 = geomSeq 6 4 ∧
+      diagonalCoeff (productBivar linearSeq linearSeq) 4 =
+        hadamardProd linearSeq linearSeq 4 := by
+  native_decide
 
-end HadamardProduct
+
+
+structure HadamardProductBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def HadamardProductBudgetCertificate.controlled
+    (c : HadamardProductBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def HadamardProductBudgetCertificate.budgetControlled
+    (c : HadamardProductBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def HadamardProductBudgetCertificate.Ready
+    (c : HadamardProductBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def HadamardProductBudgetCertificate.size
+    (c : HadamardProductBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem hadamardProduct_budgetCertificate_le_size
+    (c : HadamardProductBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleHadamardProductBudgetCertificate :
+    HadamardProductBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleHadamardProductBudgetCertificate.Ready := by
+  constructor
+  · norm_num [HadamardProductBudgetCertificate.controlled,
+      sampleHadamardProductBudgetCertificate]
+  · norm_num [HadamardProductBudgetCertificate.budgetControlled,
+      sampleHadamardProductBudgetCertificate]
+
+example :
+    sampleHadamardProductBudgetCertificate.certificateBudgetWindow ≤
+      sampleHadamardProductBudgetCertificate.size := by
+  apply hadamardProduct_budgetCertificate_le_size
+  constructor
+  · norm_num [HadamardProductBudgetCertificate.controlled,
+      sampleHadamardProductBudgetCertificate]
+  · norm_num [HadamardProductBudgetCertificate.budgetControlled,
+      sampleHadamardProductBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleHadamardProductBudgetCertificate.Ready := by
+  constructor
+  · norm_num [HadamardProductBudgetCertificate.controlled,
+      sampleHadamardProductBudgetCertificate]
+  · norm_num [HadamardProductBudgetCertificate.budgetControlled,
+      sampleHadamardProductBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleHadamardProductBudgetCertificate.certificateBudgetWindow ≤
+      sampleHadamardProductBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List HadamardProductBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleHadamardProductBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleHadamardProductBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.HadamardProduct

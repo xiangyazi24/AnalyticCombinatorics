@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace SaddlePointCoefficients
+namespace AnalyticCombinatorics.PartB.Ch6.SaddlePointCoefficients
+
 
 /-!
 # Saddle-point coefficient asymptotics
@@ -124,4 +125,86 @@ def involutionNumbersZeroToEight : Fin 9 → Nat :=
 theorem involutionNumbers_verified_0_to_8 :
     ∀ n : Fin 9, involutionCount n.val = involutionNumbersZeroToEight n := by native_decide
 
-end SaddlePointCoefficients
+
+
+structure SaddlePointCoefficientsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SaddlePointCoefficientsBudgetCertificate.controlled
+    (c : SaddlePointCoefficientsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SaddlePointCoefficientsBudgetCertificate.budgetControlled
+    (c : SaddlePointCoefficientsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SaddlePointCoefficientsBudgetCertificate.Ready
+    (c : SaddlePointCoefficientsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SaddlePointCoefficientsBudgetCertificate.size
+    (c : SaddlePointCoefficientsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem saddlePointCoefficients_budgetCertificate_le_size
+    (c : SaddlePointCoefficientsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSaddlePointCoefficientsBudgetCertificate :
+    SaddlePointCoefficientsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSaddlePointCoefficientsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SaddlePointCoefficientsBudgetCertificate.controlled,
+      sampleSaddlePointCoefficientsBudgetCertificate]
+  · norm_num [SaddlePointCoefficientsBudgetCertificate.budgetControlled,
+      sampleSaddlePointCoefficientsBudgetCertificate]
+
+example :
+    sampleSaddlePointCoefficientsBudgetCertificate.certificateBudgetWindow ≤
+      sampleSaddlePointCoefficientsBudgetCertificate.size := by
+  apply saddlePointCoefficients_budgetCertificate_le_size
+  constructor
+  · norm_num [SaddlePointCoefficientsBudgetCertificate.controlled,
+      sampleSaddlePointCoefficientsBudgetCertificate]
+  · norm_num [SaddlePointCoefficientsBudgetCertificate.budgetControlled,
+      sampleSaddlePointCoefficientsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSaddlePointCoefficientsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SaddlePointCoefficientsBudgetCertificate.controlled,
+      sampleSaddlePointCoefficientsBudgetCertificate]
+  · norm_num [SaddlePointCoefficientsBudgetCertificate.budgetControlled,
+      sampleSaddlePointCoefficientsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSaddlePointCoefficientsBudgetCertificate.certificateBudgetWindow ≤
+      sampleSaddlePointCoefficientsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SaddlePointCoefficientsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSaddlePointCoefficientsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSaddlePointCoefficientsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.SaddlePointCoefficients

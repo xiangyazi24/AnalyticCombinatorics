@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace BinaryTreeShapes
+namespace AnalyticCombinatorics.PartA.Ch1.BinaryTreeShapes
+
 
 /-!
   Chapter I finite checks for binary tree shapes and related structures.
@@ -107,10 +108,9 @@ theorem motzkin_initial_values :
       motzkinNumber 8 = 323 ∧ motzkinNumber 9 = 835 := by
   native_decide
 
-/--
-  The standard Motzkin recurrence in addition form,
-  `(n+2) M_n = (2n+1) M_{n-1} + 3(n-1) M_{n-2}`, checked for `n = 2..8`.
--/
+/-- The standard Motzkin recurrence in addition form,
+    `(n+2) M_n = (2n+1) M_{n-1} + 3(n-1) M_{n-2}`,
+    checked for `n = 2..8`. -/
 theorem motzkin_recurrence_checked_two_through_eight :
     ∀ k : Fin 7,
       let n := k.val + 2
@@ -194,4 +194,86 @@ theorem large_schroder_not_twice_small_at_zero :
     largeSchroderNumber 0 ≠ 2 * smallSchroderNumber 0 := by
   native_decide
 
-end BinaryTreeShapes
+
+
+structure BinaryTreeShapesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def BinaryTreeShapesBudgetCertificate.controlled
+    (c : BinaryTreeShapesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def BinaryTreeShapesBudgetCertificate.budgetControlled
+    (c : BinaryTreeShapesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def BinaryTreeShapesBudgetCertificate.Ready
+    (c : BinaryTreeShapesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def BinaryTreeShapesBudgetCertificate.size
+    (c : BinaryTreeShapesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem binaryTreeShapes_budgetCertificate_le_size
+    (c : BinaryTreeShapesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleBinaryTreeShapesBudgetCertificate :
+    BinaryTreeShapesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleBinaryTreeShapesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [BinaryTreeShapesBudgetCertificate.controlled,
+      sampleBinaryTreeShapesBudgetCertificate]
+  · norm_num [BinaryTreeShapesBudgetCertificate.budgetControlled,
+      sampleBinaryTreeShapesBudgetCertificate]
+
+example :
+    sampleBinaryTreeShapesBudgetCertificate.certificateBudgetWindow ≤
+      sampleBinaryTreeShapesBudgetCertificate.size := by
+  apply binaryTreeShapes_budgetCertificate_le_size
+  constructor
+  · norm_num [BinaryTreeShapesBudgetCertificate.controlled,
+      sampleBinaryTreeShapesBudgetCertificate]
+  · norm_num [BinaryTreeShapesBudgetCertificate.budgetControlled,
+      sampleBinaryTreeShapesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleBinaryTreeShapesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [BinaryTreeShapesBudgetCertificate.controlled,
+      sampleBinaryTreeShapesBudgetCertificate]
+  · norm_num [BinaryTreeShapesBudgetCertificate.budgetControlled,
+      sampleBinaryTreeShapesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleBinaryTreeShapesBudgetCertificate.certificateBudgetWindow ≤
+      sampleBinaryTreeShapesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List BinaryTreeShapesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleBinaryTreeShapesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleBinaryTreeShapesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.BinaryTreeShapes

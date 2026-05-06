@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace BirthdayParadoxVariants
+namespace AnalyticCombinatorics.PartB.Ch9.BirthdayParadoxVariants
+
 
 /-!
 # Birthday paradox variants and occupancy tables
@@ -186,4 +187,86 @@ theorem stirling_subset_sum_occupancy_values :
     (∑ k ∈ Finset.range 7, exactOccupiedBinCount 6 6 k) = 6 ^ 6 := by
   native_decide
 
-end BirthdayParadoxVariants
+
+
+structure BirthdayParadoxVariantsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def BirthdayParadoxVariantsBudgetCertificate.controlled
+    (c : BirthdayParadoxVariantsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def BirthdayParadoxVariantsBudgetCertificate.budgetControlled
+    (c : BirthdayParadoxVariantsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def BirthdayParadoxVariantsBudgetCertificate.Ready
+    (c : BirthdayParadoxVariantsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def BirthdayParadoxVariantsBudgetCertificate.size
+    (c : BirthdayParadoxVariantsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem birthdayParadoxVariants_budgetCertificate_le_size
+    (c : BirthdayParadoxVariantsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleBirthdayParadoxVariantsBudgetCertificate :
+    BirthdayParadoxVariantsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleBirthdayParadoxVariantsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [BirthdayParadoxVariantsBudgetCertificate.controlled,
+      sampleBirthdayParadoxVariantsBudgetCertificate]
+  · norm_num [BirthdayParadoxVariantsBudgetCertificate.budgetControlled,
+      sampleBirthdayParadoxVariantsBudgetCertificate]
+
+example :
+    sampleBirthdayParadoxVariantsBudgetCertificate.certificateBudgetWindow ≤
+      sampleBirthdayParadoxVariantsBudgetCertificate.size := by
+  apply birthdayParadoxVariants_budgetCertificate_le_size
+  constructor
+  · norm_num [BirthdayParadoxVariantsBudgetCertificate.controlled,
+      sampleBirthdayParadoxVariantsBudgetCertificate]
+  · norm_num [BirthdayParadoxVariantsBudgetCertificate.budgetControlled,
+      sampleBirthdayParadoxVariantsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleBirthdayParadoxVariantsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [BirthdayParadoxVariantsBudgetCertificate.controlled,
+      sampleBirthdayParadoxVariantsBudgetCertificate]
+  · norm_num [BirthdayParadoxVariantsBudgetCertificate.budgetControlled,
+      sampleBirthdayParadoxVariantsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleBirthdayParadoxVariantsBudgetCertificate.certificateBudgetWindow ≤
+      sampleBirthdayParadoxVariantsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List BirthdayParadoxVariantsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleBirthdayParadoxVariantsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleBirthdayParadoxVariantsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.BirthdayParadoxVariants

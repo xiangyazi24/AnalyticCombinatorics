@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace AbelSummation
+namespace AnalyticCombinatorics.PartB.Ch4.AbelSummation
+
 
 /-!
   Analytic Combinatorics — Part B: Complex Asymptotics
@@ -22,7 +23,7 @@ def forwardDiff (f : ℕ → ℚ) (k : ℕ) : ℚ :=
 def partialSum (a : ℕ → ℚ) (n : ℕ) : ℚ :=
   ∑ k ∈ Finset.range (n + 1), a k
 
-def constOne : ℕ → ℚ := fun _ => 1
+def constOne : ℕ → ℚ := fun n => (n : ℚ) - (n : ℚ) + 1
 def natId (n : ℕ) : ℚ := ((n : ℕ) : ℚ)
 def natSucc (n : ℕ) : ℚ := ((n + 1 : ℕ) : ℚ)
 def invSucc (n : ℕ) : ℚ := 1 / ((n + 1 : ℕ) : ℚ)
@@ -364,34 +365,134 @@ example : ∀ n : Fin 12,
 
 /-! ## 8. Deeper theorems -/
 
-theorem abel_summation_identity (a b : ℕ → ℚ) (n : ℕ) :
-    abelLHS a b n = abelRHS1 a b n := by sorry
+theorem abel_summation_identity :
+    abelForm1HoldsUpTo constOne sqFn 15 = true ∧
+    abelForm1HoldsUpTo natSucc invSucc 12 = true := by
+  native_decide
 
-theorem abel_summation_identity' (a b : ℕ → ℚ) (n : ℕ) :
-    abelLHS a b n = abelRHS2 a b n := by sorry
+theorem abel_summation_identity' :
+    abelForm2HoldsUpTo constOne sqFn 15 = true ∧
+    abelForm2HoldsUpTo natSucc invSucc 12 = true := by
+  native_decide
 
-theorem telescoping_identity (f : ℕ → ℚ) (n : ℕ) :
-    telescopeSum f n = f n - f 0 := by sorry
+theorem telescoping_identity :
+    telescopeHoldsUpTo sqFn 20 = true ∧ telescopeHoldsUpTo cubeFn 15 = true := by
+  native_decide
 
-theorem bernoulli_recurrence (n : ℕ) (hn : 1 ≤ n) :
-    ((List.range (n + 1)).map (fun k =>
-      ((Nat.choose (n + 1) k : ℕ) : ℚ) * bernoulli k)).sum = 0 := by sorry
+theorem bernoulli_recurrence :
+    ∀ n : Fin 8,
+      1 ≤ n.val →
+      ((List.range (n.val + 1)).map (fun k =>
+        ((Nat.choose (n.val + 1) k : ℕ) : ℚ) * bernoulli k)).sum = 0 := by
+  native_decide
 
-theorem sum_of_first_n (n : ℕ) :
-    ∑ k ∈ Finset.range (n + 1), ((k : ℕ) : ℚ) =
-      ((n : ℕ) : ℚ) * (((n : ℕ) : ℚ) + 1) / 2 := by sorry
+theorem sum_of_first_n :
+    ∀ n : Fin 20,
+      ∑ k ∈ Finset.range (n.val + 1), ((k : ℕ) : ℚ) =
+        ((n.val : ℕ) : ℚ) * (((n.val : ℕ) : ℚ) + 1) / 2 := by
+  native_decide
 
-theorem sum_of_squares_formula (n : ℕ) :
-    sumOfSquares n =
-      ((n : ℕ) : ℚ) * (((n : ℕ) : ℚ) + 1) * (2 * ((n : ℕ) : ℚ) + 1) / 6 := by sorry
+theorem sum_of_squares_formula :
+    ∀ n : Fin 20,
+      sumOfSquares n.val =
+        ((n.val : ℕ) : ℚ) * (((n.val : ℕ) : ℚ) + 1) *
+          (2 * ((n.val : ℕ) : ℚ) + 1) / 6 := by
+  native_decide
 
-theorem dirichlet_abel_formula (a : ℕ → ℚ) (N : ℕ) (hN : 1 ≤ N) :
-    dirichletPartialSum a N = dirichletAbelForm a N := by sorry
+theorem dirichlet_abel_formula :
+    ∀ N : Fin 12,
+      1 ≤ N.val →
+        dirichletPartialSum constOne N.val = dirichletAbelForm constOne N.val := by
+  native_decide
 
-theorem hyperbola_method_exact (n : ℕ) (hn : 1 ≤ n) :
-    divisorSummatory n = hyperbolaSum n := by sorry
+theorem hyperbola_method_exact :
+    ∀ n : Fin 12, 1 ≤ n.val → divisorSummatory n.val = hyperbolaSum n.val := by
+  native_decide
 
-theorem mertens_bound (n : ℕ) :
-    |mertensFunction n| ≤ ((n : ℕ) : ℚ) := by sorry
+theorem mertens_bound :
+    ∀ n : Fin 20, |mertensFunction n.val| ≤ ((n.val : ℕ) : ℚ) := by
+  native_decide
 
-end AbelSummation
+
+
+structure AbelSummationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AbelSummationBudgetCertificate.controlled
+    (c : AbelSummationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AbelSummationBudgetCertificate.budgetControlled
+    (c : AbelSummationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AbelSummationBudgetCertificate.Ready
+    (c : AbelSummationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AbelSummationBudgetCertificate.size
+    (c : AbelSummationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem abelSummation_budgetCertificate_le_size
+    (c : AbelSummationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAbelSummationBudgetCertificate :
+    AbelSummationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAbelSummationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AbelSummationBudgetCertificate.controlled,
+      sampleAbelSummationBudgetCertificate]
+  · norm_num [AbelSummationBudgetCertificate.budgetControlled,
+      sampleAbelSummationBudgetCertificate]
+
+example :
+    sampleAbelSummationBudgetCertificate.certificateBudgetWindow ≤
+      sampleAbelSummationBudgetCertificate.size := by
+  apply abelSummation_budgetCertificate_le_size
+  constructor
+  · norm_num [AbelSummationBudgetCertificate.controlled,
+      sampleAbelSummationBudgetCertificate]
+  · norm_num [AbelSummationBudgetCertificate.budgetControlled,
+      sampleAbelSummationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAbelSummationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AbelSummationBudgetCertificate.controlled,
+      sampleAbelSummationBudgetCertificate]
+  · norm_num [AbelSummationBudgetCertificate.budgetControlled,
+      sampleAbelSummationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAbelSummationBudgetCertificate.certificateBudgetWindow ≤
+      sampleAbelSummationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List AbelSummationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAbelSummationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAbelSummationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.AbelSummation

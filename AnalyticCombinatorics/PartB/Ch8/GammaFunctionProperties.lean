@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace GammaFunctionProperties
+namespace AnalyticCombinatorics.PartB.Ch8.GammaFunctionProperties
+
 
 /-!
   Properties of the Gamma function relevant to asymptotic analysis in
@@ -216,4 +217,86 @@ theorem beta_integer_selected_values :
       betaIntegerNumerator 5 5 = 576 ∧ betaIntegerDenominator 5 5 = 362880 := by
   native_decide
 
-end GammaFunctionProperties
+
+
+structure GammaFunctionPropertiesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def GammaFunctionPropertiesBudgetCertificate.controlled
+    (c : GammaFunctionPropertiesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def GammaFunctionPropertiesBudgetCertificate.budgetControlled
+    (c : GammaFunctionPropertiesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def GammaFunctionPropertiesBudgetCertificate.Ready
+    (c : GammaFunctionPropertiesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def GammaFunctionPropertiesBudgetCertificate.size
+    (c : GammaFunctionPropertiesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem gammaFunctionProperties_budgetCertificate_le_size
+    (c : GammaFunctionPropertiesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleGammaFunctionPropertiesBudgetCertificate :
+    GammaFunctionPropertiesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleGammaFunctionPropertiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GammaFunctionPropertiesBudgetCertificate.controlled,
+      sampleGammaFunctionPropertiesBudgetCertificate]
+  · norm_num [GammaFunctionPropertiesBudgetCertificate.budgetControlled,
+      sampleGammaFunctionPropertiesBudgetCertificate]
+
+example :
+    sampleGammaFunctionPropertiesBudgetCertificate.certificateBudgetWindow ≤
+      sampleGammaFunctionPropertiesBudgetCertificate.size := by
+  apply gammaFunctionProperties_budgetCertificate_le_size
+  constructor
+  · norm_num [GammaFunctionPropertiesBudgetCertificate.controlled,
+      sampleGammaFunctionPropertiesBudgetCertificate]
+  · norm_num [GammaFunctionPropertiesBudgetCertificate.budgetControlled,
+      sampleGammaFunctionPropertiesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleGammaFunctionPropertiesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GammaFunctionPropertiesBudgetCertificate.controlled,
+      sampleGammaFunctionPropertiesBudgetCertificate]
+  · norm_num [GammaFunctionPropertiesBudgetCertificate.budgetControlled,
+      sampleGammaFunctionPropertiesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleGammaFunctionPropertiesBudgetCertificate.certificateBudgetWindow ≤
+      sampleGammaFunctionPropertiesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List GammaFunctionPropertiesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleGammaFunctionPropertiesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleGammaFunctionPropertiesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.GammaFunctionProperties

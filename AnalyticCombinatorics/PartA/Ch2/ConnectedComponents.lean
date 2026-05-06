@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace ConnectedComponents
+namespace AnalyticCombinatorics.PartA.Ch2.ConnectedComponents
+
 
 /-! # Connected components: finite numerical checks
 
@@ -246,4 +247,86 @@ theorem fubini_formula_four :
         Nat.factorial k * stirlingSecondSmall 4 k := by
   native_decide
 
-end ConnectedComponents
+
+
+structure ConnectedComponentsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ConnectedComponentsBudgetCertificate.controlled
+    (c : ConnectedComponentsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ConnectedComponentsBudgetCertificate.budgetControlled
+    (c : ConnectedComponentsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ConnectedComponentsBudgetCertificate.Ready
+    (c : ConnectedComponentsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ConnectedComponentsBudgetCertificate.size
+    (c : ConnectedComponentsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem connectedComponents_budgetCertificate_le_size
+    (c : ConnectedComponentsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleConnectedComponentsBudgetCertificate :
+    ConnectedComponentsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleConnectedComponentsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ConnectedComponentsBudgetCertificate.controlled,
+      sampleConnectedComponentsBudgetCertificate]
+  · norm_num [ConnectedComponentsBudgetCertificate.budgetControlled,
+      sampleConnectedComponentsBudgetCertificate]
+
+example :
+    sampleConnectedComponentsBudgetCertificate.certificateBudgetWindow ≤
+      sampleConnectedComponentsBudgetCertificate.size := by
+  apply connectedComponents_budgetCertificate_le_size
+  constructor
+  · norm_num [ConnectedComponentsBudgetCertificate.controlled,
+      sampleConnectedComponentsBudgetCertificate]
+  · norm_num [ConnectedComponentsBudgetCertificate.budgetControlled,
+      sampleConnectedComponentsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleConnectedComponentsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ConnectedComponentsBudgetCertificate.controlled,
+      sampleConnectedComponentsBudgetCertificate]
+  · norm_num [ConnectedComponentsBudgetCertificate.budgetControlled,
+      sampleConnectedComponentsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleConnectedComponentsBudgetCertificate.certificateBudgetWindow ≤
+      sampleConnectedComponentsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ConnectedComponentsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleConnectedComponentsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleConnectedComponentsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.ConnectedComponents

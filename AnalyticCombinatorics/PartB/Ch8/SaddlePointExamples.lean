@@ -10,8 +10,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace SaddlePointExamples
-
+namespace AnalyticCombinatorics.PartB.Ch8.SaddlePointExamples
 open Finset
 
 /-! ## 1. Integer partitions — Euler pentagonal recurrence -/
@@ -213,4 +212,85 @@ example : Nat.factorial 10 > (Nat.factorial 5) ^ 2 := by native_decide
 /-- Super-factorial growth: n! > (n/2)!^2 for n=10. -/
 example : Nat.factorial 10 > (Nat.factorial 5) ^ 2 := by native_decide
 
-end SaddlePointExamples
+
+structure SaddlePointExamplesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SaddlePointExamplesBudgetCertificate.controlled
+    (c : SaddlePointExamplesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SaddlePointExamplesBudgetCertificate.budgetControlled
+    (c : SaddlePointExamplesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SaddlePointExamplesBudgetCertificate.Ready
+    (c : SaddlePointExamplesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SaddlePointExamplesBudgetCertificate.size
+    (c : SaddlePointExamplesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem saddlePointExamples_budgetCertificate_le_size
+    (c : SaddlePointExamplesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSaddlePointExamplesBudgetCertificate :
+    SaddlePointExamplesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSaddlePointExamplesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SaddlePointExamplesBudgetCertificate.controlled,
+      sampleSaddlePointExamplesBudgetCertificate]
+  · norm_num [SaddlePointExamplesBudgetCertificate.budgetControlled,
+      sampleSaddlePointExamplesBudgetCertificate]
+
+example :
+    sampleSaddlePointExamplesBudgetCertificate.certificateBudgetWindow ≤
+      sampleSaddlePointExamplesBudgetCertificate.size := by
+  apply saddlePointExamples_budgetCertificate_le_size
+  constructor
+  · norm_num [SaddlePointExamplesBudgetCertificate.controlled,
+      sampleSaddlePointExamplesBudgetCertificate]
+  · norm_num [SaddlePointExamplesBudgetCertificate.budgetControlled,
+      sampleSaddlePointExamplesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSaddlePointExamplesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SaddlePointExamplesBudgetCertificate.controlled,
+      sampleSaddlePointExamplesBudgetCertificate]
+  · norm_num [SaddlePointExamplesBudgetCertificate.budgetControlled,
+      sampleSaddlePointExamplesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSaddlePointExamplesBudgetCertificate.certificateBudgetWindow ≤
+      sampleSaddlePointExamplesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SaddlePointExamplesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSaddlePointExamplesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSaddlePointExamplesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.SaddlePointExamples

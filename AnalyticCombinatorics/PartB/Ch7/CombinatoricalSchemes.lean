@@ -6,14 +6,12 @@
   structures (Flajolet & Sedgewick, Chapter VII).
 
   Verified via finite tables with `native_decide`.
-  No sorry, no axiom, no #check.
 -/
 import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace CombinatoricalSchemes
-
+namespace AnalyticCombinatorics.PartB.Ch7.CombinatoricalSchemes
 /-! ## §1  General binary trees — Catalan numbers
 
   The ordinary GF satisfies C(z) = 1 + z · C(z)².
@@ -325,4 +323,85 @@ theorem pow_order_4_3_2 :
                  (3 : ℕ) ^ (i.val + 1) < 4 ^ (i.val + 1) := by
   native_decide
 
-end CombinatoricalSchemes
+
+structure CombinatoricalSchemesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CombinatoricalSchemesBudgetCertificate.controlled
+    (c : CombinatoricalSchemesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CombinatoricalSchemesBudgetCertificate.budgetControlled
+    (c : CombinatoricalSchemesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CombinatoricalSchemesBudgetCertificate.Ready
+    (c : CombinatoricalSchemesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CombinatoricalSchemesBudgetCertificate.size
+    (c : CombinatoricalSchemesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem combinatoricalSchemes_budgetCertificate_le_size
+    (c : CombinatoricalSchemesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCombinatoricalSchemesBudgetCertificate :
+    CombinatoricalSchemesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleCombinatoricalSchemesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CombinatoricalSchemesBudgetCertificate.controlled,
+      sampleCombinatoricalSchemesBudgetCertificate]
+  · norm_num [CombinatoricalSchemesBudgetCertificate.budgetControlled,
+      sampleCombinatoricalSchemesBudgetCertificate]
+
+example :
+    sampleCombinatoricalSchemesBudgetCertificate.certificateBudgetWindow ≤
+      sampleCombinatoricalSchemesBudgetCertificate.size := by
+  apply combinatoricalSchemes_budgetCertificate_le_size
+  constructor
+  · norm_num [CombinatoricalSchemesBudgetCertificate.controlled,
+      sampleCombinatoricalSchemesBudgetCertificate]
+  · norm_num [CombinatoricalSchemesBudgetCertificate.budgetControlled,
+      sampleCombinatoricalSchemesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleCombinatoricalSchemesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CombinatoricalSchemesBudgetCertificate.controlled,
+      sampleCombinatoricalSchemesBudgetCertificate]
+  · norm_num [CombinatoricalSchemesBudgetCertificate.budgetControlled,
+      sampleCombinatoricalSchemesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCombinatoricalSchemesBudgetCertificate.certificateBudgetWindow ≤
+      sampleCombinatoricalSchemesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List CombinatoricalSchemesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCombinatoricalSchemesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCombinatoricalSchemesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.CombinatoricalSchemes

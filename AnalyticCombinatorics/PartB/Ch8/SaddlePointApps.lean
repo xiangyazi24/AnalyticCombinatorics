@@ -12,8 +12,7 @@ set_option linter.style.nativeDecide false
 
 open Finset
 
-namespace SaddlePointApps
-
+namespace AnalyticCombinatorics.PartB.Ch8.SaddlePointApps
 /-! ## 1. Bell numbers via Bell triangle -/
 
 /-- The Bell triangle: row `n`, column `k`.
@@ -116,4 +115,93 @@ example : totalPartsInCompositions 3 = 4 * 2 ^ 1 := by native_decide
 example : totalPartsInCompositions 4 = 5 * 2 ^ 2 := by native_decide
 example : totalPartsInCompositions 5 = 6 * 2 ^ 3 := by native_decide
 
-end SaddlePointApps
+
+structure SaddlePointAppsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SaddlePointAppsBudgetCertificate.controlled
+    (c : SaddlePointAppsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SaddlePointAppsBudgetCertificate.budgetControlled
+    (c : SaddlePointAppsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SaddlePointAppsBudgetCertificate.Ready
+    (c : SaddlePointAppsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SaddlePointAppsBudgetCertificate.size
+    (c : SaddlePointAppsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem saddlePointApps_budgetCertificate_le_size
+    (c : SaddlePointAppsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSaddlePointAppsBudgetCertificate :
+    SaddlePointAppsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleSaddlePointAppsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SaddlePointAppsBudgetCertificate.controlled,
+      sampleSaddlePointAppsBudgetCertificate]
+  · norm_num [SaddlePointAppsBudgetCertificate.budgetControlled,
+      sampleSaddlePointAppsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSaddlePointAppsBudgetCertificate.certificateBudgetWindow ≤
+      sampleSaddlePointAppsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleSaddlePointAppsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SaddlePointAppsBudgetCertificate.controlled,
+      sampleSaddlePointAppsBudgetCertificate]
+  · norm_num [SaddlePointAppsBudgetCertificate.budgetControlled,
+      sampleSaddlePointAppsBudgetCertificate]
+
+example :
+    sampleSaddlePointAppsBudgetCertificate.certificateBudgetWindow ≤
+      sampleSaddlePointAppsBudgetCertificate.size := by
+  apply saddlePointApps_budgetCertificate_le_size
+  constructor
+  · norm_num [SaddlePointAppsBudgetCertificate.controlled,
+      sampleSaddlePointAppsBudgetCertificate]
+  · norm_num [SaddlePointAppsBudgetCertificate.budgetControlled,
+      sampleSaddlePointAppsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleSaddlePointAppsBudgetCertificate_ready :
+    sampleSaddlePointAppsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SaddlePointAppsBudgetCertificate.controlled,
+      sampleSaddlePointAppsBudgetCertificate]
+  · norm_num [SaddlePointAppsBudgetCertificate.budgetControlled,
+      sampleSaddlePointAppsBudgetCertificate]
+
+def budgetCertificateListReady (data : List SaddlePointAppsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSaddlePointAppsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSaddlePointAppsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.SaddlePointApps

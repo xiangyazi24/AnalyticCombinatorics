@@ -11,8 +11,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace AlgorithmicComplexity
-
+namespace AnalyticCombinatorics.PartB.Ch8.AlgorithmicComplexity
 /-! ## 1. Quicksort average comparisons
 
   The average number of comparisons for Quicksort on n elements is
@@ -128,4 +127,95 @@ example : Nat.log 2 (Nat.factorial 10) = 21 := by native_decide -- log₂(362880
 example : 17 ≥ Nat.log 2 (Nat.factorial 8) := by native_decide
 example : 49 ≥ Nat.log 2 (Nat.factorial 16) := by native_decide
 
-end AlgorithmicComplexity
+/-- Merge-sort comparison sample at `2^6`. -/
+theorem mergeSortComparisons_six :
+    mergeSortComparisons 6 = 321 := by
+  native_decide
+
+/-- Linear-probing successful-search sample at load `3/4`. -/
+theorem linearProbingSuccessful_three_quarters :
+    linearProbingSuccessful (3 / 4) = 5 / 2 := by
+  native_decide
+
+
+structure AlgorithmicComplexityBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AlgorithmicComplexityBudgetCertificate.controlled
+    (c : AlgorithmicComplexityBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AlgorithmicComplexityBudgetCertificate.budgetControlled
+    (c : AlgorithmicComplexityBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AlgorithmicComplexityBudgetCertificate.Ready
+    (c : AlgorithmicComplexityBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AlgorithmicComplexityBudgetCertificate.size
+    (c : AlgorithmicComplexityBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem algorithmicComplexity_budgetCertificate_le_size
+    (c : AlgorithmicComplexityBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAlgorithmicComplexityBudgetCertificate :
+    AlgorithmicComplexityBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleAlgorithmicComplexityBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AlgorithmicComplexityBudgetCertificate.controlled,
+      sampleAlgorithmicComplexityBudgetCertificate]
+  · norm_num [AlgorithmicComplexityBudgetCertificate.budgetControlled,
+      sampleAlgorithmicComplexityBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAlgorithmicComplexityBudgetCertificate.certificateBudgetWindow ≤
+      sampleAlgorithmicComplexityBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleAlgorithmicComplexityBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AlgorithmicComplexityBudgetCertificate.controlled,
+      sampleAlgorithmicComplexityBudgetCertificate]
+  · norm_num [AlgorithmicComplexityBudgetCertificate.budgetControlled,
+      sampleAlgorithmicComplexityBudgetCertificate]
+
+example :
+    sampleAlgorithmicComplexityBudgetCertificate.certificateBudgetWindow ≤
+      sampleAlgorithmicComplexityBudgetCertificate.size := by
+  apply algorithmicComplexity_budgetCertificate_le_size
+  constructor
+  · norm_num [AlgorithmicComplexityBudgetCertificate.controlled,
+      sampleAlgorithmicComplexityBudgetCertificate]
+  · norm_num [AlgorithmicComplexityBudgetCertificate.budgetControlled,
+      sampleAlgorithmicComplexityBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List AlgorithmicComplexityBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAlgorithmicComplexityBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAlgorithmicComplexityBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.AlgorithmicComplexity

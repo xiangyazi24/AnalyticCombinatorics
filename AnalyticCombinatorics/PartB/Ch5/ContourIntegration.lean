@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace ContourIntegration
+namespace AnalyticCombinatorics.PartB.Ch5.ContourIntegration
+
 
 /-!
 # Contour Integration Methods
@@ -161,4 +162,86 @@ theorem inverse_laplace_two_coefficients :
       inverseLaplaceTwoCoeffs i = Nat.factorial (i : ℕ) * 2 ^ (i : ℕ) := by
   native_decide
 
-end ContourIntegration
+
+
+structure ContourIntegrationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ContourIntegrationBudgetCertificate.controlled
+    (c : ContourIntegrationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ContourIntegrationBudgetCertificate.budgetControlled
+    (c : ContourIntegrationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ContourIntegrationBudgetCertificate.Ready
+    (c : ContourIntegrationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ContourIntegrationBudgetCertificate.size
+    (c : ContourIntegrationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem contourIntegration_budgetCertificate_le_size
+    (c : ContourIntegrationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleContourIntegrationBudgetCertificate :
+    ContourIntegrationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleContourIntegrationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ContourIntegrationBudgetCertificate.controlled,
+      sampleContourIntegrationBudgetCertificate]
+  · norm_num [ContourIntegrationBudgetCertificate.budgetControlled,
+      sampleContourIntegrationBudgetCertificate]
+
+example :
+    sampleContourIntegrationBudgetCertificate.certificateBudgetWindow ≤
+      sampleContourIntegrationBudgetCertificate.size := by
+  apply contourIntegration_budgetCertificate_le_size
+  constructor
+  · norm_num [ContourIntegrationBudgetCertificate.controlled,
+      sampleContourIntegrationBudgetCertificate]
+  · norm_num [ContourIntegrationBudgetCertificate.budgetControlled,
+      sampleContourIntegrationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleContourIntegrationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ContourIntegrationBudgetCertificate.controlled,
+      sampleContourIntegrationBudgetCertificate]
+  · norm_num [ContourIntegrationBudgetCertificate.budgetControlled,
+      sampleContourIntegrationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleContourIntegrationBudgetCertificate.certificateBudgetWindow ≤
+      sampleContourIntegrationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ContourIntegrationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleContourIntegrationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleContourIntegrationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.ContourIntegration

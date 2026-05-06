@@ -2,6 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch3.BoltzmannSampling
+
 /-!
 # Ch III — Boltzmann sampling and random generation
 
@@ -11,7 +13,6 @@ small coefficient tables so that each stated fact is checked by
 `native_decide`.
 -/
 
-namespace BoltzmannSampling
 
 open Finset
 
@@ -33,7 +34,7 @@ def sizeProbability {m : ℕ} (counts : Fin m → ℕ) (x : ℚ) (n : Fin m) : �
 def toyCounts : Fin 5 → ℕ :=
   ![1, 2, 2, 1, 3]
 
-/-- The finite normalizer `C(1/2)` for the toy model. -/
+/-- The finite normalizer `C(1/2)` for the sample model. -/
 theorem toyGF_half :
     finiteGF toyCounts (1 / 2) = 45 / 16 := by
   native_decide
@@ -238,4 +239,86 @@ theorem productPairProbability_factorizes_half :
           sizeProbability rightCounts (1 / 2) j := by
   native_decide
 
-end BoltzmannSampling
+
+
+structure BoltzmannSamplingBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def BoltzmannSamplingBudgetCertificate.controlled
+    (c : BoltzmannSamplingBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def BoltzmannSamplingBudgetCertificate.budgetControlled
+    (c : BoltzmannSamplingBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def BoltzmannSamplingBudgetCertificate.Ready
+    (c : BoltzmannSamplingBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def BoltzmannSamplingBudgetCertificate.size
+    (c : BoltzmannSamplingBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem boltzmannSampling_budgetCertificate_le_size
+    (c : BoltzmannSamplingBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleBoltzmannSamplingBudgetCertificate :
+    BoltzmannSamplingBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleBoltzmannSamplingBudgetCertificate.Ready := by
+  constructor
+  · norm_num [BoltzmannSamplingBudgetCertificate.controlled,
+      sampleBoltzmannSamplingBudgetCertificate]
+  · norm_num [BoltzmannSamplingBudgetCertificate.budgetControlled,
+      sampleBoltzmannSamplingBudgetCertificate]
+
+example :
+    sampleBoltzmannSamplingBudgetCertificate.certificateBudgetWindow ≤
+      sampleBoltzmannSamplingBudgetCertificate.size := by
+  apply boltzmannSampling_budgetCertificate_le_size
+  constructor
+  · norm_num [BoltzmannSamplingBudgetCertificate.controlled,
+      sampleBoltzmannSamplingBudgetCertificate]
+  · norm_num [BoltzmannSamplingBudgetCertificate.budgetControlled,
+      sampleBoltzmannSamplingBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleBoltzmannSamplingBudgetCertificate.Ready := by
+  constructor
+  · norm_num [BoltzmannSamplingBudgetCertificate.controlled,
+      sampleBoltzmannSamplingBudgetCertificate]
+  · norm_num [BoltzmannSamplingBudgetCertificate.budgetControlled,
+      sampleBoltzmannSamplingBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleBoltzmannSamplingBudgetCertificate.certificateBudgetWindow ≤
+      sampleBoltzmannSamplingBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List BoltzmannSamplingBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleBoltzmannSamplingBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleBoltzmannSamplingBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.BoltzmannSampling

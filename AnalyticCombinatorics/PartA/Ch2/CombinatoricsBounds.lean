@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace CombinatoricsBounds
+namespace AnalyticCombinatorics.PartA.Ch2.CombinatoricsBounds
+
 
 /-!
 # Combinatorial Bounds and Inequalities
@@ -121,4 +122,102 @@ example : Nat.choose 20 4 ≥ (20 / 4) ^ 4 := by native_decide  -- 4845 ≥ 625
 example : Nat.choose 10 5 ≤ 2 ^ 10 := by native_decide  -- 252 ≤ 1024
 example : Nat.choose 20 10 ≤ 2 ^ 20 := by native_decide  -- 184756 ≤ 1048576
 
-end CombinatoricsBounds
+/-- Upper entropy-style binomial envelope `n^k / k!`. -/
+def binomialUpperEnvelope (n k : ℕ) : ℕ :=
+  n ^ k / Nat.factorial k
+
+theorem binomialUpperEnvelope_sample :
+    Nat.choose 20 5 ≤ binomialUpperEnvelope 20 5 := by
+  native_decide
+
+/-- Bonferroni union count for derangements after four inclusion-exclusion terms. -/
+def derangementFixedPointUnionFour : ℕ :=
+  24 - 12 + 4 - 1
+
+theorem derangementFixedPointUnionFour_value :
+    derangementFixedPointUnionFour = 15 := by
+  native_decide
+
+
+
+structure CombinatoricsBoundsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CombinatoricsBoundsBudgetCertificate.controlled
+    (c : CombinatoricsBoundsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CombinatoricsBoundsBudgetCertificate.budgetControlled
+    (c : CombinatoricsBoundsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CombinatoricsBoundsBudgetCertificate.Ready
+    (c : CombinatoricsBoundsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CombinatoricsBoundsBudgetCertificate.size
+    (c : CombinatoricsBoundsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem combinatoricsBounds_budgetCertificate_le_size
+    (c : CombinatoricsBoundsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCombinatoricsBoundsBudgetCertificate :
+    CombinatoricsBoundsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleCombinatoricsBoundsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CombinatoricsBoundsBudgetCertificate.controlled,
+      sampleCombinatoricsBoundsBudgetCertificate]
+  · norm_num [CombinatoricsBoundsBudgetCertificate.budgetControlled,
+      sampleCombinatoricsBoundsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCombinatoricsBoundsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCombinatoricsBoundsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleCombinatoricsBoundsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CombinatoricsBoundsBudgetCertificate.controlled,
+      sampleCombinatoricsBoundsBudgetCertificate]
+  · norm_num [CombinatoricsBoundsBudgetCertificate.budgetControlled,
+      sampleCombinatoricsBoundsBudgetCertificate]
+
+example :
+    sampleCombinatoricsBoundsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCombinatoricsBoundsBudgetCertificate.size := by
+  apply combinatoricsBounds_budgetCertificate_le_size
+  constructor
+  · norm_num [CombinatoricsBoundsBudgetCertificate.controlled,
+      sampleCombinatoricsBoundsBudgetCertificate]
+  · norm_num [CombinatoricsBoundsBudgetCertificate.budgetControlled,
+      sampleCombinatoricsBoundsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List CombinatoricsBoundsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCombinatoricsBoundsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCombinatoricsBoundsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.CombinatoricsBounds

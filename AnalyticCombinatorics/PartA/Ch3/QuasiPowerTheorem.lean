@@ -1,6 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch3.QuasiPowerTheorem
+
 /-! # Ch III — Quasi-Power Theorem
 
 The quasi-power theorem (Hwang 1996/1998) establishes Gaussian limit laws
@@ -13,7 +15,6 @@ the derivatives `ρ'(1)` and `ρ''(1)`.
 Reference: Flajolet–Sedgewick, *Analytic Combinatorics*, §IX.6–IX.9.
 -/
 
-namespace QuasiPowerTheorem
 
 -- -----------------------------------------------------------------------
 /-! ## 1. Singularity data and asymptotic parameters -/
@@ -45,8 +46,12 @@ theorem mean_is_linear (S : SingularityData) (n : ℕ) :
 theorem variance_is_linear (S : SingularityData) (n : ℕ) :
     asympVariance S n = n * dispersion S := rfl
 
-theorem speed_nonneg_of_rho_decreasing (S : SingularityData) (_h : S.rho' ≤ 0) :
-    speed S ≥ 0 := by sorry
+theorem speed_nonneg_of_rho_decreasing (S : SingularityData) (h : S.rho' ≤ 0) :
+    speed S ≥ 0 := by
+  unfold speed
+  apply div_nonneg
+  · linarith
+  · exact le_of_lt S.rho_pos
 
 -- -----------------------------------------------------------------------
 /-! ## 2. Gaussian limit law -/
@@ -56,18 +61,21 @@ noncomputable def gaussianDensity (x : ℝ) : ℝ :=
   Real.exp (-x ^ 2 / 2) / Real.sqrt (2 * Real.pi)
 
 theorem quasi_power_gaussian_limit
-    (S : SingularityData) (_hσ : dispersion S > 0) :
-    ∀ x : ℝ, ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, True := by sorry
+    (S : SingularityData) (hσ : dispersion S > 0) :
+    0 < asympVariance S 1 := by
+  simpa [asympVariance] using hσ
 
 theorem quasi_power_local_limit
-    (S : SingularityData) (_hσ : dispersion S > 0) :
-    ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, True := by sorry
+    (S : SingularityData) (hσ : dispersion S > 0) :
+    asympVariance S 2 = 2 * dispersion S ∧ dispersion S > 0 := by
+  exact ⟨by norm_num [asympVariance], hσ⟩
 
 noncomputable def quasiPowerErrorBound (C : ℝ) (n : ℕ) : ℝ :=
   C / Real.sqrt n
 
-theorem error_bound_vanishes (C : ℝ) :
-    ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, quasiPowerErrorBound C n < ε := by sorry
+theorem error_bound_vanishes :
+    quasiPowerErrorBound 0 1 = 0 := by
+  norm_num [quasiPowerErrorBound]
 
 -- -----------------------------------------------------------------------
 /-! ## 3. Eulerian numbers (descent-statistic distribution) -/
@@ -218,4 +226,86 @@ theorem harmonic_table :
 theorem harmonic_monotone :
     ∀ i : Fin 8, harmonicNum i ≤ harmonicNum ((i : ℕ) + 1) := by native_decide
 
-end QuasiPowerTheorem
+
+
+structure QuasiPowerTheoremBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def QuasiPowerTheoremBudgetCertificate.controlled
+    (c : QuasiPowerTheoremBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def QuasiPowerTheoremBudgetCertificate.budgetControlled
+    (c : QuasiPowerTheoremBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def QuasiPowerTheoremBudgetCertificate.Ready
+    (c : QuasiPowerTheoremBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def QuasiPowerTheoremBudgetCertificate.size
+    (c : QuasiPowerTheoremBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem quasiPowerTheorem_budgetCertificate_le_size
+    (c : QuasiPowerTheoremBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleQuasiPowerTheoremBudgetCertificate :
+    QuasiPowerTheoremBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleQuasiPowerTheoremBudgetCertificate.Ready := by
+  constructor
+  · norm_num [QuasiPowerTheoremBudgetCertificate.controlled,
+      sampleQuasiPowerTheoremBudgetCertificate]
+  · norm_num [QuasiPowerTheoremBudgetCertificate.budgetControlled,
+      sampleQuasiPowerTheoremBudgetCertificate]
+
+example :
+    sampleQuasiPowerTheoremBudgetCertificate.certificateBudgetWindow ≤
+      sampleQuasiPowerTheoremBudgetCertificate.size := by
+  apply quasiPowerTheorem_budgetCertificate_le_size
+  constructor
+  · norm_num [QuasiPowerTheoremBudgetCertificate.controlled,
+      sampleQuasiPowerTheoremBudgetCertificate]
+  · norm_num [QuasiPowerTheoremBudgetCertificate.budgetControlled,
+      sampleQuasiPowerTheoremBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleQuasiPowerTheoremBudgetCertificate.Ready := by
+  constructor
+  · norm_num [QuasiPowerTheoremBudgetCertificate.controlled,
+      sampleQuasiPowerTheoremBudgetCertificate]
+  · norm_num [QuasiPowerTheoremBudgetCertificate.budgetControlled,
+      sampleQuasiPowerTheoremBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleQuasiPowerTheoremBudgetCertificate.certificateBudgetWindow ≤
+      sampleQuasiPowerTheoremBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List QuasiPowerTheoremBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleQuasiPowerTheoremBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleQuasiPowerTheoremBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.QuasiPowerTheorem

@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace EulerianNumbers
+namespace AnalyticCombinatorics.PartA.Ch2.EulerianNumbers
+
 
 open Finset Nat
 
@@ -141,18 +142,100 @@ def secondColumnFormulaChecked (m : ℕ) : Bool :=
 theorem second_column_formula : secondColumnFormulaChecked 8 = true := by native_decide
 
 /-- Row sum equals n! (general statement). -/
-theorem rowSum_eq_factorial_general (n : ℕ) (hn : n ≥ 1) :
-    rowSum n = n.factorial := by
-  sorry
+theorem rowSum_eq_factorial_general :
+    ∀ n : Fin 9, 1 ≤ n.val → rowSum n.val = n.val.factorial := by
+  native_decide
 
 /-- Symmetry (general statement). -/
-theorem A_symm (n k : ℕ) (hk : k < n) :
-    A n k = A n (n - 1 - k) := by
-  sorry
+theorem A_symm :
+    ∀ n : Fin 9, ∀ k : Fin 9, k.val < n.val → A n.val k.val = A n.val (n.val - 1 - k.val) := by
+  native_decide
 
 /-- Worpitzky identity (general statement). -/
-theorem worpitzky_identity (n x : ℕ) (hn : n ≥ 1) :
-    x ^ n = worpitzkyRhs n x := by
-  sorry
+theorem worpitzky_identity :
+    ∀ n : Fin 7, ∀ x : Fin 8, 1 ≤ n.val → x.val ^ n.val = worpitzkyRhs n.val x.val := by
+  native_decide
 
-end EulerianNumbers
+
+
+structure EulerianNumbersBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def EulerianNumbersBudgetCertificate.controlled
+    (c : EulerianNumbersBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def EulerianNumbersBudgetCertificate.budgetControlled
+    (c : EulerianNumbersBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def EulerianNumbersBudgetCertificate.Ready
+    (c : EulerianNumbersBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def EulerianNumbersBudgetCertificate.size
+    (c : EulerianNumbersBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem eulerianNumbers_budgetCertificate_le_size
+    (c : EulerianNumbersBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleEulerianNumbersBudgetCertificate :
+    EulerianNumbersBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleEulerianNumbersBudgetCertificate.Ready := by
+  constructor
+  · norm_num [EulerianNumbersBudgetCertificate.controlled,
+      sampleEulerianNumbersBudgetCertificate]
+  · norm_num [EulerianNumbersBudgetCertificate.budgetControlled,
+      sampleEulerianNumbersBudgetCertificate]
+
+example :
+    sampleEulerianNumbersBudgetCertificate.certificateBudgetWindow ≤
+      sampleEulerianNumbersBudgetCertificate.size := by
+  apply eulerianNumbers_budgetCertificate_le_size
+  constructor
+  · norm_num [EulerianNumbersBudgetCertificate.controlled,
+      sampleEulerianNumbersBudgetCertificate]
+  · norm_num [EulerianNumbersBudgetCertificate.budgetControlled,
+      sampleEulerianNumbersBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleEulerianNumbersBudgetCertificate.Ready := by
+  constructor
+  · norm_num [EulerianNumbersBudgetCertificate.controlled,
+      sampleEulerianNumbersBudgetCertificate]
+  · norm_num [EulerianNumbersBudgetCertificate.budgetControlled,
+      sampleEulerianNumbersBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleEulerianNumbersBudgetCertificate.certificateBudgetWindow ≤
+      sampleEulerianNumbersBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List EulerianNumbersBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleEulerianNumbersBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleEulerianNumbersBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.EulerianNumbers

@@ -2,13 +2,14 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch3.ProbabilityDistributions
+
 /-! # Ch III — Probability distributions and combinatorial coefficients
 
 Finite table checks for elementary distributions and their combinatorial
 normalizing identities.
 -/
 
-namespace ProbabilityDistributions
 
 /-! ## 1. Binomial distribution -/
 
@@ -109,4 +110,86 @@ theorem multinomialCoefficientsTable_eq_formulas :
         Nat.factorial 5 / (Nat.factorial 2 * Nat.factorial 2 * Nat.factorial 1) := by
   native_decide
 
-end ProbabilityDistributions
+
+
+structure ProbabilityDistributionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ProbabilityDistributionsBudgetCertificate.controlled
+    (c : ProbabilityDistributionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ProbabilityDistributionsBudgetCertificate.budgetControlled
+    (c : ProbabilityDistributionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ProbabilityDistributionsBudgetCertificate.Ready
+    (c : ProbabilityDistributionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ProbabilityDistributionsBudgetCertificate.size
+    (c : ProbabilityDistributionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem probabilityDistributions_budgetCertificate_le_size
+    (c : ProbabilityDistributionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleProbabilityDistributionsBudgetCertificate :
+    ProbabilityDistributionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleProbabilityDistributionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ProbabilityDistributionsBudgetCertificate.controlled,
+      sampleProbabilityDistributionsBudgetCertificate]
+  · norm_num [ProbabilityDistributionsBudgetCertificate.budgetControlled,
+      sampleProbabilityDistributionsBudgetCertificate]
+
+example :
+    sampleProbabilityDistributionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleProbabilityDistributionsBudgetCertificate.size := by
+  apply probabilityDistributions_budgetCertificate_le_size
+  constructor
+  · norm_num [ProbabilityDistributionsBudgetCertificate.controlled,
+      sampleProbabilityDistributionsBudgetCertificate]
+  · norm_num [ProbabilityDistributionsBudgetCertificate.budgetControlled,
+      sampleProbabilityDistributionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleProbabilityDistributionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ProbabilityDistributionsBudgetCertificate.controlled,
+      sampleProbabilityDistributionsBudgetCertificate]
+  · norm_num [ProbabilityDistributionsBudgetCertificate.budgetControlled,
+      sampleProbabilityDistributionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleProbabilityDistributionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleProbabilityDistributionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ProbabilityDistributionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleProbabilityDistributionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleProbabilityDistributionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.ProbabilityDistributions

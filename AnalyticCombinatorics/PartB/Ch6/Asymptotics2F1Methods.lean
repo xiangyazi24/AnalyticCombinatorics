@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace Asymptotics2F1Methods
+namespace AnalyticCombinatorics.PartB.Ch6.Asymptotics2F1Methods
+
 
 /-!
   Hypergeometric 2F1 methods from Chapter VI, represented here by
@@ -203,4 +204,106 @@ example : oneMinusZCoeff 2 1 = -2 := by native_decide
 example : oneMinusZCoeff 2 2 = 1 := by native_decide
 example : oneMinusZCoeff 2 3 = 0 := by native_decide
 
-end Asymptotics2F1Methods
+/-- Gauss unit argument sample. -/
+theorem gaussUnitRHS_one_one_three :
+    gaussUnitRHS 1 1 3 = 2 := by
+  native_decide
+
+/-- A terminating Vandermonde sample. -/
+theorem vandermondeLHS_four_two_five :
+    vandermondeLHS 4 2 5 = 3 / 14 := by
+  native_decide
+
+/-- Chu-Vandermonde central-binomial sample. -/
+theorem chuVandermondeSum_five_five :
+    chuVandermondeSum 5 5 = Nat.choose 10 5 := by
+  native_decide
+
+/-- Kummer coefficient sample. -/
+theorem kummerCoeffHolds_sample :
+    kummerCoeffHolds 1 2 5 2 5 := by
+  native_decide
+
+
+
+structure Asymptotics2F1MethodsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def Asymptotics2F1MethodsBudgetCertificate.controlled
+    (c : Asymptotics2F1MethodsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def Asymptotics2F1MethodsBudgetCertificate.budgetControlled
+    (c : Asymptotics2F1MethodsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def Asymptotics2F1MethodsBudgetCertificate.Ready
+    (c : Asymptotics2F1MethodsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def Asymptotics2F1MethodsBudgetCertificate.size
+    (c : Asymptotics2F1MethodsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem asymptotics2F1Methods_budgetCertificate_le_size
+    (c : Asymptotics2F1MethodsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAsymptotics2F1MethodsBudgetCertificate :
+    Asymptotics2F1MethodsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAsymptotics2F1MethodsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [Asymptotics2F1MethodsBudgetCertificate.controlled,
+      sampleAsymptotics2F1MethodsBudgetCertificate]
+  · norm_num [Asymptotics2F1MethodsBudgetCertificate.budgetControlled,
+      sampleAsymptotics2F1MethodsBudgetCertificate]
+
+example :
+    sampleAsymptotics2F1MethodsBudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptotics2F1MethodsBudgetCertificate.size := by
+  apply asymptotics2F1Methods_budgetCertificate_le_size
+  constructor
+  · norm_num [Asymptotics2F1MethodsBudgetCertificate.controlled,
+      sampleAsymptotics2F1MethodsBudgetCertificate]
+  · norm_num [Asymptotics2F1MethodsBudgetCertificate.budgetControlled,
+      sampleAsymptotics2F1MethodsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAsymptotics2F1MethodsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [Asymptotics2F1MethodsBudgetCertificate.controlled,
+      sampleAsymptotics2F1MethodsBudgetCertificate]
+  · norm_num [Asymptotics2F1MethodsBudgetCertificate.budgetControlled,
+      sampleAsymptotics2F1MethodsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAsymptotics2F1MethodsBudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptotics2F1MethodsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List Asymptotics2F1MethodsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAsymptotics2F1MethodsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAsymptotics2F1MethodsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.Asymptotics2F1Methods

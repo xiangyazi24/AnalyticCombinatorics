@@ -1,6 +1,7 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
-namespace PermutationFixedPoints
+namespace AnalyticCombinatorics.PartA.Ch2.PermutationFixedPoints
+
 
 open Finset
 
@@ -278,4 +279,86 @@ theorem eulerian_row_sums_1_to_5 :
     (∑ k : Fin 5, eulerianRow5 k) = Nat.factorial 5 := by
   native_decide
 
-end PermutationFixedPoints
+
+
+structure PermutationFixedPointsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PermutationFixedPointsBudgetCertificate.controlled
+    (c : PermutationFixedPointsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PermutationFixedPointsBudgetCertificate.budgetControlled
+    (c : PermutationFixedPointsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PermutationFixedPointsBudgetCertificate.Ready
+    (c : PermutationFixedPointsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PermutationFixedPointsBudgetCertificate.size
+    (c : PermutationFixedPointsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem permutationFixedPoints_budgetCertificate_le_size
+    (c : PermutationFixedPointsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePermutationFixedPointsBudgetCertificate :
+    PermutationFixedPointsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : samplePermutationFixedPointsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PermutationFixedPointsBudgetCertificate.controlled,
+      samplePermutationFixedPointsBudgetCertificate]
+  · norm_num [PermutationFixedPointsBudgetCertificate.budgetControlled,
+      samplePermutationFixedPointsBudgetCertificate]
+
+example :
+    samplePermutationFixedPointsBudgetCertificate.certificateBudgetWindow ≤
+      samplePermutationFixedPointsBudgetCertificate.size := by
+  apply permutationFixedPoints_budgetCertificate_le_size
+  constructor
+  · norm_num [PermutationFixedPointsBudgetCertificate.controlled,
+      samplePermutationFixedPointsBudgetCertificate]
+  · norm_num [PermutationFixedPointsBudgetCertificate.budgetControlled,
+      samplePermutationFixedPointsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    samplePermutationFixedPointsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PermutationFixedPointsBudgetCertificate.controlled,
+      samplePermutationFixedPointsBudgetCertificate]
+  · norm_num [PermutationFixedPointsBudgetCertificate.budgetControlled,
+      samplePermutationFixedPointsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePermutationFixedPointsBudgetCertificate.certificateBudgetWindow ≤
+      samplePermutationFixedPointsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List PermutationFixedPointsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePermutationFixedPointsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePermutationFixedPointsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.PermutationFixedPoints

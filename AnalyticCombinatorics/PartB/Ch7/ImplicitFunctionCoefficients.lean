@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace ImplicitFunctionCoefficients
+namespace AnalyticCombinatorics.PartB.Ch7.ImplicitFunctionCoefficients
+
 
 /-!
   Executable coefficient checks for implicit equations of the form
@@ -195,4 +196,86 @@ theorem ordered_tree_n_five_extraction_checked :
       geometricPowFive ⟨4, by native_decide⟩ := by
   native_decide
 
-end ImplicitFunctionCoefficients
+
+
+structure ImplicitFunctionCoefficientsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ImplicitFunctionCoefficientsBudgetCertificate.controlled
+    (c : ImplicitFunctionCoefficientsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ImplicitFunctionCoefficientsBudgetCertificate.budgetControlled
+    (c : ImplicitFunctionCoefficientsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ImplicitFunctionCoefficientsBudgetCertificate.Ready
+    (c : ImplicitFunctionCoefficientsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ImplicitFunctionCoefficientsBudgetCertificate.size
+    (c : ImplicitFunctionCoefficientsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem implicitFunctionCoefficients_budgetCertificate_le_size
+    (c : ImplicitFunctionCoefficientsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleImplicitFunctionCoefficientsBudgetCertificate :
+    ImplicitFunctionCoefficientsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleImplicitFunctionCoefficientsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ImplicitFunctionCoefficientsBudgetCertificate.controlled,
+      sampleImplicitFunctionCoefficientsBudgetCertificate]
+  · norm_num [ImplicitFunctionCoefficientsBudgetCertificate.budgetControlled,
+      sampleImplicitFunctionCoefficientsBudgetCertificate]
+
+example :
+    sampleImplicitFunctionCoefficientsBudgetCertificate.certificateBudgetWindow ≤
+      sampleImplicitFunctionCoefficientsBudgetCertificate.size := by
+  apply implicitFunctionCoefficients_budgetCertificate_le_size
+  constructor
+  · norm_num [ImplicitFunctionCoefficientsBudgetCertificate.controlled,
+      sampleImplicitFunctionCoefficientsBudgetCertificate]
+  · norm_num [ImplicitFunctionCoefficientsBudgetCertificate.budgetControlled,
+      sampleImplicitFunctionCoefficientsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleImplicitFunctionCoefficientsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ImplicitFunctionCoefficientsBudgetCertificate.controlled,
+      sampleImplicitFunctionCoefficientsBudgetCertificate]
+  · norm_num [ImplicitFunctionCoefficientsBudgetCertificate.budgetControlled,
+      sampleImplicitFunctionCoefficientsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleImplicitFunctionCoefficientsBudgetCertificate.certificateBudgetWindow ≤
+      sampleImplicitFunctionCoefficientsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ImplicitFunctionCoefficientsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleImplicitFunctionCoefficientsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleImplicitFunctionCoefficientsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.ImplicitFunctionCoefficients

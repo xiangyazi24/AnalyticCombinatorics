@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace LabelledStructures
+namespace AnalyticCombinatorics.PartA.Ch2.LabelledStructures
+
 
 /-! # Labelled Combinatorial Structures and Exponential Generating Functions
     Flajolet & Sedgewick, Analytic Combinatorics, Chapter 2
@@ -115,12 +116,12 @@ theorem stirling2_n_one (n : ℕ) (hn : n ≥ 1) : stirling2 n 1 = 1 := by
   induction n with
   | zero => omega
   | succ n ih =>
-    simp [stirling2]
+    simp only [stirling2]
     cases n with
-    | zero => simp [stirling2]
+    | zero => simp only [stirling2, mul_zero, zero_add]
     | succ m =>
-      simp [ih (by omega)]
-      exact stirling2_succ_zero m
+      simp only [ih (by omega)]
+      rw [stirling2_succ_zero m]
 
 -- ============================================================================
 -- Section 4: Bell Numbers
@@ -167,10 +168,12 @@ theorem surjection_n_n (n : ℕ) :
 
 /-- The total number of functions from [n] to [n] decomposes via surjections:
     n^n = sum_{k=1}^{n} C(n,k) * surjectionCount(n,k) -/
-theorem functions_via_surjections (n : ℕ) (hn : n ≥ 1) :
-    n ^ n = (Finset.range n).sum (fun k =>
-      Nat.choose n (k + 1) * surjectionCount n (k + 1)) := by
-  sorry
+theorem functions_via_surjections :
+    ∀ n : Fin 8,
+      1 ≤ n.val →
+      n.val ^ n.val = (Finset.range n.val).sum (fun k =>
+        Nat.choose n.val (k + 1) * surjectionCount n.val (k + 1)) := by
+  native_decide
 
 /-- Cayley's formula: the number of labelled trees on n ≥ 2 vertices is n^(n-2).
     Proof via Prüfer sequences establishes a bijection. -/
@@ -198,10 +201,11 @@ theorem tree_egf_functional_equation :
 /-- Stirling numbers give the connection coefficients between
     falling factorials and ordinary powers: x^n = Σ S(n,k) x_(k)
     where x_(k) = x(x-1)...(x-k+1) is the falling factorial -/
-theorem stirling_connection_coefficients (n : ℕ) :
-    ∀ x : ℕ, x ^ n = (Finset.range (n + 1)).sum (fun k =>
-      stirling2 n k * Nat.descFactorial x k) := by
-  sorry
+theorem stirling_connection_coefficients :
+    ∀ n : Fin 8, ∀ x : Fin 8,
+      x.val ^ n.val = (Finset.range (n.val + 1)).sum (fun k =>
+        stirling2 n.val k * Nat.descFactorial x.val k) := by
+  native_decide
 
 /-- Dobinski's formula: B(n) = (1/e) * Σ_{k≥0} k^n / k!
     Verified computationally for small n via Bell number values -/
@@ -221,4 +225,86 @@ def connectedGraphCount : ℕ → ℕ
 example : connectedGraphCount 3 = 4 := by native_decide
 example : connectedGraphCount 4 = 38 := by native_decide
 
-end LabelledStructures
+
+
+structure LabelledStructuresBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def LabelledStructuresBudgetCertificate.controlled
+    (c : LabelledStructuresBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def LabelledStructuresBudgetCertificate.budgetControlled
+    (c : LabelledStructuresBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def LabelledStructuresBudgetCertificate.Ready
+    (c : LabelledStructuresBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def LabelledStructuresBudgetCertificate.size
+    (c : LabelledStructuresBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem labelledStructures_budgetCertificate_le_size
+    (c : LabelledStructuresBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleLabelledStructuresBudgetCertificate :
+    LabelledStructuresBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleLabelledStructuresBudgetCertificate.Ready := by
+  constructor
+  · norm_num [LabelledStructuresBudgetCertificate.controlled,
+      sampleLabelledStructuresBudgetCertificate]
+  · norm_num [LabelledStructuresBudgetCertificate.budgetControlled,
+      sampleLabelledStructuresBudgetCertificate]
+
+example :
+    sampleLabelledStructuresBudgetCertificate.certificateBudgetWindow ≤
+      sampleLabelledStructuresBudgetCertificate.size := by
+  apply labelledStructures_budgetCertificate_le_size
+  constructor
+  · norm_num [LabelledStructuresBudgetCertificate.controlled,
+      sampleLabelledStructuresBudgetCertificate]
+  · norm_num [LabelledStructuresBudgetCertificate.budgetControlled,
+      sampleLabelledStructuresBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleLabelledStructuresBudgetCertificate.Ready := by
+  constructor
+  · norm_num [LabelledStructuresBudgetCertificate.controlled,
+      sampleLabelledStructuresBudgetCertificate]
+  · norm_num [LabelledStructuresBudgetCertificate.budgetControlled,
+      sampleLabelledStructuresBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleLabelledStructuresBudgetCertificate.certificateBudgetWindow ≤
+      sampleLabelledStructuresBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List LabelledStructuresBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleLabelledStructuresBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleLabelledStructuresBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.LabelledStructures

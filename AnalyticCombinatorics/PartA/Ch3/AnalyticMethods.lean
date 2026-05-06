@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace AnalyticMethods
+namespace AnalyticCombinatorics.PartA.Ch3.AnalyticMethods
+
 
 /-! # Analytic Methods: Finite Power-Sum Checks
 
@@ -76,4 +77,96 @@ def oddAltSum : Fin 5 → ℕ := ![1, 2, 3, 4, 5]
 example : ∀ k : Fin 5, oddAltSum k = (k : ℕ) + 1 := by
   native_decide
 
-end AnalyticMethods
+/-- Geometric-sum sample at exponent six. -/
+theorem geomSumTwo_six :
+    geomSumTwo 6 = 127 := by
+  native_decide
+
+/-- Triangular-number sample at twelve. -/
+theorem triangular_twelve :
+    triangular 11 = 78 := by
+  native_decide
+
+
+
+structure AnalyticMethodsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AnalyticMethodsBudgetCertificate.controlled
+    (c : AnalyticMethodsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AnalyticMethodsBudgetCertificate.budgetControlled
+    (c : AnalyticMethodsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AnalyticMethodsBudgetCertificate.Ready
+    (c : AnalyticMethodsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AnalyticMethodsBudgetCertificate.size
+    (c : AnalyticMethodsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem analyticMethods_budgetCertificate_le_size
+    (c : AnalyticMethodsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAnalyticMethodsBudgetCertificate :
+    AnalyticMethodsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleAnalyticMethodsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AnalyticMethodsBudgetCertificate.controlled,
+      sampleAnalyticMethodsBudgetCertificate]
+  · norm_num [AnalyticMethodsBudgetCertificate.budgetControlled,
+      sampleAnalyticMethodsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAnalyticMethodsBudgetCertificate.certificateBudgetWindow ≤
+      sampleAnalyticMethodsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleAnalyticMethodsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AnalyticMethodsBudgetCertificate.controlled,
+      sampleAnalyticMethodsBudgetCertificate]
+  · norm_num [AnalyticMethodsBudgetCertificate.budgetControlled,
+      sampleAnalyticMethodsBudgetCertificate]
+
+example :
+    sampleAnalyticMethodsBudgetCertificate.certificateBudgetWindow ≤
+      sampleAnalyticMethodsBudgetCertificate.size := by
+  apply analyticMethods_budgetCertificate_le_size
+  constructor
+  · norm_num [AnalyticMethodsBudgetCertificate.controlled,
+      sampleAnalyticMethodsBudgetCertificate]
+  · norm_num [AnalyticMethodsBudgetCertificate.budgetControlled,
+      sampleAnalyticMethodsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List AnalyticMethodsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAnalyticMethodsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAnalyticMethodsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.AnalyticMethods

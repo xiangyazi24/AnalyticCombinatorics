@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace PolyaTreeEnumeration
+namespace AnalyticCombinatorics.PartB.Ch7.PolyaTreeEnumeration
+
 
 /-!
   Polya-type finite checks for unlabelled tree enumeration.
@@ -52,7 +53,7 @@ theorem rooted_polya_recurrence_2_9 :
 /-! ## Free unlabelled trees: OEIS A000055 -/
 
 /-- Initial values of unrooted unlabelled trees, indexed by `n = 0, ..., 9`.
-The first entry is the conventional empty-size placeholder for this file. -/
+The first entry is the conventional empty tree count used for size zero. -/
 def unrootedTreeTable : Fin 10 → ℕ :=
   ![1, 1, 1, 1, 2, 3, 6, 11, 23, 47]
 
@@ -194,4 +195,86 @@ theorem plane_nonplane_factorial_scale_1_9 :
         catalanNumber (i.val + 1) := by
   native_decide
 
-end PolyaTreeEnumeration
+
+
+structure PolyaTreeEnumerationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PolyaTreeEnumerationBudgetCertificate.controlled
+    (c : PolyaTreeEnumerationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PolyaTreeEnumerationBudgetCertificate.budgetControlled
+    (c : PolyaTreeEnumerationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PolyaTreeEnumerationBudgetCertificate.Ready
+    (c : PolyaTreeEnumerationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PolyaTreeEnumerationBudgetCertificate.size
+    (c : PolyaTreeEnumerationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem polyaTreeEnumeration_budgetCertificate_le_size
+    (c : PolyaTreeEnumerationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePolyaTreeEnumerationBudgetCertificate :
+    PolyaTreeEnumerationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : samplePolyaTreeEnumerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PolyaTreeEnumerationBudgetCertificate.controlled,
+      samplePolyaTreeEnumerationBudgetCertificate]
+  · norm_num [PolyaTreeEnumerationBudgetCertificate.budgetControlled,
+      samplePolyaTreeEnumerationBudgetCertificate]
+
+example :
+    samplePolyaTreeEnumerationBudgetCertificate.certificateBudgetWindow ≤
+      samplePolyaTreeEnumerationBudgetCertificate.size := by
+  apply polyaTreeEnumeration_budgetCertificate_le_size
+  constructor
+  · norm_num [PolyaTreeEnumerationBudgetCertificate.controlled,
+      samplePolyaTreeEnumerationBudgetCertificate]
+  · norm_num [PolyaTreeEnumerationBudgetCertificate.budgetControlled,
+      samplePolyaTreeEnumerationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    samplePolyaTreeEnumerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PolyaTreeEnumerationBudgetCertificate.controlled,
+      samplePolyaTreeEnumerationBudgetCertificate]
+  · norm_num [PolyaTreeEnumerationBudgetCertificate.budgetControlled,
+      samplePolyaTreeEnumerationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePolyaTreeEnumerationBudgetCertificate.certificateBudgetWindow ≤
+      samplePolyaTreeEnumerationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List PolyaTreeEnumerationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePolyaTreeEnumerationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePolyaTreeEnumerationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.PolyaTreeEnumeration

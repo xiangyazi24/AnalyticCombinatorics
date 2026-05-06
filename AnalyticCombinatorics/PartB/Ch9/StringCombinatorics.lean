@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace StringCombinatorics
+namespace AnalyticCombinatorics.PartB.Ch9.StringCombinatorics
+
 
 /-!
 # String combinatorics and pattern matching probabilities
@@ -331,4 +332,86 @@ theorem binary_lyndon_table_checks :
 
 end LyndonWords
 
-end StringCombinatorics
+
+
+structure StringCombinatoricsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def StringCombinatoricsBudgetCertificate.controlled
+    (c : StringCombinatoricsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def StringCombinatoricsBudgetCertificate.budgetControlled
+    (c : StringCombinatoricsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def StringCombinatoricsBudgetCertificate.Ready
+    (c : StringCombinatoricsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def StringCombinatoricsBudgetCertificate.size
+    (c : StringCombinatoricsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem stringCombinatorics_budgetCertificate_le_size
+    (c : StringCombinatoricsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleStringCombinatoricsBudgetCertificate :
+    StringCombinatoricsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleStringCombinatoricsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [StringCombinatoricsBudgetCertificate.controlled,
+      sampleStringCombinatoricsBudgetCertificate]
+  · norm_num [StringCombinatoricsBudgetCertificate.budgetControlled,
+      sampleStringCombinatoricsBudgetCertificate]
+
+example :
+    sampleStringCombinatoricsBudgetCertificate.certificateBudgetWindow ≤
+      sampleStringCombinatoricsBudgetCertificate.size := by
+  apply stringCombinatorics_budgetCertificate_le_size
+  constructor
+  · norm_num [StringCombinatoricsBudgetCertificate.controlled,
+      sampleStringCombinatoricsBudgetCertificate]
+  · norm_num [StringCombinatoricsBudgetCertificate.budgetControlled,
+      sampleStringCombinatoricsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleStringCombinatoricsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [StringCombinatoricsBudgetCertificate.controlled,
+      sampleStringCombinatoricsBudgetCertificate]
+  · norm_num [StringCombinatoricsBudgetCertificate.budgetControlled,
+      sampleStringCombinatoricsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleStringCombinatoricsBudgetCertificate.certificateBudgetWindow ≤
+      sampleStringCombinatoricsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List StringCombinatoricsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleStringCombinatoricsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleStringCombinatoricsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.StringCombinatorics

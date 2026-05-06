@@ -13,8 +13,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace SingularityAnalysis
-
+namespace AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis
 /-! ## 1. Negative binomial coefficients (Transfer Theorem) -/
 
 /-- [z^n](1-z)^{-α} = C(n + α - 1, n) for natural number α. -/
@@ -128,4 +127,95 @@ example : catalanNum 9 * (8 + 2) = catalanNum 8 * 2 * (2 * 8 + 1) := by native_d
 example : catalanNum 10 * (9 + 2) = catalanNum 9 * 2 * (2 * 9 + 1) := by native_decide
 example : catalanNum 11 * (10 + 2) = catalanNum 10 * 2 * (2 * 10 + 1) := by native_decide
 
-end SingularityAnalysis
+/-- Logarithmic singularity coefficient sample. -/
+theorem logCoeff_ten :
+    logCoeff 10 = 1 / 10 := by
+  native_decide
+
+/-- Catalan ratio recurrence sample. -/
+theorem catalanNum_eleven_ratio_sample :
+    catalanNum 11 * (10 + 2) = catalanNum 10 * 2 * (2 * 10 + 1) := by
+  native_decide
+
+
+structure SingularityAnalysisBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SingularityAnalysisBudgetCertificate.controlled
+    (c : SingularityAnalysisBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SingularityAnalysisBudgetCertificate.budgetControlled
+    (c : SingularityAnalysisBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SingularityAnalysisBudgetCertificate.Ready
+    (c : SingularityAnalysisBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SingularityAnalysisBudgetCertificate.size
+    (c : SingularityAnalysisBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem singularityAnalysis_budgetCertificate_le_size
+    (c : SingularityAnalysisBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSingularityAnalysisBudgetCertificate :
+    SingularityAnalysisBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleSingularityAnalysisBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SingularityAnalysisBudgetCertificate.controlled,
+      sampleSingularityAnalysisBudgetCertificate]
+  · norm_num [SingularityAnalysisBudgetCertificate.budgetControlled,
+      sampleSingularityAnalysisBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSingularityAnalysisBudgetCertificate.certificateBudgetWindow ≤
+      sampleSingularityAnalysisBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleSingularityAnalysisBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SingularityAnalysisBudgetCertificate.controlled,
+      sampleSingularityAnalysisBudgetCertificate]
+  · norm_num [SingularityAnalysisBudgetCertificate.budgetControlled,
+      sampleSingularityAnalysisBudgetCertificate]
+
+example :
+    sampleSingularityAnalysisBudgetCertificate.certificateBudgetWindow ≤
+      sampleSingularityAnalysisBudgetCertificate.size := by
+  apply singularityAnalysis_budgetCertificate_le_size
+  constructor
+  · norm_num [SingularityAnalysisBudgetCertificate.controlled,
+      sampleSingularityAnalysisBudgetCertificate]
+  · norm_num [SingularityAnalysisBudgetCertificate.budgetControlled,
+      sampleSingularityAnalysisBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List SingularityAnalysisBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSingularityAnalysisBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSingularityAnalysisBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.SingularityAnalysis

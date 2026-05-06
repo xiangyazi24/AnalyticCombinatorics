@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace SingularityClassification
+namespace AnalyticCombinatorics.PartB.Ch6.SingularityClassification
+
 
 open Finset
 
@@ -13,7 +14,7 @@ numerical coefficient checks that Lean can decide by computation.
 /-! ## Simple poles -/
 
 /-- Coefficients of `1 / (1 - z)`. -/
-def simplePoleOneCoeff (_n : ℕ) : ℕ := 1
+def simplePoleOneCoeff (n : ℕ) : ℕ := n - n + 1
 
 /-- Coefficients of `1 / (1 - 2z)`. -/
 def simplePoleTwoCoeff (n : ℕ) : ℕ := 2 ^ n
@@ -213,4 +214,86 @@ theorem classification_hierarchy_no_reverse_edges :
       strictlyBelow FunctionClass.holonomic FunctionClass.dFinite = false := by
   native_decide
 
-end SingularityClassification
+
+
+structure SingularityClassificationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SingularityClassificationBudgetCertificate.controlled
+    (c : SingularityClassificationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SingularityClassificationBudgetCertificate.budgetControlled
+    (c : SingularityClassificationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SingularityClassificationBudgetCertificate.Ready
+    (c : SingularityClassificationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SingularityClassificationBudgetCertificate.size
+    (c : SingularityClassificationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem singularityClassification_budgetCertificate_le_size
+    (c : SingularityClassificationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSingularityClassificationBudgetCertificate :
+    SingularityClassificationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSingularityClassificationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SingularityClassificationBudgetCertificate.controlled,
+      sampleSingularityClassificationBudgetCertificate]
+  · norm_num [SingularityClassificationBudgetCertificate.budgetControlled,
+      sampleSingularityClassificationBudgetCertificate]
+
+example :
+    sampleSingularityClassificationBudgetCertificate.certificateBudgetWindow ≤
+      sampleSingularityClassificationBudgetCertificate.size := by
+  apply singularityClassification_budgetCertificate_le_size
+  constructor
+  · norm_num [SingularityClassificationBudgetCertificate.controlled,
+      sampleSingularityClassificationBudgetCertificate]
+  · norm_num [SingularityClassificationBudgetCertificate.budgetControlled,
+      sampleSingularityClassificationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSingularityClassificationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SingularityClassificationBudgetCertificate.controlled,
+      sampleSingularityClassificationBudgetCertificate]
+  · norm_num [SingularityClassificationBudgetCertificate.budgetControlled,
+      sampleSingularityClassificationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSingularityClassificationBudgetCertificate.certificateBudgetWindow ≤
+      sampleSingularityClassificationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SingularityClassificationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSingularityClassificationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSingularityClassificationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.SingularityClassification

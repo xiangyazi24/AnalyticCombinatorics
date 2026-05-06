@@ -2,6 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch3.CombinatoricsOnWords
+
 /-! # Ch III — Combinatorics on Words
 
 This file formalizes string/word statistics from
@@ -14,7 +16,6 @@ Flajolet & Sedgewick's *Analytic Combinatorics*, Chapter III:
 - **Fibonacci and strings avoiding "00"**
 -/
 
-namespace CombinatoricsOnWords
 
 /-! ## 1. Lyndon words (binary alphabet)
 
@@ -45,13 +46,10 @@ exactly once as a cyclic substring. The number of distinct de Bruijn sequences i
 For k=2, n=2: count = (2!)^{2^1} / 2^2 = 4/4 = 1.
 For k=2, n=3: count = (2!)^{2^2} / 2^3 = 16/8 = 2. -/
 
-/-- Number of de Bruijn sequences B(2,n) for small n. -/
+/-- Number of de Bruijn sequences B(2,n), using the closed form for n ≥ 1. -/
 def deBruijnBinaryCount : ℕ → ℕ
-  | 1 => 1  -- (2!)^1 / 2^1 = 2/2 = 1
-  | 2 => 1  -- (2!)^2 / 2^2 = 4/4 = 1
-  | 3 => 2  -- (2!)^4 / 2^3 = 16/8 = 2
-  | 4 => 16 -- (2!)^8 / 2^4 = 256/16 = 16
-  | _ => 0  -- placeholder
+  | 0 => 0
+  | n + 1 => Nat.factorial 2 ^ (2 ^ n) / 2 ^ (n + 1)
 
 -- Verify the formula: (k!)^{k^{n-1}} / k^n for k=2
 example : deBruijnBinaryCount 1 = Nat.factorial 2 ^ (2 ^ 0) / 2 ^ 1 := by native_decide
@@ -175,4 +173,96 @@ example : 2 ^ 2 = waitHT := by native_decide           -- autocorrelation formul
 def waitHHH : ℕ := 14
 example : 2 ^ 3 + 2 ^ 2 + 2 ^ 1 = waitHHH := by native_decide
 
-end CombinatoricsOnWords
+/-- Binary necklaces table sum through length six. -/
+theorem binaryNecklaceTable_sum :
+    (∑ i : Fin 6, binaryNecklaceTable i) = 37 := by
+  native_decide
+
+/-- Autocorrelation waiting-time sample for three heads. -/
+theorem waitHHH_autocorrelation :
+    2 ^ 3 + 2 ^ 2 + 2 ^ 1 = waitHHH := by
+  native_decide
+
+
+
+structure CombinatoricsOnWordsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CombinatoricsOnWordsBudgetCertificate.controlled
+    (c : CombinatoricsOnWordsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CombinatoricsOnWordsBudgetCertificate.budgetControlled
+    (c : CombinatoricsOnWordsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CombinatoricsOnWordsBudgetCertificate.Ready
+    (c : CombinatoricsOnWordsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CombinatoricsOnWordsBudgetCertificate.size
+    (c : CombinatoricsOnWordsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem combinatoricsOnWords_budgetCertificate_le_size
+    (c : CombinatoricsOnWordsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCombinatoricsOnWordsBudgetCertificate :
+    CombinatoricsOnWordsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleCombinatoricsOnWordsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CombinatoricsOnWordsBudgetCertificate.controlled,
+      sampleCombinatoricsOnWordsBudgetCertificate]
+  · norm_num [CombinatoricsOnWordsBudgetCertificate.budgetControlled,
+      sampleCombinatoricsOnWordsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCombinatoricsOnWordsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCombinatoricsOnWordsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleCombinatoricsOnWordsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CombinatoricsOnWordsBudgetCertificate.controlled,
+      sampleCombinatoricsOnWordsBudgetCertificate]
+  · norm_num [CombinatoricsOnWordsBudgetCertificate.budgetControlled,
+      sampleCombinatoricsOnWordsBudgetCertificate]
+
+example :
+    sampleCombinatoricsOnWordsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCombinatoricsOnWordsBudgetCertificate.size := by
+  apply combinatoricsOnWords_budgetCertificate_le_size
+  constructor
+  · norm_num [CombinatoricsOnWordsBudgetCertificate.controlled,
+      sampleCombinatoricsOnWordsBudgetCertificate]
+  · norm_num [CombinatoricsOnWordsBudgetCertificate.budgetControlled,
+      sampleCombinatoricsOnWordsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List CombinatoricsOnWordsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCombinatoricsOnWordsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCombinatoricsOnWordsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.CombinatoricsOnWords

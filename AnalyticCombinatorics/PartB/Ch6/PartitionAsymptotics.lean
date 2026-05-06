@@ -9,8 +9,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace PartitionAsymptotics
-
+namespace AnalyticCombinatorics.PartB.Ch6.PartitionAsymptotics
 /-! ## Section 1: Partition function values -/
 
 /-- The partition function p(n) for n = 0, …, 10. -/
@@ -195,4 +194,85 @@ example : (190569292 : ℕ) < 191000000 := by native_decide
     illustrating the ratio approaching 1. -/
 example : 42 * 490 > 30 * 627 := by native_decide
 
-end PartitionAsymptotics
+
+structure PartitionAsymptoticsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PartitionAsymptoticsBudgetCertificate.controlled
+    (c : PartitionAsymptoticsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PartitionAsymptoticsBudgetCertificate.budgetControlled
+    (c : PartitionAsymptoticsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PartitionAsymptoticsBudgetCertificate.Ready
+    (c : PartitionAsymptoticsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PartitionAsymptoticsBudgetCertificate.size
+    (c : PartitionAsymptoticsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem partitionAsymptotics_budgetCertificate_le_size
+    (c : PartitionAsymptoticsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePartitionAsymptoticsBudgetCertificate :
+    PartitionAsymptoticsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    samplePartitionAsymptoticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PartitionAsymptoticsBudgetCertificate.controlled,
+      samplePartitionAsymptoticsBudgetCertificate]
+  · norm_num [PartitionAsymptoticsBudgetCertificate.budgetControlled,
+      samplePartitionAsymptoticsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePartitionAsymptoticsBudgetCertificate.certificateBudgetWindow ≤
+      samplePartitionAsymptoticsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : samplePartitionAsymptoticsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PartitionAsymptoticsBudgetCertificate.controlled,
+      samplePartitionAsymptoticsBudgetCertificate]
+  · norm_num [PartitionAsymptoticsBudgetCertificate.budgetControlled,
+      samplePartitionAsymptoticsBudgetCertificate]
+
+example :
+    samplePartitionAsymptoticsBudgetCertificate.certificateBudgetWindow ≤
+      samplePartitionAsymptoticsBudgetCertificate.size := by
+  apply partitionAsymptotics_budgetCertificate_le_size
+  constructor
+  · norm_num [PartitionAsymptoticsBudgetCertificate.controlled,
+      samplePartitionAsymptoticsBudgetCertificate]
+  · norm_num [PartitionAsymptoticsBudgetCertificate.budgetControlled,
+      samplePartitionAsymptoticsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List PartitionAsymptoticsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePartitionAsymptoticsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePartitionAsymptoticsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.PartitionAsymptotics

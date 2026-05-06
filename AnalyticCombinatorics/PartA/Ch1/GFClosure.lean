@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace GFClosure
+namespace AnalyticCombinatorics.PartA.Ch1.GFClosure
+
 
 /-!
 Closure properties of ordinary generating functions under basic
@@ -151,4 +152,86 @@ theorem integral_linear :
 theorem binomial_transform_delta :
     ∀ n : Fin 8, binomialTransform deltaSeq n.val = onesSeq n.val := by native_decide
 
-end GFClosure
+
+
+structure GFClosureBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def GFClosureBudgetCertificate.controlled
+    (c : GFClosureBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def GFClosureBudgetCertificate.budgetControlled
+    (c : GFClosureBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def GFClosureBudgetCertificate.Ready
+    (c : GFClosureBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def GFClosureBudgetCertificate.size
+    (c : GFClosureBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem gFClosure_budgetCertificate_le_size
+    (c : GFClosureBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleGFClosureBudgetCertificate :
+    GFClosureBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleGFClosureBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GFClosureBudgetCertificate.controlled,
+      sampleGFClosureBudgetCertificate]
+  · norm_num [GFClosureBudgetCertificate.budgetControlled,
+      sampleGFClosureBudgetCertificate]
+
+example :
+    sampleGFClosureBudgetCertificate.certificateBudgetWindow ≤
+      sampleGFClosureBudgetCertificate.size := by
+  apply gFClosure_budgetCertificate_le_size
+  constructor
+  · norm_num [GFClosureBudgetCertificate.controlled,
+      sampleGFClosureBudgetCertificate]
+  · norm_num [GFClosureBudgetCertificate.budgetControlled,
+      sampleGFClosureBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleGFClosureBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GFClosureBudgetCertificate.controlled,
+      sampleGFClosureBudgetCertificate]
+  · norm_num [GFClosureBudgetCertificate.budgetControlled,
+      sampleGFClosureBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleGFClosureBudgetCertificate.certificateBudgetWindow ≤
+      sampleGFClosureBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List GFClosureBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleGFClosureBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleGFClosureBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.GFClosure

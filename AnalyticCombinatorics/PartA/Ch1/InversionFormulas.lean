@@ -3,7 +3,8 @@ import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 set_option linter.style.whitespace false
 
-namespace InversionFormulas
+namespace AnalyticCombinatorics.PartA.Ch1.InversionFormulas
+
 
 /-!
 Chapter I/II numerical verifications of combinatorial inversion formulas:
@@ -209,4 +210,86 @@ example : 1 * 0 + 7 * 0 + 6 * 0 + 1 * (1 : ℤ) = 1 := by native_decide
     It IS for _signed_: (S * s_signed)_{4,1} = 0. -/
 example : 1 * (1 : ℤ) + 7 * (-1) + 6 * 2 + 1 * (-6) = 0 := by native_decide
 
-end InversionFormulas
+
+
+structure InversionFormulasBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def InversionFormulasBudgetCertificate.controlled
+    (c : InversionFormulasBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def InversionFormulasBudgetCertificate.budgetControlled
+    (c : InversionFormulasBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def InversionFormulasBudgetCertificate.Ready
+    (c : InversionFormulasBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def InversionFormulasBudgetCertificate.size
+    (c : InversionFormulasBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem inversionFormulas_budgetCertificate_le_size
+    (c : InversionFormulasBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleInversionFormulasBudgetCertificate :
+    InversionFormulasBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleInversionFormulasBudgetCertificate.Ready := by
+  constructor
+  · norm_num [InversionFormulasBudgetCertificate.controlled,
+      sampleInversionFormulasBudgetCertificate]
+  · norm_num [InversionFormulasBudgetCertificate.budgetControlled,
+      sampleInversionFormulasBudgetCertificate]
+
+example :
+    sampleInversionFormulasBudgetCertificate.certificateBudgetWindow ≤
+      sampleInversionFormulasBudgetCertificate.size := by
+  apply inversionFormulas_budgetCertificate_le_size
+  constructor
+  · norm_num [InversionFormulasBudgetCertificate.controlled,
+      sampleInversionFormulasBudgetCertificate]
+  · norm_num [InversionFormulasBudgetCertificate.budgetControlled,
+      sampleInversionFormulasBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleInversionFormulasBudgetCertificate.Ready := by
+  constructor
+  · norm_num [InversionFormulasBudgetCertificate.controlled,
+      sampleInversionFormulasBudgetCertificate]
+  · norm_num [InversionFormulasBudgetCertificate.budgetControlled,
+      sampleInversionFormulasBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleInversionFormulasBudgetCertificate.certificateBudgetWindow ≤
+      sampleInversionFormulasBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List InversionFormulasBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleInversionFormulasBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleInversionFormulasBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.InversionFormulas

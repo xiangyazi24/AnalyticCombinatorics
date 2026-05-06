@@ -15,8 +15,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace PlanarMaps
-
+namespace AnalyticCombinatorics.PartA.Ch1.PlanarMaps
 /-! ## 1. Triangulations of (n+2)-gon = Catalan(n) -/
 
 /-- The number of triangulations of an (n+2)-gon equals the n-th Catalan number. -/
@@ -113,4 +112,85 @@ theorem stackSortable_six : stackSortableCount 6 = 132 := by native_decide
 theorem stackSortable_seven : stackSortableCount 7 = 429 := by native_decide
 theorem stackSortable_eight : stackSortableCount 8 = 1430 := by native_decide
 
-end PlanarMaps
+
+structure PlanarMapsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PlanarMapsBudgetCertificate.controlled
+    (c : PlanarMapsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PlanarMapsBudgetCertificate.budgetControlled
+    (c : PlanarMapsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PlanarMapsBudgetCertificate.Ready
+    (c : PlanarMapsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PlanarMapsBudgetCertificate.size
+    (c : PlanarMapsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem planarMaps_budgetCertificate_le_size
+    (c : PlanarMapsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePlanarMapsBudgetCertificate :
+    PlanarMapsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : samplePlanarMapsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PlanarMapsBudgetCertificate.controlled,
+      samplePlanarMapsBudgetCertificate]
+  · norm_num [PlanarMapsBudgetCertificate.budgetControlled,
+      samplePlanarMapsBudgetCertificate]
+
+example :
+    samplePlanarMapsBudgetCertificate.certificateBudgetWindow ≤
+      samplePlanarMapsBudgetCertificate.size := by
+  apply planarMaps_budgetCertificate_le_size
+  constructor
+  · norm_num [PlanarMapsBudgetCertificate.controlled,
+      samplePlanarMapsBudgetCertificate]
+  · norm_num [PlanarMapsBudgetCertificate.budgetControlled,
+      samplePlanarMapsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    samplePlanarMapsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PlanarMapsBudgetCertificate.controlled,
+      samplePlanarMapsBudgetCertificate]
+  · norm_num [PlanarMapsBudgetCertificate.budgetControlled,
+      samplePlanarMapsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePlanarMapsBudgetCertificate.certificateBudgetWindow ≤
+      samplePlanarMapsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List PlanarMapsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePlanarMapsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePlanarMapsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.PlanarMaps

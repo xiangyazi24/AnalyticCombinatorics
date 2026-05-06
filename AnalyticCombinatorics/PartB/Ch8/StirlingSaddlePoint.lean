@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace StirlingSaddlePoint
+namespace AnalyticCombinatorics.PartB.Ch8.StirlingSaddlePoint
+
 
 /-!
   Small bounded tables for Stirling-number families appearing around the
@@ -168,4 +169,86 @@ theorem associated_stirling2_no_too_many_blocks :
       get9 associatedStirling2Table (n : ℕ) ((k : ℕ) + 5) = 0 := by
   native_decide
 
-end StirlingSaddlePoint
+
+
+structure StirlingSaddlePointBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def StirlingSaddlePointBudgetCertificate.controlled
+    (c : StirlingSaddlePointBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def StirlingSaddlePointBudgetCertificate.budgetControlled
+    (c : StirlingSaddlePointBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def StirlingSaddlePointBudgetCertificate.Ready
+    (c : StirlingSaddlePointBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def StirlingSaddlePointBudgetCertificate.size
+    (c : StirlingSaddlePointBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem stirlingSaddlePoint_budgetCertificate_le_size
+    (c : StirlingSaddlePointBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleStirlingSaddlePointBudgetCertificate :
+    StirlingSaddlePointBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleStirlingSaddlePointBudgetCertificate.Ready := by
+  constructor
+  · norm_num [StirlingSaddlePointBudgetCertificate.controlled,
+      sampleStirlingSaddlePointBudgetCertificate]
+  · norm_num [StirlingSaddlePointBudgetCertificate.budgetControlled,
+      sampleStirlingSaddlePointBudgetCertificate]
+
+example :
+    sampleStirlingSaddlePointBudgetCertificate.certificateBudgetWindow ≤
+      sampleStirlingSaddlePointBudgetCertificate.size := by
+  apply stirlingSaddlePoint_budgetCertificate_le_size
+  constructor
+  · norm_num [StirlingSaddlePointBudgetCertificate.controlled,
+      sampleStirlingSaddlePointBudgetCertificate]
+  · norm_num [StirlingSaddlePointBudgetCertificate.budgetControlled,
+      sampleStirlingSaddlePointBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleStirlingSaddlePointBudgetCertificate.Ready := by
+  constructor
+  · norm_num [StirlingSaddlePointBudgetCertificate.controlled,
+      sampleStirlingSaddlePointBudgetCertificate]
+  · norm_num [StirlingSaddlePointBudgetCertificate.budgetControlled,
+      sampleStirlingSaddlePointBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleStirlingSaddlePointBudgetCertificate.certificateBudgetWindow ≤
+      sampleStirlingSaddlePointBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List StirlingSaddlePointBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleStirlingSaddlePointBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleStirlingSaddlePointBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.StirlingSaddlePoint

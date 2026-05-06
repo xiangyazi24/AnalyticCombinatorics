@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace TransferTheoremsII
+namespace AnalyticCombinatorics.PartB.Ch4.TransferTheoremsII
+
 
 /-!
 Transfer-theorem numerics for Chapter IV singularity analysis.
@@ -211,4 +212,86 @@ theorem cube_power_below_ternary_from_five :
         cubeVsTernaryFromFive i := by
   native_decide
 
-end TransferTheoremsII
+
+
+structure TransferTheoremsIIBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def TransferTheoremsIIBudgetCertificate.controlled
+    (c : TransferTheoremsIIBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def TransferTheoremsIIBudgetCertificate.budgetControlled
+    (c : TransferTheoremsIIBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def TransferTheoremsIIBudgetCertificate.Ready
+    (c : TransferTheoremsIIBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def TransferTheoremsIIBudgetCertificate.size
+    (c : TransferTheoremsIIBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem transferTheoremsII_budgetCertificate_le_size
+    (c : TransferTheoremsIIBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleTransferTheoremsIIBudgetCertificate :
+    TransferTheoremsIIBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleTransferTheoremsIIBudgetCertificate.Ready := by
+  constructor
+  · norm_num [TransferTheoremsIIBudgetCertificate.controlled,
+      sampleTransferTheoremsIIBudgetCertificate]
+  · norm_num [TransferTheoremsIIBudgetCertificate.budgetControlled,
+      sampleTransferTheoremsIIBudgetCertificate]
+
+example :
+    sampleTransferTheoremsIIBudgetCertificate.certificateBudgetWindow ≤
+      sampleTransferTheoremsIIBudgetCertificate.size := by
+  apply transferTheoremsII_budgetCertificate_le_size
+  constructor
+  · norm_num [TransferTheoremsIIBudgetCertificate.controlled,
+      sampleTransferTheoremsIIBudgetCertificate]
+  · norm_num [TransferTheoremsIIBudgetCertificate.budgetControlled,
+      sampleTransferTheoremsIIBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleTransferTheoremsIIBudgetCertificate.Ready := by
+  constructor
+  · norm_num [TransferTheoremsIIBudgetCertificate.controlled,
+      sampleTransferTheoremsIIBudgetCertificate]
+  · norm_num [TransferTheoremsIIBudgetCertificate.budgetControlled,
+      sampleTransferTheoremsIIBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleTransferTheoremsIIBudgetCertificate.certificateBudgetWindow ≤
+      sampleTransferTheoremsIIBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List TransferTheoremsIIBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleTransferTheoremsIIBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleTransferTheoremsIIBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.TransferTheoremsII

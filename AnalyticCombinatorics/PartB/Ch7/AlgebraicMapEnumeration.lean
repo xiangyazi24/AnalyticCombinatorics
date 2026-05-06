@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace AlgebraicMapEnumeration
+namespace AnalyticCombinatorics.PartB.Ch7.AlgebraicMapEnumeration
+
 
 /-!
   Algebraic methods in map enumeration: Tutte's functional equation,
@@ -227,4 +228,86 @@ theorem discriminant_critical_u_half :
 theorem singular_z_at_u_half :
     27 * 1 * 8 = 4 * 2 * 27 := by native_decide
 
-end AlgebraicMapEnumeration
+
+
+structure AlgebraicMapEnumerationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AlgebraicMapEnumerationBudgetCertificate.controlled
+    (c : AlgebraicMapEnumerationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AlgebraicMapEnumerationBudgetCertificate.budgetControlled
+    (c : AlgebraicMapEnumerationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AlgebraicMapEnumerationBudgetCertificate.Ready
+    (c : AlgebraicMapEnumerationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AlgebraicMapEnumerationBudgetCertificate.size
+    (c : AlgebraicMapEnumerationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem algebraicMapEnumeration_budgetCertificate_le_size
+    (c : AlgebraicMapEnumerationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAlgebraicMapEnumerationBudgetCertificate :
+    AlgebraicMapEnumerationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAlgebraicMapEnumerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AlgebraicMapEnumerationBudgetCertificate.controlled,
+      sampleAlgebraicMapEnumerationBudgetCertificate]
+  · norm_num [AlgebraicMapEnumerationBudgetCertificate.budgetControlled,
+      sampleAlgebraicMapEnumerationBudgetCertificate]
+
+example :
+    sampleAlgebraicMapEnumerationBudgetCertificate.certificateBudgetWindow ≤
+      sampleAlgebraicMapEnumerationBudgetCertificate.size := by
+  apply algebraicMapEnumeration_budgetCertificate_le_size
+  constructor
+  · norm_num [AlgebraicMapEnumerationBudgetCertificate.controlled,
+      sampleAlgebraicMapEnumerationBudgetCertificate]
+  · norm_num [AlgebraicMapEnumerationBudgetCertificate.budgetControlled,
+      sampleAlgebraicMapEnumerationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAlgebraicMapEnumerationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AlgebraicMapEnumerationBudgetCertificate.controlled,
+      sampleAlgebraicMapEnumerationBudgetCertificate]
+  · norm_num [AlgebraicMapEnumerationBudgetCertificate.budgetControlled,
+      sampleAlgebraicMapEnumerationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAlgebraicMapEnumerationBudgetCertificate.certificateBudgetWindow ≤
+      sampleAlgebraicMapEnumerationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List AlgebraicMapEnumerationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAlgebraicMapEnumerationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAlgebraicMapEnumerationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.AlgebraicMapEnumeration

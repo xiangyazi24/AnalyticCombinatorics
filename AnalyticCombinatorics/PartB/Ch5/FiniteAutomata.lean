@@ -17,8 +17,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace FiniteAutomata
-
+namespace AnalyticCombinatorics.PartB.Ch5.FiniteAutomata
 /-! ## 1. Binary strings with no consecutive 1s
 
   DFA: two states S0 (start / last symbol was 0) and S1 (last symbol was 1).
@@ -247,4 +246,95 @@ example : 8 * necklaceTable ⟨8, by norm_num⟩ ≥ 2 ^ 8 := by native_decide
 example : necklaceTable ⟨5, by norm_num⟩ = (2 ^ 5 - 2) / 5 + 2 := by native_decide
 example : necklaceTable ⟨7, by norm_num⟩ = (2 ^ 7 - 2) / 7 + 2 := by native_decide
 
-end FiniteAutomata
+/-- Binary de Bruijn count sample at order four. -/
+theorem deBruijnCount_four :
+    deBruijnCount 4 = 16 := by
+  native_decide
+
+/-- Binary necklace prime-length sample. -/
+theorem necklaceTable_seven_prime_formula :
+    necklaceTable ⟨7, by norm_num⟩ = (2 ^ 7 - 2) / 7 + 2 := by
+  native_decide
+
+
+structure FiniteAutomataBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def FiniteAutomataBudgetCertificate.controlled
+    (c : FiniteAutomataBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def FiniteAutomataBudgetCertificate.budgetControlled
+    (c : FiniteAutomataBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def FiniteAutomataBudgetCertificate.Ready
+    (c : FiniteAutomataBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def FiniteAutomataBudgetCertificate.size
+    (c : FiniteAutomataBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem finiteAutomata_budgetCertificate_le_size
+    (c : FiniteAutomataBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleFiniteAutomataBudgetCertificate :
+    FiniteAutomataBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleFiniteAutomataBudgetCertificate.Ready := by
+  constructor
+  · norm_num [FiniteAutomataBudgetCertificate.controlled,
+      sampleFiniteAutomataBudgetCertificate]
+  · norm_num [FiniteAutomataBudgetCertificate.budgetControlled,
+      sampleFiniteAutomataBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleFiniteAutomataBudgetCertificate.certificateBudgetWindow ≤
+      sampleFiniteAutomataBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleFiniteAutomataBudgetCertificate.Ready := by
+  constructor
+  · norm_num [FiniteAutomataBudgetCertificate.controlled,
+      sampleFiniteAutomataBudgetCertificate]
+  · norm_num [FiniteAutomataBudgetCertificate.budgetControlled,
+      sampleFiniteAutomataBudgetCertificate]
+
+example :
+    sampleFiniteAutomataBudgetCertificate.certificateBudgetWindow ≤
+      sampleFiniteAutomataBudgetCertificate.size := by
+  apply finiteAutomata_budgetCertificate_le_size
+  constructor
+  · norm_num [FiniteAutomataBudgetCertificate.controlled,
+      sampleFiniteAutomataBudgetCertificate]
+  · norm_num [FiniteAutomataBudgetCertificate.budgetControlled,
+      sampleFiniteAutomataBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List FiniteAutomataBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleFiniteAutomataBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleFiniteAutomataBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.FiniteAutomata

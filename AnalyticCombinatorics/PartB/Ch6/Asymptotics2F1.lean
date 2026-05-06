@@ -7,8 +7,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace Asymptotics2F1
-
+namespace AnalyticCombinatorics.PartB.Ch6.Asymptotics2F1
 /-! ## 1. Central binomial coefficient recurrence -/
 
 /-- The central binomial satisfies C(2n+2,n+1) = C(2n,n) * 2*(2n+1)/(n+1).
@@ -173,4 +172,101 @@ example : Nat.choose 8 4 * 4 < Nat.choose 6 3 * 16 := by native_decide
 example : Nat.choose 10 5 * 4 < Nat.choose 8 4 * 16 := by native_decide
 example : Nat.choose 12 6 * 4 < Nat.choose 10 5 * 16 := by native_decide
 
-end Asymptotics2F1
+/-- Coefficient model for `(1 - z)^(-alpha)` when `alpha` is a positive integer. -/
+def integerSingularityCoeff (alpha n : ℕ) : ℕ :=
+  Nat.choose (n + alpha - 1) n
+
+theorem integerSingularityCoeff_alpha_three_five :
+    integerSingularityCoeff 3 5 = 21 := by
+  native_decide
+
+/-- Partial Euler-product sample for zeta-two factors. -/
+def zetaTwoEulerPrefixFive : ℚ :=
+  (1225 : ℚ) / 768 * (121 / 120)
+
+theorem zetaTwoEulerPrefixFive_value :
+    zetaTwoEulerPrefixFive = 29645 / 18432 := by
+  native_decide
+
+
+structure Asymptotics2F1BudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def Asymptotics2F1BudgetCertificate.controlled
+    (c : Asymptotics2F1BudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def Asymptotics2F1BudgetCertificate.budgetControlled
+    (c : Asymptotics2F1BudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def Asymptotics2F1BudgetCertificate.Ready
+    (c : Asymptotics2F1BudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def Asymptotics2F1BudgetCertificate.size
+    (c : Asymptotics2F1BudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem asymptotics2F1_budgetCertificate_le_size
+    (c : Asymptotics2F1BudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAsymptotics2F1BudgetCertificate :
+    Asymptotics2F1BudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleAsymptotics2F1BudgetCertificate.Ready := by
+  constructor
+  · norm_num [Asymptotics2F1BudgetCertificate.controlled,
+      sampleAsymptotics2F1BudgetCertificate]
+  · norm_num [Asymptotics2F1BudgetCertificate.budgetControlled,
+      sampleAsymptotics2F1BudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAsymptotics2F1BudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptotics2F1BudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleAsymptotics2F1BudgetCertificate.Ready := by
+  constructor
+  · norm_num [Asymptotics2F1BudgetCertificate.controlled,
+      sampleAsymptotics2F1BudgetCertificate]
+  · norm_num [Asymptotics2F1BudgetCertificate.budgetControlled,
+      sampleAsymptotics2F1BudgetCertificate]
+
+example :
+    sampleAsymptotics2F1BudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptotics2F1BudgetCertificate.size := by
+  apply asymptotics2F1_budgetCertificate_le_size
+  constructor
+  · norm_num [Asymptotics2F1BudgetCertificate.controlled,
+      sampleAsymptotics2F1BudgetCertificate]
+  · norm_num [Asymptotics2F1BudgetCertificate.budgetControlled,
+      sampleAsymptotics2F1BudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List Asymptotics2F1BudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAsymptotics2F1BudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAsymptotics2F1BudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.Asymptotics2F1

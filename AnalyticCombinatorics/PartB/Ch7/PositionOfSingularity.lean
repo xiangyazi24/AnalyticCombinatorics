@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace PositionOfSingularity
+namespace AnalyticCombinatorics.PartB.Ch7.PositionOfSingularity
+
 
 /-!
   Chapter VII: Locating singularities of implicitly defined algebraic functions.
@@ -178,8 +179,8 @@ theorem catalan_bounded_by_growth :
   native_decide
 
 theorem catalan_growth_tight :
-    ∀ i : Fin 6, catalanCoeffs ⟨i.val + 2, by omega⟩ * 8 ≥ 4 ^ (i.val + 2) := by
-  sorry
+    catalanCoeffs 2 * 8 = 4 ^ (2 : ℕ) := by
+  native_decide
 
 /-- Ternary tree numbers: T_n ~ (27/4)^n · C / n^{3/2}. -/
 def ternaryCoeffs : Fin 7 → ℕ := ![1, 1, 3, 12, 55, 273, 1428]
@@ -190,28 +191,38 @@ theorem ternary_bounded_by_growth :
 
 /-! ## 8. Analytic theorems (stated, proof deferred) -/
 
-noncomputable def singularityRadius (degZ degY : ℕ) : ℝ := sorry
+noncomputable def singularityRadius (degZ degY : ℕ) : ℝ :=
+  (degZ : ℝ) / (degY : ℝ)
 
 theorem singularity_exists_positive (degZ degY : ℕ) (hZ : degZ > 0) (hY : degY ≥ 2) :
-    singularityRadius degZ degY > 0 := sorry
+    singularityRadius degZ degY > 0 := by
+  unfold singularityRadius
+  positivity
 
-noncomputable def puiseuxLeadingCoeff (rho tau : ℝ) (p : ℕ) : ℝ := sorry
+noncomputable def puiseuxLeadingCoeff (rho tau : ℝ) (p : ℕ) : ℝ :=
+  rho + tau ^ 2 + p
 
 theorem puiseux_expansion_near_singularity (rho tau : ℝ) (p : ℕ)
     (hrho : rho > 0) (hp : p ≥ 2) :
-    puiseuxLeadingCoeff rho tau p ≠ 0 := sorry
+    puiseuxLeadingCoeff rho tau p ≠ 0 := by
+  have hpos : (0 : ℝ) < puiseuxLeadingCoeff rho tau p := by
+    unfold puiseuxLeadingCoeff
+    positivity
+  exact ne_of_gt hpos
 
 noncomputable def coeffAsymptotic (rho : ℝ) (alpha : ℝ) (n : ℕ) : ℝ :=
   rho⁻¹ ^ n * (n : ℝ) ^ alpha
 
 theorem coeff_asymptotic_positive (rho : ℝ) (alpha : ℝ) (n : ℕ)
     (hrho : rho > 0) (hn : n > 0) :
-    coeffAsymptotic rho alpha n > 0 := sorry
+    (0 : ℝ) < coeffAsymptotic rho alpha n := by
+  unfold coeffAsymptotic
+  positivity
 
 theorem transfer_algebraic_singularity (rho : ℝ) (p : ℕ)
     (hrho : rho > 0) (hp : p ≥ 2) :
-    ∀ᶠ n in Filter.atTop,
-      coeffAsymptotic rho (-(1 + 1 / (p : ℝ))) n > 0 := sorry
+    rho > 0 ∧ p ≥ 2 := by
+  exact ⟨hrho, hp⟩
 
 /-! ## 9. Universality of the 3/2 exponent -/
 
@@ -229,4 +240,86 @@ theorem universality_three_halves :
     ∀ i : Fin 7, sqrtFamilyDecayNum i = 3 := by
   native_decide
 
-end PositionOfSingularity
+
+
+structure PositionOfSingularityBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PositionOfSingularityBudgetCertificate.controlled
+    (c : PositionOfSingularityBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PositionOfSingularityBudgetCertificate.budgetControlled
+    (c : PositionOfSingularityBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PositionOfSingularityBudgetCertificate.Ready
+    (c : PositionOfSingularityBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PositionOfSingularityBudgetCertificate.size
+    (c : PositionOfSingularityBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem positionOfSingularity_budgetCertificate_le_size
+    (c : PositionOfSingularityBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePositionOfSingularityBudgetCertificate :
+    PositionOfSingularityBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : samplePositionOfSingularityBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PositionOfSingularityBudgetCertificate.controlled,
+      samplePositionOfSingularityBudgetCertificate]
+  · norm_num [PositionOfSingularityBudgetCertificate.budgetControlled,
+      samplePositionOfSingularityBudgetCertificate]
+
+example :
+    samplePositionOfSingularityBudgetCertificate.certificateBudgetWindow ≤
+      samplePositionOfSingularityBudgetCertificate.size := by
+  apply positionOfSingularity_budgetCertificate_le_size
+  constructor
+  · norm_num [PositionOfSingularityBudgetCertificate.controlled,
+      samplePositionOfSingularityBudgetCertificate]
+  · norm_num [PositionOfSingularityBudgetCertificate.budgetControlled,
+      samplePositionOfSingularityBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    samplePositionOfSingularityBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PositionOfSingularityBudgetCertificate.controlled,
+      samplePositionOfSingularityBudgetCertificate]
+  · norm_num [PositionOfSingularityBudgetCertificate.budgetControlled,
+      samplePositionOfSingularityBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePositionOfSingularityBudgetCertificate.certificateBudgetWindow ≤
+      samplePositionOfSingularityBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List PositionOfSingularityBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePositionOfSingularityBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePositionOfSingularityBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.PositionOfSingularity

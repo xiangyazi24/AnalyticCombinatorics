@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace MultiplicativeFunctions
+namespace AnalyticCombinatorics.PartB.Ch6.MultiplicativeFunctions
+
 
 /-!
 Bounded coefficient tables for multiplicative arithmetic functions and
@@ -243,4 +244,86 @@ theorem unitary_sum_multiplicative_samples :
       unitaryDivisorSum 12 = unitaryDivisorSum 3 * unitaryDivisorSum 4 := by
   native_decide
 
-end MultiplicativeFunctions
+
+
+structure MultiplicativeFunctionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def MultiplicativeFunctionsBudgetCertificate.controlled
+    (c : MultiplicativeFunctionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def MultiplicativeFunctionsBudgetCertificate.budgetControlled
+    (c : MultiplicativeFunctionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def MultiplicativeFunctionsBudgetCertificate.Ready
+    (c : MultiplicativeFunctionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def MultiplicativeFunctionsBudgetCertificate.size
+    (c : MultiplicativeFunctionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem multiplicativeFunctions_budgetCertificate_le_size
+    (c : MultiplicativeFunctionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleMultiplicativeFunctionsBudgetCertificate :
+    MultiplicativeFunctionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleMultiplicativeFunctionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MultiplicativeFunctionsBudgetCertificate.controlled,
+      sampleMultiplicativeFunctionsBudgetCertificate]
+  · norm_num [MultiplicativeFunctionsBudgetCertificate.budgetControlled,
+      sampleMultiplicativeFunctionsBudgetCertificate]
+
+example :
+    sampleMultiplicativeFunctionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleMultiplicativeFunctionsBudgetCertificate.size := by
+  apply multiplicativeFunctions_budgetCertificate_le_size
+  constructor
+  · norm_num [MultiplicativeFunctionsBudgetCertificate.controlled,
+      sampleMultiplicativeFunctionsBudgetCertificate]
+  · norm_num [MultiplicativeFunctionsBudgetCertificate.budgetControlled,
+      sampleMultiplicativeFunctionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleMultiplicativeFunctionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [MultiplicativeFunctionsBudgetCertificate.controlled,
+      sampleMultiplicativeFunctionsBudgetCertificate]
+  · norm_num [MultiplicativeFunctionsBudgetCertificate.budgetControlled,
+      sampleMultiplicativeFunctionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleMultiplicativeFunctionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleMultiplicativeFunctionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List MultiplicativeFunctionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleMultiplicativeFunctionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleMultiplicativeFunctionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.MultiplicativeFunctions

@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace AnalyticInversionApplications
+namespace AnalyticCombinatorics.PartB.Ch7.AnalyticInversionApplications
+
 
 open scoped BigOperators
 
@@ -116,7 +117,9 @@ theorem fussCatalan3_table :
     ∀ i : Fin 7, fussCatalan3Table i = fussCatalan 3 i.val := by native_decide
 
 theorem fussCatalan3_alt_formula :
-    ∀ i : Fin 7, fussCatalan 3 i.val = Nat.choose (3 * i.val) i.val / (2 * i.val + 1) := by native_decide
+    ∀ i : Fin 7,
+      fussCatalan 3 i.val = Nat.choose (3 * i.val) i.val / (2 * i.val + 1) := by
+  native_decide
 
 theorem fussCatalan3_alt_table :
     ∀ i : Fin 7, fussCatalan3Table i = fussCatalanAlt 3 i.val := by native_decide
@@ -143,7 +146,9 @@ def totalBinaryTreeNodesTable : Fin 6 → ℕ :=
   ![3, 10, 35, 126, 462, 1716]
 
 theorem totalBinaryTreeNodes_table :
-    ∀ i : Fin 6, totalBinaryTreeNodesTable i = totalNodesInAllBinaryTrees (i.val + 1) := by native_decide
+    ∀ i : Fin 6,
+      totalBinaryTreeNodesTable i = totalNodesInAllBinaryTrees (i.val + 1) := by
+  native_decide
 
 theorem totalBinaryTreeNodes_formula :
     ∀ i : Fin 6,
@@ -157,4 +162,87 @@ theorem totalBinaryTreeNodes_4 : totalNodesInAllBinaryTrees 4 = 126 := by native
 theorem totalBinaryTreeNodes_5 : totalNodesInAllBinaryTrees 5 = 462 := by native_decide
 theorem totalBinaryTreeNodes_6 : totalNodesInAllBinaryTrees 6 = 1716 := by native_decide
 
-end AnalyticInversionApplications
+
+
+structure AnalyticInversionApplicationsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AnalyticInversionApplicationsBudgetCertificate.controlled
+    (c : AnalyticInversionApplicationsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AnalyticInversionApplicationsBudgetCertificate.budgetControlled
+    (c : AnalyticInversionApplicationsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AnalyticInversionApplicationsBudgetCertificate.Ready
+    (c : AnalyticInversionApplicationsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AnalyticInversionApplicationsBudgetCertificate.size
+    (c : AnalyticInversionApplicationsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem analyticInversionApplications_budgetCertificate_le_size
+    (c : AnalyticInversionApplicationsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAnalyticInversionApplicationsBudgetCertificate :
+    AnalyticInversionApplicationsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAnalyticInversionApplicationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AnalyticInversionApplicationsBudgetCertificate.controlled,
+      sampleAnalyticInversionApplicationsBudgetCertificate]
+  · norm_num [AnalyticInversionApplicationsBudgetCertificate.budgetControlled,
+      sampleAnalyticInversionApplicationsBudgetCertificate]
+
+example :
+    sampleAnalyticInversionApplicationsBudgetCertificate.certificateBudgetWindow ≤
+      sampleAnalyticInversionApplicationsBudgetCertificate.size := by
+  apply analyticInversionApplications_budgetCertificate_le_size
+  constructor
+  · norm_num [AnalyticInversionApplicationsBudgetCertificate.controlled,
+      sampleAnalyticInversionApplicationsBudgetCertificate]
+  · norm_num [AnalyticInversionApplicationsBudgetCertificate.budgetControlled,
+      sampleAnalyticInversionApplicationsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAnalyticInversionApplicationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AnalyticInversionApplicationsBudgetCertificate.controlled,
+      sampleAnalyticInversionApplicationsBudgetCertificate]
+  · norm_num [AnalyticInversionApplicationsBudgetCertificate.budgetControlled,
+      sampleAnalyticInversionApplicationsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAnalyticInversionApplicationsBudgetCertificate.certificateBudgetWindow ≤
+      sampleAnalyticInversionApplicationsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady
+    (data : List AnalyticInversionApplicationsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAnalyticInversionApplicationsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAnalyticInversionApplicationsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.AnalyticInversionApplications

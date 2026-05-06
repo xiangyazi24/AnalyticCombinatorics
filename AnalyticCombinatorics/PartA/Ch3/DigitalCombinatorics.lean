@@ -2,9 +2,10 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
+namespace AnalyticCombinatorics.PartA.Ch3.DigitalCombinatorics
+
 open Finset Nat
 
-namespace DigitalCombinatorics
 
 /-! # Digital / Radix-Based Enumeration
 
@@ -268,4 +269,106 @@ example : Nat.xor 5 3 = 6 := by native_decide   -- 101 XOR 011 = 110
 example : Nat.land 5 3 = 1 := by native_decide   -- 101 AND 011 = 001
 example : Nat.lor 5 3 = 7 := by native_decide    -- 101 OR  011 = 111
 
-end DigitalCombinatorics
+/-- Total bit-count sample for five-bit words. -/
+theorem totalBits_five :
+    totalBits 5 = 80 := by
+  native_decide
+
+/-- Gray-code table sample at the last four-bit word. -/
+theorem grayTable4_last :
+    grayTable4 15 = 8 := by
+  native_decide
+
+/-- De Bruijn sequence count sample at order five. -/
+theorem deBruijnCount_five :
+    deBruijnCount 5 = 2048 := by
+  native_decide
+
+/-- Decimal digit-sum table sample. -/
+theorem digitSumBase10_fifteen :
+    digitSumBase10 15 = 6 := by
+  native_decide
+
+
+
+structure DigitalCombinatoricsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def DigitalCombinatoricsBudgetCertificate.controlled
+    (c : DigitalCombinatoricsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def DigitalCombinatoricsBudgetCertificate.budgetControlled
+    (c : DigitalCombinatoricsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def DigitalCombinatoricsBudgetCertificate.Ready
+    (c : DigitalCombinatoricsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def DigitalCombinatoricsBudgetCertificate.size
+    (c : DigitalCombinatoricsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem digitalCombinatorics_budgetCertificate_le_size
+    (c : DigitalCombinatoricsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleDigitalCombinatoricsBudgetCertificate :
+    DigitalCombinatoricsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleDigitalCombinatoricsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DigitalCombinatoricsBudgetCertificate.controlled,
+      sampleDigitalCombinatoricsBudgetCertificate]
+  · norm_num [DigitalCombinatoricsBudgetCertificate.budgetControlled,
+      sampleDigitalCombinatoricsBudgetCertificate]
+
+example :
+    sampleDigitalCombinatoricsBudgetCertificate.certificateBudgetWindow ≤
+      sampleDigitalCombinatoricsBudgetCertificate.size := by
+  apply digitalCombinatorics_budgetCertificate_le_size
+  constructor
+  · norm_num [DigitalCombinatoricsBudgetCertificate.controlled,
+      sampleDigitalCombinatoricsBudgetCertificate]
+  · norm_num [DigitalCombinatoricsBudgetCertificate.budgetControlled,
+      sampleDigitalCombinatoricsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleDigitalCombinatoricsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DigitalCombinatoricsBudgetCertificate.controlled,
+      sampleDigitalCombinatoricsBudgetCertificate]
+  · norm_num [DigitalCombinatoricsBudgetCertificate.budgetControlled,
+      sampleDigitalCombinatoricsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleDigitalCombinatoricsBudgetCertificate.certificateBudgetWindow ≤
+      sampleDigitalCombinatoricsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List DigitalCombinatoricsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleDigitalCombinatoricsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleDigitalCombinatoricsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.DigitalCombinatorics

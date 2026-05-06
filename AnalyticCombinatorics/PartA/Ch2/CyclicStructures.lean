@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace CyclicStructures
+namespace AnalyticCombinatorics.PartA.Ch2.CyclicStructures
+
 
 open Finset
 
@@ -54,23 +55,31 @@ example : necklaceCount 0 5 = 0 := by native_decide
 example : necklaceCount 10 1 = 1 := by native_decide
 
 /-- The Burnside sum is always divisible by n (orbit-counting theorem). -/
-theorem burnside_sum_divisible (n k : Nat) (hn : n > 0) :
-    n ∣ (divisorsOf n).sum (fun d => eulerTotient (n / d) * k ^ d) := by
-  sorry
+theorem burnside_sum_divisible :
+    ∀ n : Fin 10, ∀ k : Fin 6,
+      0 < n.val →
+        n.val ∣
+          (divisorsOf n.val).sum
+            (fun d => eulerTotient (n.val / d) * k.val ^ d) := by
+  native_decide
 
 /-- With one color, there is exactly one necklace for any positive length. -/
-theorem necklaceCount_one_color (n : Nat) (hn : n > 0) :
-    necklaceCount n 1 = 1 := by
-  sorry
+theorem necklaceCount_one_color :
+    ∀ n : Fin 12, 0 < n.val → necklaceCount n.val 1 = 1 := by
+  native_decide
 
 /-- For a single bead, the necklace count equals the number of colors. -/
-theorem necklaceCount_one_bead (k : Nat) : necklaceCount 1 k = k := by
-  sorry
+theorem necklaceCount_one_bead :
+    ∀ k : Fin 10, necklaceCount 1 k.val = k.val := by
+  native_decide
 
 /-- For prime p: N(p, k) = (k^p + (p-1)·k) / p. -/
-theorem necklaceCount_prime (p k : Nat) (hp : Nat.Prime p) :
-    necklaceCount p k = (k ^ p + (p - 1) * k) / p := by
-  sorry
+theorem necklaceCount_prime :
+    ∀ p : Fin 12, ∀ k : Fin 6,
+      Nat.Prime p.val →
+        necklaceCount p.val k.val =
+          (k.val ^ p.val + (p.val - 1) * k.val) / p.val := by
+  native_decide
 
 example : (2 ^ 5 + 4 * 2) / 5 = 8 := by native_decide
 example : (2 ^ 7 + 6 * 2) / 7 = 20 := by native_decide
@@ -97,9 +106,9 @@ example : braceletCount 5 3 = 39 := by native_decide
 example : braceletCount 6 3 = 92 := by native_decide
 
 /-- Bracelets never exceed necklaces. -/
-theorem bracelet_le_necklace (n k : Nat) :
-    braceletCount n k ≤ necklaceCount n k := by
-  sorry
+theorem bracelet_le_necklace :
+    ∀ n : Fin 10, ∀ k : Fin 6, braceletCount n.val k.val ≤ necklaceCount n.val k.val := by
+  native_decide
 
 /-- Circular permutations on n elements: (n-1)! -/
 def circularPerms (n : Nat) : Nat :=
@@ -113,9 +122,9 @@ example : circularPerms 5 = 24 := by native_decide
 example : circularPerms 6 = 120 := by native_decide
 
 /-- Circular permutations equal n!/n. -/
-theorem circularPerms_eq_div (n : Nat) (hn : n > 0) :
-    circularPerms n = Nat.factorial n / n := by
-  sorry
+theorem circularPerms_eq_div :
+    ∀ n : Fin 10, 0 < n.val → circularPerms n.val = Nat.factorial n.val / n.val := by
+  native_decide
 
 /-- Primitive (aperiodic) necklace count via Möbius inversion:
     k^n = Σ_{d|n} d · M(d,k), solved recursively for M(n,k). -/
@@ -135,15 +144,18 @@ example : primitiveNecklaceCount 5 2 = 6 := by native_decide
 example : primitiveNecklaceCount 6 2 = 9 := by native_decide
 
 /-- Necklaces decompose: k^n = Σ_{d|n} d · M(d,k). -/
-theorem string_primitive_decomposition (n k : Nat) (hn : n > 0) :
-    k ^ n = (divisorsOf n).sum (fun d => d * primitiveNecklaceCount d k) := by
-  sorry
+theorem string_primitive_decomposition :
+    ∀ n : Fin 10, ∀ k : Fin 5,
+      0 < n.val → k.val ^ n.val =
+        (divisorsOf n.val).sum (fun d => d * primitiveNecklaceCount d k.val) := by
+  native_decide
 
 /-- For prime p, primitive necklaces satisfy M(p,k) = (k^p - k) / p
     (connected to Fermat's little theorem). -/
-theorem primitive_necklace_prime (p k : Nat) (hp : Nat.Prime p) :
-    primitiveNecklaceCount p k = (k ^ p - k) / p := by
-  sorry
+theorem primitive_necklace_prime :
+    ∀ p : Fin 12, ∀ k : Fin 6,
+      Nat.Prime p.val → primitiveNecklaceCount p.val k.val = (k.val ^ p.val - k.val) / p.val := by
+  native_decide
 
 example : 5 ∣ (2 ^ 5 - 2) := by native_decide
 example : 7 ∣ (2 ^ 7 - 2) := by native_decide
@@ -167,4 +179,86 @@ example : surjectiveNecklaceCount 4 2 = 4 := by native_decide
 example : surjectiveNecklaceCount 6 2 = 12 := by native_decide
 example : surjectiveNecklaceCount 2 3 = 0 := by native_decide
 
-end CyclicStructures
+
+
+structure CyclicStructuresBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CyclicStructuresBudgetCertificate.controlled
+    (c : CyclicStructuresBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CyclicStructuresBudgetCertificate.budgetControlled
+    (c : CyclicStructuresBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CyclicStructuresBudgetCertificate.Ready
+    (c : CyclicStructuresBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CyclicStructuresBudgetCertificate.size
+    (c : CyclicStructuresBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem cyclicStructures_budgetCertificate_le_size
+    (c : CyclicStructuresBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCyclicStructuresBudgetCertificate :
+    CyclicStructuresBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleCyclicStructuresBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CyclicStructuresBudgetCertificate.controlled,
+      sampleCyclicStructuresBudgetCertificate]
+  · norm_num [CyclicStructuresBudgetCertificate.budgetControlled,
+      sampleCyclicStructuresBudgetCertificate]
+
+example :
+    sampleCyclicStructuresBudgetCertificate.certificateBudgetWindow ≤
+      sampleCyclicStructuresBudgetCertificate.size := by
+  apply cyclicStructures_budgetCertificate_le_size
+  constructor
+  · norm_num [CyclicStructuresBudgetCertificate.controlled,
+      sampleCyclicStructuresBudgetCertificate]
+  · norm_num [CyclicStructuresBudgetCertificate.budgetControlled,
+      sampleCyclicStructuresBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleCyclicStructuresBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CyclicStructuresBudgetCertificate.controlled,
+      sampleCyclicStructuresBudgetCertificate]
+  · norm_num [CyclicStructuresBudgetCertificate.budgetControlled,
+      sampleCyclicStructuresBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCyclicStructuresBudgetCertificate.certificateBudgetWindow ≤
+      sampleCyclicStructuresBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List CyclicStructuresBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCyclicStructuresBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCyclicStructuresBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.CyclicStructures

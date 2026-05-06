@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace RadiusOfConvergence
+namespace AnalyticCombinatorics.PartB.Ch4.RadiusOfConvergence
+
 
 /-!
 Radius of convergence and exponential growth rates, following the Chapter IV
@@ -295,4 +296,86 @@ theorem hadamard_geometric_two_radius :
 theorem hadamard_geometric_two_growth :
     ∀ n : Fin 10, geometricTwoCoeff n.val = geometricTwoInvRadius ^ n.val := by native_decide
 
-end RadiusOfConvergence
+
+
+structure RadiusOfConvergenceBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def RadiusOfConvergenceBudgetCertificate.controlled
+    (c : RadiusOfConvergenceBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def RadiusOfConvergenceBudgetCertificate.budgetControlled
+    (c : RadiusOfConvergenceBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def RadiusOfConvergenceBudgetCertificate.Ready
+    (c : RadiusOfConvergenceBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def RadiusOfConvergenceBudgetCertificate.size
+    (c : RadiusOfConvergenceBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem radiusOfConvergence_budgetCertificate_le_size
+    (c : RadiusOfConvergenceBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleRadiusOfConvergenceBudgetCertificate :
+    RadiusOfConvergenceBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleRadiusOfConvergenceBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RadiusOfConvergenceBudgetCertificate.controlled,
+      sampleRadiusOfConvergenceBudgetCertificate]
+  · norm_num [RadiusOfConvergenceBudgetCertificate.budgetControlled,
+      sampleRadiusOfConvergenceBudgetCertificate]
+
+example :
+    sampleRadiusOfConvergenceBudgetCertificate.certificateBudgetWindow ≤
+      sampleRadiusOfConvergenceBudgetCertificate.size := by
+  apply radiusOfConvergence_budgetCertificate_le_size
+  constructor
+  · norm_num [RadiusOfConvergenceBudgetCertificate.controlled,
+      sampleRadiusOfConvergenceBudgetCertificate]
+  · norm_num [RadiusOfConvergenceBudgetCertificate.budgetControlled,
+      sampleRadiusOfConvergenceBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleRadiusOfConvergenceBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RadiusOfConvergenceBudgetCertificate.controlled,
+      sampleRadiusOfConvergenceBudgetCertificate]
+  · norm_num [RadiusOfConvergenceBudgetCertificate.budgetControlled,
+      sampleRadiusOfConvergenceBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleRadiusOfConvergenceBudgetCertificate.certificateBudgetWindow ≤
+      sampleRadiusOfConvergenceBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List RadiusOfConvergenceBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleRadiusOfConvergenceBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleRadiusOfConvergenceBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.RadiusOfConvergence

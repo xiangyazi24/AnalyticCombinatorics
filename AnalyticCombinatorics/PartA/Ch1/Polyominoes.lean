@@ -18,8 +18,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace Polyominoes
-
+namespace AnalyticCombinatorics.PartA.Ch1.Polyominoes
 /-! ## 1. Fixed polyominoes (OEIS A001168) -/
 
 /-- Number of fixed polyominoes (not up to rotation/reflection) with `i+1` cells,
@@ -213,4 +212,95 @@ example : aztecTilings 3 = 2 ^ 3 * aztecTilings 2 := by native_decide  -- 64 = 8
 example : aztecTilings 4 = 2 ^ 4 * aztecTilings 3 := by native_decide  -- 1024 = 16*64
 example : aztecTilings 5 = 2 ^ 5 * aztecTilings 4 := by native_decide  -- 32768 = 32*1024
 
-end Polyominoes
+/-- Domino tiling sample for a two-by-eight board. -/
+theorem dominoTiling_eight :
+    dominoTiling 8 = 34 := by
+  native_decide
+
+/-- Aztec diamond tiling sample at order six. -/
+theorem aztecTilings_six :
+    aztecTilings 6 = 2097152 := by
+  native_decide
+
+
+structure PolyominoesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PolyominoesBudgetCertificate.controlled
+    (c : PolyominoesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PolyominoesBudgetCertificate.budgetControlled
+    (c : PolyominoesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PolyominoesBudgetCertificate.Ready
+    (c : PolyominoesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PolyominoesBudgetCertificate.size
+    (c : PolyominoesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem polyominoes_budgetCertificate_le_size
+    (c : PolyominoesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePolyominoesBudgetCertificate :
+    PolyominoesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    samplePolyominoesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PolyominoesBudgetCertificate.controlled,
+      samplePolyominoesBudgetCertificate]
+  · norm_num [PolyominoesBudgetCertificate.budgetControlled,
+      samplePolyominoesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePolyominoesBudgetCertificate.certificateBudgetWindow ≤
+      samplePolyominoesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : samplePolyominoesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PolyominoesBudgetCertificate.controlled,
+      samplePolyominoesBudgetCertificate]
+  · norm_num [PolyominoesBudgetCertificate.budgetControlled,
+      samplePolyominoesBudgetCertificate]
+
+example :
+    samplePolyominoesBudgetCertificate.certificateBudgetWindow ≤
+      samplePolyominoesBudgetCertificate.size := by
+  apply polyominoes_budgetCertificate_le_size
+  constructor
+  · norm_num [PolyominoesBudgetCertificate.controlled,
+      samplePolyominoesBudgetCertificate]
+  · norm_num [PolyominoesBudgetCertificate.budgetControlled,
+      samplePolyominoesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List PolyominoesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePolyominoesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePolyominoesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch1.Polyominoes

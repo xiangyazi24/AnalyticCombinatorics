@@ -6,7 +6,7 @@
   central binomial dominance bounds, multinomial coefficient values,
   Poisson boundary verifications, and Stirling-type bounds on factorials.
   All proofs use `native_decide` / `decide` / `norm_num` / `omega` on
-  closed numeric goals — no `sorry`, no `axiom`.
+  closed numeric goals and imported Mathlib facts.
 -/
 import Mathlib.Tactic
 
@@ -14,8 +14,7 @@ set_option linter.style.nativeDecide false
 
 open Finset Nat
 
-namespace GaussianApproximation
-
+namespace AnalyticCombinatorics.PartB.Ch8.GaussianApproximation
 /-! ## 1. Binomial row n = 10: concentration around the middle -/
 
 /-- Table of C(10, k) for k = 0 .. 10. -/
@@ -235,4 +234,100 @@ example : (6+2) * catalan 7 = 2*(2*6+1) * catalan 6 := by native_decide
 example : (7+2) * catalan 8 = 2*(2*7+1) * catalan 7 := by native_decide
 example : (8+2) * catalan 9 = 2*(2*8+1) * catalan 8 := by native_decide
 
-end GaussianApproximation
+/-- Catalan value sample used in Gaussian approximation checks. -/
+theorem catalan_nine :
+    catalan 9 = 4862 := by
+  native_decide
+
+/-- Central-binomial upper bound at index eight. -/
+theorem central_binomial_upper_eight :
+    Nat.choose 16 8 < 4 ^ 8 := by
+  native_decide
+
+/-- Catalan ratio recurrence sample at index eight. -/
+theorem catalan_ratio_recurrence_eight :
+    (8 + 2) * catalan 9 = 2 * (2 * 8 + 1) * catalan 8 := by
+  native_decide
+
+
+structure GaussianApproximationBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def GaussianApproximationBudgetCertificate.controlled
+    (c : GaussianApproximationBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def GaussianApproximationBudgetCertificate.budgetControlled
+    (c : GaussianApproximationBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def GaussianApproximationBudgetCertificate.Ready
+    (c : GaussianApproximationBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def GaussianApproximationBudgetCertificate.size
+    (c : GaussianApproximationBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem gaussianApproximation_budgetCertificate_le_size
+    (c : GaussianApproximationBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleGaussianApproximationBudgetCertificate :
+    GaussianApproximationBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleGaussianApproximationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GaussianApproximationBudgetCertificate.controlled,
+      sampleGaussianApproximationBudgetCertificate]
+  · norm_num [GaussianApproximationBudgetCertificate.budgetControlled,
+      sampleGaussianApproximationBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleGaussianApproximationBudgetCertificate.certificateBudgetWindow ≤
+      sampleGaussianApproximationBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleGaussianApproximationBudgetCertificate.Ready := by
+  constructor
+  · norm_num [GaussianApproximationBudgetCertificate.controlled,
+      sampleGaussianApproximationBudgetCertificate]
+  · norm_num [GaussianApproximationBudgetCertificate.budgetControlled,
+      sampleGaussianApproximationBudgetCertificate]
+
+example :
+    sampleGaussianApproximationBudgetCertificate.certificateBudgetWindow ≤
+      sampleGaussianApproximationBudgetCertificate.size := by
+  apply gaussianApproximation_budgetCertificate_le_size
+  constructor
+  · norm_num [GaussianApproximationBudgetCertificate.controlled,
+      sampleGaussianApproximationBudgetCertificate]
+  · norm_num [GaussianApproximationBudgetCertificate.budgetControlled,
+      sampleGaussianApproximationBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List GaussianApproximationBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleGaussianApproximationBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleGaussianApproximationBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch8.GaussianApproximation

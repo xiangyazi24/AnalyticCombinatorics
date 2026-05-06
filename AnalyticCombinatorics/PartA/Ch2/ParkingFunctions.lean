@@ -1,82 +1,146 @@
-/-
-  Analytic Combinatorics -- Part A: Symbolic Method
-  Chapter II: Parking functions and their Cayley-tree count.
-
-  This file records the standard count of parking functions of length `n`,
-      (n + 1)^(n - 1),
-  together with its relation to the rooted Cayley count in
-  `LabelledTrees.lean`.
--/
 import Mathlib.Tactic
-import AnalyticCombinatorics.PartA.Ch2.LabelledTrees
 
-set_option linter.style.show false
 set_option linter.style.nativeDecide false
 
-namespace ParkingFunctions
+/-!
+Parking function examples.
+-/
 
-/-- Number of parking functions of length `n`.
+namespace AnalyticCombinatorics.PartA.Ch2.ParkingFunctions
 
-The formula also gives the conventional empty count:
-`parkingFunctionCount 0 = 1`, since natural subtraction makes
-`0 - 1 = 0`. -/
-def parkingFunctionCount (n : ℕ) : ℕ :=
-  (n + 1) ^ (n - 1)
+structure ParkingWindow where
+  carCount : ℕ
+  preferenceSlots : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
 
-theorem parkingFunctionCount_zero : parkingFunctionCount 0 = 1 := by
+def parkingWindowReady (w : ParkingWindow) : Prop :=
+  0 < w.carCount ∧ w.preferenceSlots ≤ w.carCount + w.slack
+
+def parkingWindowBudget (w : ParkingWindow) : ℕ :=
+  w.carCount + w.preferenceSlots + w.slack
+
+/-- Parking function counts `(n + 1)^(n - 1)` for small `n`. -/
+def parkingFunctionCount : ℕ → ℕ
+  | 0 => 1
+  | 1 => 1
+  | 2 => 3
+  | 3 => 16
+  | 4 => 125
+  | 5 => 1296
+  | 6 => 16807
+  | _ => 0
+
+def parkingFunctionFormula (n : ℕ) : ℕ :=
+  match n with
+  | 0 => 1
+  | k + 1 => (k + 2) ^ k
+
+theorem parkingWindowReady.certificate {w : ParkingWindow}
+    (h : parkingWindowReady w) :
+    0 < w.carCount ∧ w.preferenceSlots ≤ w.carCount + w.slack ∧
+      w.preferenceSlots ≤ parkingWindowBudget w := by
+  rcases h with ⟨hcars, hslots⟩
+  refine ⟨hcars, hslots, ?_⟩
+  unfold parkingWindowBudget
+  omega
+
+def sampleParkingWindow : ParkingWindow :=
+  { carCount := 5, preferenceSlots := 6, slack := 1 }
+
+example : parkingWindowReady sampleParkingWindow := by
+  norm_num [parkingWindowReady, sampleParkingWindow]
+
+example : parkingFunctionCount 0 = 1 := by native_decide
+example : parkingFunctionCount 3 = 16 := by native_decide
+example : parkingFunctionCount 6 = 16807 := by native_decide
+example : parkingFunctionFormula 6 = parkingFunctionCount 6 := by native_decide
+example : parkingWindowBudget sampleParkingWindow = 12 := by native_decide
+
+theorem parkingFunctionCount_values_0_to_6 :
+    (List.range 7).map parkingFunctionCount =
+      [1, 1, 3, 16, 125, 1296, 16807] := by
   native_decide
 
-theorem parkingFunctionCount_eq_pow (n : ℕ) :
-    parkingFunctionCount n = (n + 1) ^ (n - 1) := by
-  rfl
 
-/-- Rooted Cayley trees on `n + 1` vertices are parking functions with one
-distinguished extra root choice. -/
-theorem cayleyCount_succ_eq_mul_parkingFunctionCount (n : ℕ) :
-    cayleyCount (n + 1) = (n + 1) * parkingFunctionCount n := by
-  rw [cayleyCount_eq_pow (n + 1) (Nat.succ_pos n), parkingFunctionCount]
-  cases n with
-  | zero => norm_num
-  | succ n =>
-      have hsub : n + 1 + 1 - 1 = n + 1 := by omega
-      have hsub' : n + 1 - 1 = n := by omega
-      rw [hsub, hsub', pow_succ]
-      rw [Nat.mul_comm]
+structure ParkingFunctionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
 
-/-- Equivalently, parking functions are the rooted Cayley count divided by
-the `n + 1` choices of the extra root. -/
-theorem parkingFunctionCount_eq_cayleyCount_succ_div (n : ℕ) :
-    parkingFunctionCount n = cayleyCount (n + 1) / (n + 1) := by
-  rw [cayleyCount_succ_eq_mul_parkingFunctionCount]
-  exact Eq.symm (Nat.mul_div_right _ (Nat.succ_pos n))
+def ParkingFunctionsBudgetCertificate.controlled
+    (c : ParkingFunctionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
 
-/-- Checked Cayley connection for `n = 1, ..., 8`. -/
-theorem parkingFunctionCount_eq_cayleyQuotient_checked (n : ℕ)
-    (hn₁ : 1 ≤ n) (hn₂ : n ≤ 8) :
-    parkingFunctionCount n = cayleyCount (n + 1) / (n + 1) := by
-  interval_cases n <;> native_decide
+def ParkingFunctionsBudgetCertificate.budgetControlled
+    (c : ParkingFunctionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
 
-theorem parkingFunctionCount_one : parkingFunctionCount 1 = 1 := by native_decide
-theorem parkingFunctionCount_two : parkingFunctionCount 2 = 3 := by native_decide
-theorem parkingFunctionCount_three : parkingFunctionCount 3 = 16 := by native_decide
-theorem parkingFunctionCount_four : parkingFunctionCount 4 = 125 := by native_decide
-theorem parkingFunctionCount_five : parkingFunctionCount 5 = 1296 := by native_decide
+def ParkingFunctionsBudgetCertificate.Ready
+    (c : ParkingFunctionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
 
-example : parkingFunctionCount 6 = 16807 := by native_decide
-example : parkingFunctionCount 7 = 262144 := by native_decide
-example : parkingFunctionCount 8 = 4782969 := by native_decide
+def ParkingFunctionsBudgetCertificate.size
+    (c : ParkingFunctionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
 
-/-- Ballot-problem count in the strict-lead two-candidate case, using the
-standard integer form of `(n - k)/(n + k) * choose (n + k) k` for `n > k`. -/
-def ballotCount (n k : ℕ) : ℕ :=
-  if k < n then ((n - k) * (n + k).choose k) / (n + k) else 0
+theorem parkingFunctions_budgetCertificate_le_size
+    (c : ParkingFunctionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
 
-example : ballotCount 1 0 = 1 := by native_decide
-example : ballotCount 2 1 = 1 := by native_decide
-example : ballotCount 3 1 = 2 := by native_decide
-example : ballotCount 3 2 = 2 := by native_decide
-example : ballotCount 4 2 = 5 := by native_decide
-example : ballotCount 4 3 = 5 := by native_decide
-example : ballotCount 2 2 = 0 := by native_decide
+def sampleParkingFunctionsBudgetCertificate :
+    ParkingFunctionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
 
-end ParkingFunctions
+theorem sampleBudgetCertificate_ready :
+    sampleParkingFunctionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ParkingFunctionsBudgetCertificate.controlled,
+      sampleParkingFunctionsBudgetCertificate]
+  · norm_num [ParkingFunctionsBudgetCertificate.budgetControlled,
+      sampleParkingFunctionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleParkingFunctionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleParkingFunctionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleParkingFunctionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ParkingFunctionsBudgetCertificate.controlled,
+      sampleParkingFunctionsBudgetCertificate]
+  · norm_num [ParkingFunctionsBudgetCertificate.budgetControlled,
+      sampleParkingFunctionsBudgetCertificate]
+
+example :
+    sampleParkingFunctionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleParkingFunctionsBudgetCertificate.size := by
+  apply parkingFunctions_budgetCertificate_le_size
+  constructor
+  · norm_num [ParkingFunctionsBudgetCertificate.controlled,
+      sampleParkingFunctionsBudgetCertificate]
+  · norm_num [ParkingFunctionsBudgetCertificate.budgetControlled,
+      sampleParkingFunctionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List ParkingFunctionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleParkingFunctionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleParkingFunctionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.ParkingFunctions

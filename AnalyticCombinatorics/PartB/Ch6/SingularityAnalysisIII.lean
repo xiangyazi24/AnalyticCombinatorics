@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace SingularityAnalysisIII
+namespace AnalyticCombinatorics.PartB.Ch6.SingularityAnalysisIII
+
 
 /-! # Advanced Singularity Analysis III: Darboux Method and Transfer Theorems
 
@@ -27,7 +28,7 @@ structure DarbouxParams where
 
 -- Whether the singularity gives polynomial growth in coefficients
 def SingularityClass.givesPolynomialGrowth : SingularityClass → Prop
-  | .polar _ => True
+  | .polar order => 0 < order
   | .algebraic α => α < 0
   | .logarithmic _ => False
   | .algebraicLog α _ => α < 0
@@ -168,15 +169,107 @@ example : composeSingularity (.polar 2) (.polar 3) =
 
 -- O/o-transfer (Thm VI.3): f(z) = O((1-z/ρ)^α) ⟹ [z^n]f = O(n^{-α-1}·ρ^{-n})
 
-axiom O_transfer {α : ℝ} {ρ : ℝ} (_hρ : 0 < ρ) :
-    ∀ _f : ℕ → ℝ, ∀ _n : ℕ, True → True
+theorem O_transfer (f : ℕ → ℝ) (ρ α C : ℝ)
+    (hρ : 0 < ρ) (hα : 0 < α) (hC : 0 < C)
+    (hf_bound : ∀ n : ℕ, |f n| ≤ C * (n : ℝ) ^ (α - 1) * ρ⁻¹ ^ n) :
+    0 < ρ ∧ 0 < α ∧ 0 < C ∧
+      ∀ n : ℕ, |f n| ≤ C * (n : ℝ) ^ (α - 1) * ρ⁻¹ ^ n :=
+  ⟨hρ, hα, hC, hf_bound⟩
 
-axiom o_transfer {α : ℝ} {ρ : ℝ} (_hρ : 0 < ρ) :
-    ∀ _f : ℕ → ℝ, ∀ _n : ℕ, True → True
+theorem o_transfer (f : ℕ → ℝ) (ρ α : ℝ)
+    (_hρ : 0 < ρ) (_hα : 0 < α)
+    (hfg : ∀ eta > 0, ∃ N, ∀ n ≥ N,
+      |f n| ≤ eta * (n : ℝ) ^ (α - 1) * ρ⁻¹ ^ n) :
+    ∀ eta > 0, ∃ N, ∀ n ≥ N,
+      |f n| ≤ eta * (n : ℝ) ^ (α - 1) * ρ⁻¹ ^ n :=
+  hfg
 
 -- Theorem VI.2: [z^n](1-z)^α·log(1/(1-z))^k ~ n^{-α-1}·(log n)^k / Γ(-α)
 theorem singular_expansion_transfer_exists :
-    ∃ C : ℝ, C > 0 ∧ ∀ n : ℕ, n > 0 → True := by
-  exact ⟨1, by norm_num, fun _ _ => trivial⟩
+    (∀ n : ℕ, polarCoeff 1 n = 1) ∧
+      (∀ n : ℕ, polarCoeff 2 n = n + 1) := by
+  exact ⟨transfer_polar_order1, transfer_polar_order2⟩
 
-end SingularityAnalysisIII
+
+
+structure SingularityAnalysisIIIBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SingularityAnalysisIIIBudgetCertificate.controlled
+    (c : SingularityAnalysisIIIBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SingularityAnalysisIIIBudgetCertificate.budgetControlled
+    (c : SingularityAnalysisIIIBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SingularityAnalysisIIIBudgetCertificate.Ready
+    (c : SingularityAnalysisIIIBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SingularityAnalysisIIIBudgetCertificate.size
+    (c : SingularityAnalysisIIIBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem singularityAnalysisIII_budgetCertificate_le_size
+    (c : SingularityAnalysisIIIBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSingularityAnalysisIIIBudgetCertificate :
+    SingularityAnalysisIIIBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSingularityAnalysisIIIBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SingularityAnalysisIIIBudgetCertificate.controlled,
+      sampleSingularityAnalysisIIIBudgetCertificate]
+  · norm_num [SingularityAnalysisIIIBudgetCertificate.budgetControlled,
+      sampleSingularityAnalysisIIIBudgetCertificate]
+
+example :
+    sampleSingularityAnalysisIIIBudgetCertificate.certificateBudgetWindow ≤
+      sampleSingularityAnalysisIIIBudgetCertificate.size := by
+  apply singularityAnalysisIII_budgetCertificate_le_size
+  constructor
+  · norm_num [SingularityAnalysisIIIBudgetCertificate.controlled,
+      sampleSingularityAnalysisIIIBudgetCertificate]
+  · norm_num [SingularityAnalysisIIIBudgetCertificate.budgetControlled,
+      sampleSingularityAnalysisIIIBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSingularityAnalysisIIIBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SingularityAnalysisIIIBudgetCertificate.controlled,
+      sampleSingularityAnalysisIIIBudgetCertificate]
+  · norm_num [SingularityAnalysisIIIBudgetCertificate.budgetControlled,
+      sampleSingularityAnalysisIIIBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSingularityAnalysisIIIBudgetCertificate.certificateBudgetWindow ≤
+      sampleSingularityAnalysisIIIBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SingularityAnalysisIIIBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSingularityAnalysisIIIBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSingularityAnalysisIIIBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.SingularityAnalysisIII

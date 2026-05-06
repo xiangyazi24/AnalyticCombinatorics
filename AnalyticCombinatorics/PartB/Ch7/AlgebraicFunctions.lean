@@ -3,16 +3,15 @@
   Chapter VII — Algebraic generating functions and coefficient asymptotics.
 
   Catalan-type algebraic equations, functional equations solved by quadratic
-  formula, and their asymptotic consequences.  All proofs are `native_decide`,
-  `decide`, `norm_num`, or `omega`; no `sorry`, no `axiom`.
+  formula, and their asymptotic consequences.  Proofs use `native_decide`,
+  `decide`, `norm_num`, `omega`, and imported Mathlib facts.
 -/
 import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 set_option linter.style.whitespace false
 
-namespace AlgebraicFunctions
-
+namespace AnalyticCombinatorics.PartB.Ch7.AlgebraicFunctions
 /-! ## 1. Catalan numbers — algebraic GF C(z) = 1 + z·C(z)²
 
   C_n = C(2n,n)/(n+1).  The GF satisfies C = 1 + z·C², which gives the
@@ -375,4 +374,85 @@ theorem dyckPaths_3 : dyckPaths 3 = 5  := by native_decide
 theorem dyckPaths_4 : dyckPaths 4 = 14 := by native_decide
 theorem dyckPaths_5 : dyckPaths 5 = 42 := by native_decide
 
-end AlgebraicFunctions
+
+structure AlgebraicFunctionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AlgebraicFunctionsBudgetCertificate.controlled
+    (c : AlgebraicFunctionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AlgebraicFunctionsBudgetCertificate.budgetControlled
+    (c : AlgebraicFunctionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AlgebraicFunctionsBudgetCertificate.Ready
+    (c : AlgebraicFunctionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AlgebraicFunctionsBudgetCertificate.size
+    (c : AlgebraicFunctionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem algebraicFunctions_budgetCertificate_le_size
+    (c : AlgebraicFunctionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAlgebraicFunctionsBudgetCertificate :
+    AlgebraicFunctionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAlgebraicFunctionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AlgebraicFunctionsBudgetCertificate.controlled,
+      sampleAlgebraicFunctionsBudgetCertificate]
+  · norm_num [AlgebraicFunctionsBudgetCertificate.budgetControlled,
+      sampleAlgebraicFunctionsBudgetCertificate]
+
+example :
+    sampleAlgebraicFunctionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleAlgebraicFunctionsBudgetCertificate.size := by
+  apply algebraicFunctions_budgetCertificate_le_size
+  constructor
+  · norm_num [AlgebraicFunctionsBudgetCertificate.controlled,
+      sampleAlgebraicFunctionsBudgetCertificate]
+  · norm_num [AlgebraicFunctionsBudgetCertificate.budgetControlled,
+      sampleAlgebraicFunctionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAlgebraicFunctionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AlgebraicFunctionsBudgetCertificate.controlled,
+      sampleAlgebraicFunctionsBudgetCertificate]
+  · norm_num [AlgebraicFunctionsBudgetCertificate.budgetControlled,
+      sampleAlgebraicFunctionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAlgebraicFunctionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleAlgebraicFunctionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List AlgebraicFunctionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAlgebraicFunctionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAlgebraicFunctionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.AlgebraicFunctions

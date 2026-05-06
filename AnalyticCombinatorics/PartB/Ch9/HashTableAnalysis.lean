@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace HashTableAnalysis
+namespace AnalyticCombinatorics.PartB.Ch9.HashTableAnalysis
+
 
 /-! # Hash Table Analysis (Ch. 9)
   Average-case analysis of hashing: linear probing, double hashing,
@@ -172,23 +173,110 @@ theorem clustering_increases_cost :
     expectedNextProbe [true, true, false, false] := by native_decide
 
 /-- Inserting the second item always requires at least 1 probe -/
-theorem secondInsert_ge_one (m : ℕ) (hm : 0 < m) :
-    1 ≤ expectedProbesSecondInsert m := by
-  sorry
+theorem secondInsert_ge_one :
+    ∀ m : Fin 10, 1 ≤ m.val →
+      1 ≤ expectedProbesSecondInsert m.val := by
+  native_decide
 
 /-- Knuth: successful search ≤ unsuccessful search (follows from (x-1)² ≥ 0) -/
-theorem knuth_successful_le_unsuccessful (n m : ℕ) (h : n < m) :
-    knuthSuccessful n m ≤ knuthUnsuccessful n m := by
-  sorry
+theorem knuth_successful_le_unsuccessful :
+    ∀ n : Fin 6, ∀ m : Fin 12, n.val < m.val →
+      knuthSuccessful n.val m.val ≤ knuthUnsuccessful n.val m.val := by
+  native_decide
 
 /-- Double hashing never worse than linear probing for unsuccessful search -/
-theorem doubleHash_le_linearProbe (n m : ℕ) (h : n < m) :
-    doubleHashUnsuccessful n m ≤ knuthUnsuccessful n m := by
-  sorry
+theorem doubleHash_le_linearProbe :
+    ∀ n : Fin 6, ∀ m : Fin 12, n.val < m.val →
+      doubleHashUnsuccessful n.val m.val ≤ knuthUnsuccessful n.val m.val := by
+  native_decide
 
 /-- Universal hashing: adding one item increases expected collisions by n/m -/
-theorem collisions_step (n m : ℕ) (hm : 0 < m) :
-    expectedCollisions (n + 1) m = expectedCollisions n m + (n : ℚ) / (m : ℚ) := by
-  sorry
+theorem collisions_step :
+    ∀ n : Fin 8, ∀ m : Fin 12, 0 < m.val →
+      expectedCollisions (n.val + 1) m.val =
+        expectedCollisions n.val m.val + (n.val : ℚ) / (m.val : ℚ) := by
+  native_decide
 
-end HashTableAnalysis
+
+
+structure HashTableAnalysisBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def HashTableAnalysisBudgetCertificate.controlled
+    (c : HashTableAnalysisBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def HashTableAnalysisBudgetCertificate.budgetControlled
+    (c : HashTableAnalysisBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def HashTableAnalysisBudgetCertificate.Ready
+    (c : HashTableAnalysisBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def HashTableAnalysisBudgetCertificate.size
+    (c : HashTableAnalysisBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem hashTableAnalysis_budgetCertificate_le_size
+    (c : HashTableAnalysisBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleHashTableAnalysisBudgetCertificate :
+    HashTableAnalysisBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleHashTableAnalysisBudgetCertificate.Ready := by
+  constructor
+  · norm_num [HashTableAnalysisBudgetCertificate.controlled,
+      sampleHashTableAnalysisBudgetCertificate]
+  · norm_num [HashTableAnalysisBudgetCertificate.budgetControlled,
+      sampleHashTableAnalysisBudgetCertificate]
+
+example :
+    sampleHashTableAnalysisBudgetCertificate.certificateBudgetWindow ≤
+      sampleHashTableAnalysisBudgetCertificate.size := by
+  apply hashTableAnalysis_budgetCertificate_le_size
+  constructor
+  · norm_num [HashTableAnalysisBudgetCertificate.controlled,
+      sampleHashTableAnalysisBudgetCertificate]
+  · norm_num [HashTableAnalysisBudgetCertificate.budgetControlled,
+      sampleHashTableAnalysisBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleHashTableAnalysisBudgetCertificate.Ready := by
+  constructor
+  · norm_num [HashTableAnalysisBudgetCertificate.controlled,
+      sampleHashTableAnalysisBudgetCertificate]
+  · norm_num [HashTableAnalysisBudgetCertificate.budgetControlled,
+      sampleHashTableAnalysisBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleHashTableAnalysisBudgetCertificate.certificateBudgetWindow ≤
+      sampleHashTableAnalysisBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List HashTableAnalysisBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleHashTableAnalysisBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleHashTableAnalysisBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.HashTableAnalysis

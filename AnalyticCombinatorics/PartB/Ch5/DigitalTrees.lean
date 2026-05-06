@@ -9,8 +9,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace DigitalTrees
-
+namespace AnalyticCombinatorics.PartB.Ch5.DigitalTrees
 /-! ## 1. Binary trie leaf count at depth d -/
 
 /-- A complete binary trie of depth d has 2^d leaves. -/
@@ -72,4 +71,95 @@ example : compSortWork 1024 = 10240 := by native_decide
 /-- When b < log₂ n, radix sort wins. -/
 example : radixWork 1024 5 < compSortWork 1024 := by native_decide
 
-end DigitalTrees
+/-- Patricia internal-node sample at ten keys. -/
+theorem patriciaPaths_ten :
+    patriciaPaths 10 = 9 := by
+  native_decide
+
+/-- Radix-sort work beats comparison-sort work in this window. -/
+theorem radixWork_lt_compSortWork_sample :
+    radixWork 1024 5 < compSortWork 1024 := by
+  native_decide
+
+
+structure DigitalTreesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def DigitalTreesBudgetCertificate.controlled
+    (c : DigitalTreesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def DigitalTreesBudgetCertificate.budgetControlled
+    (c : DigitalTreesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def DigitalTreesBudgetCertificate.Ready
+    (c : DigitalTreesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def DigitalTreesBudgetCertificate.size
+    (c : DigitalTreesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem digitalTrees_budgetCertificate_le_size
+    (c : DigitalTreesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleDigitalTreesBudgetCertificate :
+    DigitalTreesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleDigitalTreesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DigitalTreesBudgetCertificate.controlled,
+      sampleDigitalTreesBudgetCertificate]
+  · norm_num [DigitalTreesBudgetCertificate.budgetControlled,
+      sampleDigitalTreesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleDigitalTreesBudgetCertificate.certificateBudgetWindow ≤
+      sampleDigitalTreesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleDigitalTreesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [DigitalTreesBudgetCertificate.controlled,
+      sampleDigitalTreesBudgetCertificate]
+  · norm_num [DigitalTreesBudgetCertificate.budgetControlled,
+      sampleDigitalTreesBudgetCertificate]
+
+example :
+    sampleDigitalTreesBudgetCertificate.certificateBudgetWindow ≤
+      sampleDigitalTreesBudgetCertificate.size := by
+  apply digitalTrees_budgetCertificate_le_size
+  constructor
+  · norm_num [DigitalTreesBudgetCertificate.controlled,
+      sampleDigitalTreesBudgetCertificate]
+  · norm_num [DigitalTreesBudgetCertificate.budgetControlled,
+      sampleDigitalTreesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List DigitalTreesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleDigitalTreesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleDigitalTreesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.DigitalTrees

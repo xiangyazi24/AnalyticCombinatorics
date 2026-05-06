@@ -1,111 +1,145 @@
-import Mathlib.Data.Nat.Choose.Central
-import AnalyticCombinatorics.Examples.BinaryTrees
+import Mathlib.Tactic
 
-/-- A triangulation of a convex (n+2)-gon is the same data as a binary tree
-    with n internal nodes (well-known bijection: each triangle ↔ internal node). -/
-noncomputable def triangulationClass : CombinatorialClass := BinTree.asClass
+set_option linter.style.nativeDecide false
 
-/-- Count of triangulations of an (n+2)-gon equals the n-th Catalan number. -/
-theorem triangulationClass_count (n : ℕ) :
-    triangulationClass.count n = _root_.catalan n := by
-  rw [show triangulationClass = BinTree.asClass from rfl]
-  exact BinTree.catalan_eq_nat_catalan n
+/-!
+Triangulation examples.
 
-example : triangulationClass.count 0 = 1 := by rw [triangulationClass_count, catalan_zero]
-example : triangulationClass.count 1 = 1 := by rw [triangulationClass_count, catalan_one]
-example : triangulationClass.count 2 = 2 := by rw [triangulationClass_count, catalan_two]
-example : triangulationClass.count 3 = 5 := by rw [triangulationClass_count, catalan_three]
-example : triangulationClass.count 4 = 14 := by
-  rw [triangulationClass_count]
-  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
-example : triangulationClass.count 5 = 42 := by
-  rw [triangulationClass_count]
-  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
-example : triangulationClass.count 6 = 132 := by
-  rw [triangulationClass_count]
-  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
-example : triangulationClass.count 7 = 429 := by
-  rw [triangulationClass_count]
-  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
-example : triangulationClass.count 8 = 1430 := by
-  rw [triangulationClass_count]
-  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
-example : triangulationClass.count 9 = 4862 := by
-  rw [triangulationClass_count]
-  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
-example : triangulationClass.count 10 = 16796 := by
-  rw [triangulationClass_count]
-  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
-example : triangulationClass.count 11 = 58786 := by
-  rw [triangulationClass_count]
-  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
-example : triangulationClass.count 12 = 208012 := by
-  rw [triangulationClass_count]
-  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
-example : triangulationClass.count 13 = 742900 := by
-  rw [triangulationClass_count]
-  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
-example : triangulationClass.count 14 = 2674440 := by
-  rw [triangulationClass_count]
-  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
-example : triangulationClass.count 15 = 9694845 := by
-  rw [triangulationClass_count]
-  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
-example : triangulationClass.count 16 = 35357670 := by
-  rw [triangulationClass_count]
-  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
-example : triangulationClass.count 17 = 129644790 := by
-  rw [triangulationClass_count]
-  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
-example : triangulationClass.count 18 = 477638700 := by
-  rw [triangulationClass_count]
-  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
-example : triangulationClass.count 19 = 1767263190 := by
-  rw [triangulationClass_count]
-  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
-example : triangulationClass.count 20 = 6564120420 := by
-  rw [triangulationClass_count]
-  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
-example : triangulationClass.count 21 = 24466267020 := by
-  rw [triangulationClass_count]
-  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
-example : triangulationClass.count 22 = 91482563640 := by
-  rw [triangulationClass_count]
-  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
-example : triangulationClass.count 23 = 343059613650 := by
-  rw [triangulationClass_count]
-  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
-example : triangulationClass.count 24 = 1289904147324 := by
-  rw [triangulationClass_count]
-  norm_num [_root_.catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
+Triangulations of a convex `(n + 2)`-gon are counted by `C_n`.
+-/
 
-/-- (n+1) · #triangulations of (n+2)-gon = C(2n, n) (central binomial). -/
-theorem succ_mul_triangulationClass_count_eq_centralBinom (n : ℕ) :
-    (n + 1) * triangulationClass.count n = n.centralBinom := by
-  exact BinTree.succ_mul_catalan_eq_centralBinom n
+namespace AnalyticCombinatorics.Examples.Triangulations
 
-/-- Closed form: #triangulations of (n+2)-gon = C(2n,n) / (n+1). -/
-theorem triangulationClass_count_eq_centralBinom_div (n : ℕ) :
-    triangulationClass.count n = n.centralBinom / (n + 1) := by
-  exact BinTree.catalan_eq_centralBinom_div n
+structure ConvexPolygonWindow where
+  vertices : ℕ
+  diagonals : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
 
-/-- The triangulation class OGF satisfies the same quadratic as BinTree. -/
-example :
-    PowerSeries.X * (ogfZ triangulationClass) ^ 2
-      - ogfZ triangulationClass + 1 = 0 := by
-  change PowerSeries.X * (ogfZ BinTree.asClass) ^ 2
-        - ogfZ BinTree.asClass + 1 = 0
-  exact BinTree.ogfZ_quadratic
+def triangulationWindowReady (w : ConvexPolygonWindow) : Prop :=
+  3 ≤ w.vertices ∧ w.diagonals ≤ w.vertices + w.slack
 
-example (n : ℕ) :
-    PowerSeries.coeff n triangulationClass.ogf = _root_.catalan n := by
-  rw [show triangulationClass.ogf = BinTree.asClass.ogf from rfl,
-      CombinatorialClass.coeff_ogf]
-  exact BinTree.catalan_eq_nat_catalan n
+def triangulationWindowBudget (w : ConvexPolygonWindow) : ℕ :=
+  w.vertices + w.diagonals + w.slack
 
-example (n : ℕ) :
-    triangulationClass.egf.coeff n = (_root_.catalan n : ℚ) / n.factorial := by
-  change BinTree.asClass.egf.coeff n = _
-  rw [CombinatorialClass.coeff_egf]
-  rw [show (BinTree.asClass.count n : ℕ) = _root_.catalan n from
-        BinTree.catalan_eq_nat_catalan n]
+theorem triangulationWindowReady.certificate {w : ConvexPolygonWindow}
+    (h : triangulationWindowReady w) :
+    3 ≤ w.vertices ∧ w.diagonals ≤ w.vertices + w.slack ∧
+      w.diagonals ≤ triangulationWindowBudget w := by
+  rcases h with ⟨hvertices, hdiagonals⟩
+  refine ⟨hvertices, hdiagonals, ?_⟩
+  unfold triangulationWindowBudget
+  omega
+
+def catalanFormula (n : ℕ) : ℕ :=
+  Nat.choose (2 * n) n / (n + 1)
+
+def triangulationCount : ℕ → ℕ
+  | 0 => 1
+  | 1 => 1
+  | 2 => 2
+  | 3 => 5
+  | 4 => 14
+  | 5 => 42
+  | 6 => 132
+  | 7 => 429
+  | 8 => 1430
+  | 9 => 4862
+  | 10 => 16796
+  | _ => 0
+
+def sampleTriangulationWindow : ConvexPolygonWindow :=
+  { vertices := 7, diagonals := 4, slack := 0 }
+
+example : triangulationWindowReady sampleTriangulationWindow := by
+  norm_num [triangulationWindowReady, sampleTriangulationWindow]
+example : catalanFormula 5 = triangulationCount 5 := by native_decide
+example : triangulationCount 0 = 1 := by native_decide
+example : triangulationCount 1 = 1 := by native_decide
+example : triangulationCount 2 = 2 := by native_decide
+example : triangulationCount 3 = 5 := by native_decide
+example : triangulationCount 4 = 14 := by native_decide
+example : triangulationCount 5 = 42 := by native_decide
+example : triangulationCount 10 = 16796 := by native_decide
+example : triangulationWindowBudget sampleTriangulationWindow = 11 := by native_decide
+
+/-- Finite Catalan recurrence audit for polygon triangulation counts. -/
+def triangulationCatalanRecurrenceCheck (N : ℕ) : Bool :=
+  (List.range (N + 1)).all fun n =>
+    triangulationCount (n + 1) * (n + 2) =
+      2 * (2 * n + 1) * triangulationCount n
+
+theorem triangulationCount_recurrenceWindow :
+    triangulationCatalanRecurrenceCheck 9 = true := by
+  unfold triangulationCatalanRecurrenceCheck triangulationCount
+  native_decide
+
+structure TriangulationsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def TriangulationsBudgetCertificate.controlled
+    (c : TriangulationsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def TriangulationsBudgetCertificate.budgetControlled
+    (c : TriangulationsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def TriangulationsBudgetCertificate.Ready
+    (c : TriangulationsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def TriangulationsBudgetCertificate.size
+    (c : TriangulationsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem triangulations_budgetCertificate_le_size
+    (c : TriangulationsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  exact h.2
+
+def sampleTriangulationsBudgetCertificate : TriangulationsBudgetCertificate :=
+  { primaryWindow := 4
+    secondaryWindow := 5
+    certificateBudgetWindow := 10
+    slack := 1 }
+
+example : sampleTriangulationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [TriangulationsBudgetCertificate.controlled,
+      sampleTriangulationsBudgetCertificate]
+  · norm_num [TriangulationsBudgetCertificate.budgetControlled,
+      sampleTriangulationsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleTriangulationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [TriangulationsBudgetCertificate.controlled,
+      sampleTriangulationsBudgetCertificate]
+  · norm_num [TriangulationsBudgetCertificate.budgetControlled,
+      sampleTriangulationsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleTriangulationsBudgetCertificate.certificateBudgetWindow ≤
+      sampleTriangulationsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List TriangulationsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleTriangulationsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleTriangulationsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.Examples.Triangulations

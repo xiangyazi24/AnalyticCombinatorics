@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace SymbolicMethodIII
+namespace AnalyticCombinatorics.PartA.Ch3.SymbolicMethodIII
+
 
 /-!
 # Symbolic method extensions: multivariate GF and parameter analysis
@@ -24,7 +25,7 @@ abbrev BivariateGF := Nat → Nat → Nat
 def bgfCoeff (F : BivariateGF) (n k : Nat) : Nat :=
   F n k
 
-/-- A toy bivariate series with one nonzero coefficient. -/
+/-- A sample bivariate series with one nonzero coefficient. -/
 def markedToyBGF : BivariateGF :=
   fun n k => if n = 2 ∧ k = 1 then 3 else 0
 
@@ -207,4 +208,96 @@ example : lahRowSum 3 = 13 := by native_decide
 example : lahRowSum 4 = 73 := by native_decide
 example : lahRowSum 5 = 501 := by native_decide
 
-end SymbolicMethodIII
+/-- Catalan area row sample for semilength three. -/
+theorem catalanAreaRow_three :
+    (fun i : Fin 4 => catalanAreaCount 3 i) = catalanAreaRow3 := by
+  native_decide
+
+/-- Lah row sum sample. -/
+theorem lahRowSum_five :
+    lahRowSum 5 = 501 := by
+  native_decide
+
+
+
+structure SymbolicMethodIIIBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SymbolicMethodIIIBudgetCertificate.controlled
+    (c : SymbolicMethodIIIBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SymbolicMethodIIIBudgetCertificate.budgetControlled
+    (c : SymbolicMethodIIIBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SymbolicMethodIIIBudgetCertificate.Ready
+    (c : SymbolicMethodIIIBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SymbolicMethodIIIBudgetCertificate.size
+    (c : SymbolicMethodIIIBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem symbolicMethodIII_budgetCertificate_le_size
+    (c : SymbolicMethodIIIBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSymbolicMethodIIIBudgetCertificate :
+    SymbolicMethodIIIBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleSymbolicMethodIIIBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SymbolicMethodIIIBudgetCertificate.controlled,
+      sampleSymbolicMethodIIIBudgetCertificate]
+  · norm_num [SymbolicMethodIIIBudgetCertificate.budgetControlled,
+      sampleSymbolicMethodIIIBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSymbolicMethodIIIBudgetCertificate.certificateBudgetWindow ≤
+      sampleSymbolicMethodIIIBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleSymbolicMethodIIIBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SymbolicMethodIIIBudgetCertificate.controlled,
+      sampleSymbolicMethodIIIBudgetCertificate]
+  · norm_num [SymbolicMethodIIIBudgetCertificate.budgetControlled,
+      sampleSymbolicMethodIIIBudgetCertificate]
+
+example :
+    sampleSymbolicMethodIIIBudgetCertificate.certificateBudgetWindow ≤
+      sampleSymbolicMethodIIIBudgetCertificate.size := by
+  apply symbolicMethodIII_budgetCertificate_le_size
+  constructor
+  · norm_num [SymbolicMethodIIIBudgetCertificate.controlled,
+      sampleSymbolicMethodIIIBudgetCertificate]
+  · norm_num [SymbolicMethodIIIBudgetCertificate.budgetControlled,
+      sampleSymbolicMethodIIIBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List SymbolicMethodIIIBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSymbolicMethodIIIBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSymbolicMethodIIIBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.SymbolicMethodIII

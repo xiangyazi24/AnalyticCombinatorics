@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace WalksCounting
+namespace AnalyticCombinatorics.PartA.Ch3.WalksCounting
+
 
 /-!
 # Lattice walk counting
@@ -319,4 +320,86 @@ theorem large_schroeder_table :
     (List.range 6).map largeSchroederCount = [1, 2, 6, 22, 90, 394] := by
   native_decide
 
-end WalksCounting
+
+
+structure WalksCountingBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def WalksCountingBudgetCertificate.controlled
+    (c : WalksCountingBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def WalksCountingBudgetCertificate.budgetControlled
+    (c : WalksCountingBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def WalksCountingBudgetCertificate.Ready
+    (c : WalksCountingBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def WalksCountingBudgetCertificate.size
+    (c : WalksCountingBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem walksCounting_budgetCertificate_le_size
+    (c : WalksCountingBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleWalksCountingBudgetCertificate :
+    WalksCountingBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleWalksCountingBudgetCertificate.Ready := by
+  constructor
+  · norm_num [WalksCountingBudgetCertificate.controlled,
+      sampleWalksCountingBudgetCertificate]
+  · norm_num [WalksCountingBudgetCertificate.budgetControlled,
+      sampleWalksCountingBudgetCertificate]
+
+example :
+    sampleWalksCountingBudgetCertificate.certificateBudgetWindow ≤
+      sampleWalksCountingBudgetCertificate.size := by
+  apply walksCounting_budgetCertificate_le_size
+  constructor
+  · norm_num [WalksCountingBudgetCertificate.controlled,
+      sampleWalksCountingBudgetCertificate]
+  · norm_num [WalksCountingBudgetCertificate.budgetControlled,
+      sampleWalksCountingBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleWalksCountingBudgetCertificate.Ready := by
+  constructor
+  · norm_num [WalksCountingBudgetCertificate.controlled,
+      sampleWalksCountingBudgetCertificate]
+  · norm_num [WalksCountingBudgetCertificate.budgetControlled,
+      sampleWalksCountingBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleWalksCountingBudgetCertificate.certificateBudgetWindow ≤
+      sampleWalksCountingBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List WalksCountingBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleWalksCountingBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleWalksCountingBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.WalksCounting

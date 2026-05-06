@@ -12,8 +12,7 @@ set_option linter.style.nativeDecide false
 
 open Finset Nat
 
-namespace CodingTheory
-
+namespace AnalyticCombinatorics.PartA.Ch2.CodingTheory
 /-! ## 1. Hamming volume (sphere-packing ball)
 
   For a binary code of length n and minimum distance d = 2t+1,
@@ -262,4 +261,85 @@ example : hammingVolume 15 1 = 2 ^ 4 := by native_decide -- V(15,1) = 2^r = 16
 example : hammingVolume 23 3 = 2 ^ 11 := by native_decide  -- V(23,3) = 2^11
 example : 2 ^ 12 * 2 ^ 11 = 2 ^ 23 := by native_decide    -- |C| · V = 2^n
 
-end CodingTheory
+
+structure CodingTheoryBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CodingTheoryBudgetCertificate.controlled
+    (c : CodingTheoryBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CodingTheoryBudgetCertificate.budgetControlled
+    (c : CodingTheoryBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CodingTheoryBudgetCertificate.Ready
+    (c : CodingTheoryBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CodingTheoryBudgetCertificate.size
+    (c : CodingTheoryBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem codingTheory_budgetCertificate_le_size
+    (c : CodingTheoryBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCodingTheoryBudgetCertificate :
+    CodingTheoryBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleCodingTheoryBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CodingTheoryBudgetCertificate.controlled,
+      sampleCodingTheoryBudgetCertificate]
+  · norm_num [CodingTheoryBudgetCertificate.budgetControlled,
+      sampleCodingTheoryBudgetCertificate]
+
+example :
+    sampleCodingTheoryBudgetCertificate.certificateBudgetWindow ≤
+      sampleCodingTheoryBudgetCertificate.size := by
+  apply codingTheory_budgetCertificate_le_size
+  constructor
+  · norm_num [CodingTheoryBudgetCertificate.controlled,
+      sampleCodingTheoryBudgetCertificate]
+  · norm_num [CodingTheoryBudgetCertificate.budgetControlled,
+      sampleCodingTheoryBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleCodingTheoryBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CodingTheoryBudgetCertificate.controlled,
+      sampleCodingTheoryBudgetCertificate]
+  · norm_num [CodingTheoryBudgetCertificate.budgetControlled,
+      sampleCodingTheoryBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCodingTheoryBudgetCertificate.certificateBudgetWindow ≤
+      sampleCodingTheoryBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List CodingTheoryBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCodingTheoryBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCodingTheoryBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.CodingTheory

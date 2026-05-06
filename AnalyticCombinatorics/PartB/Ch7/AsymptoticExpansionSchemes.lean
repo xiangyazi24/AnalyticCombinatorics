@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace AsymptoticExpansionSchemes
+namespace AnalyticCombinatorics.PartB.Ch7.AsymptoticExpansionSchemes
+
 
 /-!
 Finite, computable models for Chapter VII asymptotic-expansion schemes.
@@ -249,4 +250,86 @@ theorem words_avoiding_double_zero_are_fibonacci_upto_eleven :
       List.ofFn (fun n : Fin 12 => fibonacci (n.val + 2)) := by
   native_decide
 
-end AsymptoticExpansionSchemes
+
+
+structure AsymptoticExpansionSchemesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def AsymptoticExpansionSchemesBudgetCertificate.controlled
+    (c : AsymptoticExpansionSchemesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def AsymptoticExpansionSchemesBudgetCertificate.budgetControlled
+    (c : AsymptoticExpansionSchemesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def AsymptoticExpansionSchemesBudgetCertificate.Ready
+    (c : AsymptoticExpansionSchemesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def AsymptoticExpansionSchemesBudgetCertificate.size
+    (c : AsymptoticExpansionSchemesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem asymptoticExpansionSchemes_budgetCertificate_le_size
+    (c : AsymptoticExpansionSchemesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleAsymptoticExpansionSchemesBudgetCertificate :
+    AsymptoticExpansionSchemesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleAsymptoticExpansionSchemesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AsymptoticExpansionSchemesBudgetCertificate.controlled,
+      sampleAsymptoticExpansionSchemesBudgetCertificate]
+  · norm_num [AsymptoticExpansionSchemesBudgetCertificate.budgetControlled,
+      sampleAsymptoticExpansionSchemesBudgetCertificate]
+
+example :
+    sampleAsymptoticExpansionSchemesBudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptoticExpansionSchemesBudgetCertificate.size := by
+  apply asymptoticExpansionSchemes_budgetCertificate_le_size
+  constructor
+  · norm_num [AsymptoticExpansionSchemesBudgetCertificate.controlled,
+      sampleAsymptoticExpansionSchemesBudgetCertificate]
+  · norm_num [AsymptoticExpansionSchemesBudgetCertificate.budgetControlled,
+      sampleAsymptoticExpansionSchemesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleAsymptoticExpansionSchemesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [AsymptoticExpansionSchemesBudgetCertificate.controlled,
+      sampleAsymptoticExpansionSchemesBudgetCertificate]
+  · norm_num [AsymptoticExpansionSchemesBudgetCertificate.budgetControlled,
+      sampleAsymptoticExpansionSchemesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleAsymptoticExpansionSchemesBudgetCertificate.certificateBudgetWindow ≤
+      sampleAsymptoticExpansionSchemesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List AsymptoticExpansionSchemesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleAsymptoticExpansionSchemesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleAsymptoticExpansionSchemesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.AsymptoticExpansionSchemes

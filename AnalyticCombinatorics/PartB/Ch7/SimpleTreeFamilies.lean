@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace SimpleTreeFamilies
+namespace AnalyticCombinatorics.PartB.Ch7.SimpleTreeFamilies
+
 
 /-!
   Simple families of trees from Chapter VII of Flajolet--Sedgewick.
@@ -208,4 +209,86 @@ theorem generalizedCatalan_standard_form_4_4 :
     generalizedCatalan 4 4 = Nat.choose (4 * 4) 4 / (4 * 4 + 1 - 4) := by
   native_decide
 
-end SimpleTreeFamilies
+
+
+structure SimpleTreeFamiliesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def SimpleTreeFamiliesBudgetCertificate.controlled
+    (c : SimpleTreeFamiliesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def SimpleTreeFamiliesBudgetCertificate.budgetControlled
+    (c : SimpleTreeFamiliesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def SimpleTreeFamiliesBudgetCertificate.Ready
+    (c : SimpleTreeFamiliesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def SimpleTreeFamiliesBudgetCertificate.size
+    (c : SimpleTreeFamiliesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem simpleTreeFamilies_budgetCertificate_le_size
+    (c : SimpleTreeFamiliesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleSimpleTreeFamiliesBudgetCertificate :
+    SimpleTreeFamiliesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleSimpleTreeFamiliesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SimpleTreeFamiliesBudgetCertificate.controlled,
+      sampleSimpleTreeFamiliesBudgetCertificate]
+  · norm_num [SimpleTreeFamiliesBudgetCertificate.budgetControlled,
+      sampleSimpleTreeFamiliesBudgetCertificate]
+
+example :
+    sampleSimpleTreeFamiliesBudgetCertificate.certificateBudgetWindow ≤
+      sampleSimpleTreeFamiliesBudgetCertificate.size := by
+  apply simpleTreeFamilies_budgetCertificate_le_size
+  constructor
+  · norm_num [SimpleTreeFamiliesBudgetCertificate.controlled,
+      sampleSimpleTreeFamiliesBudgetCertificate]
+  · norm_num [SimpleTreeFamiliesBudgetCertificate.budgetControlled,
+      sampleSimpleTreeFamiliesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleSimpleTreeFamiliesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [SimpleTreeFamiliesBudgetCertificate.controlled,
+      sampleSimpleTreeFamiliesBudgetCertificate]
+  · norm_num [SimpleTreeFamiliesBudgetCertificate.budgetControlled,
+      sampleSimpleTreeFamiliesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleSimpleTreeFamiliesBudgetCertificate.certificateBudgetWindow ≤
+      sampleSimpleTreeFamiliesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List SimpleTreeFamiliesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleSimpleTreeFamiliesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleSimpleTreeFamiliesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.SimpleTreeFamilies

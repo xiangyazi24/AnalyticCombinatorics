@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace UrbanRenewal
+namespace AnalyticCombinatorics.PartA.Ch2.UrbanRenewal
+
 
 /-! # Urn Models and Random Allocation via EGF
 
@@ -210,4 +211,86 @@ theorem stirling_ortho_4_4 : stirlingProduct 4 4 = 1 := by native_decide
 theorem stirling_ortho_3_2 : stirlingProduct 3 2 = 0 := by native_decide
 theorem stirling_ortho_4_2 : stirlingProduct 4 2 = 0 := by native_decide
 
-end UrbanRenewal
+
+
+structure UrbanRenewalBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def UrbanRenewalBudgetCertificate.controlled
+    (c : UrbanRenewalBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def UrbanRenewalBudgetCertificate.budgetControlled
+    (c : UrbanRenewalBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def UrbanRenewalBudgetCertificate.Ready
+    (c : UrbanRenewalBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def UrbanRenewalBudgetCertificate.size
+    (c : UrbanRenewalBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem urbanRenewal_budgetCertificate_le_size
+    (c : UrbanRenewalBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleUrbanRenewalBudgetCertificate :
+    UrbanRenewalBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleUrbanRenewalBudgetCertificate.Ready := by
+  constructor
+  · norm_num [UrbanRenewalBudgetCertificate.controlled,
+      sampleUrbanRenewalBudgetCertificate]
+  · norm_num [UrbanRenewalBudgetCertificate.budgetControlled,
+      sampleUrbanRenewalBudgetCertificate]
+
+example :
+    sampleUrbanRenewalBudgetCertificate.certificateBudgetWindow ≤
+      sampleUrbanRenewalBudgetCertificate.size := by
+  apply urbanRenewal_budgetCertificate_le_size
+  constructor
+  · norm_num [UrbanRenewalBudgetCertificate.controlled,
+      sampleUrbanRenewalBudgetCertificate]
+  · norm_num [UrbanRenewalBudgetCertificate.budgetControlled,
+      sampleUrbanRenewalBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleUrbanRenewalBudgetCertificate.Ready := by
+  constructor
+  · norm_num [UrbanRenewalBudgetCertificate.controlled,
+      sampleUrbanRenewalBudgetCertificate]
+  · norm_num [UrbanRenewalBudgetCertificate.budgetControlled,
+      sampleUrbanRenewalBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleUrbanRenewalBudgetCertificate.certificateBudgetWindow ≤
+      sampleUrbanRenewalBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List UrbanRenewalBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleUrbanRenewalBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleUrbanRenewalBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.UrbanRenewal

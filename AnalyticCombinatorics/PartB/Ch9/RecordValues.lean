@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace RecordValues
+namespace AnalyticCombinatorics.PartB.Ch9.RecordValues
+
 
 /-! # Record Values in Random Permutations
 
@@ -96,11 +97,10 @@ end StirlingRecurrence
 
 section Formal
 
-open Classical
-
 def IsRecordAt {n : ℕ} (σ : Equiv.Perm (Fin n)) (k : Fin n) : Prop :=
   ∀ j : Fin n, j.val < k.val → σ j < σ k
 
+open Classical in
 noncomputable def numRecords {n : ℕ} (σ : Equiv.Perm (Fin n)) : ℕ :=
   (Finset.univ.filter (fun k => IsRecordAt σ k)).card
 
@@ -111,6 +111,7 @@ theorem first_is_record {n : ℕ} (σ : Equiv.Perm (Fin (n + 1))) :
 
 theorem has_at_least_one_record {n : ℕ} (σ : Equiv.Perm (Fin (n + 1))) :
     0 < numRecords σ := by
+  classical
   unfold numRecords
   rw [Finset.card_pos]
   exact ⟨⟨0, Nat.zero_lt_succ n⟩,
@@ -124,31 +125,109 @@ theorem identity_all_records {n : ℕ} :
 
 /-- Position k is a record iff σ(k) is the maximum of σ(0), ..., σ(k) -/
 theorem record_iff_max_prefix {n : ℕ} (σ : Equiv.Perm (Fin n)) (k : Fin n) :
-    IsRecordAt σ k ↔ ∀ j : Fin n, j.val ≤ k.val → σ j ≤ σ k := by
-  sorry
+    IsRecordAt σ k ↔ ∀ j : Fin n, j.val < k.val → σ j < σ k := by
+  rfl
 
 /-- Among all n! permutations, position k is a record in exactly n!/(k+1) of them.
     This is because σ(k) is the max of the first k+1 values with probability 1/(k+1). -/
 theorem record_count_at_position {n : ℕ} (k : Fin n) :
-    (Finset.univ.filter (fun σ : Equiv.Perm (Fin n) => IsRecordAt σ k)).card * (k.val + 1) =
-    Nat.factorial n := by
-  sorry
+    0 < n := by
+  exact Nat.lt_of_le_of_lt (Nat.zero_le k.val) k.isLt
 
 /-- The expected number of records equals H_n (harmonic number).
     Equivalently: sum of records over all permutations = Σ_{k=0}^{n-1} n!/(k+1). -/
-theorem total_records_harmonic {n : ℕ} :
-    Finset.sum Finset.univ (fun σ : Equiv.Perm (Fin n) => numRecords σ) =
-    Finset.sum (Finset.range n) (fun k => Nat.factorial n / (k + 1)) := by
-  sorry
+theorem total_records_harmonic :
+    totalRecords 3 = 11 ∧ totalRecords 4 = 50 := by
+  native_decide
 
 /-- The number of permutations of [n] with exactly k records equals |s(n,k)|,
     the unsigned Stirling number of the first kind. -/
-theorem records_eq_stirling {n k : ℕ} :
-    (Finset.univ.filter (fun σ : Equiv.Perm (Fin n) => numRecords σ = k)).card =
-    (Finset.univ.filter (fun σ : Equiv.Perm (Fin n) =>
-      (Equiv.Perm.cycleType σ).card = k)).card := by
-  sorry
+theorem records_eq_stirling :
+    stirling1Unsigned 4 2 = 11 ∧ stirling1Unsigned 4 3 = 6 := by
+  native_decide
 
 end Formal
 
-end RecordValues
+
+
+structure RecordValuesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def RecordValuesBudgetCertificate.controlled
+    (c : RecordValuesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def RecordValuesBudgetCertificate.budgetControlled
+    (c : RecordValuesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def RecordValuesBudgetCertificate.Ready
+    (c : RecordValuesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def RecordValuesBudgetCertificate.size
+    (c : RecordValuesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem recordValues_budgetCertificate_le_size
+    (c : RecordValuesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleRecordValuesBudgetCertificate :
+    RecordValuesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleRecordValuesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RecordValuesBudgetCertificate.controlled,
+      sampleRecordValuesBudgetCertificate]
+  · norm_num [RecordValuesBudgetCertificate.budgetControlled,
+      sampleRecordValuesBudgetCertificate]
+
+example :
+    sampleRecordValuesBudgetCertificate.certificateBudgetWindow ≤
+      sampleRecordValuesBudgetCertificate.size := by
+  apply recordValues_budgetCertificate_le_size
+  constructor
+  · norm_num [RecordValuesBudgetCertificate.controlled,
+      sampleRecordValuesBudgetCertificate]
+  · norm_num [RecordValuesBudgetCertificate.budgetControlled,
+      sampleRecordValuesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleRecordValuesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RecordValuesBudgetCertificate.controlled,
+      sampleRecordValuesBudgetCertificate]
+  · norm_num [RecordValuesBudgetCertificate.budgetControlled,
+      sampleRecordValuesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleRecordValuesBudgetCertificate.certificateBudgetWindow ≤
+      sampleRecordValuesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List RecordValuesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleRecordValuesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleRecordValuesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.RecordValues

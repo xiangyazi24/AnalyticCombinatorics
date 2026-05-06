@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace PermutationDescents
+namespace AnalyticCombinatorics.PartA.Ch2.PermutationDescents
+
 
 open Finset
 
@@ -120,4 +121,86 @@ theorem eulerian_symmetry_n5 :
     eulerianSymmetryRowChecked 5 = true := by
   native_decide
 
-end PermutationDescents
+
+
+structure PermutationDescentsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PermutationDescentsBudgetCertificate.controlled
+    (c : PermutationDescentsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PermutationDescentsBudgetCertificate.budgetControlled
+    (c : PermutationDescentsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PermutationDescentsBudgetCertificate.Ready
+    (c : PermutationDescentsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PermutationDescentsBudgetCertificate.size
+    (c : PermutationDescentsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem permutationDescents_budgetCertificate_le_size
+    (c : PermutationDescentsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePermutationDescentsBudgetCertificate :
+    PermutationDescentsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : samplePermutationDescentsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PermutationDescentsBudgetCertificate.controlled,
+      samplePermutationDescentsBudgetCertificate]
+  · norm_num [PermutationDescentsBudgetCertificate.budgetControlled,
+      samplePermutationDescentsBudgetCertificate]
+
+example :
+    samplePermutationDescentsBudgetCertificate.certificateBudgetWindow ≤
+      samplePermutationDescentsBudgetCertificate.size := by
+  apply permutationDescents_budgetCertificate_le_size
+  constructor
+  · norm_num [PermutationDescentsBudgetCertificate.controlled,
+      samplePermutationDescentsBudgetCertificate]
+  · norm_num [PermutationDescentsBudgetCertificate.budgetControlled,
+      samplePermutationDescentsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    samplePermutationDescentsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PermutationDescentsBudgetCertificate.controlled,
+      samplePermutationDescentsBudgetCertificate]
+  · norm_num [PermutationDescentsBudgetCertificate.budgetControlled,
+      samplePermutationDescentsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePermutationDescentsBudgetCertificate.certificateBudgetWindow ≤
+      samplePermutationDescentsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List PermutationDescentsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePermutationDescentsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePermutationDescentsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.PermutationDescents

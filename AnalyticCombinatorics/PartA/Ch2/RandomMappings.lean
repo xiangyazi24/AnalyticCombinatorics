@@ -1,10 +1,11 @@
 import Mathlib.Tactic
 
+namespace AnalyticCombinatorics.PartA.Ch2.RandomMappings
+
 open Finset
 
 set_option linter.style.nativeDecide false
 
-namespace RandomMappings
 
 /-- Number of all mappings `[n] → [n]`.  The value at `n = 0` is the usual
 empty-function convention `0^0 = 1`. -/
@@ -104,4 +105,86 @@ theorem labeledRootedTreeCount_eq_mul_labeledTreeCount (n : ℕ) (hn : 2 ≤ n) 
     omega
   rw [hsub, pow_succ, mul_comm]
 
-end RandomMappings
+
+
+structure RandomMappingsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def RandomMappingsBudgetCertificate.controlled
+    (c : RandomMappingsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def RandomMappingsBudgetCertificate.budgetControlled
+    (c : RandomMappingsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def RandomMappingsBudgetCertificate.Ready
+    (c : RandomMappingsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def RandomMappingsBudgetCertificate.size
+    (c : RandomMappingsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem randomMappings_budgetCertificate_le_size
+    (c : RandomMappingsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleRandomMappingsBudgetCertificate :
+    RandomMappingsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleRandomMappingsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RandomMappingsBudgetCertificate.controlled,
+      sampleRandomMappingsBudgetCertificate]
+  · norm_num [RandomMappingsBudgetCertificate.budgetControlled,
+      sampleRandomMappingsBudgetCertificate]
+
+example :
+    sampleRandomMappingsBudgetCertificate.certificateBudgetWindow ≤
+      sampleRandomMappingsBudgetCertificate.size := by
+  apply randomMappings_budgetCertificate_le_size
+  constructor
+  · norm_num [RandomMappingsBudgetCertificate.controlled,
+      sampleRandomMappingsBudgetCertificate]
+  · norm_num [RandomMappingsBudgetCertificate.budgetControlled,
+      sampleRandomMappingsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleRandomMappingsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RandomMappingsBudgetCertificate.controlled,
+      sampleRandomMappingsBudgetCertificate]
+  · norm_num [RandomMappingsBudgetCertificate.budgetControlled,
+      sampleRandomMappingsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleRandomMappingsBudgetCertificate.certificateBudgetWindow ≤
+      sampleRandomMappingsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List RandomMappingsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleRandomMappingsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleRandomMappingsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.RandomMappings

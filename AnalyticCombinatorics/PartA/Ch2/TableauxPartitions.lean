@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace TableauxPartitions
+namespace AnalyticCombinatorics.PartA.Ch2.TableauxPartitions
+
 
 open Finset
 
@@ -132,4 +133,86 @@ theorem parts_at_most_three_table_verified :
     ∀ i : Fin 9, partsAtMostCount i.val 3 = partsAtMostThreeTable i := by
   native_decide
 
-end TableauxPartitions
+
+
+structure TableauxPartitionsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def TableauxPartitionsBudgetCertificate.controlled
+    (c : TableauxPartitionsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def TableauxPartitionsBudgetCertificate.budgetControlled
+    (c : TableauxPartitionsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def TableauxPartitionsBudgetCertificate.Ready
+    (c : TableauxPartitionsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def TableauxPartitionsBudgetCertificate.size
+    (c : TableauxPartitionsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem tableauxPartitions_budgetCertificate_le_size
+    (c : TableauxPartitionsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleTableauxPartitionsBudgetCertificate :
+    TableauxPartitionsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleTableauxPartitionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [TableauxPartitionsBudgetCertificate.controlled,
+      sampleTableauxPartitionsBudgetCertificate]
+  · norm_num [TableauxPartitionsBudgetCertificate.budgetControlled,
+      sampleTableauxPartitionsBudgetCertificate]
+
+example :
+    sampleTableauxPartitionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleTableauxPartitionsBudgetCertificate.size := by
+  apply tableauxPartitions_budgetCertificate_le_size
+  constructor
+  · norm_num [TableauxPartitionsBudgetCertificate.controlled,
+      sampleTableauxPartitionsBudgetCertificate]
+  · norm_num [TableauxPartitionsBudgetCertificate.budgetControlled,
+      sampleTableauxPartitionsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleTableauxPartitionsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [TableauxPartitionsBudgetCertificate.controlled,
+      sampleTableauxPartitionsBudgetCertificate]
+  · norm_num [TableauxPartitionsBudgetCertificate.budgetControlled,
+      sampleTableauxPartitionsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleTableauxPartitionsBudgetCertificate.certificateBudgetWindow ≤
+      sampleTableauxPartitionsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List TableauxPartitionsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleTableauxPartitionsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleTableauxPartitionsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.TableauxPartitions

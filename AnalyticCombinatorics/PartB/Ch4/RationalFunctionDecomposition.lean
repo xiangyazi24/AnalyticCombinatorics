@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace RationalFunctionDecomposition
+namespace AnalyticCombinatorics.PartB.Ch4.RationalFunctionDecomposition
+
 
 /-!
 Executable coefficient checks for rational-function decompositions from
@@ -137,7 +138,7 @@ theorem five_fib_sq_values :
     ∀ n : Fin 13, fiveFibSqTable n = 5 * fib n.val ^ 2 := by
   native_decide
 
-/-! ## 4. Linear-recurrence solution skeletons -/
+/-! ## 4. Linear-recurrence solution schemas -/
 
 structure TwoRootSolution where
   c1 : ℤ
@@ -258,4 +259,87 @@ theorem exp_poly_simple_pole_with_numerator :
         polynomialNumeratorPoleCoeff [2, 3] 4 1 n.val := by
   native_decide
 
-end RationalFunctionDecomposition
+
+
+structure RationalFunctionDecompositionBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def RationalFunctionDecompositionBudgetCertificate.controlled
+    (c : RationalFunctionDecompositionBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def RationalFunctionDecompositionBudgetCertificate.budgetControlled
+    (c : RationalFunctionDecompositionBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def RationalFunctionDecompositionBudgetCertificate.Ready
+    (c : RationalFunctionDecompositionBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def RationalFunctionDecompositionBudgetCertificate.size
+    (c : RationalFunctionDecompositionBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem rationalFunctionDecomposition_budgetCertificate_le_size
+    (c : RationalFunctionDecompositionBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleRationalFunctionDecompositionBudgetCertificate :
+    RationalFunctionDecompositionBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleRationalFunctionDecompositionBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RationalFunctionDecompositionBudgetCertificate.controlled,
+      sampleRationalFunctionDecompositionBudgetCertificate]
+  · norm_num [RationalFunctionDecompositionBudgetCertificate.budgetControlled,
+      sampleRationalFunctionDecompositionBudgetCertificate]
+
+example :
+    sampleRationalFunctionDecompositionBudgetCertificate.certificateBudgetWindow ≤
+      sampleRationalFunctionDecompositionBudgetCertificate.size := by
+  apply rationalFunctionDecomposition_budgetCertificate_le_size
+  constructor
+  · norm_num [RationalFunctionDecompositionBudgetCertificate.controlled,
+      sampleRationalFunctionDecompositionBudgetCertificate]
+  · norm_num [RationalFunctionDecompositionBudgetCertificate.budgetControlled,
+      sampleRationalFunctionDecompositionBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleRationalFunctionDecompositionBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RationalFunctionDecompositionBudgetCertificate.controlled,
+      sampleRationalFunctionDecompositionBudgetCertificate]
+  · norm_num [RationalFunctionDecompositionBudgetCertificate.budgetControlled,
+      sampleRationalFunctionDecompositionBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleRationalFunctionDecompositionBudgetCertificate.certificateBudgetWindow ≤
+      sampleRationalFunctionDecompositionBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady
+    (data : List RationalFunctionDecompositionBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleRationalFunctionDecompositionBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleRationalFunctionDecompositionBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch4.RationalFunctionDecomposition

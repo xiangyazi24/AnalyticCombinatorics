@@ -10,8 +10,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace RandomPermutations
-
+namespace AnalyticCombinatorics.PartB.Ch9.RandomPermutations
 open Finset
 
 /-! ## 1. Expected number of cycles = H_n -/
@@ -92,4 +91,100 @@ example : Nat.lcm 4 5 = 20 := by native_decide
 /-- g(10) = 30, from cycle type (2,3,5): lcm(2, lcm(3,5)) = 30. -/
 example : Nat.lcm 2 (Nat.lcm 3 5) = 30 := by native_decide
 
-end RandomPermutations
+/-- Expected-cycle harmonic sample at six. -/
+theorem expectedCycles_six :
+    expectedCycles 6 = 49 / 20 := by
+  native_decide
+
+/-- Fixed-point count sample for five elements and no fixed points. -/
+theorem fixedPointCount_five_zero :
+    fixedPointCount 5 0 = 44 := by
+  native_decide
+
+/-- Landau function table sample at ten. -/
+theorem landauFunction_ten :
+    landauFunction 10 = 30 := by
+  native_decide
+
+
+structure RandomPermutationsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def RandomPermutationsBudgetCertificate.controlled
+    (c : RandomPermutationsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def RandomPermutationsBudgetCertificate.budgetControlled
+    (c : RandomPermutationsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def RandomPermutationsBudgetCertificate.Ready
+    (c : RandomPermutationsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def RandomPermutationsBudgetCertificate.size
+    (c : RandomPermutationsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem randomPermutations_budgetCertificate_le_size
+    (c : RandomPermutationsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleRandomPermutationsBudgetCertificate :
+    RandomPermutationsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleRandomPermutationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RandomPermutationsBudgetCertificate.controlled,
+      sampleRandomPermutationsBudgetCertificate]
+  · norm_num [RandomPermutationsBudgetCertificate.budgetControlled,
+      sampleRandomPermutationsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleRandomPermutationsBudgetCertificate.certificateBudgetWindow ≤
+      sampleRandomPermutationsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleRandomPermutationsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RandomPermutationsBudgetCertificate.controlled,
+      sampleRandomPermutationsBudgetCertificate]
+  · norm_num [RandomPermutationsBudgetCertificate.budgetControlled,
+      sampleRandomPermutationsBudgetCertificate]
+
+example :
+    sampleRandomPermutationsBudgetCertificate.certificateBudgetWindow ≤
+      sampleRandomPermutationsBudgetCertificate.size := by
+  apply randomPermutations_budgetCertificate_le_size
+  constructor
+  · norm_num [RandomPermutationsBudgetCertificate.controlled,
+      sampleRandomPermutationsBudgetCertificate]
+  · norm_num [RandomPermutationsBudgetCertificate.budgetControlled,
+      sampleRandomPermutationsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List RandomPermutationsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleRandomPermutationsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleRandomPermutationsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch9.RandomPermutations

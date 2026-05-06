@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace RecurrenceAnalysis
+namespace AnalyticCombinatorics.PartA.Ch3.RecurrenceAnalysis
+
 
 open Finset Nat
 
@@ -175,4 +176,86 @@ theorem hanoi_recurrence :
     forall n : Fin 9, hanoi (n.val + 1) = 2 * hanoi n.val + 1 := by
   native_decide
 
-end RecurrenceAnalysis
+
+
+structure RecurrenceAnalysisBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def RecurrenceAnalysisBudgetCertificate.controlled
+    (c : RecurrenceAnalysisBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def RecurrenceAnalysisBudgetCertificate.budgetControlled
+    (c : RecurrenceAnalysisBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def RecurrenceAnalysisBudgetCertificate.Ready
+    (c : RecurrenceAnalysisBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def RecurrenceAnalysisBudgetCertificate.size
+    (c : RecurrenceAnalysisBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem recurrenceAnalysis_budgetCertificate_le_size
+    (c : RecurrenceAnalysisBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleRecurrenceAnalysisBudgetCertificate :
+    RecurrenceAnalysisBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleRecurrenceAnalysisBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RecurrenceAnalysisBudgetCertificate.controlled,
+      sampleRecurrenceAnalysisBudgetCertificate]
+  · norm_num [RecurrenceAnalysisBudgetCertificate.budgetControlled,
+      sampleRecurrenceAnalysisBudgetCertificate]
+
+example :
+    sampleRecurrenceAnalysisBudgetCertificate.certificateBudgetWindow ≤
+      sampleRecurrenceAnalysisBudgetCertificate.size := by
+  apply recurrenceAnalysis_budgetCertificate_le_size
+  constructor
+  · norm_num [RecurrenceAnalysisBudgetCertificate.controlled,
+      sampleRecurrenceAnalysisBudgetCertificate]
+  · norm_num [RecurrenceAnalysisBudgetCertificate.budgetControlled,
+      sampleRecurrenceAnalysisBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleRecurrenceAnalysisBudgetCertificate.Ready := by
+  constructor
+  · norm_num [RecurrenceAnalysisBudgetCertificate.controlled,
+      sampleRecurrenceAnalysisBudgetCertificate]
+  · norm_num [RecurrenceAnalysisBudgetCertificate.budgetControlled,
+      sampleRecurrenceAnalysisBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleRecurrenceAnalysisBudgetCertificate.certificateBudgetWindow ≤
+      sampleRecurrenceAnalysisBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List RecurrenceAnalysisBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleRecurrenceAnalysisBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleRecurrenceAnalysisBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch3.RecurrenceAnalysis

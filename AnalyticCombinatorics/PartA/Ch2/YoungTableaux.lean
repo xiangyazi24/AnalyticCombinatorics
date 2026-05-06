@@ -1,7 +1,8 @@
 import Mathlib.Tactic
 set_option linter.style.nativeDecide false
 
-namespace YoungTableaux
+namespace AnalyticCombinatorics.PartA.Ch2.YoungTableaux
+
 
 open Finset
 
@@ -34,7 +35,7 @@ def sytByHook {h : Nat} (rows : Fin h -> Nat) : Nat :=
 
 def oneRowShape (n : Nat) : Fin 1 -> Nat := ![n]
 
-def oneColumnShape (n : Nat) : Fin n -> Nat := fun _ => 1
+def oneColumnShape (n : Nat) : Fin n -> Nat := fun i => i.val - i.val + 1
 
 theorem one_row_shape_syt_count :
     ∀ i : Fin 8, sytByHook (oneRowShape (i.val + 1)) = 1 := by
@@ -175,4 +176,86 @@ theorem robinson_schensted_explicit_sums :
       sameShapePairCount partitionSytCounts5 = Nat.factorial 5 := by
   native_decide
 
-end YoungTableaux
+
+
+structure YoungTableauxBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def YoungTableauxBudgetCertificate.controlled
+    (c : YoungTableauxBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def YoungTableauxBudgetCertificate.budgetControlled
+    (c : YoungTableauxBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def YoungTableauxBudgetCertificate.Ready
+    (c : YoungTableauxBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def YoungTableauxBudgetCertificate.size
+    (c : YoungTableauxBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem youngTableaux_budgetCertificate_le_size
+    (c : YoungTableauxBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleYoungTableauxBudgetCertificate :
+    YoungTableauxBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleYoungTableauxBudgetCertificate.Ready := by
+  constructor
+  · norm_num [YoungTableauxBudgetCertificate.controlled,
+      sampleYoungTableauxBudgetCertificate]
+  · norm_num [YoungTableauxBudgetCertificate.budgetControlled,
+      sampleYoungTableauxBudgetCertificate]
+
+example :
+    sampleYoungTableauxBudgetCertificate.certificateBudgetWindow ≤
+      sampleYoungTableauxBudgetCertificate.size := by
+  apply youngTableaux_budgetCertificate_le_size
+  constructor
+  · norm_num [YoungTableauxBudgetCertificate.controlled,
+      sampleYoungTableauxBudgetCertificate]
+  · norm_num [YoungTableauxBudgetCertificate.budgetControlled,
+      sampleYoungTableauxBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleYoungTableauxBudgetCertificate.Ready := by
+  constructor
+  · norm_num [YoungTableauxBudgetCertificate.controlled,
+      sampleYoungTableauxBudgetCertificate]
+  · norm_num [YoungTableauxBudgetCertificate.budgetControlled,
+      sampleYoungTableauxBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleYoungTableauxBudgetCertificate.certificateBudgetWindow ≤
+      sampleYoungTableauxBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List YoungTableauxBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleYoungTableauxBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleYoungTableauxBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.YoungTableaux

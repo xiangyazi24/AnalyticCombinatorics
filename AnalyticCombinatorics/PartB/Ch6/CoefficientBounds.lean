@@ -8,8 +8,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace CoefficientBounds
-
+namespace AnalyticCombinatorics.PartB.Ch6.CoefficientBounds
 -- ============================================================
 -- §1  Catalan numbers and Darboux-type bounds
 -- ============================================================
@@ -179,4 +178,100 @@ example : catalan 10 * 12 < 4 * catalan 9 * 11 := by native_decide
 example : ∀ n : Fin 10, ((n : ℕ) + 1) * 2 ^ ((n : ℕ) + 1) > (n : ℕ) * 2 ^ (n : ℕ) := by
   native_decide
 
-end CoefficientBounds
+/-- Catalan Darboux bound sample at index eight. -/
+theorem catalan_darboux_bound_eight :
+    catalan 8 * 8 < 4 ^ 8 := by
+  native_decide
+
+/-- Negative-binomial coefficient sample for a third-order pole. -/
+theorem negBinCoeff_order_three_ten :
+    negBinCoeff 10 3 = 66 := by
+  native_decide
+
+/-- Bell coefficient table sample at index seven. -/
+theorem bellCoeff_seven :
+    bellCoeff 7 = 877 := by
+  native_decide
+
+
+structure CoefficientBoundsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def CoefficientBoundsBudgetCertificate.controlled
+    (c : CoefficientBoundsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def CoefficientBoundsBudgetCertificate.budgetControlled
+    (c : CoefficientBoundsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def CoefficientBoundsBudgetCertificate.Ready
+    (c : CoefficientBoundsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def CoefficientBoundsBudgetCertificate.size
+    (c : CoefficientBoundsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem coefficientBounds_budgetCertificate_le_size
+    (c : CoefficientBoundsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleCoefficientBoundsBudgetCertificate :
+    CoefficientBoundsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleCoefficientBoundsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CoefficientBoundsBudgetCertificate.controlled,
+      sampleCoefficientBoundsBudgetCertificate]
+  · norm_num [CoefficientBoundsBudgetCertificate.budgetControlled,
+      sampleCoefficientBoundsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleCoefficientBoundsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCoefficientBoundsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleCoefficientBoundsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [CoefficientBoundsBudgetCertificate.controlled,
+      sampleCoefficientBoundsBudgetCertificate]
+  · norm_num [CoefficientBoundsBudgetCertificate.budgetControlled,
+      sampleCoefficientBoundsBudgetCertificate]
+
+example :
+    sampleCoefficientBoundsBudgetCertificate.certificateBudgetWindow ≤
+      sampleCoefficientBoundsBudgetCertificate.size := by
+  apply coefficientBounds_budgetCertificate_le_size
+  constructor
+  · norm_num [CoefficientBoundsBudgetCertificate.controlled,
+      sampleCoefficientBoundsBudgetCertificate]
+  · norm_num [CoefficientBoundsBudgetCertificate.budgetControlled,
+      sampleCoefficientBoundsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List CoefficientBoundsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleCoefficientBoundsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleCoefficientBoundsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch6.CoefficientBounds

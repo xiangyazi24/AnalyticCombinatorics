@@ -14,8 +14,7 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace BijectionPrinciples
-
+namespace AnalyticCombinatorics.PartB.Ch5.BijectionPrinciples
 open Nat Finset
 
 -- ============================================================
@@ -594,4 +593,104 @@ example : Nat.choose 4 4 + Nat.choose 5 4 + Nat.choose 6 4 + Nat.choose 7 4
 
 example : Nat.choose 8 5 = 56 := by native_decide
 
-end BijectionPrinciples
+/-- Hockey-stick identity sample for `r = 3`, `n = 7`. -/
+theorem hockeyStick_three_seven :
+    Nat.choose 3 3 + Nat.choose 4 3 + Nat.choose 5 3
+      + Nat.choose 6 3 + Nat.choose 7 3 = Nat.choose 8 4 := by
+  native_decide
+
+/-- Even and odd binomial sums agree for `n = 8`. -/
+theorem binomial_even_odd_split_eight :
+    Nat.choose 8 0 + Nat.choose 8 2 + Nat.choose 8 4 +
+      Nat.choose 8 6 + Nat.choose 8 8 =
+        Nat.choose 8 1 + Nat.choose 8 3 + Nat.choose 8 5 +
+          Nat.choose 8 7 := by
+  native_decide
+
+/-- Boolean subset count for a twelve-element set. -/
+theorem boolean_subset_count_twelve :
+    2 ^ 12 = 4096 := by
+  native_decide
+
+
+structure BijectionPrinciplesBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def BijectionPrinciplesBudgetCertificate.controlled
+    (c : BijectionPrinciplesBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def BijectionPrinciplesBudgetCertificate.budgetControlled
+    (c : BijectionPrinciplesBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def BijectionPrinciplesBudgetCertificate.Ready
+    (c : BijectionPrinciplesBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def BijectionPrinciplesBudgetCertificate.size
+    (c : BijectionPrinciplesBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem bijectionPrinciples_budgetCertificate_le_size
+    (c : BijectionPrinciplesBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleBijectionPrinciplesBudgetCertificate :
+    BijectionPrinciplesBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+theorem sampleBudgetCertificate_ready :
+    sampleBijectionPrinciplesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [BijectionPrinciplesBudgetCertificate.controlled,
+      sampleBijectionPrinciplesBudgetCertificate]
+  · norm_num [BijectionPrinciplesBudgetCertificate.budgetControlled,
+      sampleBijectionPrinciplesBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleBijectionPrinciplesBudgetCertificate.certificateBudgetWindow ≤
+      sampleBijectionPrinciplesBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+example : sampleBijectionPrinciplesBudgetCertificate.Ready := by
+  constructor
+  · norm_num [BijectionPrinciplesBudgetCertificate.controlled,
+      sampleBijectionPrinciplesBudgetCertificate]
+  · norm_num [BijectionPrinciplesBudgetCertificate.budgetControlled,
+      sampleBijectionPrinciplesBudgetCertificate]
+
+example :
+    sampleBijectionPrinciplesBudgetCertificate.certificateBudgetWindow ≤
+      sampleBijectionPrinciplesBudgetCertificate.size := by
+  apply bijectionPrinciples_budgetCertificate_le_size
+  constructor
+  · norm_num [BijectionPrinciplesBudgetCertificate.controlled,
+      sampleBijectionPrinciplesBudgetCertificate]
+  · norm_num [BijectionPrinciplesBudgetCertificate.budgetControlled,
+      sampleBijectionPrinciplesBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+def budgetCertificateListReady (data : List BijectionPrinciplesBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleBijectionPrinciplesBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleBijectionPrinciplesBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch5.BijectionPrinciples

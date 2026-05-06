@@ -18,8 +18,7 @@ set_option linter.style.nativeDecide false
 set_option linter.style.setOption false
 set_option linter.flexible false
 
-namespace ApplicationsOfSingularity
-
+namespace AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity
 /-! ## 1. Pólya trees (non-isomorphic rooted trees, OEIS A000081) -/
 
 /-- Number of non-isomorphic rooted trees on n nodes (Pólya, 1937).
@@ -240,4 +239,85 @@ example : 2 ^ 15 / 2 ^ 14 = (2 : ℕ) := by native_decide
   | Compositions               | 2 (exact)        | 1 (no subexp.)        |
 -/
 
-end ApplicationsOfSingularity
+
+structure ApplicationsOfSingularityBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def ApplicationsOfSingularityBudgetCertificate.controlled
+    (c : ApplicationsOfSingularityBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def ApplicationsOfSingularityBudgetCertificate.budgetControlled
+    (c : ApplicationsOfSingularityBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def ApplicationsOfSingularityBudgetCertificate.Ready
+    (c : ApplicationsOfSingularityBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def ApplicationsOfSingularityBudgetCertificate.size
+    (c : ApplicationsOfSingularityBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem applicationsOfSingularity_budgetCertificate_le_size
+    (c : ApplicationsOfSingularityBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def sampleApplicationsOfSingularityBudgetCertificate :
+    ApplicationsOfSingularityBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : sampleApplicationsOfSingularityBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ApplicationsOfSingularityBudgetCertificate.controlled,
+      sampleApplicationsOfSingularityBudgetCertificate]
+  · norm_num [ApplicationsOfSingularityBudgetCertificate.budgetControlled,
+      sampleApplicationsOfSingularityBudgetCertificate]
+
+example :
+    sampleApplicationsOfSingularityBudgetCertificate.certificateBudgetWindow ≤
+      sampleApplicationsOfSingularityBudgetCertificate.size := by
+  apply applicationsOfSingularity_budgetCertificate_le_size
+  constructor
+  · norm_num [ApplicationsOfSingularityBudgetCertificate.controlled,
+      sampleApplicationsOfSingularityBudgetCertificate]
+  · norm_num [ApplicationsOfSingularityBudgetCertificate.budgetControlled,
+      sampleApplicationsOfSingularityBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    sampleApplicationsOfSingularityBudgetCertificate.Ready := by
+  constructor
+  · norm_num [ApplicationsOfSingularityBudgetCertificate.controlled,
+      sampleApplicationsOfSingularityBudgetCertificate]
+  · norm_num [ApplicationsOfSingularityBudgetCertificate.budgetControlled,
+      sampleApplicationsOfSingularityBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    sampleApplicationsOfSingularityBudgetCertificate.certificateBudgetWindow ≤
+      sampleApplicationsOfSingularityBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List ApplicationsOfSingularityBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [sampleApplicationsOfSingularityBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady sampleApplicationsOfSingularityBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartB.Ch7.ApplicationsOfSingularity

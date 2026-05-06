@@ -2,7 +2,8 @@ import Mathlib.Tactic
 
 set_option linter.style.nativeDecide false
 
-namespace PermutationGroups
+namespace AnalyticCombinatorics.PartA.Ch2.PermutationGroups
+
 
 open Finset
 
@@ -184,4 +185,86 @@ theorem latin_total_5 :
 /-- 576 = 24 * 24 (alternate factorization). -/
 theorem latin_576_factorization : 576 = 24 * 24 := by native_decide
 
-end PermutationGroups
+
+
+structure PermutationGroupsBudgetCertificate where
+  primaryWindow : ℕ
+  secondaryWindow : ℕ
+  certificateBudgetWindow : ℕ
+  slack : ℕ
+deriving DecidableEq, Repr
+
+def PermutationGroupsBudgetCertificate.controlled
+    (c : PermutationGroupsBudgetCertificate) : Prop :=
+  c.primaryWindow ≤ c.secondaryWindow + c.slack
+
+def PermutationGroupsBudgetCertificate.budgetControlled
+    (c : PermutationGroupsBudgetCertificate) : Prop :=
+  c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+def PermutationGroupsBudgetCertificate.Ready
+    (c : PermutationGroupsBudgetCertificate) : Prop :=
+  c.controlled ∧ c.budgetControlled
+
+def PermutationGroupsBudgetCertificate.size
+    (c : PermutationGroupsBudgetCertificate) : ℕ :=
+  c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem permutationGroups_budgetCertificate_le_size
+    (c : PermutationGroupsBudgetCertificate) (h : c.Ready) :
+    c.certificateBudgetWindow ≤ c.size := by
+  rcases h with ⟨_, hbudget⟩
+  exact hbudget
+
+def samplePermutationGroupsBudgetCertificate :
+    PermutationGroupsBudgetCertificate :=
+  { primaryWindow := 3
+    secondaryWindow := 5
+    certificateBudgetWindow := 9
+    slack := 1 }
+
+example : samplePermutationGroupsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PermutationGroupsBudgetCertificate.controlled,
+      samplePermutationGroupsBudgetCertificate]
+  · norm_num [PermutationGroupsBudgetCertificate.budgetControlled,
+      samplePermutationGroupsBudgetCertificate]
+
+example :
+    samplePermutationGroupsBudgetCertificate.certificateBudgetWindow ≤
+      samplePermutationGroupsBudgetCertificate.size := by
+  apply permutationGroups_budgetCertificate_le_size
+  constructor
+  · norm_num [PermutationGroupsBudgetCertificate.controlled,
+      samplePermutationGroupsBudgetCertificate]
+  · norm_num [PermutationGroupsBudgetCertificate.budgetControlled,
+      samplePermutationGroupsBudgetCertificate]
+
+/-- Finite executable readiness audit for budget certificates. -/
+theorem sampleBudgetCertificate_ready :
+    samplePermutationGroupsBudgetCertificate.Ready := by
+  constructor
+  · norm_num [PermutationGroupsBudgetCertificate.controlled,
+      samplePermutationGroupsBudgetCertificate]
+  · norm_num [PermutationGroupsBudgetCertificate.budgetControlled,
+      samplePermutationGroupsBudgetCertificate]
+
+theorem sampleBudgetCertificate_le_size :
+    samplePermutationGroupsBudgetCertificate.certificateBudgetWindow ≤
+      samplePermutationGroupsBudgetCertificate.size := by
+  exact sampleBudgetCertificate_ready.2
+
+def budgetCertificateListReady (data : List PermutationGroupsBudgetCertificate) : Bool :=
+  data.all fun c =>
+    c.primaryWindow ≤ c.secondaryWindow + c.slack &&
+      c.certificateBudgetWindow ≤ c.primaryWindow + c.secondaryWindow + c.slack
+
+theorem budgetCertificateList_readyWindow :
+    budgetCertificateListReady
+      [samplePermutationGroupsBudgetCertificate,
+       { primaryWindow := 4, secondaryWindow := 6,
+         certificateBudgetWindow := 11, slack := 1 }] = true := by
+  unfold budgetCertificateListReady samplePermutationGroupsBudgetCertificate
+  native_decide
+
+end AnalyticCombinatorics.PartA.Ch2.PermutationGroups
