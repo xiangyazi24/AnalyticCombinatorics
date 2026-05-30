@@ -8,6 +8,7 @@ import AnalyticCombinatorics.Ch1.OGF.ProductPower
 import AnalyticCombinatorics.Ch1.OGF.SequenceInverse
 import AnalyticCombinatorics.Ch1.OGF.SeqApplications
 import AnalyticCombinatorics.Ch1.OGF.Fibonacci
+import AnalyticCombinatorics.Ch1.OGF.Partitions
 
 /-!
 # AnalyticCombinatorics
@@ -44,6 +45,8 @@ Discipline (formalization-playbook):
   `1/(1 - a z)`); compositions as a special case of the sequence transfer.
 - `Ch1.OGF.Fibonacci` — compositions into parts `1,2` are counted by `F_{n+1}`,
   with OGF `1/(1 - z - z²)`.
+- `Ch1.OGF.Partitions` — integer partitions (MSET flagship): Euler's product
+  `P(z) = ∏_{m≥1} 1/(1 - z^m)`, via Mathlib's `Nat.Partition.genFun`.
 
 Modules are added here as they are proved.
 -/
