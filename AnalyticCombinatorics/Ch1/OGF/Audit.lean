@@ -1,6 +1,8 @@
 import AnalyticCombinatorics.Ch1.OGF.Defs
 import AnalyticCombinatorics.Ch1.OGF.Sum
 import AnalyticCombinatorics.Ch1.OGF.Product
+import AnalyticCombinatorics.Ch1.OGF.Sequence
+import AnalyticCombinatorics.Ch1.OGF.Compositions
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -21,5 +23,9 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms CombClass.counts_prod
 #print axioms CombClass.ogf_prod
 #print axioms CombClass.ogf_neutral_prod
+#print axioms CombClass.counts_seq
+#print axioms CombClass.counts_seq_posInt
+#print axioms CombClass.counts_seq_posInt_eq_compositions
+#print axioms CombClass.ogf_compositions
 
 end AnalyticCombinatorics.Ch1
