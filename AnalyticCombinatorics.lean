@@ -5,6 +5,7 @@ import AnalyticCombinatorics.Ch1.OGF.Sequence
 import AnalyticCombinatorics.Ch1.OGF.Compositions
 import AnalyticCombinatorics.Ch1.OGF.SeqFormula
 import AnalyticCombinatorics.Ch1.OGF.ProductPower
+import AnalyticCombinatorics.Ch1.OGF.SequenceInverse
 
 /-!
 # AnalyticCombinatorics
@@ -35,6 +36,8 @@ Discipline (formalization-playbook):
   `C(z)·(1 - ℙ(z)) = 1` (the end-to-end symbolic-method example).
 - `Ch1.OGF.ProductPower` — Cartesian power `(C^k)(z) = C(z)^k`; words of length
   `k` over an `a`-letter alphabet, OGF `(a z)^k`.
+- `Ch1.OGF.SequenceInverse` — the general sequence construction: for `C₀ = ∅`,
+  the functional equation `S = 1 + C·S` and `(seq C)(z)·(1 - C(z)) = 1`.
 
 Modules are added here as they are proved.
 -/
