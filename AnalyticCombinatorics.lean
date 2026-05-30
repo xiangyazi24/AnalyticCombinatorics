@@ -7,6 +7,7 @@ import AnalyticCombinatorics.Ch1.OGF.SeqFormula
 import AnalyticCombinatorics.Ch1.OGF.ProductPower
 import AnalyticCombinatorics.Ch1.OGF.SequenceInverse
 import AnalyticCombinatorics.Ch1.OGF.SeqApplications
+import AnalyticCombinatorics.Ch1.OGF.Fibonacci
 
 /-!
 # AnalyticCombinatorics
@@ -41,6 +42,8 @@ Discipline (formalization-playbook):
   the functional equation `S = 1 + C·S` and `(seq C)(z)·(1 - C(z)) = 1`.
 - `Ch1.OGF.SeqApplications` — words over a finite alphabet (`a^n` words, OGF
   `1/(1 - a z)`); compositions as a special case of the sequence transfer.
+- `Ch1.OGF.Fibonacci` — compositions into parts `1,2` are counted by `F_{n+1}`,
+  with OGF `1/(1 - z - z²)`.
 
 Modules are added here as they are proved.
 -/

@@ -7,6 +7,7 @@ import AnalyticCombinatorics.Ch1.OGF.SeqFormula
 import AnalyticCombinatorics.Ch1.OGF.ProductPower
 import AnalyticCombinatorics.Ch1.OGF.SequenceInverse
 import AnalyticCombinatorics.Ch1.OGF.SeqApplications
+import AnalyticCombinatorics.Ch1.OGF.Fibonacci
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -40,5 +41,7 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms counts_seq_alphabet
 #print axioms ogf_seq_alphabet
 #print axioms ogf_seq_posInt
+#print axioms counts_seq_parts12
+#print axioms CombClass.ogf_seq_parts12
 
 end AnalyticCombinatorics.Ch1
