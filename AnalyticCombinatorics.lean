@@ -9,6 +9,7 @@ import AnalyticCombinatorics.Ch1.OGF.SequenceInverse
 import AnalyticCombinatorics.Ch1.OGF.SeqApplications
 import AnalyticCombinatorics.Ch1.OGF.Fibonacci
 import AnalyticCombinatorics.Ch1.OGF.Partitions
+import AnalyticCombinatorics.Ch1.OGF.Mset
 
 /-!
 # AnalyticCombinatorics
@@ -47,6 +48,8 @@ Discipline (formalization-playbook):
   with OGF `1/(1 - z - z²)`.
 - `Ch1.OGF.Partitions` — integer partitions (MSET flagship): Euler's product
   `P(z) = ∏_{m≥1} 1/(1 - z^m)`, via Mathlib's `Nat.Partition.genFun`.
+- `Ch1.OGF.Mset` — general multiset construction (counts layer): `MSET(C)` model,
+  `MSET(C)ₙ = ∑_p ∏_m multichoose(Cₘ, mult_m p) = genFun(…).coeff n`.
 
 Modules are added here as they are proved.
 -/
