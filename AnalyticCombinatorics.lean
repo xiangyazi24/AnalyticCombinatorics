@@ -4,6 +4,7 @@ import AnalyticCombinatorics.Ch1.OGF.Product
 import AnalyticCombinatorics.Ch1.OGF.Sequence
 import AnalyticCombinatorics.Ch1.OGF.Compositions
 import AnalyticCombinatorics.Ch1.OGF.SeqFormula
+import AnalyticCombinatorics.Ch1.OGF.ProductPower
 
 /-!
 # AnalyticCombinatorics
@@ -32,6 +33,8 @@ Discipline (formalization-playbook):
 - `Ch1.OGF.Compositions` — OGF of integer compositions: `C(z)·(1 - 2z) = 1 - z`.
 - `Ch1.OGF.SeqFormula` — `ℙ(z) = z/(1-z)`; the sequence formula for compositions
   `C(z)·(1 - ℙ(z)) = 1` (the end-to-end symbolic-method example).
+- `Ch1.OGF.ProductPower` — Cartesian power `(C^k)(z) = C(z)^k`; words of length
+  `k` over an `a`-letter alphabet, OGF `(a z)^k`.
 
 Modules are added here as they are proved.
 -/
