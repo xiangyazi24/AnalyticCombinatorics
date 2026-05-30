@@ -6,6 +6,7 @@ import AnalyticCombinatorics.Ch1.OGF.Compositions
 import AnalyticCombinatorics.Ch1.OGF.SeqFormula
 import AnalyticCombinatorics.Ch1.OGF.ProductPower
 import AnalyticCombinatorics.Ch1.OGF.SequenceInverse
+import AnalyticCombinatorics.Ch1.OGF.SeqApplications
 
 /-!
 # AnalyticCombinatorics
@@ -38,6 +39,8 @@ Discipline (formalization-playbook):
   `k` over an `a`-letter alphabet, OGF `(a z)^k`.
 - `Ch1.OGF.SequenceInverse` — the general sequence construction: for `C₀ = ∅`,
   the functional equation `S = 1 + C·S` and `(seq C)(z)·(1 - C(z)) = 1`.
+- `Ch1.OGF.SeqApplications` — words over a finite alphabet (`a^n` words, OGF
+  `1/(1 - a z)`); compositions as a special case of the sequence transfer.
 
 Modules are added here as they are proved.
 -/

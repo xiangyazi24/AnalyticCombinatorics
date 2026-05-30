@@ -81,7 +81,7 @@ private lemma consSeq_bijective (n : ℕ) :
 
 /-- The convolution recursion: a nonempty sequence is a first component (size
 `k+1`) followed by a sequence of the remaining size. -/
-private lemma counts_seq_succ (n : ℕ) :
+lemma counts_seq_succ (n : ℕ) :
     C.seq.counts (n + 1)
       = ∑ k : Fin (n + 1), C.counts ((k : ℕ) + 1) * C.seq.counts (n - (k : ℕ)) := by
   rw [counts_seq_eq_listProd,
@@ -93,7 +93,7 @@ private lemma counts_seq_succ (n : ℕ) :
   simp_rw [prod_consSeq]
   rw [← Finset.mul_sum, ← counts_seq_eq_listProd]
 
-private lemma counts_seq_zero : C.seq.counts 0 = 1 := by
+lemma counts_seq_zero : C.seq.counts 0 = 1 := by
   rw [counts_seq_eq_listProd]
   have h : ∀ c : Composition 0, (c.blocks.map C.counts).prod = 1 := by
     intro c
