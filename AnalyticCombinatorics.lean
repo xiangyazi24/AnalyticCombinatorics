@@ -3,6 +3,7 @@ import AnalyticCombinatorics.Ch1.OGF.Sum
 import AnalyticCombinatorics.Ch1.OGF.Product
 import AnalyticCombinatorics.Ch1.OGF.Sequence
 import AnalyticCombinatorics.Ch1.OGF.Compositions
+import AnalyticCombinatorics.Ch1.OGF.SeqFormula
 
 /-!
 # AnalyticCombinatorics
@@ -29,6 +30,8 @@ Discipline (formalization-playbook):
 - `Ch1.OGF.Sequence` — sequence construction; `(SEQ C)ₙ = ∑_c ∏ᵢ C_{cᵢ}`;
   integer compositions as sequences of positive integers (`= 2^{n-1}`).
 - `Ch1.OGF.Compositions` — OGF of integer compositions: `C(z)·(1 - 2z) = 1 - z`.
+- `Ch1.OGF.SeqFormula` — `ℙ(z) = z/(1-z)`; the sequence formula for compositions
+  `C(z)·(1 - ℙ(z)) = 1` (the end-to-end symbolic-method example).
 
 Modules are added here as they are proved.
 -/
