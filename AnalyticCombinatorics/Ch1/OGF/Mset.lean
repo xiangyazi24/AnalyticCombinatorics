@@ -68,4 +68,32 @@ theorem CombClass.ogf_mset_eq_genFun (C : CombClass) :
   refine Finset.prod_congr rfl fun m _ => ?_
   rw [Multiset.toFinsupp_apply]
 
+section EulerProduct
+
+open scoped PowerSeries.WithPiTopology
+open PowerSeries.WithPiTopology
+
+local instance instTopRatMset : TopologicalSpace ℚ := ⊥
+local instance instDiscRatMset : DiscreteTopology ℚ := ⟨rfl⟩
+
+/-- **The multiset construction as an infinite product** (F&S Theorem I.1): for a
+class `C` with `C₀=∅`, `MSET(C)(z) = ∏_{i} (∑_{k} multichoose(Cᵢ₊₁, k) z^{(i+1)k})`,
+i.e. `∏_{m≥1} (1 - z^m)^{-Cₘ}` (Euler's product in series form). Generalizes
+`ogf_partitions` (`Cₘ=1`, `multichoose 1 k = 1`). -/
+theorem CombClass.ogf_mset (C : CombClass) :
+    C.mset.ogf
+      = ∏' i, ∑' k, ((C.counts (i + 1)).multichoose k : ℚ) • (X : ℚ⟦X⟧) ^ ((i + 1) * k) := by
+  rw [CombClass.ogf_mset_eq_genFun, Nat.Partition.genFun_eq_tprod]
+  refine tprod_congr fun i => ?_
+  have hshift : Summable
+      (fun j => ((C.counts (i + 1)).multichoose (j + 1) : ℚ) • (X : ℚ⟦X⟧) ^ ((i + 1) * (j + 1))) :=
+    Nat.Partition.summable_genFun_term (fun m j => ((C.counts m).multichoose j : ℚ)) i
+  have hsumm : Summable
+      (fun k => ((C.counts (i + 1)).multichoose k : ℚ) • (X : ℚ⟦X⟧) ^ ((i + 1) * k)) :=
+    (summable_nat_add_iff 1).mp hshift
+  rw [hsumm.tsum_eq_zero_add]
+  simp [Nat.multichoose_zero_right]
+
+end EulerProduct
+
 end AnalyticCombinatorics.Ch1

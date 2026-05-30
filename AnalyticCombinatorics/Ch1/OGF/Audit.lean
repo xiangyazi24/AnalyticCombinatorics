@@ -49,5 +49,6 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms CombClass.ogf_partitions
 #print axioms CombClass.counts_mset
 #print axioms CombClass.ogf_mset_eq_genFun
+#print axioms CombClass.ogf_mset
 
 end AnalyticCombinatorics.Ch1

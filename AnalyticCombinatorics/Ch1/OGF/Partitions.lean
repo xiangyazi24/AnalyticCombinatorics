@@ -44,8 +44,8 @@ section EulerProduct
 open scoped PowerSeries.WithPiTopology
 open PowerSeries.WithPiTopology
 
-local instance : TopologicalSpace ℚ := ⊥
-local instance : DiscreteTopology ℚ := ⟨rfl⟩
+local instance instTopRatPartitions : TopologicalSpace ℚ := ⊥
+local instance instDiscRatPartitions : DiscreteTopology ℚ := ⟨rfl⟩
 
 /-- **The partition generating function as an infinite product** (F&S §I.3,
 Euler): `P(z) = ∏_{i} (∑_{j} z^{(i+1) j})`, i.e. `∏_{m≥1} 1/(1 - z^m)`. -/
