@@ -88,7 +88,7 @@ Discipline (formalization-playbook):
 - `Ch2.EGF.LabelledSetExp` — **`SET(C)(z) = exp(C(z))`** (the exponential formula),
   via the ODE + uniqueness.
 - `Ch2.EGF.LabelledSeq` — labelled sequence: `SEQ(C)(z)·(1 - C(z)) = 1`, i.e. `1/(1-C(z))`.
-- `Ch2.EGF.Applications` — set partitions/Bell `exp(e^z-1)`; surjections `1/(2-e^z)`.
+- `Ch2.EGF.Applications` — Bell `exp(e^z-1)`; surjections `1/(2-e^z)`; involutions `exp(z+z²/2)`.
 - `Ch2.EGF.LabelledCyc` — the labelled cycle construction `CYC(C)' = C'·SEQ(C)`
   (= `C'(z)/(1-C(z))`, i.e. `log(1/(1-C(z)))`), with `CYC(0)=0` (ODE characterization).
 
