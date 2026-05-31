@@ -26,6 +26,7 @@ import AnalyticCombinatorics.Ch2.EGF.Applications
 import AnalyticCombinatorics.Ch2.EGF.LabelledCyc
 import AnalyticCombinatorics.Ch3.BGF.Defs
 import AnalyticCombinatorics.Ch3.BGF.Moments
+import AnalyticCombinatorics.Ch3.BGF.Variance
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -94,6 +95,9 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms ParamClass.coeff_factorialMoment1
 #print axioms ParamClass.mean_eq
 #print axioms ParamClass.evalU1_compositionsByParts
+#print axioms ParamClass.coeff_rawMoment2
+#print axioms ParamClass.variance_eq
+#print axioms ParamClass.bgf_compositionsByParts_closed
 #print axioms CombClass.egf_lcyc_ode
 #print axioms CombClass.egf_lcyc_unique
 #print axioms CombClass.constantCoeff_egf_lcyc
