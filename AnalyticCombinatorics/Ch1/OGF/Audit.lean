@@ -24,6 +24,7 @@ import AnalyticCombinatorics.Ch2.EGF.LabelledSetExp
 import AnalyticCombinatorics.Ch2.EGF.LabelledSeq
 import AnalyticCombinatorics.Ch2.EGF.Applications
 import AnalyticCombinatorics.Ch2.EGF.LabelledCyc
+import AnalyticCombinatorics.Ch3.BGF.Defs
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -85,6 +86,10 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms CombClass.egf_bell
 #print axioms CombClass.egf_surjections
 #print axioms CombClass.egf_involutions
+#print axioms ParamClass.coeff_bgf
+#print axioms ParamClass.bgf_sum
+#print axioms ParamClass.bgf_prod
+#print axioms ParamClass.evalU1_bgf
 #print axioms CombClass.egf_lcyc_ode
 #print axioms CombClass.egf_lcyc_unique
 #print axioms CombClass.constantCoeff_egf_lcyc

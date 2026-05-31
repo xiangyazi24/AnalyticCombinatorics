@@ -24,6 +24,7 @@ import AnalyticCombinatorics.Ch2.EGF.LabelledSetExp
 import AnalyticCombinatorics.Ch2.EGF.LabelledSeq
 import AnalyticCombinatorics.Ch2.EGF.Applications
 import AnalyticCombinatorics.Ch2.EGF.LabelledCyc
+import AnalyticCombinatorics.Ch3.BGF.Defs
 
 /-!
 # AnalyticCombinatorics
@@ -91,6 +92,11 @@ Discipline (formalization-playbook):
 - `Ch2.EGF.Applications` — Bell `exp(e^z-1)`; surjections `1/(2-e^z)`; involutions `exp(z+z²/2)`.
 - `Ch2.EGF.LabelledCyc` — the labelled cycle construction `CYC(C)' = C'·SEQ(C)`
   (= `C'(z)/(1-C(z))`, i.e. `log(1/(1-C(z)))`), with `CYC(0)=0` (ODE characterization).
+
+## Part A, Chapter III — Combinatorial parameters (bivariate GF)
+
+- `Ch3.BGF.Defs` — parameterized classes; bivariate GF `F(z,u)=∑ b_{n,k} z^n u^k`
+  over `ℚ[u]⟦z⟧`; sum/product transfers; `evalU 1 = OGF`.
 
 Modules are added here as they are proved.
 -/
