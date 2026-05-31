@@ -10,6 +10,10 @@ import AnalyticCombinatorics.Ch1.OGF.SeqApplications
 import AnalyticCombinatorics.Ch1.OGF.Fibonacci
 import AnalyticCombinatorics.Ch1.OGF.Partitions
 import AnalyticCombinatorics.Ch1.OGF.Mset
+import AnalyticCombinatorics.Ch1.OGF.Pset
+import AnalyticCombinatorics.Ch1.OGF.DistinctPartitions
+import AnalyticCombinatorics.Ch1.OGF.Pointing
+import AnalyticCombinatorics.Ch2.EGF.Defs
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -54,5 +58,7 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms CombClass.ogf_pset
 #print axioms CombClass.ogf_pset_posInt
 #print axioms CombClass.ogf_pointing
+#print axioms CombClass.egf_permutations
+#print axioms CombClass.egf_setClass
 
 end AnalyticCombinatorics.Ch1

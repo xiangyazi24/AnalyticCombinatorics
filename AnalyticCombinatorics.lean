@@ -13,6 +13,7 @@ import AnalyticCombinatorics.Ch1.OGF.Mset
 import AnalyticCombinatorics.Ch1.OGF.Pset
 import AnalyticCombinatorics.Ch1.OGF.DistinctPartitions
 import AnalyticCombinatorics.Ch1.OGF.Pointing
+import AnalyticCombinatorics.Ch2.EGF.Defs
 
 /-!
 # AnalyticCombinatorics
@@ -59,6 +60,11 @@ Discipline (formalization-playbook):
 - `Ch1.OGF.DistinctPartitions` — partitions into distinct parts `= PSET(ℙ)`, with
   generating function `∏_{m≥1} (1 + z^m)`.
 - `Ch1.OGF.Pointing` — the pointing construction `Θ(C)(z) = z·C'(z)` (counts `n·Cₙ`).
+
+## Part A, Chapter II — Labelled structures (EGF)
+
+- `Ch2.EGF.Defs` — exponential generating functions `A(z) = ∑ Aₙ zⁿ/n!`;
+  permutations (`1/(1-z)`) and the set class (`e^z`).
 
 Modules are added here as they are proved.
 -/
