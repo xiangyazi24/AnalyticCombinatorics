@@ -22,6 +22,7 @@ import AnalyticCombinatorics.Ch2.EGF.SetExp
 import AnalyticCombinatorics.Ch2.EGF.LabelledSetOde
 import AnalyticCombinatorics.Ch2.EGF.LabelledSetExp
 import AnalyticCombinatorics.Ch2.EGF.LabelledSeq
+import AnalyticCombinatorics.Ch2.EGF.Applications
 
 /-!
 # AnalyticCombinatorics
@@ -86,6 +87,7 @@ Discipline (formalization-playbook):
 - `Ch2.EGF.LabelledSetExp` — **`SET(C)(z) = exp(C(z))`** (the exponential formula),
   via the ODE + uniqueness.
 - `Ch2.EGF.LabelledSeq` — labelled sequence: `SEQ(C)(z)·(1 - C(z)) = 1`, i.e. `1/(1-C(z))`.
+- `Ch2.EGF.Applications` — set partitions/Bell `exp(e^z-1)`; surjections `1/(2-e^z)`.
 
 Modules are added here as they are proved.
 -/
