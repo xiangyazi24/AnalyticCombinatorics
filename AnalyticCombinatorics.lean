@@ -16,6 +16,7 @@ import AnalyticCombinatorics.Ch1.OGF.Pointing
 import AnalyticCombinatorics.Ch2.EGF.Defs
 import AnalyticCombinatorics.Ch2.EGF.LabelledProduct
 import AnalyticCombinatorics.Ch2.EGF.LabelledSum
+import AnalyticCombinatorics.Ch2.EGF.LabelledPower
 
 /-!
 # AnalyticCombinatorics
@@ -70,6 +71,7 @@ Discipline (formalization-playbook):
 - `Ch2.EGF.LabelledProduct` — the labelled product: `(A ⋆ B)(z) = A(z)·B(z)`
   (binomial convolution `(A⋆B)ₙ = ∑ₖ C(n,k)·Aₖ·B_{n-k}`).
 - `Ch2.EGF.LabelledSum` — the labelled sum: `(A + B)(z) = A(z) + B(z)`.
+- `Ch2.EGF.LabelledPower` — labelled power `(C^{⋆k})(z) = C(z)^k`.
 
 Modules are added here as they are proved.
 -/
