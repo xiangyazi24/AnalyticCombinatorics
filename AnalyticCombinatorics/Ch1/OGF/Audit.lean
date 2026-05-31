@@ -14,6 +14,7 @@ import AnalyticCombinatorics.Ch1.OGF.Pset
 import AnalyticCombinatorics.Ch1.OGF.DistinctPartitions
 import AnalyticCombinatorics.Ch1.OGF.Pointing
 import AnalyticCombinatorics.Ch2.EGF.Defs
+import AnalyticCombinatorics.Ch2.EGF.LabelledProduct
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -60,5 +61,7 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms CombClass.ogf_pointing
 #print axioms CombClass.egf_permutations
 #print axioms CombClass.egf_setClass
+#print axioms CombClass.counts_lprod
+#print axioms CombClass.egf_lprod
 
 end AnalyticCombinatorics.Ch1
