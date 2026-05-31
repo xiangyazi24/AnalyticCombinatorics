@@ -19,6 +19,7 @@ import AnalyticCombinatorics.Ch2.EGF.LabelledSum
 import AnalyticCombinatorics.Ch2.EGF.LabelledPower
 import AnalyticCombinatorics.Ch2.EGF.LabelledSet
 import AnalyticCombinatorics.Ch2.EGF.SetExp
+import AnalyticCombinatorics.Ch2.EGF.LabelledSetOde
 
 /-!
 # AnalyticCombinatorics
@@ -78,6 +79,8 @@ Discipline (formalization-playbook):
   `SET(C)ₙ = ∑_π ∏_{B∈π} C_{|B|}` over set partitions.
 - `Ch2.EGF.SetExp` — ODE machinery toward `SET(C)(z)=exp(C(z))`: `exp(C(z))` solves
   `F'=C'·F`, and that ODE has a unique solution.
+- `Ch2.EGF.LabelledSetOde` — the combinatorial ODE `SET(C)'=C'·SET(C)` (pointing
+  bijection on set partitions); the recurrence `SET_{n+1}=∑ C(n,i)·C_{i+1}·SET_{n-i}`.
 
 Modules are added here as they are proved.
 -/
