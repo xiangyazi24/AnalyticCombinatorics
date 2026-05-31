@@ -21,6 +21,7 @@ import AnalyticCombinatorics.Ch2.EGF.LabelledSet
 import AnalyticCombinatorics.Ch2.EGF.SetExp
 import AnalyticCombinatorics.Ch2.EGF.LabelledSetOde
 import AnalyticCombinatorics.Ch2.EGF.LabelledSetExp
+import AnalyticCombinatorics.Ch2.EGF.LabelledSeq
 
 /-!
 # AnalyticCombinatorics
@@ -84,6 +85,7 @@ Discipline (formalization-playbook):
   bijection on set partitions); the recurrence `SET_{n+1}=∑ C(n,i)·C_{i+1}·SET_{n-i}`.
 - `Ch2.EGF.LabelledSetExp` — **`SET(C)(z) = exp(C(z))`** (the exponential formula),
   via the ODE + uniqueness.
+- `Ch2.EGF.LabelledSeq` — labelled sequence: `SEQ(C)(z)·(1 - C(z)) = 1`, i.e. `1/(1-C(z))`.
 
 Modules are added here as they are proved.
 -/
