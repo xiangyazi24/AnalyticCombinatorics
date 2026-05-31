@@ -11,6 +11,7 @@ import AnalyticCombinatorics.Ch1.OGF.Fibonacci
 import AnalyticCombinatorics.Ch1.OGF.Partitions
 import AnalyticCombinatorics.Ch1.OGF.Mset
 import AnalyticCombinatorics.Ch1.OGF.Pset
+import AnalyticCombinatorics.Ch1.OGF.DistinctPartitions
 
 /-!
 # AnalyticCombinatorics
@@ -54,6 +55,8 @@ Discipline (formalization-playbook):
   `MSET(C)(z) = ∏_{m≥1} (1 - z^m)^{-Cₘ}`.
 - `Ch1.OGF.Pset` — general powerset construction `PSET(C)`: sets of C-objects, with
   `PSET(C)(z) = ∏_{m≥1} (1 + z^m)^{Cₘ}`.
+- `Ch1.OGF.DistinctPartitions` — partitions into distinct parts `= PSET(ℙ)`, with
+  generating function `∏_{m≥1} (1 + z^m)`.
 
 Modules are added here as they are proved.
 -/
