@@ -53,5 +53,6 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms CombClass.counts_pset
 #print axioms CombClass.ogf_pset
 #print axioms CombClass.ogf_pset_posInt
+#print axioms CombClass.ogf_pointing
 
 end AnalyticCombinatorics.Ch1

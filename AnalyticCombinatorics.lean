@@ -12,6 +12,7 @@ import AnalyticCombinatorics.Ch1.OGF.Partitions
 import AnalyticCombinatorics.Ch1.OGF.Mset
 import AnalyticCombinatorics.Ch1.OGF.Pset
 import AnalyticCombinatorics.Ch1.OGF.DistinctPartitions
+import AnalyticCombinatorics.Ch1.OGF.Pointing
 
 /-!
 # AnalyticCombinatorics
@@ -57,6 +58,7 @@ Discipline (formalization-playbook):
   `PSET(C)(z) = ∏_{m≥1} (1 + z^m)^{Cₘ}`.
 - `Ch1.OGF.DistinctPartitions` — partitions into distinct parts `= PSET(ℙ)`, with
   generating function `∏_{m≥1} (1 + z^m)`.
+- `Ch1.OGF.Pointing` — the pointing construction `Θ(C)(z) = z·C'(z)` (counts `n·Cₙ`).
 
 Modules are added here as they are proved.
 -/
