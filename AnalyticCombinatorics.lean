@@ -23,6 +23,7 @@ import AnalyticCombinatorics.Ch2.EGF.LabelledSetOde
 import AnalyticCombinatorics.Ch2.EGF.LabelledSetExp
 import AnalyticCombinatorics.Ch2.EGF.LabelledSeq
 import AnalyticCombinatorics.Ch2.EGF.Applications
+import AnalyticCombinatorics.Ch2.EGF.LabelledCyc
 
 /-!
 # AnalyticCombinatorics
@@ -88,6 +89,8 @@ Discipline (formalization-playbook):
   via the ODE + uniqueness.
 - `Ch2.EGF.LabelledSeq` — labelled sequence: `SEQ(C)(z)·(1 - C(z)) = 1`, i.e. `1/(1-C(z))`.
 - `Ch2.EGF.Applications` — set partitions/Bell `exp(e^z-1)`; surjections `1/(2-e^z)`.
+- `Ch2.EGF.LabelledCyc` — the labelled cycle construction `CYC(C)' = C'·SEQ(C)`
+  (= `C'(z)/(1-C(z))`, i.e. `log(1/(1-C(z)))`), with `CYC(0)=0` (ODE characterization).
 
 Modules are added here as they are proved.
 -/
