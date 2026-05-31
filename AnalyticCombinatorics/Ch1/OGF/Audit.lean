@@ -15,6 +15,7 @@ import AnalyticCombinatorics.Ch1.OGF.DistinctPartitions
 import AnalyticCombinatorics.Ch1.OGF.Pointing
 import AnalyticCombinatorics.Ch2.EGF.Defs
 import AnalyticCombinatorics.Ch2.EGF.LabelledProduct
+import AnalyticCombinatorics.Ch2.EGF.LabelledSum
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -63,5 +64,6 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms CombClass.egf_setClass
 #print axioms CombClass.counts_lprod
 #print axioms CombClass.egf_lprod
+#print axioms CombClass.egf_sum
 
 end AnalyticCombinatorics.Ch1

@@ -15,6 +15,7 @@ import AnalyticCombinatorics.Ch1.OGF.DistinctPartitions
 import AnalyticCombinatorics.Ch1.OGF.Pointing
 import AnalyticCombinatorics.Ch2.EGF.Defs
 import AnalyticCombinatorics.Ch2.EGF.LabelledProduct
+import AnalyticCombinatorics.Ch2.EGF.LabelledSum
 
 /-!
 # AnalyticCombinatorics
@@ -68,6 +69,7 @@ Discipline (formalization-playbook):
   permutations (`1/(1-z)`) and the set class (`e^z`).
 - `Ch2.EGF.LabelledProduct` — the labelled product: `(A ⋆ B)(z) = A(z)·B(z)`
   (binomial convolution `(A⋆B)ₙ = ∑ₖ C(n,k)·Aₖ·B_{n-k}`).
+- `Ch2.EGF.LabelledSum` — the labelled sum: `(A + B)(z) = A(z) + B(z)`.
 
 Modules are added here as they are proved.
 -/
