@@ -13,6 +13,7 @@ import AnalyticCombinatorics.Ch1.OGF.Mset
 import AnalyticCombinatorics.Ch1.OGF.Pset
 import AnalyticCombinatorics.Ch1.OGF.DistinctPartitions
 import AnalyticCombinatorics.Ch1.OGF.Pointing
+import AnalyticCombinatorics.Ch1.OGF.CycleOGF
 import AnalyticCombinatorics.Ch2.EGF.Defs
 import AnalyticCombinatorics.Ch2.EGF.LabelledProduct
 import AnalyticCombinatorics.Ch2.EGF.LabelledSum
@@ -101,5 +102,8 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms CombClass.egf_lcyc_ode
 #print axioms CombClass.egf_lcyc_unique
 #print axioms CombClass.constantCoeff_egf_lcyc
+#print axioms CombClass.ogf_cyc
+#print axioms counts_necklaces_k
+#print axioms card_fixedBy_rotation
 
 end AnalyticCombinatorics.Ch1

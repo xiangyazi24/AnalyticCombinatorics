@@ -13,6 +13,9 @@ import AnalyticCombinatorics.Ch1.OGF.Mset
 import AnalyticCombinatorics.Ch1.OGF.Pset
 import AnalyticCombinatorics.Ch1.OGF.DistinctPartitions
 import AnalyticCombinatorics.Ch1.OGF.Pointing
+import AnalyticCombinatorics.Ch1.OGF.CycleModel
+import AnalyticCombinatorics.Ch1.OGF.CycleBurnside
+import AnalyticCombinatorics.Ch1.OGF.CycleOGF
 import AnalyticCombinatorics.Ch2.EGF.Defs
 import AnalyticCombinatorics.Ch2.EGF.LabelledProduct
 import AnalyticCombinatorics.Ch2.EGF.LabelledSum
