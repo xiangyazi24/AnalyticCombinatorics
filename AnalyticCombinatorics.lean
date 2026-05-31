@@ -17,6 +17,7 @@ import AnalyticCombinatorics.Ch2.EGF.Defs
 import AnalyticCombinatorics.Ch2.EGF.LabelledProduct
 import AnalyticCombinatorics.Ch2.EGF.LabelledSum
 import AnalyticCombinatorics.Ch2.EGF.LabelledPower
+import AnalyticCombinatorics.Ch2.EGF.LabelledSet
 
 /-!
 # AnalyticCombinatorics
@@ -72,6 +73,8 @@ Discipline (formalization-playbook):
   (binomial convolution `(A⋆B)ₙ = ∑ₖ C(n,k)·Aₖ·B_{n-k}`).
 - `Ch2.EGF.LabelledSum` — the labelled sum: `(A + B)(z) = A(z) + B(z)`.
 - `Ch2.EGF.LabelledPower` — labelled power `(C^{⋆k})(z) = C(z)^k`.
+- `Ch2.EGF.LabelledSet` — labelled set construction `SET(C)` (counts layer):
+  `SET(C)ₙ = ∑_π ∏_{B∈π} C_{|B|}` over set partitions.
 
 Modules are added here as they are proved.
 -/

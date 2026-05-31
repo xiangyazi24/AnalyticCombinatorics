@@ -17,6 +17,7 @@ import AnalyticCombinatorics.Ch2.EGF.Defs
 import AnalyticCombinatorics.Ch2.EGF.LabelledProduct
 import AnalyticCombinatorics.Ch2.EGF.LabelledSum
 import AnalyticCombinatorics.Ch2.EGF.LabelledPower
+import AnalyticCombinatorics.Ch2.EGF.LabelledSet
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -67,5 +68,6 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms CombClass.egf_lprod
 #print axioms CombClass.egf_sum
 #print axioms CombClass.egf_lpow
+#print axioms CombClass.counts_set
 
 end AnalyticCombinatorics.Ch1
