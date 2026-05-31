@@ -10,6 +10,7 @@ import AnalyticCombinatorics.Ch1.OGF.SeqApplications
 import AnalyticCombinatorics.Ch1.OGF.Fibonacci
 import AnalyticCombinatorics.Ch1.OGF.Partitions
 import AnalyticCombinatorics.Ch1.OGF.Mset
+import AnalyticCombinatorics.Ch1.OGF.Pset
 
 /-!
 # AnalyticCombinatorics
@@ -51,6 +52,8 @@ Discipline (formalization-playbook):
 - `Ch1.OGF.Mset` — general multiset construction `MSET(C)`: counts layer
   `MSET(C)ₙ = ∑_p ∏_m multichoose(Cₘ, mult_m p)`, and the Euler product OGF
   `MSET(C)(z) = ∏_{m≥1} (1 - z^m)^{-Cₘ}`.
+- `Ch1.OGF.Pset` — general powerset construction `PSET(C)`: sets of C-objects, with
+  `PSET(C)(z) = ∏_{m≥1} (1 + z^m)^{Cₘ}`.
 
 Modules are added here as they are proved.
 -/
