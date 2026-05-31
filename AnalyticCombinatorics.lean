@@ -25,6 +25,7 @@ import AnalyticCombinatorics.Ch2.EGF.LabelledSeq
 import AnalyticCombinatorics.Ch2.EGF.Applications
 import AnalyticCombinatorics.Ch2.EGF.LabelledCyc
 import AnalyticCombinatorics.Ch3.BGF.Defs
+import AnalyticCombinatorics.Ch3.BGF.Moments
 
 /-!
 # AnalyticCombinatorics
@@ -97,6 +98,7 @@ Discipline (formalization-playbook):
 
 - `Ch3.BGF.Defs` — parameterized classes; bivariate GF `F(z,u)=∑ b_{n,k} z^n u^k`
   over `ℚ[u]⟦z⟧`; sum/product transfers; `evalU 1 = OGF`.
+- `Ch3.BGF.Moments` — mean/variance via `∂_u` at `u=1`; compositions-by-#parts flagship.
 
 Modules are added here as they are proved.
 -/
