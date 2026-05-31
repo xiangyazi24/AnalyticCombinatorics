@@ -18,6 +18,7 @@ import AnalyticCombinatorics.Ch2.EGF.LabelledProduct
 import AnalyticCombinatorics.Ch2.EGF.LabelledSum
 import AnalyticCombinatorics.Ch2.EGF.LabelledPower
 import AnalyticCombinatorics.Ch2.EGF.LabelledSet
+import AnalyticCombinatorics.Ch2.EGF.SetExp
 
 /-!
 # AnalyticCombinatorics
@@ -75,6 +76,8 @@ Discipline (formalization-playbook):
 - `Ch2.EGF.LabelledPower` — labelled power `(C^{⋆k})(z) = C(z)^k`.
 - `Ch2.EGF.LabelledSet` — labelled set construction `SET(C)` (counts layer):
   `SET(C)ₙ = ∑_π ∏_{B∈π} C_{|B|}` over set partitions.
+- `Ch2.EGF.SetExp` — ODE machinery toward `SET(C)(z)=exp(C(z))`: `exp(C(z))` solves
+  `F'=C'·F`, and that ODE has a unique solution.
 
 Modules are added here as they are proved.
 -/

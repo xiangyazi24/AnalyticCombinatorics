@@ -35,8 +35,29 @@ formula). The EGF is `exp(C(z))`. Two candidate routes to the OGF identity:
 Hardest: **A5/A6** — connecting the set-partition count to `exp` (the genuine new
 content; comparable to MSET-2's `genFun` connection but for labelled/exp).
 
-## Round 2/3 — decide after API survey + codex review
+## Round 3 — DECISION (codex/gpt-5.5 verdict + verified Mathlib lemmas)
 
-Decide: A1 model; R1 (powers/tsum) vs R2 (direct/Mathlib); stage (counts layer first,
-EGF/exp second). Flagship corollary: `SET(Z) = e^z` (already have via setClass);
-later Bell `SET(SET_{≥1})`, etc. Anchor on `Fintype.card`; no banking.
+codex (second model) verdict: model faithful (use subtype `(B : π.parts) → C.Obj B.1.card`,
+NOT `Π B in π.parts` — avoids outside-support trivial factors). **Use the differential
+route R3, not R1/R2** (avoids `log`, the `∑ C^k/k!` tsum, and Bell polynomials):
+
+**R3 plan (`SET(C).egf = (exp ℚ).subst C.egf`):**
+1. counts layer DONE (`LabelledSet.lean`, `counts_set`).
+2. `subst_exp_ode` (GENERAL, easy): `d⁄dX ℚ ((exp ℚ).subst C.egf) = d⁄dX ℚ C.egf * (exp ℚ).subst C.egf`,
+   via `derivative_subst hsub` + `derivative_exp`. `hsub : HasSubst C.egf` from
+   `HasSubst.of_constantCoeff_zero'` (constantCoeff C.egf = C₀/0! = 0).
+3. `ode_unique` (GENERAL, easy): `d⁄dX ℚ H = G*H ∧ constantCoeff H = 0 → H = 0`
+   by `Nat.strong_induction_on` on `coeff n H` (`coeff_derivative` + `coeff_mul` + `mul_eq_zero`).
+4. **`SET(C).egf' = C.egf' * SET(C).egf` (HARD combinatorial ODE)**: the pointing
+   bijection on `Finpartition` — the block containing the last label `n` has size i+1
+   (a C-structure), the rest is `SET(C)` on the other `n-i` labels (relabel via
+   `Finpartition` transport). Counts recurrence `SET_{n+1} = ∑_i C(n,i)·C_{i+1}·SET_{n-i}`.
+   THIS is the remaining hard work (Finpartition pointing + relabel; ~MSET-2 scale).
+5. constantCoeff SET.egf = 1 (empty partition); apply `ode_unique` to `SET.egf - subst exp`.
+
+**Verified Mathlib (uisai1):** `Finpartition s` Fintype; `PowerSeries.subst`/`substAlgHom`
+(AlgHom: `subst_mul`/`subst_add`/`subst_pow`); `HasSubst.of_constantCoeff_zero'`;
+`constantCoeff_subst`; `derivative_subst {f g}(hg:HasSubst g): d⁄dX A (f.subst g) =
+(d⁄dX A f).subst g * d⁄dX A g`; `derivative_exp : d⁄dX A (exp A) = exp A`;
+`coeff_derivative (f)(n): coeff n (d⁄dX f) = coeff(n+1) f * (n+1)`;
+`exp_unique_of_derivative_eq_self` (for f'=f). NO Bell / exponential formula in Mathlib.
