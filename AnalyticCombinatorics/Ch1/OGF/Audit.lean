@@ -35,6 +35,7 @@ import AnalyticCombinatorics.Ch3.BGF.LabelledSetMarked
 import AnalyticCombinatorics.Ch3.BGF.LabelledBGFApplications
 import AnalyticCombinatorics.Ch3.BGF.CompositionMoments
 import AnalyticCombinatorics.Ch3.BGF.BinaryWordMoments
+import AnalyticCombinatorics.Ch4.Analytic.Bridge
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -120,6 +121,8 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms ParamClass.variance_compositionsByParts
 #print axioms ParamClass.mean_binaryWords
 #print axioms ParamClass.variance_binaryWords
+#print axioms PowerSeries.radius_toFMLS_inv_eq_limsup
+#print axioms PowerSeries.analyticAt_analyticSum
 #print axioms CombClass.ogf_cyc
 #print axioms counts_necklaces_k
 #print axioms card_fixedBy_rotation
