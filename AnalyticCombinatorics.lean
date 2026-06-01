@@ -41,6 +41,7 @@ import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
 import AnalyticCombinatorics.Ch4.Analytic.Fibonacci
+import AnalyticCombinatorics.Ch4.Analytic.SingularityInteger
 
 /-!
 # AnalyticCombinatorics
