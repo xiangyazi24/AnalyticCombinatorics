@@ -47,6 +47,7 @@ import AnalyticCombinatorics.Ch4.Analytic.CentralBinomial
 import AnalyticCombinatorics.Ch4.Analytic.Catalan
 import AnalyticCombinatorics.Ch4.Analytic.PringsheimCore
 import AnalyticCombinatorics.Ch4.Analytic.Pringsheim
+import AnalyticCombinatorics.Ch4.Analytic.DeltaDomain
 
 /-!
 # AnalyticCombinatorics
