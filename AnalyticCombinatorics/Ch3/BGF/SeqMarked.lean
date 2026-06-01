@@ -35,13 +35,13 @@ theorem evalU_C_u (a : ℚ) :
     evalU a (PowerSeries.C (Polynomial.X : ℚ[X])) = PowerSeries.C a := by
   simp [evalU]
 
-private lemma nat_smul_eq_rat_smul (m : ℕ) (p : ℚ[X]) :
+lemma nat_smul_eq_rat_smul (m : ℕ) (p : ℚ[X]) :
     m • p = (m : ℚ) • p := by
   rw [nsmul_eq_mul]
   rw [show (m : ℚ[X]) = Polynomial.C (m : ℚ) by norm_num]
   rw [← Polynomial.smul_eq_C_mul]
 
-private lemma X_C_mul_smul_X_pow (a b : ℚ) (m : ℕ) :
+lemma X_C_mul_smul_X_pow (a b : ℚ) (m : ℕ) :
     (Polynomial.X : ℚ[X]) * Polynomial.C a * (b • (Polynomial.X : ℚ[X]) ^ m) =
       (a * b) • (Polynomial.X : ℚ[X]) ^ (m + 1) := by
   rw [Polynomial.smul_eq_C_mul, Polynomial.smul_eq_C_mul]

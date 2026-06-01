@@ -32,6 +32,7 @@ import AnalyticCombinatorics.Ch3.BGF.Moments
 import AnalyticCombinatorics.Ch3.BGF.Variance
 import AnalyticCombinatorics.Ch3.BGF.SeqMarked
 import AnalyticCombinatorics.Ch3.BGF.BinaryWords
+import AnalyticCombinatorics.Ch3.BGF.LabelledSeqMarked
 
 /-!
 # AnalyticCombinatorics
