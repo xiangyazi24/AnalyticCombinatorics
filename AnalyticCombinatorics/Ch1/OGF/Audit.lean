@@ -38,6 +38,7 @@ import AnalyticCombinatorics.Ch3.BGF.BinaryWordMoments
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
+import AnalyticCombinatorics.Ch4.Analytic.Fibonacci
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -132,6 +133,8 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms PowerSeries.coeff_rescale_invOneSubPow
 #print axioms _root_.simplePoleSum_dominant_isEquivalent
 #print axioms _root_.coeff_mapℂ_ogf_compositions_isEquivalent
+#print axioms _root_.partialFraction_eq
+#print axioms _root_.fib_isEquivalent
 #print axioms CombClass.ogf_cyc
 #print axioms counts_necklaces_k
 #print axioms card_fixedBy_rotation
