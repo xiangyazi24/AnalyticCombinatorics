@@ -44,6 +44,7 @@ import AnalyticCombinatorics.Ch4.Analytic.Fibonacci
 import AnalyticCombinatorics.Ch4.Analytic.SingularityInteger
 import AnalyticCombinatorics.Ch4.Analytic.SingularityGeneral
 import AnalyticCombinatorics.Ch4.Analytic.CentralBinomial
+import AnalyticCombinatorics.Ch4.Analytic.Catalan
 
 /-!
 # AnalyticCombinatorics
