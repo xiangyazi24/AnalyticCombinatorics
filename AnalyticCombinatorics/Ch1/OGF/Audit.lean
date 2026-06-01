@@ -37,6 +37,7 @@ import AnalyticCombinatorics.Ch3.BGF.CompositionMoments
 import AnalyticCombinatorics.Ch3.BGF.BinaryWordMoments
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
+import AnalyticCombinatorics.Ch4.Analytic.Rational
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -128,6 +129,9 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms PowerSeries.analyticSum_pole1_of_norm_lt_one
 #print axioms PowerSeries.analyticSum_pole2_of_norm_lt_one
 #print axioms meromorphicOrderAt_one_sub_inv
+#print axioms PowerSeries.coeff_rescale_invOneSubPow
+#print axioms _root_.simplePoleSum_dominant_isEquivalent
+#print axioms _root_.coeff_mapℂ_ogf_compositions_isEquivalent
 #print axioms CombClass.ogf_cyc
 #print axioms counts_necklaces_k
 #print axioms card_fixedBy_rotation
