@@ -41,6 +41,7 @@ import AnalyticCombinatorics.Ch4.Analytic.Rational
 import AnalyticCombinatorics.Ch4.Analytic.Fibonacci
 import AnalyticCombinatorics.Ch4.Analytic.SingularityInteger
 import AnalyticCombinatorics.Ch4.Analytic.SingularityGeneral
+import AnalyticCombinatorics.Ch4.Analytic.CentralBinomial
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -140,6 +141,7 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms _root_.coeff_invOneSubPow_isEquivalent_of_one_le
 #print axioms _root_.choose_standard_scale_complex
 #print axioms _root_.coeff_oneDivOneSubCpow_isEquivalent
+#print axioms _root_.centralBinom_isEquivalent_complex_sqrt
 #print axioms CombClass.ogf_cyc
 #print axioms counts_necklaces_k
 #print axioms card_fixedBy_rotation
