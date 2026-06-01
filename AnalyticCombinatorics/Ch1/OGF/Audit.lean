@@ -33,6 +33,7 @@ import AnalyticCombinatorics.Ch3.BGF.BinaryWords
 import AnalyticCombinatorics.Ch3.BGF.LabelledSeqMarked
 import AnalyticCombinatorics.Ch3.BGF.LabelledSetMarked
 import AnalyticCombinatorics.Ch3.BGF.LabelledBGFApplications
+import AnalyticCombinatorics.Ch3.BGF.CompositionMoments
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -114,6 +115,8 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms ParamClass.begf_setMarked_exp
 #print axioms ParamClass.begf_setPartitionsByBlocks
 #print axioms ParamClass.begf_involutionsByComponents
+#print axioms ParamClass.mean_compositionsByParts
+#print axioms ParamClass.variance_compositionsByParts
 #print axioms CombClass.ogf_cyc
 #print axioms counts_necklaces_k
 #print axioms card_fixedBy_rotation
