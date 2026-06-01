@@ -26,29 +26,29 @@ variable {C : CombClass}
 
 /-- Assemble a composition of `n+1` from a first part of size `k+1` and a
 composition of the remaining `n - k`. -/
-private def consSeq (n : ℕ) (k : Fin (n + 1)) (c : Composition (n - (k : ℕ))) :
+def consSeq (n : ℕ) (k : Fin (n + 1)) (c : Composition (n - (k : ℕ))) :
     Composition (n + 1) :=
   (Composition.append (Composition.single ((k : ℕ) + 1) (Nat.succ_pos _)) c).cast
     (by have := k.is_le; omega)
 
-private lemma consSeq_blocks (n : ℕ) (k : Fin (n + 1)) (c : Composition (n - (k : ℕ))) :
+lemma consSeq_blocks (n : ℕ) (k : Fin (n + 1)) (c : Composition (n - (k : ℕ))) :
     (consSeq n k c).blocks = ((k : ℕ) + 1) :: c.blocks := by
   simp [consSeq, Composition.single_blocks]
 
-private lemma prod_consSeq (n : ℕ) (k : Fin (n + 1)) (c : Composition (n - (k : ℕ))) :
+lemma prod_consSeq (n : ℕ) (k : Fin (n + 1)) (c : Composition (n - (k : ℕ))) :
     ((consSeq n k c).blocks.map C.counts).prod
       = C.counts ((k : ℕ) + 1) * (c.blocks.map C.counts).prod := by
   rw [consSeq_blocks, List.map_cons, List.prod_cons]
 
 /-- `counts_seq` rewritten as a sum of products over the blocks list. -/
-private lemma counts_seq_eq_listProd (m : ℕ) :
+lemma counts_seq_eq_listProd (m : ℕ) :
     C.seq.counts m = ∑ c : Composition m, (c.blocks.map C.counts).prod := by
   rw [C.counts_seq]
   refine Finset.sum_congr rfl fun c _ => ?_
   rw [← Composition.ofFn_blocksFun c, List.map_ofFn, List.prod_ofFn]
   simp only [Function.comp_apply]
 
-private lemma consSeq_bijective (n : ℕ) :
+lemma consSeq_bijective (n : ℕ) :
     Function.Bijective
       (fun p : Σ k : Fin (n + 1), Composition (n - (k : ℕ)) => consSeq n p.1 p.2) := by
   constructor

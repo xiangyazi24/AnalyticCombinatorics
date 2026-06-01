@@ -30,6 +30,7 @@ import AnalyticCombinatorics.Ch2.EGF.LabelledCyc
 import AnalyticCombinatorics.Ch3.BGF.Defs
 import AnalyticCombinatorics.Ch3.BGF.Moments
 import AnalyticCombinatorics.Ch3.BGF.Variance
+import AnalyticCombinatorics.Ch3.BGF.SeqMarked
 
 /-!
 # AnalyticCombinatorics
