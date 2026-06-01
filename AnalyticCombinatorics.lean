@@ -36,6 +36,7 @@ import AnalyticCombinatorics.Ch3.BGF.LabelledSeqMarked
 import AnalyticCombinatorics.Ch3.BGF.LabelledSetMarked
 import AnalyticCombinatorics.Ch3.BGF.LabelledBGFApplications
 import AnalyticCombinatorics.Ch3.BGF.CompositionMoments
+import AnalyticCombinatorics.Ch3.BGF.BinaryWordMoments
 
 /-!
 # AnalyticCombinatorics
