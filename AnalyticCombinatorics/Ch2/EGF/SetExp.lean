@@ -38,8 +38,9 @@ theorem CombClass.subst_exp_ode {C : CombClass} (hC : C.counts 0 = 0) :
   ring
 
 /-- **ODE uniqueness**: a power series solving `H' = G·H` with vanishing constant term
-is `0` (coefficient induction over `ℚ`). -/
-theorem ode_unique {H G : ℚ⟦X⟧} (hode : d⁄dX ℚ H = G * H)
+is `0` (coefficient induction). -/
+theorem ode_unique {R : Type*} [CommSemiring R] [Algebra ℚ R] {H G : R⟦X⟧}
+    (hode : d⁄dX R H = G * H)
     (h0 : constantCoeff H = 0) : H = 0 := by
   have key : ∀ n, coeff n H = 0 := by
     intro n
@@ -51,9 +52,11 @@ theorem ode_unique {H G : ℚ⟦X⟧} (hode : d⁄dX ℚ H = G * H)
         have hd := congrArg (coeff m) hode
         rw [coeff_derivative, coeff_mul,
           Finset.sum_eq_zero (fun p hp => ?_)] at hd
-        · rcases mul_eq_zero.mp hd with h | h
-          · exact h
-          · exact absurd h (by positivity)
+        · have hu : IsUnit ((m : R) + 1) := by
+            simpa using
+              (IsUnit.map (algebraMap ℚ R)
+                (isUnit_iff_ne_zero.mpr (by positivity : ((m : ℚ) + 1) ≠ 0)))
+          exact hu.mul_left_eq_zero.mp hd
         · rw [Finset.mem_antidiagonal] at hp
           rw [ih p.2 (by omega), mul_zero]
   ext n
