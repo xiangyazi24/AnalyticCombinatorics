@@ -46,6 +46,7 @@ import AnalyticCombinatorics.Ch4.Analytic.Catalan
 import AnalyticCombinatorics.Ch4.Analytic.PringsheimCore
 import AnalyticCombinatorics.Ch4.Analytic.Pringsheim
 import AnalyticCombinatorics.Ch4.Analytic.DeltaDomain
+import AnalyticCombinatorics.Ch4.Analytic.RepeatedPole
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -150,6 +151,7 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms _root_.pringsheim_not_analyticAt
 #print axioms _root_.pringsheim_not_analyticContinuation
 #print axioms _root_.analyticOnNhd_one_sub_cpow_deltaDomain
+#print axioms _root_.coeff_repeatedPole_isEquivalent
 #print axioms CombClass.ogf_cyc
 #print axioms counts_necklaces_k
 #print axioms card_fixedBy_rotation
