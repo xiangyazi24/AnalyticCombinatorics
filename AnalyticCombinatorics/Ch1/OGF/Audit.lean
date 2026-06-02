@@ -157,6 +157,8 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms _root_.geometric_singularity_at_one
 #print axioms _root_.centralBinom_isEquivalent_real_sqrt
 #print axioms _root_.catalan_isEquivalent_real_rpow
+#print axioms _root_.fib_isEquivalent_real
+#print axioms _root_.choose_standard_scale_real
 #print axioms CombClass.ogf_cyc
 #print axioms counts_necklaces_k
 #print axioms card_fixedBy_rotation
