@@ -53,6 +53,7 @@ import AnalyticCombinatorics.Ch4.Analytic.Derangements
 import AnalyticCombinatorics.Ch4.Analytic.GrowthRates
 import AnalyticCombinatorics.Ch4.Analytic.CauchyCoeff
 import AnalyticCombinatorics.Ch4.Analytic.DeltaGeometry
+import AnalyticCombinatorics.Ch4.Analytic.KernelEstimate
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -169,6 +170,7 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms _root_.norm_coeff_le_of_circleIntegral
 #print axioms _root_.closedBall_subset_deltaDomain
 #print axioms _root_.local_disk_subset_deltaDomain
+#print axioms _root_.circleKernel_integral_bound_nat
 #print axioms CombClass.ogf_cyc
 #print axioms counts_necklaces_k
 #print axioms card_fixedBy_rotation

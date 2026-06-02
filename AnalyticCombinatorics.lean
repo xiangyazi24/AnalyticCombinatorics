@@ -55,6 +55,7 @@ import AnalyticCombinatorics.Ch4.Analytic.Derangements
 import AnalyticCombinatorics.Ch4.Analytic.GrowthRates
 import AnalyticCombinatorics.Ch4.Analytic.CauchyCoeff
 import AnalyticCombinatorics.Ch4.Analytic.DeltaGeometry
+import AnalyticCombinatorics.Ch4.Analytic.KernelEstimate
 
 /-!
 # AnalyticCombinatorics
