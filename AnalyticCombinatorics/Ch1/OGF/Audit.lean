@@ -61,8 +61,10 @@ import AnalyticCombinatorics.Ch4.Analytic.DerivEstimate
 import AnalyticCombinatorics.Ch4.Analytic.CoeffDescent
 import AnalyticCombinatorics.Ch4.Analytic.LittleODescent
 import AnalyticCombinatorics.Ch4.Analytic.TransferGeneral
+import AnalyticCombinatorics.Ch4.Analytic.SubstComp
 import AnalyticCombinatorics.Ch8.SaddlePoint.Bound
 import AnalyticCombinatorics.Ch8.SaddlePoint.Exp
+import AnalyticCombinatorics.Ch8.SaddlePoint.BellBridge
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -186,6 +188,8 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms _root_.transfer_theorem
 #print axioms PowerSeries.norm_coeff_le_analyticSum_of_nonneg
 #print axioms _root_.inv_factorial_le_exp_nat_div_pow_self
+#print axioms PowerSeries.toFMLS_subst_eq_comp
+#print axioms bell_egf_coeff_le
 #print axioms _root_.exists_iteratedDeriv_norm_le_deltaDomain
 #print axioms _root_.coeff_norm_isBigO_atTop_of_delta_bound
 #print axioms _root_.coeff_norm_isLittleO_atTop_of_delta_littleO
