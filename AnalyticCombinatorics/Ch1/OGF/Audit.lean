@@ -65,6 +65,7 @@ import AnalyticCombinatorics.Ch4.Analytic.SubstComp
 import AnalyticCombinatorics.Ch8.SaddlePoint.Bound
 import AnalyticCombinatorics.Ch8.SaddlePoint.Assembly
 import AnalyticCombinatorics.Ch8.SaddlePoint.GaussianCore
+import AnalyticCombinatorics.Ch8.SaddlePoint.ExpStirling
 import AnalyticCombinatorics.Ch8.SaddlePoint.Exp
 import AnalyticCombinatorics.Ch8.SaddlePoint.BellBridge
 
@@ -194,6 +195,7 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms bell_egf_coeff_le
 #print axioms _root_.coeff_isEquivalent_saddle_assembly
 #print axioms _root_.central_tendsto_one_of_dominated_of_aestronglyMeasurable
+#print axioms ExpStirling.inv_factorial_isEquivalent_stirling
 #print axioms _root_.exists_iteratedDeriv_norm_le_deltaDomain
 #print axioms _root_.coeff_norm_isBigO_atTop_of_delta_bound
 #print axioms _root_.coeff_norm_isLittleO_atTop_of_delta_littleO
