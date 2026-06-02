@@ -57,6 +57,7 @@ import AnalyticCombinatorics.Ch4.Analytic.CauchyCoeff
 import AnalyticCombinatorics.Ch4.Analytic.DeltaGeometry
 import AnalyticCombinatorics.Ch4.Analytic.KernelEstimate
 import AnalyticCombinatorics.Ch4.Analytic.OTransfer
+import AnalyticCombinatorics.Ch4.Analytic.LittleOTransfer
 
 /-!
 # AnalyticCombinatorics
