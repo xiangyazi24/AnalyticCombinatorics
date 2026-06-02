@@ -61,6 +61,7 @@ import AnalyticCombinatorics.Ch4.Analytic.LittleOTransfer
 import AnalyticCombinatorics.Ch4.Analytic.TransferTheorem
 import AnalyticCombinatorics.Ch4.Analytic.DerivEstimate
 import AnalyticCombinatorics.Ch4.Analytic.CoeffDescent
+import AnalyticCombinatorics.Ch4.Analytic.LittleODescent
 
 /-!
 # AnalyticCombinatorics
