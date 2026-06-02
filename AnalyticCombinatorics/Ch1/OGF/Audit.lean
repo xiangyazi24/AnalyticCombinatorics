@@ -49,6 +49,7 @@ import AnalyticCombinatorics.Ch4.Analytic.DeltaDomain
 import AnalyticCombinatorics.Ch4.Analytic.RepeatedPole
 import AnalyticCombinatorics.Ch4.Analytic.PringsheimExample
 import AnalyticCombinatorics.Ch4.Analytic.RealAsymptotics
+import AnalyticCombinatorics.Ch4.Analytic.Derangements
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -159,6 +160,7 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms _root_.catalan_isEquivalent_real_rpow
 #print axioms _root_.fib_isEquivalent_real
 #print axioms _root_.choose_standard_scale_real
+#print axioms _root_.numDerangements_isEquivalent
 #print axioms CombClass.ogf_cyc
 #print axioms counts_necklaces_k
 #print axioms card_fixedBy_rotation

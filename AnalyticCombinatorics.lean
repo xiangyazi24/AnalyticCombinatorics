@@ -51,6 +51,7 @@ import AnalyticCombinatorics.Ch4.Analytic.DeltaDomain
 import AnalyticCombinatorics.Ch4.Analytic.RepeatedPole
 import AnalyticCombinatorics.Ch4.Analytic.PringsheimExample
 import AnalyticCombinatorics.Ch4.Analytic.RealAsymptotics
+import AnalyticCombinatorics.Ch4.Analytic.Derangements
 
 /-!
 # AnalyticCombinatorics
