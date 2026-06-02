@@ -53,6 +53,7 @@ import AnalyticCombinatorics.Ch4.Analytic.PringsheimExample
 import AnalyticCombinatorics.Ch4.Analytic.RealAsymptotics
 import AnalyticCombinatorics.Ch4.Analytic.Derangements
 import AnalyticCombinatorics.Ch4.Analytic.GrowthRates
+import AnalyticCombinatorics.Ch4.Analytic.CauchyCoeff
 
 /-!
 # AnalyticCombinatorics
