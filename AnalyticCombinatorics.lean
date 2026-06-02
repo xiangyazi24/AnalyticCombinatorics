@@ -59,6 +59,7 @@ import AnalyticCombinatorics.Ch4.Analytic.KernelEstimate
 import AnalyticCombinatorics.Ch4.Analytic.OTransfer
 import AnalyticCombinatorics.Ch4.Analytic.LittleOTransfer
 import AnalyticCombinatorics.Ch4.Analytic.TransferTheorem
+import AnalyticCombinatorics.Ch4.Analytic.DerivEstimate
 
 /-!
 # AnalyticCombinatorics
