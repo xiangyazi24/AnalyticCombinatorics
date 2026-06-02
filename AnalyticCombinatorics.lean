@@ -66,6 +66,7 @@ import AnalyticCombinatorics.Ch4.Analytic.TransferGeneral
 import AnalyticCombinatorics.Ch4.Analytic.SubstComp
 import AnalyticCombinatorics.Ch8.SaddlePoint.Bound
 import AnalyticCombinatorics.Ch8.SaddlePoint.Assembly
+import AnalyticCombinatorics.Ch8.SaddlePoint.GaussianCore
 import AnalyticCombinatorics.Ch8.SaddlePoint.Exp
 import AnalyticCombinatorics.Ch8.SaddlePoint.Bell
 import AnalyticCombinatorics.Ch8.SaddlePoint.BellBridge
