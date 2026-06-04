@@ -52,6 +52,15 @@
   hChar caught+fixed), Ch9 binary-word CLT, Ch9 permutation cycle CLT. Opened Ch V, VII, IX with
   framework + instance(s) each. Whole-tree Group-A/C audit clean. Trust-but-verify caught + fixed 2
   fidelity issues (Motzkin-v1 vacuous, quasi-powers hChar over-strong).
-- next: more Ch IX/Ch V/Ch VII applications; appendices; F&S Ch VI singularity-analysis remaining.
+  - 2-regular graphs asymptotic (codex): DONE — Ch7/SingularityApp/TwoRegular.lean, g_n/n! ~
+    e^{-3/4}/√(πn) via general transfer (α=1/2, entire prefactor). FAITHFUL as GF-coefficient asymptotic
+    (count defined via EGF — weakest fidelity this run, honestly flagged). build green 8331, axioms clean,
+    committed a339174.
+- Session FAITHFUL deliverables (9): Ch5 meromorphic transfer, Ch5 surjections/Fubini, Ch7 ternary,
+  Ch7 Motzkin, Ch7 Fuss-Catalan, Ch9 quasi-powers framework, Ch9 binary-word CLT, Ch9 cycle CLT,
+  Ch7 2-regular (GF-coeff). Opened Ch V, VII, IX. Whole-tree audit clean. 2 fidelity issues caught+fixed.
+- fidelity note: prefer genuine combinatorial definitions (surjections/ternary/Motzkin/Fuss-Catalan have
+  them); 2-regular drifted to GF-coeff definition — future bricks should re-anchor to real counts.
+- next: more high-fidelity Ch V/VII/IX applications; appendices; Ch VI breadth.
 - end: <ongoing — automode>
 - final result: <ongoing>
