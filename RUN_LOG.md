@@ -127,3 +127,6 @@
   committed 4235801. (17th deliverable; 92 files.)
 - next: involutions (e^{z+z²/2}, another Hayman instance); then Hardy-Ramanujan partitions (circle method,
   hard); breadth; appendices.
+- involutions HAdmissible (codex): DONE — InvolutionHAdmissible.lean (912L), 3rd Hayman instance
+  (e^{z+z²/2}), genuine count parts12.set (verified parts12=(0,1,1,0,…) atom class). green 8340, clean,
+  committed d62b396. (18th deliverable; 93 files, 21,171 L total.)
