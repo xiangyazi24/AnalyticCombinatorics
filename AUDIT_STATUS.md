@@ -57,3 +57,14 @@ Continue spot-checks chapter by chapter as coverage grows.
 | `Ch5.Meromorphic.dominant_simplePole_isEquivalent` | IV.10 | simple pole at ρ + remainder analytic past R>‖ρ‖ ⟹ `coeff f ~ c·ρ^{-(n+1)}` | FAITHFUL — genuine remainder-radius hypothesis, not buried |
 
 All 5 `#print axioms` = {propext, Classical.choice, Quot.sound}; full build green (8323 jobs).
+
+### Checked 2026-06-03 (Pringsheim — singularity-location foundation)
+
+| Theorem | F&S | Statement (abridged) | Verdict |
+|---------|-----|----------------------|---------|
+| `pringsheim_not_analyticAt` | IV.6 | nonneg-coeff series of radius R ⟹ sum not analytic at z=R | FAITHFUL |
+| `pringsheim_not_analyticContinuation` | IV.6 | nonneg-coeff series ⟹ no analytic continuation across z=R | FAITHFUL |
+
+Audit coverage now spans every foundational layer (symbolic transfer Ch1/2/3, complex core
+Pringsheim/Transfer-VI.3/Cauchy-coeff, asymptotic payoffs Catalan/Fib/CentralBinom, saddle exp,
+Ch5 meromorphic) — all FAITHFUL. The rebuilt tree passes C-group audit for its current content.
