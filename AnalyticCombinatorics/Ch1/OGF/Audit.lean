@@ -73,6 +73,7 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.HAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.ExpHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.BellHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.InvolutionHAdmissible
+import AnalyticCombinatorics.Ch8.SaddlePoint.Blocks3HAdmissible
 import AnalyticCombinatorics.Ch5.Meromorphic.Transfer
 import AnalyticCombinatorics.Ch5.Meromorphic.Surjections
 import AnalyticCombinatorics.Ch5.Meromorphic.Alignments
@@ -374,5 +375,11 @@ namespace AnalyticCombinatorics.Ch1
 -- reported-open (honestly, not faked). α=2 instance ~ n log n.
 #print axioms _root_.logSingularityCoeff_isEquivalent
 #print axioms _root_.doublePoleLogCoeff_isEquivalent
+
+-- Ch8 4th Hayman instance: set partitions with all block sizes ≤ 3, EGF e^{z+z²/2+z³/6} (= SET of the
+-- genuine parts123 atom class, counts (0,1,1,1,0,…)); saddle a(r)=r+r²+r³/2=n. Count asymptotic through
+-- the general Hayman interface.
+#print axioms _root_.Blocks3HAdmissible.blocks3HAdmissible
+#print axioms _root_.Blocks3HAdmissible.blocks3_count_over_factorial_isEquivalent_saddle
 
 end AnalyticCombinatorics.Ch1

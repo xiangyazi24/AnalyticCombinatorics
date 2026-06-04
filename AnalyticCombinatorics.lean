@@ -76,6 +76,7 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.HAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.ExpHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.BellHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.InvolutionHAdmissible
+import AnalyticCombinatorics.Ch8.SaddlePoint.Blocks3HAdmissible
 import AnalyticCombinatorics.Ch5.Meromorphic.Transfer
 import AnalyticCombinatorics.Ch5.Meromorphic.Surjections
 import AnalyticCombinatorics.Ch5.Meromorphic.Alignments
