@@ -183,3 +183,13 @@ faithful results, keeping progress through the external block.
 Dispatched after codex usage-limit reset (auto-bridged at 05:29). build green (8333 jobs), axioms clean.
 This re-establishes genuine-combinatorial fidelity: the part-count law is proved equal to the uniform
 distribution over the real Mathlib `Composition n` type, not posited.
+
+### New work 2026-06-04 (Ch5 alignments — SEQ of CYC, F&S Ch V, HIGH FIDELITY)
+
+| Theorem | F&S | Statement | Verdict |
+|---------|-----|-----------|---------|
+| `Alignments.alignmentCount_div_factorial_isEquivalent` | V | `o_n/n! ~ (1/(e-1))·(e/(e-1))^n` (ρ=1-1/e) | FAITHFUL — genuine class `alignmentClass.counts`, dominant simple pole of 1/(1-log(1/(1-z))) |
+| `Alignments.alignmentEGFℂ_mul_denominator` | V | `alignmentEGF·(1-cycleEGF)=1` (SEQ-of-CYC) | FAITHFUL — ties to Ch2 genuine cycle EGF |
+
+codex corrected the brief's wrong OEIS values (true A007840 = 1,1,3,14,88,694; ratios → 1). build green
+(8334 jobs), axioms clean. Genuine-combinatorial fidelity (alignmentClass, not EGF-defined).
