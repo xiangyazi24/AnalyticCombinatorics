@@ -145,3 +145,8 @@
 - coverage note: tractable frontiers largely covered (3 chapters, frameworks+instances, 3 saddle instances,
   algebraic/explicit/meromorphic-SEQ/limit-law families). Remaining is the HARD frontier: Hardy-Ramanujan
   circle method (partitions), bivariate saddles (set-partition blocks — flagged), multivariate, appendices.
+- Riordan (codex): DONE — Riordan.lean (751L), genuine first-return def R=1+z²MR (vs A005043 incl R_10=603),
+  R_n ~ (3√3/(8√π))·3^n·n^{-3/2}. green 8342, clean. committed 915e95b. (20th deliverable.)
+- PIVOT: algebraic √-family (Motzkin/Schröder/Riordan) well-covered; turning to NEW territory —
+  two-dominant-pole meromorphic transfer (tangent numbers, tan z poles ±π/2), then conjugate/higher-order
+  poles, log-singularity transfer, appendices.
