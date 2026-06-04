@@ -72,6 +72,7 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.Exp
 import AnalyticCombinatorics.Ch8.SaddlePoint.Bell
 import AnalyticCombinatorics.Ch8.SaddlePoint.BellBridge
 import AnalyticCombinatorics.Ch8.SaddlePoint.HAdmissible
+import AnalyticCombinatorics.Ch8.SaddlePoint.ExpHAdmissible
 import AnalyticCombinatorics.Ch5.Meromorphic.Transfer
 import AnalyticCombinatorics.Ch5.Meromorphic.Surjections
 import AnalyticCombinatorics.Ch5.Meromorphic.Alignments

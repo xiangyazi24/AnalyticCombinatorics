@@ -69,6 +69,7 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.ExpStirling
 import AnalyticCombinatorics.Ch8.SaddlePoint.Exp
 import AnalyticCombinatorics.Ch8.SaddlePoint.BellBridge
 import AnalyticCombinatorics.Ch8.SaddlePoint.HAdmissible
+import AnalyticCombinatorics.Ch8.SaddlePoint.ExpHAdmissible
 import AnalyticCombinatorics.Ch5.Meromorphic.Transfer
 import AnalyticCombinatorics.Ch5.Meromorphic.Surjections
 import AnalyticCombinatorics.Ch5.Meromorphic.Alignments
@@ -323,5 +324,12 @@ namespace AnalyticCombinatorics.Ch1
 -- closing the earlier thin-wrapper's flagged future-work. coeff(1/(1-C)) ~ (1/(ρC'(ρ)))ρ^{-n}.
 #print axioms AnalyticCombinatorics.Ch5.Meromorphic.SupercriticalSeqGenuine.supercriticalSeq_decomposition_from_supercritical_data
 #print axioms AnalyticCombinatorics.Ch5.Meromorphic.SupercriticalSeqGenuine.supercriticalSeq_isEquivalent_from_supercritical_data
+
+-- Ch8 FIRST HAdmissible instance (closes the original session-start CONDITIONAL gap): expHAdmissible is a
+-- fully-constructed HAdmissible Complex.exp (local_uniform + tail_uniform proved), and the exp asymptotic
+-- is derived THROUGH the general Hayman interface coeff_isEquivalent_saddle — so that interface is now
+-- demonstrably NON-VACUOUS.
+#print axioms _root_.ExpStirling.expHAdmissible
+#print axioms _root_.ExpStirling.exp_coeff_isEquivalent_saddle_from_HAdmissible
 
 end AnalyticCombinatorics.Ch1
