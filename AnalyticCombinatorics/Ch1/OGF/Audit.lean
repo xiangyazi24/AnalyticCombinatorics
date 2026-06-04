@@ -96,6 +96,7 @@ import AnalyticCombinatorics.Ch9.LimitLaws.BinaryWordCLT
 import AnalyticCombinatorics.Ch9.LimitLaws.PermutationCycles
 import AnalyticCombinatorics.Ch9.LimitLaws.FixedPointsPoisson
 import AnalyticCombinatorics.Ch9.LimitLaws.PMFToDistribution
+import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoisson
 import AnalyticCombinatorics.Ch9.LimitLaws.CompositionParts
 
 /-!
@@ -299,6 +300,13 @@ namespace AnalyticCombinatorics.Ch1
 -- ⟹ weak convergence (portmanteau finite-subset approximation). Upgrades fixed-points → FULL Poisson(1).
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.PMFToDistribution.probabilityMeasure_nat_tendsto_of_tendsto_singleton
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.PMFToDistribution.FixedPointsPoissonNS.fixedPoints_tendstoInDistribution_poisson_one
+
+-- Ch9 r-cycles → Poisson(1/r) (Goncharov, F&S Ch IX): UNCONDITIONAL analytic limit of the
+-- inclusion-exclusion truncated-exponential pmf formula, (r^j j!)⁻¹·expPartial(-1/r, ⌊n/r⌋-j+1)
+-- → e^{-1/r}(1/r)^j/j!. The moving truncation index ⌊n/r⌋→∞ is the analytic crux. (The full
+-- weak-convergence for general r is reduced, via the reusable bridge, to the marginal cycle-count
+-- enumeration rCyclePMF = rCyclePMFFormula — a genuine Mathlib gap, left conditional; see RCyclesPoisson.)
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.rCyclePMFFormula_tendsto_poisson
 
 -- Ch9 permutation cycle-count CLT (Goncharov, F&S Ch IX): the number of cycles of a uniform random
 -- permutation (Feller-coupling realization: sum of independent Bernoulli(1/k)) satisfies

@@ -186,3 +186,12 @@
   TendstoInDistribution Poisson(1). Filled the Mathlib gap. green 8350, clean. committed 4c59db5. (28th.)
 - This unlocks more discrete limit laws (the bridge is reusable). Ch IX now: Gaussian (3 instances) +
   Poisson (fixed points, full weak convergence) + reusable Gaussian (quasi-powers) & discrete (pmf) bridges.
+- r-cycles → Poisson(1/r) (codex): RCyclesPoisson.lean (namespaced RCyclesPoissonNS).
+  BANKED unconditional: rCyclePMFFormula_tendsto_poisson — analytic limit of the Goncharov
+  inclusion-exclusion truncated-exp pmf formula (r^j j!)⁻¹·expPartial(-1/r,⌊n/r⌋-j+1) → e^{-1/r}(1/r)^j/j!
+  (moving truncation ⌊n/r⌋→∞ is the crux). Genuine RV rCycleCount (cycleType.count r / fixedPointCount),
+  genuine count restatement rCycleCount_eq_card_cycleFactorsFinset_filter, laws + bridge wired.
+  CONDITIONAL (NOT banked as headline): full →d Poisson(1/r) general r, reduced via reusable pmf⟹weak
+  bridge to the marginal cycle-count identity rCyclePMF=rCyclePMFFormula — genuine Mathlib gap (no
+  marginal cycleType.count r=j enumeration / Goncharov exact count). r=1 = re-wrap of fixed-points (not banked).
+  Honest conditional status; combinatorial enumeration is multi-session future work. (29th deliverable.)
