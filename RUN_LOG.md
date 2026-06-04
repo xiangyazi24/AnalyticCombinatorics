@@ -83,6 +83,17 @@
   composition-parts CLT, alignments, supercrit transfer (thin). Opened Ch V/VII/IX. Whole-tree audit clean
   (build green 8335). 3 fidelity issues caught+fixed (Motzkin-v1 vacuous, quasi-powers hChar over-strong,
   supercrit decorative hyps); codex outage bridged.
-- next: more high-fidelity Ch V/VII/IX applications; appendices; Ch VI breadth; hard saddle (Bell/partitions).
+  - 2-regular fidelity upgrade (codex): DONE — TwoRegularClass.lean, genuine SET-of-undirected-cycles
+    count, EGF derived, counts=old GF-coeff count proved; asymptotic now for the genuine count. The one
+    flagged fidelity gap is CLOSED. (My Audit #print-axioms namespace path was wrong → full build caught
+    it, lake env lean had missed it — lesson: always run the integrated build, not just env lean.)
+    committed 2c7796b/63b7695, green 8336.
+- CAPSTONE (2026-06-04): 88 files, build green 8336 jobs, 0 sorry/admit/native_decide/custom-axiom;
+  ~160 headline theorems #print-axioms-certified clean. Opened Ch V (meromorphic transfer + surjections +
+  alignments + supercrit-transfer), Ch VII (ternary, Motzkin, Fuss-Catalan general+p=4/5/6, 2-regular
+  genuine), Ch IX (quasi-powers framework + binary-word + cycle + composition-parts CLTs). 3 fidelity
+  issues caught+fixed; 1 gap closed; codex outage bridged. ~38 commits.
+- next (multi-session): genuine V.2 supercrit derivation (tighten the flagged future-work); hard
+  saddle/circle-method (Bell/involutions/Hardy-Ramanujan partitions); more Ch V/VII/IX breadth; appendices.
 - end: <ongoing — automode>
 - final result: <ongoing>
