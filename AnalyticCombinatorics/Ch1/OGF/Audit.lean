@@ -78,6 +78,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.Motzkin
 import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalan
 import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegular
 import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalanInstances
+import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularClass
 import AnalyticCombinatorics.Ch9.LimitLaws.QuasiPowers
 import AnalyticCombinatorics.Ch9.LimitLaws.BinaryWordCLT
 import AnalyticCombinatorics.Ch9.LimitLaws.PermutationCycles
@@ -308,5 +309,12 @@ namespace AnalyticCombinatorics.Ch1
 -- around dominant_simplePole_isEquivalent (decorative C-hypotheses removed); genuine F&S V.2 derivation
 -- of the decomposition from C(ρ)=1 is flagged future work.
 #print axioms AnalyticCombinatorics.Ch5.Meromorphic.supercriticalSeq_isEquivalent
+
+-- Ch7 2-regular graphs UPGRADED to genuine combinatorial fidelity: twoRegularClass = SET of undirected
+-- cycles (length ≥3, = directed cycle mod reversal, card (n-1)!/2), EGF derived, count proved equal to
+-- the earlier GF-coeff count; asymptotic now holds for the genuine combinatorial count.
+#print axioms AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularClass.undirectedCycle_card_of_three_le
+#print axioms AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularClass.twoRegularClass_counts_eq_twoRegularGraphCount
+#print axioms AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularClass.twoRegularClass_counts_div_factorial_isEquivalent
 
 end AnalyticCombinatorics.Ch1
