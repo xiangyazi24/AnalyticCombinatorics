@@ -68,3 +68,14 @@ All 5 `#print axioms` = {propext, Classical.choice, Quot.sound}; full build gree
 Audit coverage now spans every foundational layer (symbolic transfer Ch1/2/3, complex core
 Pringsheim/Transfer-VI.3/Cauchy-coeff, asymptotic payoffs Catalan/Fib/CentralBinom, saddle exp,
 Ch5 meromorphic) — all FAITHFUL. The rebuilt tree passes C-group audit for its current content.
+
+### New work 2026-06-03 (Ch5 surjections — Fubini numbers, F&S Ch V)
+
+| Theorem | F&S | Statement (abridged) | Verdict |
+|---------|-----|----------------------|---------|
+| `Surjections.surjectionsCount_div_factorial_isEquivalent` | V | `r_n/n! ~ 1/(2(log2)^{n+1})`, r_n = posInt.lseq.counts (Fubini/ordered-Bell) | FAITHFUL — correct constant |
+| `Surjections.remainder_radius_gt_one` | V | toFMLS radius of (surjEGF − principal) > 1 | FAITHFUL — genuine |
+| `Surjections.analyticRemainderFun_differentiableOn_closedBall_two` | V | meromorphic remainder of 1/(2−e^z) analytic on closedBall 2 | FAITHFUL — dslope removable-singularity continuation, math cross-checked: remainder = (1/2)(e^w−1−w)/(w(e^w−1)), w=z−log2; next poles log2±2πi modulus ≈6.3>2 |
+
+The hard transcendental step (remainder radius) is genuinely proved, not buried. All headline
+`#print axioms` clean; full build green (8324 jobs).

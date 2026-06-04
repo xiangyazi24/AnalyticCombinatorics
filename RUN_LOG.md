@@ -10,7 +10,12 @@
 - avenue (a) progress:
   - meromorphic-transfer brick (codex): DONE — Ch5/Meromorphic/Transfer.lean, 7 theorems, FAITHFUL,
     all #print axioms clean, full build green (8323 jobs), committed 1d0f262.
-  - surjections asymptotic brick (codex PID 1069696): dispatched — r_n/n! ~ 1/(2(log2)^(n+1))
-    via dominant_simplePole_isEquivalent on EGF 1/(2-e^z). [grinding]
+  - surjections asymptotic brick (codex): DONE — Ch5/Meromorphic/Surjections.lean, 15 theorems,
+    FAITHFUL (incl. hard transcendental remainder differentiable on closedBall 2 via dslope),
+    surjectionsCount n/n! ~ 1/(2(log2)^(n+1)) (Fubini numbers), build green 8324 jobs, axioms clean,
+    committed fa90671. Avenue (a) Ch V core delivered.
+- avenue (b) Ch VII opened:
+  - ternary trees / Fuss-Catalan brick (codex PID 1154821): dispatched — T_n=C(3n,n)/(2n+1) ~
+    (27/4)^n √3/(2√(3π) n^{3/2}) via Stirling. [grinding]
 - end: <fill on close>
 - final result: <fill on close>
