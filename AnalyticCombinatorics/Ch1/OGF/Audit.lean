@@ -95,6 +95,7 @@ import AnalyticCombinatorics.Ch9.LimitLaws.QuasiPowers
 import AnalyticCombinatorics.Ch9.LimitLaws.BinaryWordCLT
 import AnalyticCombinatorics.Ch9.LimitLaws.PermutationCycles
 import AnalyticCombinatorics.Ch9.LimitLaws.FixedPointsPoisson
+import AnalyticCombinatorics.Ch9.LimitLaws.PMFToDistribution
 import AnalyticCombinatorics.Ch9.LimitLaws.CompositionParts
 
 /-!
@@ -293,6 +294,11 @@ namespace AnalyticCombinatorics.Ch1
 -- Full weak-convergence blocked on a missing Mathlib pmf⟹weak bridge (honestly reported, not faked).
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.FixedPointsPoissonNS.fixedPoint_factorialMoment_eq_one
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.FixedPointsPoissonNS.fixedPointPMF_tendsto_poissonPMFReal_one
+
+-- Ch9 reusable bridge (fills a Mathlib gap): pointwise singleton-mass convergence of ProbabilityMeasure ℕ
+-- ⟹ weak convergence (portmanteau finite-subset approximation). Upgrades fixed-points → FULL Poisson(1).
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.PMFToDistribution.probabilityMeasure_nat_tendsto_of_tendsto_singleton
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.PMFToDistribution.FixedPointsPoissonNS.fixedPoints_tendstoInDistribution_poisson_one
 
 -- Ch9 permutation cycle-count CLT (Goncharov, F&S Ch IX): the number of cycles of a uniform random
 -- permutation (Feller-coupling realization: sum of independent Bernoulli(1/k)) satisfies
