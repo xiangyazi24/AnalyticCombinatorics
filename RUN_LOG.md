@@ -195,3 +195,10 @@
   bridge to the marginal cycle-count identity rCyclePMF=rCyclePMFFormula — genuine Mathlib gap (no
   marginal cycleType.count r=j enumeration / Goncharov exact count). r=1 = re-wrap of fixed-points (not banked).
   Honest conditional status; combinatorial enumeration is multi-session future work. (29th deliverable.)
+- Fibonacci OGF asymptotic (codex): FibonacciCompositions.lean (namespaced FibonacciCompositionsNS).
+  BANKED unconditional: natFib_succ_isEquivalent_phi — Nat.fib(n+1) ~ φ^{n+1}/√5, the textbook first
+  rational-coefficient asymptotic (F&S Ch V). Genuine: partial-fraction split of 1/(1-z-z²) into poles
+  ρ=1/φ (dominant) + 1/(-φ) (remainder radius>1 via FMLS estimate), coeff=Nat.fib(n+1) from recurrence
+  (fibonacciSeries_mul_denominator), residue -1/√5, fed to banked dominant_simplePole_isEquivalent.
+  13 theorems, 0 blocked. NOTE: fibonacciCompositionCount:=Nat.fib(n+1) by def; {1,2}-composition
+  bijection NOT proved — banked the clean Nat.fib statement, not the "composition" framing. (30th deliverable.)

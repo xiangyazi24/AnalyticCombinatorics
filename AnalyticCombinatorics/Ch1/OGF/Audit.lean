@@ -81,6 +81,7 @@ import AnalyticCombinatorics.Ch5.Meromorphic.Tangent
 import AnalyticCombinatorics.Ch5.Meromorphic.Secant
 import AnalyticCombinatorics.Ch5.Meromorphic.SupercriticalSeq
 import AnalyticCombinatorics.Ch5.Meromorphic.SupercriticalSeqGenuine
+import AnalyticCombinatorics.Ch5.Meromorphic.FibonacciCompositions
 import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTrees
 import AnalyticCombinatorics.Ch7.SingularityApp.Motzkin
 import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalan
@@ -392,6 +393,12 @@ namespace AnalyticCombinatorics.Ch1
 -- Ch5 secant/Euler numbers (F&S Ch V): sec z poles ±π/2 (residues ∓1), reusing the two-pole machinery;
 -- UNCONDITIONAL E_{2n}/(2n)! ~ 2(2/π)^{2k+1} (even n).
 #print axioms AnalyticCombinatorics.Ch5.Meromorphic.Secant.secantNumber_div_factorial_even_isEquivalent
+
+-- Ch5 Fibonacci OGF 1/(1-z-z²) (F&S Ch V, the textbook first rational-coefficient asymptotic):
+-- partial-fraction split into the two simple poles ρ=1/φ (dominant) and 1/(-φ) (remainder radius >1),
+-- coeff = Nat.fib(n+1) from the recurrence, residue -1/√5 ⟹ UNCONDITIONAL Nat.fib(n+1) ~ φ^{n+1}/√5
+-- via the banked dominant_simplePole_isEquivalent. Stated for the genuine Mathlib Nat.fib.
+#print axioms AnalyticCombinatorics.Ch5.Meromorphic.FibonacciCompositionsNS.natFib_succ_isEquivalent_phi
 
 -- Ch4/VI log-singularity coefficient scale (leading order, β=1): genuine [z^n](1-z)^{-α}log(1/(1-z))
 -- = Ring.choose(α+n-1,n)·Σ_{j<n}(α+j)⁻¹ ~ (n^{α-1}/Γα)·log n (α>1). Full Δ-domain log-transfer + general β
