@@ -72,6 +72,17 @@
   general, quasi-powers framework, binary-word CLT, cycle CLT, 2-regular (GF-coeff), Fuss-Catalan
   p=4/5/6 instances (Opus), composition-parts CLT. Opened Ch V/VII/IX. Whole-tree audit clean.
   2 fidelity issues caught+fixed; codex outage bridged.
+  - alignments (codex): DONE — Ch5/Meromorphic/Alignments.lean, HIGH-FIDELITY (genuine alignmentClass),
+    o_n/n! ~ (1/(e-1))(e/(e-1))^n; codex corrected brief's wrong OEIS values. committed f235290, green 8334.
+  - supercritical-seq schema (codex): DONE-with-fidelity-fix — codex dressed dominant_simplePole with
+    UNUSED supercritical C-hypotheses (3rd fidelity catch this run). Removed decorative hyps; committed
+    honest thin SEQ-form-constant transfer (d64a98c, green 8335). Genuine V.2 (derive decomposition from
+    C(ρ)=1) flagged future work.
+- Session FAITHFUL deliverables (13): meromorphic transfer, surjections, ternary, Motzkin, Fuss-Catalan
+  general + p=4/5/6, quasi-powers framework, binary-word CLT, cycle CLT, 2-regular (GF-coeff),
+  composition-parts CLT, alignments, supercrit transfer (thin). Opened Ch V/VII/IX. Whole-tree audit clean
+  (build green 8335). 3 fidelity issues caught+fixed (Motzkin-v1 vacuous, quasi-powers hChar over-strong,
+  supercrit decorative hyps); codex outage bridged.
 - next: more high-fidelity Ch V/VII/IX applications; appendices; Ch VI breadth; hard saddle (Bell/partitions).
 - end: <ongoing — automode>
 - final result: <ongoing>
