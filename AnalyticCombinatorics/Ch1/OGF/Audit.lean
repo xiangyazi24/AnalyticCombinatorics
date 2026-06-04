@@ -70,6 +70,7 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.Exp
 import AnalyticCombinatorics.Ch8.SaddlePoint.BellBridge
 import AnalyticCombinatorics.Ch8.SaddlePoint.HAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.ExpHAdmissible
+import AnalyticCombinatorics.Ch8.SaddlePoint.BellHAdmissible
 import AnalyticCombinatorics.Ch5.Meromorphic.Transfer
 import AnalyticCombinatorics.Ch5.Meromorphic.Surjections
 import AnalyticCombinatorics.Ch5.Meromorphic.Alignments
@@ -331,5 +332,11 @@ namespace AnalyticCombinatorics.Ch1
 -- demonstrably NON-VACUOUS.
 #print axioms _root_.ExpStirling.expHAdmissible
 #print axioms _root_.ExpStirling.exp_coeff_isEquivalent_saddle_from_HAdmissible
+
+-- Ch8 Bell HAdmissible instance — the Hayman flagship (f = e^{e^z-1}, saddle r·e^r=n). Full instance
+-- (local_uniform + tail_uniform proved), Bell asymptotic through the general interface, tied to the
+-- genuine combinatorial Bell count (posInt.set.counts = set partitions): B_n/n! ~ saddleScale.
+#print axioms _root_.bellHAdmissible
+#print axioms _root_.bell_number_over_factorial_isEquivalent_saddle
 
 end AnalyticCombinatorics.Ch1
