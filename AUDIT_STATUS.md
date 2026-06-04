@@ -114,3 +114,14 @@ IMPOSTOR CAUGHT + FIXED: the first Motzkin attempt produced a conditional theore
 UNSATISFIABLE → vacuously true → unusable. Trust-but-verify caught it; rebuilt with the centered
 architecture (subtract regular part f(1)=3 before transfer). Constant cross-checked numerically
 (M_n/(K·3^n·n^{-3/2}) → 1, 0.80 at n=10). All `#print axioms` clean; full build green (8326 jobs).
+
+### New work 2026-06-04 (Ch7 general Fuss-Catalan / p-ary trees, F&S Ch VII)
+
+| Theorem | F&S | Statement (abridged) | Verdict |
+|---------|-----|----------------------|---------|
+| `fussCatalan_isEquivalent (p≥2)` | VII | `C(pn,n)/((p-1)n+1) ~ (√p/((p-1)^{3/2}√(2π)))·(p^p/(p-1)^{p-1})^n·n^{-3/2}` | FAITHFUL |
+| `fussCatalan_choose_dvd (p≥2)` | — | `(p-1)n+1 ∣ C(pn,n)` (Fuss-Catalan integrality) | FAITHFUL |
+| `fussCatalan_three_eq_ternaryTreeCount` | — | `fussCatalan 3 n = ternaryTreeCount n` (consistency) | FAITHFUL |
+
+Subsumes Catalan (p=2: base 4, const 1/√π) and ternary (p=3: 27/4, √3/(4√π)) — both cross-checks
+PROVED in Lean, not asserted. All `#print axioms` clean; full build green (8327 jobs).

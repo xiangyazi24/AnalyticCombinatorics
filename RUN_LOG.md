@@ -25,7 +25,14 @@
     the hsing contradiction → v3 corrected (centered architecture) + proved Δ-domain analyticity +
     denominator nonvanishing + singular expansion → v4 closed power-series bridge (quadratic branch
     uniqueness). build green 8326, axioms clean, committed 323a011.
-  - Fuss-Catalan general p-ary brick (codex PID 1494581): dispatched — fussCatalan p n ~ C_p·r_p^n·
-    n^{-3/2}, generalizes ternary; reliable explicit+Stirling route. [grinding]
-- end: <fill on close>
-- final result: <fill on close>
+  - Fuss-Catalan general p-ary brick (codex): DONE — Ch7/SingularityApp/FussCatalan.lean, FAITHFUL,
+    fussCatalan p n ~ (√p/((p-1)^{3/2}√(2π)))·(p^p/(p-1)^{p-1})^n·n^{-3/2} for all p≥2; Catalan/ternary
+    cross-checks + fussCatalan 3 = ternaryTreeCount proved in Lean. build green 8327, axioms clean,
+    committed eca8d96.
+- avenue (c) Ch IX opened:
+  - quasi-powers / Gaussian limit law brick (codex PID 1549525): dispatched — Mathlib-survey-first
+    (Levy continuity?), then Hwang IX.8 + mean/variance asymptotics or maximal tractable core. [grinding]
+- Session FAITHFUL deliverables: Ch5 meromorphic transfer (IV.10), Ch5 surjections/Fubini,
+  Ch7 ternary, Ch7 Motzkin (impostor caught+fixed), Ch7 Fuss-Catalan general. Whole-tree audit clean.
+- end: <ongoing>
+- final result: <ongoing>
