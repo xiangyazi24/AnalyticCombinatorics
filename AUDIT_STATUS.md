@@ -100,3 +100,17 @@ The hard transcendental step (remainder radius) is genuinely proved, not buried.
 Note: codex correctly REJECTED the (wrong, self-inconsistent) target constant in the dispatch brief
 and proved the true Stirling value √3/(4√π) — verified by hand. Healthy "有来有往" (not 传声筒).
 All `#print axioms` = {propext, Classical.choice, Quot.sound}; full build green (8325 jobs).
+
+### New work 2026-06-04 (Ch7 Motzkin — algebraic √-singularity, F&S Ch VII) — UNCONDITIONAL
+
+| Theorem | F&S | Statement (abridged) | Verdict |
+|---------|-----|----------------------|---------|
+| `motzkin_isEquivalent` | VII | `M_n ~ (3√3/(2√π))·3^n·n^{-3/2}`, M = genuine Motzkin recurrence | FAITHFUL, UNCONDITIONAL |
+| `motzkinRescaledDenominator_ne_zero` | — | denominator of rescaled OGF ≠ 0 on Δ-domain (the crux) | FAITHFUL |
+| `motzkinCenteredRescaledFun_hasFPowerSeriesAt_zero` | — | explicit fn's Taylor series = formal Motzkin (centered) series | FAITHFUL — via quadratic branch uniqueness |
+
+IMPOSTOR CAUGHT + FIXED: the first Motzkin attempt produced a conditional theorem whose hypotheses
+(`hp`: series = motzkinRescaledSeriesℂ ⟹ f(1)=3; `hsing`: f ~ C(1-z)^{1/2} ⟹ f(1)=0) were JOINTLY
+UNSATISFIABLE → vacuously true → unusable. Trust-but-verify caught it; rebuilt with the centered
+architecture (subtract regular part f(1)=3 before transfer). Constant cross-checked numerically
+(M_n/(K·3^n·n^{-3/2}) → 1, 0.80 at n=10). All `#print axioms` clean; full build green (8326 jobs).

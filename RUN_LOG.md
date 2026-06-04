@@ -20,7 +20,12 @@
     proved true Stirling value (有来有往). build green 8325, axioms clean, committed 126b7c6.
   - DISCOVERY: TransferGeneral.transfer_theorem covers ALL α (α≠-m), incl √-singularities (α=-1/2).
     Singularity-analysis framework is complete → Ch VI/VII tree results unlocked.
-  - Motzkin brick (codex PID 1205778): dispatched — M_n ~ K·3^n·n^{-3/2} via general transfer
-    (√-singularity at 1/3); constant derived+numerically-verified, not asserted. [grinding]
+  - Motzkin brick: DONE (4 sub-bricks) — Ch7/SingularityApp/Motzkin.lean, UNCONDITIONAL FAITHFUL,
+    M_n ~ (3√3/(2√π))·3^n·n^{-3/2}. v1 = vacuous impostor (caught by trust-but-verify) → v2 found
+    the hsing contradiction → v3 corrected (centered architecture) + proved Δ-domain analyticity +
+    denominator nonvanishing + singular expansion → v4 closed power-series bridge (quadratic branch
+    uniqueness). build green 8326, axioms clean, committed 323a011.
+  - Fuss-Catalan general p-ary brick (codex PID 1494581): dispatched — fussCatalan p n ~ C_p·r_p^n·
+    n^{-3/2}, generalizes ternary; reliable explicit+Stirling route. [grinding]
 - end: <fill on close>
 - final result: <fill on close>
