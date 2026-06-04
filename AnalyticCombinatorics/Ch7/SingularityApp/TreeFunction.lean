@@ -22,6 +22,8 @@ factor `1/n`.
 open Filter Asymptotics
 open scoped Topology
 
+namespace AnalyticCombinatorics.Ch7.SingularityApp.TreeFunctionNS
+
 /-- Cayley's count of rooted labelled trees on `n` labelled vertices. -/
 def cayleyRootedTree (n : ℕ) : ℕ :=
   n ^ (n - 1)
@@ -169,3 +171,5 @@ def cayleyAsymptoticRatio (n : ℕ) : Float :=
 
 #eval [1, 2, 3, 4, 5].map fun n =>
   (n, cayleyCoeffFloat n, cayleyAsymptoticFloat n, cayleyAsymptoticRatio n)
+
+end AnalyticCombinatorics.Ch7.SingularityApp.TreeFunctionNS

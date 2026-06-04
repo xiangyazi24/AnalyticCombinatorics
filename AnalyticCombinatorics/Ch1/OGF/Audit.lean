@@ -385,6 +385,7 @@ namespace AnalyticCombinatorics.Ch1
 
 -- Ch7 tree function / Cayley (F&S VII.4 implicit-function schema): genuine cayleyRootedTree n = n^{n-1}
 -- (rooted labelled trees, T=z e^T, √-singularity at 1/e); n^{n-1}/n! ~ e^n/(√(2π)·n^{3/2}) via Stirling.
-#print axioms _root_.treeFunctionCoeff_isEquivalent
+#print axioms AnalyticCombinatorics.Ch7.SingularityApp.TreeFunctionNS.treeFunctionCoeff_isEquivalent
+#print axioms AnalyticCombinatorics.Ch7.SingularityApp.TreeFunctionNS.cayleyRootedTree_over_factorial_isEquivalent
 
 end AnalyticCombinatorics.Ch1
