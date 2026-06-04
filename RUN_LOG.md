@@ -150,3 +150,6 @@
 - PIVOT: algebraic √-family (Motzkin/Schröder/Riordan) well-covered; turning to NEW territory —
   two-dominant-pole meromorphic transfer (tangent numbers, tan z poles ±π/2), then conjugate/higher-order
   poles, log-singularity transfer, appendices.
+- tangent numbers (codex, 2 sub-bricks): DONE — Tangent.lean (789L), UNCONDITIONAL. First two-dominant-pole
+  meromorphic transfer (tan poles ±π/2, residue −1); remainder analytic to closedBall 3 proved → T_n/n! ~
+  2(2/π)^{n+1} (odd n). green 8343, clean. committed c620359. (21st deliverable; new two-pole machinery.)
