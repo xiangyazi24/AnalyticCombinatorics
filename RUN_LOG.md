@@ -93,7 +93,15 @@
   alignments + supercrit-transfer), Ch VII (ternary, Motzkin, Fuss-Catalan general+p=4/5/6, 2-regular
   genuine), Ch IX (quasi-powers framework + binary-word + cycle + composition-parts CLTs). 3 fidelity
   issues caught+fixed; 1 gap closed; codex outage bridged. ~38 commits.
-- next (multi-session): genuine V.2 supercrit derivation (tighten the flagged future-work); hard
-  saddle/circle-method (Bell/involutions/Hardy-Ramanujan partitions); more Ch V/VII/IX breadth; appendices.
-- end: <ongoing — automode>
+  - genuine V.2 supercrit (codex): DONE — SupercriticalSeqGenuine.lean, decomposition DERIVED from
+    C(ρ)=1 simple (dslope removable-singularity subtraction), no assumed decomposition. The thin-wrapper's
+    flagged future-work is CLOSED. committed d5b0241, green 8337.
+- CAPSTONE v2 (2026-06-04): 89 files, build green 8337, 0 sorry/admit/native_decide/custom-axiom; ~162
+  headline theorems #print-axioms-certified. Opened Ch V/VII/IX. ALL flagged fidelity gaps closed
+  (2-regular → genuine count; supercrit → genuine V.2). 3 fidelity issues caught+fixed; codex outage
+  bridged. ~40 commits. Every fidelity concern raised this run has been resolved.
+- next (genuinely multi-session): hard saddle/circle-method (Bell/involutions/Hardy-Ramanujan partitions);
+  more Ch V/VII/IX breadth; multivariate (Ch IX); appendices A/B/C.
+- end: <comprehensive milestone; campaign continues per doctrine>
 - final result: <ongoing>
+
