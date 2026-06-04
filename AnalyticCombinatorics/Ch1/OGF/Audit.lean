@@ -89,6 +89,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalanInstances
 import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularClass
 import AnalyticCombinatorics.Ch7.SingularityApp.Schroeder
 import AnalyticCombinatorics.Ch7.SingularityApp.Riordan
+import AnalyticCombinatorics.Ch7.SingularityApp.TreeFunction
 import AnalyticCombinatorics.Ch9.LimitLaws.QuasiPowers
 import AnalyticCombinatorics.Ch9.LimitLaws.BinaryWordCLT
 import AnalyticCombinatorics.Ch9.LimitLaws.PermutationCycles
@@ -381,5 +382,9 @@ namespace AnalyticCombinatorics.Ch1
 -- the general Hayman interface.
 #print axioms _root_.Blocks3HAdmissible.blocks3HAdmissible
 #print axioms _root_.Blocks3HAdmissible.blocks3_count_over_factorial_isEquivalent_saddle
+
+-- Ch7 tree function / Cayley (F&S VII.4 implicit-function schema): genuine cayleyRootedTree n = n^{n-1}
+-- (rooted labelled trees, T=z e^T, √-singularity at 1/e); n^{n-1}/n! ~ e^n/(√(2π)·n^{3/2}) via Stirling.
+#print axioms _root_.treeFunctionCoeff_isEquivalent
 
 end AnalyticCombinatorics.Ch1
