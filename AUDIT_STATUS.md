@@ -193,3 +193,27 @@ distribution over the real Mathlib `Composition n` type, not posited.
 
 codex corrected the brief's wrong OEIS values (true A007840 = 1,1,3,14,88,694; ratios → 1). build green
 (8334 jobs), axioms clean. Genuine-combinatorial fidelity (alignmentClass, not EGF-defined).
+
+### Fidelity upgrade 2026-06-04 (2-regular → genuine combinatorial; closes the one flagged gap)
+
+The earlier `twoRegularGraphCount` was GF-coefficient-defined (flagged as the weakest-fidelity result).
+`TwoRegularClass.lean` now closes that gap:
+
+| Theorem | Statement | Verdict |
+|---------|-----------|---------|
+| `TwoRegularClass.undirectedCycle_card_of_three_le` | `card(UndirectedCycle n) = (n-1)!/2` (k≥3) | FAITHFUL — directed cycle mod reversal |
+| `TwoRegularClass.twoRegularClass_counts_eq_twoRegularGraphCount` | genuine `SET`-of-cycles count = old GF-coeff count | FAITHFUL — ties genuine class to the asymptotic |
+| `TwoRegularClass.twoRegularClass_counts_div_factorial_isEquivalent` | `twoRegularClass.counts n /n! ~ e^{-3/4}/√(πn)` | FAITHFUL — asymptotic now for the GENUINE combinatorial count |
+
+`twoRegularClass = SET` of undirected-cycle blocks (Ch2 SET-EGF machinery), EGF derived
+= exp(-z/2-z²/4)/√(1-z). The audit closed its own flagged gap. build green; axioms clean.
+
+## Summary (2026-06-04, this run)
+
+Whole tree: 88 files, 0 sorry/admit/native_decide/custom-axiom; Audit.lean #print-axioms-certifies ~160
+headline theorems = {propext, Classical.choice, Quot.sound}; full build green (8336 jobs).
+Opened F&S Ch V (meromorphic transfer + surjections + alignments + supercrit-transfer), Ch VII (ternary,
+Motzkin, general+p=4/5/6 Fuss-Catalan, 2-regular genuine), Ch IX (quasi-powers framework + binary-word +
+cycle + composition-parts CLTs). 3 fidelity issues caught & fixed (Motzkin-v1 vacuous, quasi-powers hChar
+over-strong, supercrit decorative hyps); 1 fidelity gap closed (2-regular). Whole book remains
+multi-session (hard saddle/circle-method: Bell/partitions/Hardy-Ramanujan; more breadth; appendices).
