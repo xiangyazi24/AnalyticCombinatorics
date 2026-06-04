@@ -176,3 +176,8 @@
   clean. committed a53289f. (26th.)
 - PIVOT to a genuinely-different limit law: fixed points of a random permutation → Poisson(1) (discrete
   limit, not Gaussian; method of factorial moments). Opens the discrete-limit-law side of Ch IX.
+- fixed points → Poisson(1) (codex): DONE (pmf-level) — FixedPointsPoisson.lean (namespaced), FIRST
+  discrete limit law: exact factorial moments E[(F_n)_k]=1, pmf → poissonPMFReal 1 j (via derangements).
+  Full weak-convergence reported-open (Mathlib lacks pmf⟹weak bridge for ℕ). green 8349, clean. 36f7a74. (27th.)
+- LIMIT-LAW LANDSCAPE now covers BOTH Gaussian (binary-word/cycle/composition-parts) AND Poisson
+  (fixed points) — the two canonical F&S Ch IX universal laws.
