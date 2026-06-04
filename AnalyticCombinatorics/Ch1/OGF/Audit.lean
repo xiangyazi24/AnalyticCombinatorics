@@ -72,6 +72,7 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.HAdmissible
 import AnalyticCombinatorics.Ch5.Meromorphic.Transfer
 import AnalyticCombinatorics.Ch5.Meromorphic.Surjections
 import AnalyticCombinatorics.Ch5.Meromorphic.Alignments
+import AnalyticCombinatorics.Ch5.Meromorphic.SupercriticalSeq
 import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTrees
 import AnalyticCombinatorics.Ch7.SingularityApp.Motzkin
 import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalan
@@ -302,5 +303,10 @@ namespace AnalyticCombinatorics.Ch1
 -- o_n/n! ~ (1/(e-1))·(e/(e-1))^n via dominant simple pole of 1/(1-log(1/(1-z))) at ρ=1-1/e.
 #print axioms AnalyticCombinatorics.Ch5.Meromorphic.Alignments.alignmentEGFℂ_mul_denominator
 #print axioms AnalyticCombinatorics.Ch5.Meromorphic.Alignments.alignmentCount_div_factorial_isEquivalent
+
+-- Ch5 supercritical-sequence dominant-pole transfer (SEQ-form constant c=1/C'(ρ)). Honest thin wrapper
+-- around dominant_simplePole_isEquivalent (decorative C-hypotheses removed); genuine F&S V.2 derivation
+-- of the decomposition from C(ρ)=1 is flagged future work.
+#print axioms AnalyticCombinatorics.Ch5.Meromorphic.supercriticalSeq_isEquivalent
 
 end AnalyticCombinatorics.Ch1
