@@ -243,3 +243,7 @@
   (uniformPermExpectation_finset_sum) over the banked per-length means rCycle_mean_eq_inv. Classic Goncharov
   (a random permutation has ∼ log n cycles). Genuine consequence of the factorial-moment machinery,
   lake env lean clean. (34th deliverable; Opus-authored during outage.)
+- Variance of r-cycle count (Opus, during outage): CycleVariance.lean (namespace RCyclesPoissonNS).
+  BANKED: rCycle_variance_eq_inv — Var(C_{n,r}) = E[(C_{n,r})_2]+E[C_{n,r}]-(E[C_{n,r}])² = 1/r²+1/r-1/r² = 1/r
+  (2r≤n), from the banked factorial moments. Second-moment confirmation of the Poisson(1/r) limit (variance 1/r).
+  lake env lean clean. (35th deliverable; Opus-authored during codex outage.)

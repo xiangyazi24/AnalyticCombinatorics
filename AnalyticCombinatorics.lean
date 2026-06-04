@@ -105,6 +105,7 @@ import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesFactorialMoment
 import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonComplete
 import AnalyticCombinatorics.Ch9.LimitLaws.JointCycleMoments
 import AnalyticCombinatorics.Ch9.LimitLaws.ExpectedCycles
+import AnalyticCombinatorics.Ch9.LimitLaws.CycleVariance
 import AnalyticCombinatorics.Ch9.LimitLaws.CompositionParts
 
 /-!

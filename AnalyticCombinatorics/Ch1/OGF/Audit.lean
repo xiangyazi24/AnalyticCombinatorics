@@ -102,6 +102,7 @@ import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesFactorialMoment
 import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonComplete
 import AnalyticCombinatorics.Ch9.LimitLaws.JointCycleMoments
 import AnalyticCombinatorics.Ch9.LimitLaws.ExpectedCycles
+import AnalyticCombinatorics.Ch9.LimitLaws.CycleVariance
 import AnalyticCombinatorics.Ch9.LimitLaws.CompositionParts
 
 /-!
@@ -343,6 +344,11 @@ namespace AnalyticCombinatorics.Ch1
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
 -- E[#cycles] = E[∑_{r=1}^n C_{n,r}] = ∑_{r=1}^n 1/r = H_n (∼ log n cycles in a random permutation).
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.expected_totalCycles_eq_harmonic
+
+-- Ch9 variance of the r-cycle count = 1/r (Opus-authored, second-moment confirmation of Poisson(1/r)).
+-- Var(C_{n,r}) = E[(C_{n,r})_2] + E[C_{n,r}] - (E[C_{n,r}])² = 1/r² + 1/r - 1/r² = 1/r (2r ≤ n),
+-- from the banked factorial moments. Matches the Poisson(1/r) variance.
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.rCycle_variance_eq_inv
 
 -- Ch9 permutation cycle-count CLT (Goncharov, F&S Ch IX): the number of cycles of a uniform random
 -- permutation (Feller-coupling realization: sum of independent Bernoulli(1/k)) satisfies
