@@ -75,6 +75,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTrees
 import AnalyticCombinatorics.Ch7.SingularityApp.Motzkin
 import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalan
 import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegular
+import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalanInstances
 import AnalyticCombinatorics.Ch9.LimitLaws.QuasiPowers
 import AnalyticCombinatorics.Ch9.LimitLaws.BinaryWordCLT
 import AnalyticCombinatorics.Ch9.LimitLaws.PermutationCycles
@@ -283,5 +284,10 @@ namespace AnalyticCombinatorics.Ch1
 -- combinatorial input, not proved in Lean here.
 #print axioms _root_.twoRegularGraphCount_div_factorial_isEquivalent
 #print axioms _root_.twoRegularAsymptoticConstant_eq
+
+-- Ch7 named Fuss-Catalan instances (p-ary trees: quaternary/quinary/senary), specializations of the
+-- general theorem with explicit growth bases. (Opus-authored during codex outage.)
+#print axioms AnalyticCombinatorics.Ch7.SingularityApp.fussCatalan_four_isEquivalent
+#print axioms AnalyticCombinatorics.Ch7.SingularityApp.fussCatalan_five_isEquivalent
 
 end AnalyticCombinatorics.Ch1
