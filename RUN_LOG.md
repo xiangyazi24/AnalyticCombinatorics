@@ -153,3 +153,8 @@
 - tangent numbers (codex, 2 sub-bricks): DONE — Tangent.lean (789L), UNCONDITIONAL. First two-dominant-pole
   meromorphic transfer (tan poles ±π/2, residue −1); remainder analytic to closedBall 3 proved → T_n/n! ~
   2(2/π)^{n+1} (odd n). green 8343, clean. committed c620359. (21st deliverable; new two-pole machinery.)
+- secant/Euler numbers (codex): DONE — Secant.lean (609L), UNCONDITIONAL, reused tangent two-pole
+  machinery; E_{2n}/(2n)! ~ 2(2/π)^{2k+1}, numeric → 0.99995. green 8344, clean. committed 1296edb. (22nd.)
+- coverage: Ch V (single+two-pole meromorphic + 4 apps + supercrit V.2), Ch VII (6 algebraic/singularity),
+  Ch IX (framework + 3 CLT), Ch VIII (3 Hayman saddle instances). Reusable machinery built. All fidelity
+  gaps closed. Next genuinely-new: log-singularity transfer (VI.2), then circle method / appendices / multivariate.
