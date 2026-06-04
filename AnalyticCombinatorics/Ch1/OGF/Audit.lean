@@ -71,6 +71,7 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.BellBridge
 import AnalyticCombinatorics.Ch8.SaddlePoint.HAdmissible
 import AnalyticCombinatorics.Ch5.Meromorphic.Transfer
 import AnalyticCombinatorics.Ch5.Meromorphic.Surjections
+import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTrees
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -229,5 +230,11 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch5.Meromorphic.Surjections.remainder_radius_gt_one
 #print axioms AnalyticCombinatorics.Ch5.Meromorphic.Surjections.coeff_surjEGFℂ_isEquivalent
 #print axioms AnalyticCombinatorics.Ch5.Meromorphic.Surjections.surjectionsCount_div_factorial_isEquivalent
+
+-- Ch7 ternary trees / Fuss-Catalan asymptotic (F&S Ch VII, simple-variety √-singularity):
+-- T_n = C(3n,n)/(2n+1) ~ (27/4)^n · √3 / (4 √π · n^(3/2)).
+#print axioms _root_.ternary_choose_dvd
+#print axioms _root_.choose_three_mul_isEquivalent
+#print axioms _root_.ternaryTreeCount_isEquivalent
 
 end AnalyticCombinatorics.Ch1
