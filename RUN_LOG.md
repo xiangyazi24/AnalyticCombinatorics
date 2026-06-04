@@ -272,3 +272,8 @@
   * jointRCyclePMF_eq_formula + jointRCyclePMF_tendsto_poisson_product: bivariate pmf inversion (tensor of the
     1-D factorial-moment kernel) + exact joint moments r^{-a}s^{-b} ⟹ joint pmf → product Poisson pmf.
   Genuine end-to-end, no Mathlib re-wrapper. (38th deliverable; distributional Goncharov–Kolchin, bivariate.)
+- BIV build note: first full-build of BivariateCyclePoisson was KILLED mid-Audit-job (~OOM) due to 2 concurrent
+  Ripple lake builds on uisai1 (another session's SturmQrowCert work — not killed, per no-disrupt rule).
+  Incremental rebuild succeeded: 8359 jobs green, 3 flagship headlines clean-3, CLEAN. (Lesson: uisai1 shared;
+  heavy Audit job can OOM under concurrent builds — re-run incremental.) BivariateCyclePoisson uses
+  maxHeartbeats 1000000 on heavy bivariate-measure proofs (style-linter warns for a comment; audit unaffected).
