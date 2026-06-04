@@ -158,3 +158,7 @@
 - coverage: Ch V (single+two-pole meromorphic + 4 apps + supercrit V.2), Ch VII (6 algebraic/singularity),
   Ch IX (framework + 3 CLT), Ch VIII (3 Hayman saddle instances). Reusable machinery built. All fidelity
   gaps closed. Next genuinely-new: log-singularity transfer (VI.2), then circle method / appendices / multivariate.
+- log-singularity coeff scale (codex): DONE — LogSingularity.lean (183L), leading-order β=1
+  [z^n](1-z)^{-α}log(1/(1-z)) ~ (n^{α-1}/Γα)log n (α>1), α=2 ~ n log n. Full analytic log-transfer +
+  general β honestly reported-open. green 8345, clean. committed 721fa0c (+b13b48e import fix). (23rd.)
+  (process note: forgot Audit import — full build caught the unknown-constant; env-lean had missed it.)
