@@ -247,3 +247,8 @@
   BANKED: rCycle_variance_eq_inv — Var(C_{n,r}) = E[(C_{n,r})_2]+E[C_{n,r}]-(E[C_{n,r}])² = 1/r²+1/r-1/r² = 1/r
   (2r≤n), from the banked factorial moments. Second-moment confirmation of the Poisson(1/r) limit (variance 1/r).
   lake env lean clean. (35th deliverable; Opus-authored during codex outage.)
+- Cycle-count covariance (Opus, during outage): added rCycle_covariance_eq_zero to CycleVariance.lean.
+  BANKED: Cov(C_{n,r},C_{n,s}) = E[C_r C_s] - E[C_r]E[C_s] = 1/(rs) - (1/r)(1/s) = 0 for distinct positive
+  r,s with r+s≤n. Cycle counts of distinct lengths are UNCORRELATED — second-moment shadow of
+  Goncharov–Kolchin independence, from banked joint moment (factorialMoment_two_rCycle_of_pos) + means.
+  lake env lean clean. (36th deliverable; Opus-authored during outage.)

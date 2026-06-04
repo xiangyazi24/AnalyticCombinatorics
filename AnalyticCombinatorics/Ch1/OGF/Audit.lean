@@ -350,6 +350,11 @@ namespace AnalyticCombinatorics.Ch1
 -- from the banked factorial moments. Matches the Poisson(1/r) variance.
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.rCycle_variance_eq_inv
 
+-- Ch9 cycle counts of two distinct lengths are UNCORRELATED (Opus-authored): Cov(C_{n,r},C_{n,s}) =
+-- E[C_r C_s] - E[C_r]E[C_s] = 1/(rs) - (1/r)(1/s) = 0 (distinct positive r,s, r+s ≤ n). Second-moment
+-- shadow of Goncharov–Kolchin asymptotic independence, from the banked joint moment + means.
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.rCycle_covariance_eq_zero
+
 -- Ch9 permutation cycle-count CLT (Goncharov, F&S Ch IX): the number of cycles of a uniform random
 -- permutation (Feller-coupling realization: sum of independent Bernoulli(1/k)) satisfies
 -- (C_n − H_n)/√H_n →d N(0,1), UNCONDITIONAL. cycle_hChar = the local quasi-powers hypothesis, PROVED.

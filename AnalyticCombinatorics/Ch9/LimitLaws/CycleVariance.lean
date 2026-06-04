@@ -1,6 +1,7 @@
 import Mathlib
 import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoisson
 import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesFactorialMoment
+import AnalyticCombinatorics.Ch9.LimitLaws.JointCycleMoments
 
 /-!
 # Variance of the number of `r`-cycles
@@ -71,6 +72,28 @@ theorem rCycle_variance_eq_inv {n r : ℕ} (hr : 0 < r) (h2 : 2 * r ≤ n) :
     rw [zpow_neg, zpow_natCast, ← inv_pow]
   rw [uniformPermExpectation_sq_eq, hmean, factorialMoment_rCycle hr hk2, key]
   ring
+
+/-- **Cycle counts of two distinct lengths are uncorrelated**:
+`Cov(C_{n,r}, C_{n,s}) = E[C_{n,r} C_{n,s}] - E[C_{n,r}] E[C_{n,s}] = 1/(rs) - (1/r)(1/s) = 0`
+for distinct positive `r ≠ s` with `r + s ≤ n` — the second-moment shadow of asymptotic
+independence (Goncharov–Kolchin). -/
+theorem rCycle_covariance_eq_zero {n r s : ℕ} (hr : 0 < r) (hs : 0 < s) (hrs : r ≠ s)
+    (h : r + s ≤ n) :
+    FixedPointsPoissonNS.uniformPermExpectation n
+        (fun σ => (rCycleCount n r σ : ℝ) * (rCycleCount n s σ : ℝ)) -
+      FixedPointsPoissonNS.uniformPermExpectation n (fun σ => (rCycleCount n r σ : ℝ)) *
+        FixedPointsPoissonNS.uniformPermExpectation n (fun σ => (rCycleCount n s σ : ℝ)) = 0 := by
+  have hrn : r ≤ n := by omega
+  have hsn : s ≤ n := by omega
+  have hxy :
+      FixedPointsPoissonNS.uniformPermExpectation n
+        (fun σ => (rCycleCount n r σ : ℝ) * (rCycleCount n s σ : ℝ)) =
+          (r : ℝ)⁻¹ * (s : ℝ)⁻¹ := by
+    have hmom := JointCycleMomentsNS.factorialMoment_two_rCycle_of_pos
+      (n := n) (r := r) (s := s) (a := 1) (b := 1) hr hs hrs (by omega)
+    simpa [Nat.descFactorial_one, zpow_neg_one] using hmom
+  rw [hxy, rCycle_mean_eq_inv hr hrn, rCycle_mean_eq_inv hs hsn]
+  simp
 
 end RCyclesPoissonNS
 end LimitLaws
