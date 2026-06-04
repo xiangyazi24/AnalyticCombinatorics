@@ -71,6 +71,7 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.BellBridge
 import AnalyticCombinatorics.Ch8.SaddlePoint.HAdmissible
 import AnalyticCombinatorics.Ch5.Meromorphic.Transfer
 import AnalyticCombinatorics.Ch5.Meromorphic.Surjections
+import AnalyticCombinatorics.Ch5.Meromorphic.Alignments
 import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTrees
 import AnalyticCombinatorics.Ch7.SingularityApp.Motzkin
 import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalan
@@ -296,5 +297,10 @@ namespace AnalyticCombinatorics.Ch1
 -- combinatorial count #{c : Composition n // c.length = k} = C(n-1,k-1) (via compositionAsSetEquiv).
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.card_compositionsWithParts_eq_choose
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.compositionParts_tendstoInDistribution_gaussian
+
+-- Ch5 alignments (sequences of cycles, F&S Ch V): genuine class count alignmentClass.counts;
+-- o_n/n! ~ (1/(e-1))·(e/(e-1))^n via dominant simple pole of 1/(1-log(1/(1-z))) at ρ=1-1/e.
+#print axioms AnalyticCombinatorics.Ch5.Meromorphic.Alignments.alignmentEGFℂ_mul_denominator
+#print axioms AnalyticCombinatorics.Ch5.Meromorphic.Alignments.alignmentCount_div_factorial_isEquivalent
 
 end AnalyticCombinatorics.Ch1
