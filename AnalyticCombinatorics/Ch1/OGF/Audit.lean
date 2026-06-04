@@ -83,6 +83,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalan
 import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegular
 import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalanInstances
 import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularClass
+import AnalyticCombinatorics.Ch7.SingularityApp.Schroeder
 import AnalyticCombinatorics.Ch9.LimitLaws.QuasiPowers
 import AnalyticCombinatorics.Ch9.LimitLaws.BinaryWordCLT
 import AnalyticCombinatorics.Ch9.LimitLaws.PermutationCycles
@@ -345,5 +346,9 @@ namespace AnalyticCombinatorics.Ch1
 -- involutions, since parts12.counts = (0,1,1,0,…)). I_n/n! ~ saddleScale via the general interface.
 #print axioms _root_.InvolutionHAdmissible.involHAdmissible
 #print axioms _root_.InvolutionHAdmissible.involution_count_over_factorial_isEquivalent_saddle
+
+-- Ch7 large Schröder numbers (F&S Ch VII, algebraic √-singularity): genuine recurrence
+-- S(n+1)=S(n)+ΣS(k)S(n-k), OGF zS²+(z-1)S+1=0, ρ=3-2√2; S_n ~ C·(3+2√2)^n·n^{-3/2} via general transfer.
+#print axioms _root_.schroeder_isEquivalent
 
 end AnalyticCombinatorics.Ch1
