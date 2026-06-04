@@ -75,6 +75,7 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.InvolutionHAdmissible
 import AnalyticCombinatorics.Ch5.Meromorphic.Transfer
 import AnalyticCombinatorics.Ch5.Meromorphic.Surjections
 import AnalyticCombinatorics.Ch5.Meromorphic.Alignments
+import AnalyticCombinatorics.Ch5.Meromorphic.Tangent
 import AnalyticCombinatorics.Ch5.Meromorphic.SupercriticalSeq
 import AnalyticCombinatorics.Ch5.Meromorphic.SupercriticalSeqGenuine
 import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTrees
@@ -355,5 +356,11 @@ namespace AnalyticCombinatorics.Ch1
 -- Ch7 Riordan numbers (F&S Ch VII, Motzkin-sister √-singularity at 1/3): genuine first-return def
 -- R_{n+2}=Σ M_k R_{n-k} (R=1+z²MR); R_n ~ (3√3/(8√π))·3^n·n^{-3/2} via general transfer.
 #print axioms _root_.riordan_isEquivalent
+
+-- Ch5 tangent numbers (F&S Ch V, NEW two-pole meromorphic transfer): tan z has dominant simple poles at
+-- ±π/2 (residue −1); remainder analytic past radius 2 (next poles ±3π/2) — PROVED. UNCONDITIONAL:
+-- T_n/n! ~ 2(2/π)^{n+1} (odd n). First two-dominant-pole transfer in the repo.
+#print axioms AnalyticCombinatorics.Ch5.Meromorphic.Tangent.tangentRemainder_radius_gt_two
+#print axioms AnalyticCombinatorics.Ch5.Meromorphic.Tangent.tangentNumber_div_factorial_odd_isEquivalent
 
 end AnalyticCombinatorics.Ch1
