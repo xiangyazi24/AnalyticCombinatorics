@@ -202,3 +202,9 @@
   (fibonacciSeries_mul_denominator), residue -1/√5, fed to banked dominant_simplePole_isEquivalent.
   13 theorems, 0 blocked. NOTE: fibonacciCompositionCount:=Nat.fib(n+1) by def; {1,2}-composition
   bijection NOT proved — banked the clean Nat.fib statement, not the "composition" framing. (30th deliverable.)
+- Derangements D_n/n!→1/e (codex): REJECTED — NOT banked. Mathlib ALREADY proves this
+  (Mathlib/Combinatorics/Derangements/Exponential.lean:27 numDerangements_tendsto_inv_e). codex's
+  derangementRatio_tendsto is a restatement of that existing theorem; numDerangements_isEquivalent
+  (D_n~n!/e) is cosmetic repackaging into IsEquivalent (D_n/(n!/e)=e·(D_n/n!)→1). Per playbook
+  "never bank re-wrappers / zero-new-math". File left unwired/uncommitted. LESSON: grep Mathlib for the
+  target theorem BEFORE dispatching a textbook limit — derangements→1/e was already there.
