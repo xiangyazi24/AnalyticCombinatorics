@@ -162,3 +162,6 @@
   [z^n](1-z)^{-α}log(1/(1-z)) ~ (n^{α-1}/Γα)log n (α>1), α=2 ~ n log n. Full analytic log-transfer +
   general β honestly reported-open. green 8345, clean. committed 721fa0c (+b13b48e import fix). (23rd.)
   (process note: forgot Audit import — full build caught the unknown-constant; env-lean had missed it.)
+- blocks≤3 saddle (codex): DONE — Blocks3HAdmissible.lean (1067L), 4th Hayman instance e^{z+z²/2+z³/6},
+  genuine count parts123.set (set partitions blocks ≤3). green 8346, clean. committed 4a8d953. (24th.)
+- PIVOT to implicit-function schema (F&S VII.4): tree function T=ze^{T}, √-singularity at 1/e.
