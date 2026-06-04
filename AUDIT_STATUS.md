@@ -32,6 +32,16 @@ Verdict legend: FAITHFUL / CONDITIONAL-honest / FRAGMENT / IMPOSTOR.
 | `ParamClass.mean_eq` | III | `mean = (Σ param)/count` | FAITHFUL |
 | `ParamClass.variance_eq` | III | `variance = (Σ param²)/count − mean²` | FAITHFUL |
 
-Conclusion so far: the rebuilt tree's headline asymptotics are genuine `IsEquivalent`
-statements with correct constants — not the trivially-true projections of the old impostor
-tree. Continue spot-checks chapter by chapter as coverage grows.
+### Checked 2026-06-03 (Ch2 EGF core)
+
+| Theorem | F&S | Statement (abridged) | Verdict |
+|---------|-----|----------------------|---------|
+| `CombClass.egf_lprod` | II.1 | `(A⋆B).egf = A.egf·B.egf` (labelled product) | FAITHFUL |
+| `CombClass.egf_set` | II.2 | `SET(C).egf = exp(C.egf)` (C.counts 0 = 0) | FAITHFUL |
+| `CombClass.egf_lseq` | II.2 | `SEQ(C).egf·(1-C.egf)=1` | FAITHFUL |
+| `CombClass.egf_lcyc_ode` | II.2 | `d/dX CYC(C).egf = C.egf'·SEQ(C).egf` (CYC = log 1/(1-C)) | FAITHFUL |
+
+Conclusion so far: spot-checks across ALL existing chapters (Ch1 OGF, Ch2 EGF, Ch3 BGF,
+Ch4 complex+singularity, Ch8 saddle) — every core transfer rule and payoff theorem is a genuine,
+correctly-constanted statement. The rebuilt tree is honest, unlike the old whole-repo impostor.
+Continue spot-checks chapter by chapter as coverage grows.
