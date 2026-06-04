@@ -160,3 +160,15 @@ RESOLVED 2026-06-04 (commit 5a0f4b8): `hChar` weakened to the LOCAL form
 The framework theorems were re-proved (the proof only evaluates charFun at scaled args → 0, which
 eventually lie in `|s|≤s₀`). The binary-word CLT then instantiates it unconditionally, confirming the
 fixed framework is faithful AND non-vacuous. Full build green (8329 jobs); both `#print axioms` clean.
+
+### Opus-authored 2026-06-04 (during codex usage-limit outage)
+
+| Theorem | F&S | Statement | Verdict |
+|---------|-----|-----------|---------|
+| `fussCatalan_four_isEquivalent` | VII | quaternary trees `~ C₄·(256/27)^n·n^{-3/2}` | FAITHFUL — specialization of the general theorem |
+| `fussCatalan_five_isEquivalent` | VII | quinary trees `~ C₅·(3125/256)^n·n^{-3/2}` | FAITHFUL — specialization |
+| `fussCatalan_six_isEquivalent` | VII | senary trees `~ C₆·(6^6/5^5)^n·n^{-3/2}` | FAITHFUL — specialization |
+
+Authored directly with Opus (codex gpt-5.5 out of credits until ~5:27 AM); lake env lean + full build
+green (8332 jobs), axioms clean. Low marginal value (instances of the general p-ary theorem) but genuine
+faithful results, keeping progress through the external block.
