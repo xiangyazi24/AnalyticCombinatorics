@@ -74,6 +74,7 @@ import AnalyticCombinatorics.Ch5.Meromorphic.Surjections
 import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTrees
 import AnalyticCombinatorics.Ch7.SingularityApp.Motzkin
 import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalan
+import AnalyticCombinatorics.Ch9.LimitLaws.QuasiPowers
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -252,5 +253,13 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms _root_.fussCatalan_choose_dvd
 #print axioms _root_.fussCatalan_isEquivalent
 #print axioms _root_.fussCatalan_three_eq_ternaryTreeCount
+
+-- Ch9 quasi-powers / Gaussian limit law (F&S/Hwang IX.8), characteristic-function formulation.
+-- FAITHFUL framework theorem: given the quasi-powers charFun form + scaled-remainder→0 (the genuine
+-- Hwang hypothesis, via Mathlib's Levy continuity theorem), (X_n - β_n u₁)/√(β_n u₂) →d N(0,1);
+-- plus the mean/variance asymptotics. CONDITIONAL on the quasi-powers analytic input (no instance yet).
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.quasiPowers_tendstoInDistribution_of_continuousAt
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.expectation_sub_quasiPowerCoeff_isBigO
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.variance_sub_quasiPowerCoeff_isBigO
 
 end AnalyticCombinatorics.Ch1
