@@ -79,6 +79,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalanInstances
 import AnalyticCombinatorics.Ch9.LimitLaws.QuasiPowers
 import AnalyticCombinatorics.Ch9.LimitLaws.BinaryWordCLT
 import AnalyticCombinatorics.Ch9.LimitLaws.PermutationCycles
+import AnalyticCombinatorics.Ch9.LimitLaws.CompositionParts
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -289,5 +290,11 @@ namespace AnalyticCombinatorics.Ch1
 -- general theorem with explicit growth bases. (Opus-authored during codex outage.)
 #print axioms AnalyticCombinatorics.Ch7.SingularityApp.fussCatalan_four_isEquivalent
 #print axioms AnalyticCombinatorics.Ch7.SingularityApp.fussCatalan_five_isEquivalent
+
+-- Ch9 composition part-count CLT (F&S Ch IX): #parts of a uniform random composition of n is
+-- asymptotically Gaussian. HIGH FIDELITY: card_compositionsWithParts_eq_choose proves the genuine
+-- combinatorial count #{c : Composition n // c.length = k} = C(n-1,k-1) (via compositionAsSetEquiv).
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.card_compositionsWithParts_eq_choose
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.compositionParts_tendstoInDistribution_gaussian
 
 end AnalyticCombinatorics.Ch1
