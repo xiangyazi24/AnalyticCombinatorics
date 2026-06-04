@@ -130,3 +130,13 @@
 - involutions HAdmissible (codex): DONE — InvolutionHAdmissible.lean (912L), 3rd Hayman instance
   (e^{z+z²/2}), genuine count parts12.set (verified parts12=(0,1,1,0,…) atom class). green 8340, clean,
   committed d62b396. (18th deliverable; 93 files, 21,171 L total.)
+- set-partition block-count CLT (codex): NOT BANKED — codex honestly reduced it to a single
+  `def BellBlockSaddleCoefficientAsymptoticsObligation : Prop` that CONTAINS the substance (mean ~ n/log n,
+  variance ~ n/(log n)², AND the bivariate-Bell charFun quasi-powers expansion). The Gaussian conclusion
+  follows trivially from that obligation, so this is the "hard part bundled into a hypothesis" / def:Prop
+  pattern — NOT a faithful result. Per audit discipline, NOT wired into the tree, NOT counted as a
+  deliverable. The obligation = genuine hard multi-session sub-goal (parameter-uniform bivariate Bell
+  saddle, beyond the univariate BellHAdmissible). Flagged future work. (SetPartitionBlocks.lean left on
+  uisai1 as scaffolding, unwired.)
+- audit lesson reaffirmed: a CLT "conditional on" an obligation that contains the mean/variance/expansion
+  is not progress — refuse to bank it (substrate: 不容忍把数学负担塞进假设).
