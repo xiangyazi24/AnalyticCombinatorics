@@ -30,9 +30,15 @@
     cross-checks + fussCatalan 3 = ternaryTreeCount proved in Lean. build green 8327, axioms clean,
     committed eca8d96.
 - avenue (c) Ch IX opened:
-  - quasi-powers / Gaussian limit law brick (codex PID 1549525): dispatched — Mathlib-survey-first
-    (Levy continuity?), then Hwang IX.8 + mean/variance asymptotics or maximal tractable core. [grinding]
-- Session FAITHFUL deliverables: Ch5 meromorphic transfer (IV.10), Ch5 surjections/Fubini,
-  Ch7 ternary, Ch7 Motzkin (impostor caught+fixed), Ch7 Fuss-Catalan general. Whole-tree audit clean.
-- end: <ongoing>
+  - quasi-powers / Gaussian limit law brick (codex): DONE — Ch9/LimitLaws/QuasiPowers.lean, opens Ch IX.
+    Mathlib Levy continuity theorem PRESENT (tendsto_iff_tendsto_charFun) → quasi-powers Gaussian limit
+    law (X_n−β_n u₁)/√(β_n u₂)→d N(0,1) proved, + mean/variance asymptotics. FAITHFUL framework
+    (conditional on genuine quasi-powers hypothesis, satisfiable). build green 8328, axioms clean,
+    committed c2a024b.
+- Session FAITHFUL deliverables (6): Ch5 meromorphic transfer (IV.10), Ch5 surjections/Fubini,
+  Ch7 ternary, Ch7 Motzkin (impostor caught+fixed), Ch7 Fuss-Catalan general, Ch9 quasi-powers limit law.
+  Opened Ch V, Ch VII, Ch IX. Whole-tree Group-A/C audit clean. Caught+fixed 1 vacuous impostor.
+- next: quasi-powers concrete instance (compositions-by-parts → Gaussian, reuse Ch3 BGF), then more
+  Ch IX/Ch V/Ch VII applications; appendices.
+- end: <ongoing — automode>
 - final result: <ongoing>

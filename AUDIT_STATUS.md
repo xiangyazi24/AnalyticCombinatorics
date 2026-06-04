@@ -125,3 +125,18 @@ architecture (subtract regular part f(1)=3 before transfer). Constant cross-chec
 
 Subsumes Catalan (p=2: base 4, const 1/√π) and ternary (p=3: 27/4, √3/(4√π)) — both cross-checks
 PROVED in Lean, not asserted. All `#print axioms` clean; full build green (8327 jobs).
+
+### New work 2026-06-04 (Ch9 quasi-powers / Gaussian limit law, F&S/Hwang IX.8) — opens Ch IX
+
+| Theorem | F&S | Statement (abridged) | Verdict |
+|---------|-----|----------------------|---------|
+| `quasiPowers_tendstoInDistribution_of_continuousAt` | IX.8 | quasi-powers charFun form + β→∞ + scaled-remainder→0 ⟹ `(X_n−β_n u₁)/√(β_n u₂) →d N(0,1)` | FAITHFUL (framework, conditional on quasi-powers hypothesis) |
+| `expectation_sub_quasiPowerCoeff_isBigO` | IX | `E[X_n] = β_n u₁ + O(1)` from cgf | FAITHFUL |
+| `variance_sub_quasiPowerCoeff_isBigO` | IX | `Var[X_n] = β_n u₂ + O(1)` from cgf | FAITHFUL |
+
+Proved via Mathlib's Levy continuity theorem (`ProbabilityMeasure.tendsto_iff_tendsto_charFun`) +
+`charFun_gaussianReal` — genuinely used, not faked. The quasi-powers hypothesis (charFun exponential
+form + scaled remainder→0) is the genuine Hwang input — SATISFIABLE (unlike the Motzkin-v1 vacuous
+contradiction), not the conclusion smuggled in. Concrete instance is the natural follow-up.
+All `#print axioms` clean; full build green (8328 jobs). Mathlib survey logged: Levy continuity +
+gaussianReal + charFun present; Curtiss MGF-continuity absent.
