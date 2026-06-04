@@ -73,6 +73,7 @@ import AnalyticCombinatorics.Ch5.Meromorphic.Transfer
 import AnalyticCombinatorics.Ch5.Meromorphic.Surjections
 import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTrees
 import AnalyticCombinatorics.Ch7.SingularityApp.Motzkin
+import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalan
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -244,5 +245,12 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms _root_.motzkinRescaledDenominator_ne_zero
 #print axioms _root_.motzkinCenteredRescaledFun_hasFPowerSeriesAt_zero
 #print axioms _root_.motzkin_isEquivalent
+
+-- Ch7 general Fuss-Catalan / p-ary trees (F&S Ch VII): for p ≥ 2,
+-- C(pn,n)/((p-1)n+1) ~ (√p/((p-1)^{3/2}√(2π))) · (p^p/(p-1)^{p-1})^n · n^{-3/2}.
+-- Subsumes Catalan (p=2) and ternary (p=3); consistency with ternaryTreeCount proved.
+#print axioms _root_.fussCatalan_choose_dvd
+#print axioms _root_.fussCatalan_isEquivalent
+#print axioms _root_.fussCatalan_three_eq_ternaryTreeCount
 
 end AnalyticCombinatorics.Ch1
