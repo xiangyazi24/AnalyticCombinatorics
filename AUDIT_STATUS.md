@@ -130,7 +130,7 @@ PROVED in Lean, not asserted. All `#print axioms` clean; full build green (8327 
 
 | Theorem | F&S | Statement (abridged) | Verdict |
 |---------|-----|----------------------|---------|
-| `quasiPowers_tendstoInDistribution_of_continuousAt` | IX.8 | quasi-powers charFun form + β→∞ + scaled-remainder→0 ⟹ `(X_n−β_n u₁)/√(β_n u₂) →d N(0,1)` | FAITHFUL (framework, conditional on quasi-powers hypothesis) |
+| `quasiPowers_tendstoInDistribution_of_continuousAt` | IX.8 | quasi-powers charFun form + β→∞ + scaled-remainder→0 ⟹ `(X_n−β_n u₁)/√(β_n u₂) →d N(0,1)` | ⚠ OVER-STRONG HYPOTHESIS (fix in progress) — see note below |
 | `expectation_sub_quasiPowerCoeff_isBigO` | IX | `E[X_n] = β_n u₁ + O(1)` from cgf | FAITHFUL |
 | `variance_sub_quasiPowerCoeff_isBigO` | IX | `Var[X_n] = β_n u₂ + O(1)` from cgf | FAITHFUL |
 
@@ -140,3 +140,14 @@ form + scaled remainder→0) is the genuine Hwang input — SATISFIABLE (unlike 
 contradiction), not the conclusion smuggled in. Concrete instance is the natural follow-up.
 All `#print axioms` clean; full build green (8328 jobs). Mathlib survey logged: Levy continuity +
 gaussianReal + charFun present; Curtiss MGF-continuity absent.
+
+⚠ FIDELITY ISSUE (caught 2026-06-04 by the instance-attempt; fix in progress): the committed
+`quasiPowers_…` hypothesis `hChar` requires a GLOBAL identity `charFun = Complex.exp(…)`. But
+`Complex.exp _ ≠ 0` everywhere, while genuine lattice laws have vanishing charFun
+(PROVED: `charFun oneBitCountLaw Real.pi = 0`, and `oneBitCountLaw_no_quasiPowers_hChar : hChar → False`).
+So the committed theorem is STRONGER than Hwang's actual (LOCAL, s near 0) quasi-powers condition and is
+NOT instantiable by binomial/binary-word counts — the canonical Ch IX examples. It is a true theorem but
+an over-narrow / non-faithful IX.8. FIX: weaken `hChar` to a local-neighborhood form (the standard Hwang
+hypothesis), then instantiate the binary-word CLT. Until fixed, this result is NOT counted as FAITHFUL.
+This is exactly the over-strong-hypothesis failure mode the audit exists to catch — same family as the
+Motzkin-v1 vacuous impostor.
