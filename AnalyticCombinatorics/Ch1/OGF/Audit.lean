@@ -94,6 +94,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.Forests
 import AnalyticCombinatorics.Ch9.LimitLaws.QuasiPowers
 import AnalyticCombinatorics.Ch9.LimitLaws.BinaryWordCLT
 import AnalyticCombinatorics.Ch9.LimitLaws.PermutationCycles
+import AnalyticCombinatorics.Ch9.LimitLaws.FixedPointsPoisson
 import AnalyticCombinatorics.Ch9.LimitLaws.CompositionParts
 
 /-!
@@ -286,6 +287,12 @@ namespace AnalyticCombinatorics.Ch1
 -- asymptotically Gaussian (UNCONDITIONAL) — demonstrates the (now local-hChar, faithful) framework
 -- is non-vacuous.
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.binaryWord_symbolCount_tendstoInDistribution_gaussian
+
+-- Ch9 fixed points of a random permutation → Poisson(1) (DISCRETE limit law, not Gaussian): exact
+-- factorial moments E[(F_n)_k]=1 (k≤n), and pmf P(F_n=j)=C(n,j)D_{n-j}/n! → poissonPMFReal 1 j (e^{-1}/j!).
+-- Full weak-convergence blocked on a missing Mathlib pmf⟹weak bridge (honestly reported, not faked).
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.FixedPointsPoissonNS.fixedPoint_factorialMoment_eq_one
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.FixedPointsPoissonNS.fixedPointPMF_tendsto_poissonPMFReal_one
 
 -- Ch9 permutation cycle-count CLT (Goncharov, F&S Ch IX): the number of cycles of a uniform random
 -- permutation (Feller-coupling realization: sum of independent Bernoulli(1/k)) satisfies

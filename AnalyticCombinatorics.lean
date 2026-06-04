@@ -97,6 +97,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.Forests
 import AnalyticCombinatorics.Ch9.LimitLaws.QuasiPowers
 import AnalyticCombinatorics.Ch9.LimitLaws.BinaryWordCLT
 import AnalyticCombinatorics.Ch9.LimitLaws.PermutationCycles
+import AnalyticCombinatorics.Ch9.LimitLaws.FixedPointsPoisson
 import AnalyticCombinatorics.Ch9.LimitLaws.CompositionParts
 
 /-!
