@@ -172,3 +172,14 @@ fixed framework is faithful AND non-vacuous. Full build green (8329 jobs); both 
 Authored directly with Opus (codex gpt-5.5 out of credits until ~5:27 AM); lake env lean + full build
 green (8332 jobs), axioms clean. Low marginal value (instances of the general p-ary theorem) but genuine
 faithful results, keeping progress through the external block.
+
+### New work 2026-06-04 (Ch9 composition part-count CLT — HIGH FIDELITY)
+
+| Theorem | F&S | Statement | Verdict |
+|---------|-----|-----------|---------|
+| `card_compositionsWithParts_eq_choose` | III/IX | `card {c : Composition n // c.length = k} = C(n-1,k-1)` | FAITHFUL — genuine combinatorial count via Mathlib compositionAsSetEquiv (NOT assumed) |
+| `compositionParts_tendstoInDistribution_gaussian` | IX | #parts of uniform composition: `(parts−(n+1)/2)/√((n-1)/4) →d N(0,1)` | FAITHFUL — re-anchored to genuine object (corrects 2-regular's GF-coeff drift) |
+
+Dispatched after codex usage-limit reset (auto-bridged at 05:29). build green (8333 jobs), axioms clean.
+This re-establishes genuine-combinatorial fidelity: the part-count law is proved equal to the uniform
+distribution over the real Mathlib `Composition n` type, not posited.

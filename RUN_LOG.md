@@ -61,6 +61,17 @@
   Ch7 2-regular (GF-coeff). Opened Ch V, VII, IX. Whole-tree audit clean. 2 fidelity issues caught+fixed.
 - fidelity note: prefer genuine combinatorial definitions (surjections/ternary/Motzkin/Fuss-Catalan have
   them); 2-regular drifted to GF-coeff definition — future bricks should re-anchor to real counts.
-- next: more high-fidelity Ch V/VII/IX applications; appendices; Ch VI breadth.
+  - CODEX OUTAGE (05:27 CDT): gpt-5.5 usage limit hit. Handled per automode hard-stop: (i) Opus-authored
+    Fuss-Catalan p=4/5/6 instances (ab9a48a, build green 8332); (ii) updated UNDERSTANDING (56be2cb);
+    (iii) bridge command auto-waited to 05:29 reset then re-dispatched composition-parts.
+  - composition part-count CLT (codex, auto-bridged): DONE — Ch9/LimitLaws/CompositionParts.lean,
+    HIGH-FIDELITY (card {c:Composition n//c.length=k}=C(n-1,k-1) proved via compositionAsSetEquiv —
+    genuine combinatorial object, re-anchoring after 2-regular's GF-coeff drift). #parts →d N(0,1).
+    committed 398ac98.
+- Session FAITHFUL deliverables (11): meromorphic transfer, surjections, ternary, Motzkin, Fuss-Catalan
+  general, quasi-powers framework, binary-word CLT, cycle CLT, 2-regular (GF-coeff), Fuss-Catalan
+  p=4/5/6 instances (Opus), composition-parts CLT. Opened Ch V/VII/IX. Whole-tree audit clean.
+  2 fidelity issues caught+fixed; codex outage bridged.
+- next: more high-fidelity Ch V/VII/IX applications; appendices; Ch VI breadth; hard saddle (Bell/partitions).
 - end: <ongoing — automode>
 - final result: <ongoing>
