@@ -208,3 +208,13 @@
   (D_n~n!/e) is cosmetic repackaging into IsEquivalent (D_n/(n!/e)=e·(D_n/n!)→1). Per playbook
   "never bank re-wrappers / zero-new-math". File left unwired/uncommitted. LESSON: grep Mathlib for the
   target theorem BEFORE dispatching a textbook limit — derangements→1/e was already there.
+- r-cycle FACTORIAL-MOMENT identity (codex, hard): RCyclesFactorialMoment.lean (654L, namespace
+  RCyclesPoissonNS, nested FM). BANKED unconditional, fills the documented Mathlib gap:
+  * FM.cycleType_count_factorialMoment_sum_in: r^k·Σ_σ (σ.cycleType.count r)_k = (card α)! — the Goncharov
+    identity, proved FROM FIRST PRINCIPLES via genuine Equiv bijections (delete a distinguished r-cycle ↔
+    permute the complement) + induction over the complement. NOT a Mathlib re-wrapper (~650L combinatorics).
+  * factorialMoment_rCycle: E[(C_{n,r})_k] = r^{-k} (general k, r·k≤n) over the genuine uniform perm average.
+  * rCycle_mean_eq_inv: classic mean E[C_{n,r}] = 1/r.
+  This is the genuine combinatorial HEART the conditional r-cycles→Poisson(1/r) was missing. Full
+  distribution-level Poisson(1/r) still needs a factorial-moment⟹law bridge (separate Mathlib gap).
+  0 blocked. (31st deliverable — strongest since the pmf⟹weak bridge.)

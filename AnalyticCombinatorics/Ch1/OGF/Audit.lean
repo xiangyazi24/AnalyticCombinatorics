@@ -98,6 +98,7 @@ import AnalyticCombinatorics.Ch9.LimitLaws.PermutationCycles
 import AnalyticCombinatorics.Ch9.LimitLaws.FixedPointsPoisson
 import AnalyticCombinatorics.Ch9.LimitLaws.PMFToDistribution
 import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoisson
+import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesFactorialMoment
 import AnalyticCombinatorics.Ch9.LimitLaws.CompositionParts
 
 /-!
@@ -308,6 +309,15 @@ namespace AnalyticCombinatorics.Ch1
 -- weak-convergence for general r is reduced, via the reusable bridge, to the marginal cycle-count
 -- enumeration rCyclePMF = rCyclePMFFormula — a genuine Mathlib gap, left conditional; see RCyclesPoisson.)
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.rCyclePMFFormula_tendsto_poisson
+
+-- Ch9 r-cycle FACTORIAL-MOMENT identity (Goncharov, F&S Ch III/IX): fills the documented Mathlib gap
+-- (no marginal cycle-length enumeration). Proved from FIRST PRINCIPLES via genuine Equiv bijections
+-- (delete a distinguished r-cycle ↔ permute the complement) + induction. Core: r^k·Σ_σ (cycleType.count r)_k
+-- = n! ⟹ E[(C_{n,r})_k] = r^{-k} (general k) over the genuine uniform permutation average; incl. the
+-- classic mean E[C_{n,r}] = 1/r. (Distribution-level Poisson(1/r) still needs a factorial-moment⟹law bridge.)
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.FM.cycleType_count_factorialMoment_sum_in
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.rCycle_mean_eq_inv
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.factorialMoment_rCycle
 
 -- Ch9 permutation cycle-count CLT (Goncharov, F&S Ch IX): the number of cycles of a uniform random
 -- permutation (Feller-coupling realization: sum of independent Bernoulli(1/k)) satisfies
