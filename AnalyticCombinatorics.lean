@@ -64,6 +64,7 @@ import AnalyticCombinatorics.Ch4.Analytic.CoeffDescent
 import AnalyticCombinatorics.Ch4.Analytic.LittleODescent
 import AnalyticCombinatorics.Ch4.Analytic.TransferGeneral
 import AnalyticCombinatorics.Ch4.Analytic.SubstComp
+import AnalyticCombinatorics.Ch4.Analytic.LogSingularity
 import AnalyticCombinatorics.Ch8.SaddlePoint.Bound
 import AnalyticCombinatorics.Ch8.SaddlePoint.Assembly
 import AnalyticCombinatorics.Ch8.SaddlePoint.GaussianCore

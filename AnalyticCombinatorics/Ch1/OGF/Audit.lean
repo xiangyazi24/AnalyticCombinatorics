@@ -368,4 +368,10 @@ namespace AnalyticCombinatorics.Ch1
 -- UNCONDITIONAL E_{2n}/(2n)! ~ 2(2/π)^{2k+1} (even n).
 #print axioms AnalyticCombinatorics.Ch5.Meromorphic.Secant.secantNumber_div_factorial_even_isEquivalent
 
+-- Ch4/VI log-singularity coefficient scale (leading order, β=1): genuine [z^n](1-z)^{-α}log(1/(1-z))
+-- = Ring.choose(α+n-1,n)·Σ_{j<n}(α+j)⁻¹ ~ (n^{α-1}/Γα)·log n (α>1). Full Δ-domain log-transfer + general β
+-- reported-open (honestly, not faked). α=2 instance ~ n log n.
+#print axioms _root_.logSingularityCoeff_isEquivalent
+#print axioms _root_.doublePoleLogCoeff_isEquivalent
+
 end AnalyticCombinatorics.Ch1
