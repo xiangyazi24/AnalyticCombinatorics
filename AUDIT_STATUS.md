@@ -1,4 +1,13 @@
-# AUDIT_STATUS — C-group fidelity spot-checks
+# AUDIT_STATUS — fidelity audit
+
+## Group A (mechanical, whole tree) — 2026-06-03
+
+Across all 77 `.lean` files: **0 sorry, 0 admit, 0 native_decide, 0 custom axiom**
+(the lone `native_decide` grep hit is the prohibition text in `Audit.lean`'s docstring, not a tactic).
+Full library build green (8324 jobs). Every headline `#print axioms` in `Audit.lean` =
+{propext, Classical.choice, Quot.sound}. The tree passes Group A unconditionally.
+
+## Group C (semantic fidelity) spot-checks
 
 Tracking statement-fidelity verdicts for headline theorems, per formalization-playbook
 Phase 3 (Group C semantic review). The old tree (archive/impostor-2026-05) was a whole-repo
