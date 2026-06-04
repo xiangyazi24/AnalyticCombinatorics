@@ -43,10 +43,15 @@
     downgraded (9dd62c4), then weakened hChar to LOCAL form (faithful Hwang) + proved unconditional
     binary-word CLT (#ones →d N(0,1)). build green 8329, axioms clean, committed 5a0f4b8. Ch IX now has a
     faithful framework + a non-vacuous instance.
-- Session FAITHFUL deliverables (7): Ch5 meromorphic transfer (IV.10), Ch5 surjections/Fubini, Ch7 ternary,
+  - permutation cycle-count CLT (codex, 2 sub-bricks): DONE — Ch9/LimitLaws/PermutationCycles.lean,
+    UNCONDITIONAL FAITHFUL. (C_n−H_n)/√H_n →d N(0,1) (Goncharov), Feller-coupling realization; cycle_hChar
+    (local quasi-powers) proved, scaled log-sum remainder closed. build green 8330, axioms clean,
+    committed 2463a33. Ch IX now: faithful framework + 2 unconditional instances.
+- Session FAITHFUL deliverables (8): Ch5 meromorphic transfer (IV.10), Ch5 surjections/Fubini, Ch7 ternary,
   Ch7 Motzkin (impostor caught+fixed), Ch7 Fuss-Catalan general, Ch9 quasi-powers limit law (over-strong
-  hChar caught+fixed), Ch9 binary-word CLT instance. Opened Ch V, VII, IX. Whole-tree Group-A/C audit clean.
-  Trust-but-verify caught + fixed 2 fidelity issues (Motzkin-v1 vacuous, quasi-powers hChar over-strong).
+  hChar caught+fixed), Ch9 binary-word CLT, Ch9 permutation cycle CLT. Opened Ch V, VII, IX with
+  framework + instance(s) each. Whole-tree Group-A/C audit clean. Trust-but-verify caught + fixed 2
+  fidelity issues (Motzkin-v1 vacuous, quasi-powers hChar over-strong).
 - next: more Ch IX/Ch V/Ch VII applications; appendices; F&S Ch VI singularity-analysis remaining.
 - end: <ongoing — automode>
 - final result: <ongoing>

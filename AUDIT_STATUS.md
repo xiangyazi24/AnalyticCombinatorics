@@ -132,6 +132,7 @@ PROVED in Lean, not asserted. All `#print axioms` clean; full build green (8327 
 |---------|-----|----------------------|---------|
 | `quasiPowers_tendstoInDistribution_of_continuousAt` | IX.8 | LOCAL quasi-powers charFun form (∃s₀>0,∀|s|≤s₀) + β→∞ + scaled-remainder→0 ⟹ `(X_n−β_n u₁)/√(β_n u₂) →d N(0,1)` | FAITHFUL (local hChar = Hwang's hypothesis; now instantiable) |
 | `binaryWord_symbolCount_tendstoInDistribution_gaussian` | IX | #ones in uniform binary word: `(X_n−n/2)/√(n/4) →d N(0,1)` | FAITHFUL, UNCONDITIONAL — instantiates the framework (sign sum, u₁=0,u₂=1,s₀=1/2) |
+| `permutationCycles_tendstoInDistribution_gaussian` | IX (Goncharov) | #cycles of random permutation: `(C_n−H_n)/√H_n →d N(0,1)` | FAITHFUL, UNCONDITIONAL — Feller-coupling realization (Σ indep Bernoulli(1/k)); cycle_hChar (local quasi-powers, u₁=u₂=1) proved, remainder closed. Non-iid instance. Note: distribution-faithful realization, not a literal permutation count |
 | `expectation_sub_quasiPowerCoeff_isBigO` | IX | `E[X_n] = β_n u₁ + O(1)` from cgf | FAITHFUL |
 | `variance_sub_quasiPowerCoeff_isBigO` | IX | `Var[X_n] = β_n u₂ + O(1)` from cgf | FAITHFUL |
 
