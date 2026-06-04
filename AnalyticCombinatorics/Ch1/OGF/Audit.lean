@@ -90,6 +90,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularClass
 import AnalyticCombinatorics.Ch7.SingularityApp.Schroeder
 import AnalyticCombinatorics.Ch7.SingularityApp.Riordan
 import AnalyticCombinatorics.Ch7.SingularityApp.TreeFunction
+import AnalyticCombinatorics.Ch7.SingularityApp.Forests
 import AnalyticCombinatorics.Ch9.LimitLaws.QuasiPowers
 import AnalyticCombinatorics.Ch9.LimitLaws.BinaryWordCLT
 import AnalyticCombinatorics.Ch9.LimitLaws.PermutationCycles
@@ -387,5 +388,9 @@ namespace AnalyticCombinatorics.Ch1
 -- (rooted labelled trees, T=z e^T, √-singularity at 1/e); n^{n-1}/n! ~ e^n/(√(2π)·n^{3/2}) via Stirling.
 #print axioms AnalyticCombinatorics.Ch7.SingularityApp.TreeFunctionNS.treeFunctionCoeff_isEquivalent
 #print axioms AnalyticCombinatorics.Ch7.SingularityApp.TreeFunctionNS.cayleyRootedTree_over_factorial_isEquivalent
+
+-- Ch7 rooted-tree forests (F&S Ch VII): genuine rootedForest n = (n+1)^{n-1} (Cayley-Prüfer), tied to the
+-- tree function by the shift rootedForestCoeff n = treeFunctionCoeff (n+1); (n+1)^{n-1}/n! ~ e^{n+1}/(√(2π)n^{3/2}).
+#print axioms AnalyticCombinatorics.Ch7.SingularityApp.ForestsNS.rootedForest_over_factorial_isEquivalent
 
 end AnalyticCombinatorics.Ch1
