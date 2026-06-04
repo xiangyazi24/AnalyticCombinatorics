@@ -102,6 +102,20 @@
   bridged. ~40 commits. Every fidelity concern raised this run has been resolved.
 - next (genuinely multi-session): hard saddle/circle-method (Bell/involutions/Hardy-Ramanujan partitions);
   more Ch V/VII/IX breadth; multivariate (Ch IX); appendices A/B/C.
-- end: <comprehensive milestone; campaign continues per doctrine>
-- final result: <ongoing>
+  - exp HAdmissible instance (codex): DONE — Ch8/SaddlePoint/ExpHAdmissible.lean, FULL instance
+    expHAdmissible : HAdmissible Complex.exp (local_uniform + tail_uniform proved), exp asymptotic derived
+    THROUGH the general Hayman coeff_isEquivalent_saddle → interface now NON-VACUOUS. Closes the original
+    session-start CONDITIONAL gap (task #3). instance axioms clean. committed 9b7d2bd, green 8338.
+- CAPSTONE v3 — EVERY flagged fidelity concern this run is now CLOSED:
+  (1) Motzkin v1 vacuous impostor → rebuilt unconditional;
+  (2) quasi-powers hChar over-strong → weakened to faithful local form + binary-word instance;
+  (3) supercrit decorative hyps → removed, then genuine F&S V.2 derived (decomposition from C(ρ)=1);
+  (4) 2-regular GF-coeff → upgraded to genuine SET-of-cycles combinatorial count;
+  (5) original Ch8 HAdmissible no-instance → exp instance constructed, general interface non-vacuous.
+  State: 91 files, build green 8338, 0 sorry/admit/native_decide/custom-axiom, ~164 headline theorems
+  #print-axioms-certified. Opened Ch V/VII/IX. ~41 commits.
+- next (genuinely multi-session): hard saddle/circle-method (Bell/involutions/Hardy-Ramanujan partitions);
+  Ch V/VII/IX breadth; multivariate; appendices A/B/C.
+- end: <comprehensive capstone; all flagged gaps closed; campaign continues per doctrine across sessions>
+- final result: <ongoing — book is multi-session; this run delivered 16 faithful results + opened 3 chapters>
 
