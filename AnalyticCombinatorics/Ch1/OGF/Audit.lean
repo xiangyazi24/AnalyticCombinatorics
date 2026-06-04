@@ -313,8 +313,8 @@ namespace AnalyticCombinatorics.Ch1
 -- Ch7 2-regular graphs UPGRADED to genuine combinatorial fidelity: twoRegularClass = SET of undirected
 -- cycles (length ≥3, = directed cycle mod reversal, card (n-1)!/2), EGF derived, count proved equal to
 -- the earlier GF-coeff count; asymptotic now holds for the genuine combinatorial count.
-#print axioms AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularClass.undirectedCycle_card_of_three_le
-#print axioms AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularClass.twoRegularClass_counts_eq_twoRegularGraphCount
-#print axioms AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularClass.twoRegularClass_counts_div_factorial_isEquivalent
+#print axioms _root_.TwoRegularClass.undirectedCycle_card_of_three_le
+#print axioms _root_.TwoRegularClass.twoRegularClass_counts_eq_twoRegularGraphCount
+#print axioms _root_.TwoRegularClass.twoRegularClass_counts_div_factorial_isEquivalent
 
 end AnalyticCombinatorics.Ch1
