@@ -34,14 +34,36 @@ formalization-playbook 三组验收（audit）为准。
 | Ch4/Analytic (27 文件) | Ch IV+VI | 复分析+奇点分析：Pringsheim、Rational(partial-fraction)、Poles/RepeatedPole、Catalan/CentralBinomial/Fibonacci/Derangements 渐近、Transfer VI.3(general α)、Δ-domain/Cauchy/kernel estimates | 扎实 |
 | Ch8/SaddlePoint (8 文件) | Ch VIII | saddle-point：exp/Stirling 无条件渐近(FAITHFUL)、Hayman H-admissible transfer(CONDITIONAL-honest，通用接口暂无实例) | 良好 |
 
-### 缺（whole-book 前沿）
+### 2026-06-04 新增（本次自主 run，均 FAITHFUL、audit-clean、build-green）
 
-- **F&S Ch V**（Applications of Rational and Meromorphic）：缺。需先建通用 meromorphic
-  coefficient transfer（IV.10：减极点 + 解析余项 O(R^{-n})），再做满射/supercritical-seq 等应用。
-  → 正在做：`Ch5/Meromorphic/`（见下）。
-- **F&S Ch VII**（Applications of Singularity Analysis）：缺。infra（Ch4 Transfer VI.3）已在。
-- **F&S Ch IX**（Multivariate / Limit Laws）：缺。infra（Ch3 BGF）已在。
+- **Ch5/Meromorphic** (F&S Ch V)：`Transfer`（IV.10 通用 meromorphic coefficient transfer：解析余项
+  O(R^{-n}) via Cauchy + dominant simple pole 渐近）；`Surjections`（满射/Fubini 数 `r_n/n! ~
+  1/(2(log2)^{n+1})`，transcendental remainder 经 dslope 可去奇点延拓攻克）。
+- **Ch7/SingularityApp** (F&S Ch VI/VII)：`TernaryTrees`、`Motzkin`（`~(3√3/2√π)3^n n^{-3/2}`，4-brick
+  硬战，v1 vacuous impostor 被打回）、`FussCatalan`（通用 p-ary，含 Catalan/ternary 实例，Lean 内证
+  一致性）、`FussCatalanInstances`（p=4/5/6 特化）、`TwoRegular`（`g_n/n!~e^{-3/4}/√(πn)`，**注：count
+  由 EGF 定义 = GF-系数级保真，非组合定义**）。
+- **Ch9/LimitLaws** (F&S Ch IX)：`QuasiPowers`（Hwang IX.8 Gaussian 极限律，**局部 hChar** = 忠实
+  Hwang，经 Mathlib `ProbabilityMeasure.tendsto_iff_tendsto_charFun` Levy 连续性定理）；`BinaryWordCLT`
+  （二进制词 1 数 →d N(0,1)，无条件实例）；`PermutationCycles`（环数 →d N(0,1) Goncharov，Feller 耦合
+  实现）。
+
+### 仍缺（whole-book 前沿，多 session）
+
+- **F&S Ch V/VII 更多应用**：alignments、supercritical 序列/合成 schema、更多树族；基础（meromorphic
+  + 通用 transfer 覆盖全 α）已在。
+- **F&S Ch IX**：quasi-powers 框架 + 2 实例已在；缺 supercritical-composition Gaussian、连续极限律、
+  多元。composition-parts CLT 已排队（codex 待恢复）。
+- **硬 saddle/circle-method**：Bell/involutions/Hardy-Ramanujan 分拆渐近（各自多 brick 战役）。
 - **Appendices A/B/C**：缺（多数 Mathlib 已覆盖）。
+
+### Fidelity 纪律（本 run 教训）
+
+- trust-but-verify 揪出 2 个保真度缺陷：Motzkin v1 = vacuous impostor（hp∧hsing 互相矛盾，永不可
+  实例化）；quasi-powers v1 hChar = over-strong 全局 exp 等式（对格点分布不可满足，`charFun π=0` 反例）。
+  二者均诚实降级后修复。**"0 blocked + lake env lean 通过" ≠ FAITHFUL，必检 statement fidelity。**
+- 偏好真组合定义（surjections=lseq.counts、ternary/Motzkin/Fuss-Catalan=显式/递推、cycles=Feller）。
+  2-regular 漂移成 GF-系数定义，已标注；后续 brick 应 re-anchor 到真 count。
 
 ### Audit 备注
 
