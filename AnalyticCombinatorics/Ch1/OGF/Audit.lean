@@ -72,6 +72,7 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.HAdmissible
 import AnalyticCombinatorics.Ch5.Meromorphic.Transfer
 import AnalyticCombinatorics.Ch5.Meromorphic.Surjections
 import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTrees
+import AnalyticCombinatorics.Ch7.SingularityApp.Motzkin
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -236,5 +237,12 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms _root_.ternary_choose_dvd
 #print axioms _root_.choose_three_mul_isEquivalent
 #print axioms _root_.ternaryTreeCount_isEquivalent
+
+-- Ch7 Motzkin numbers asymptotic (F&S Ch VII, algebraic √-singularity at z=1/3):
+-- M_n ~ (3√3/(2√π)) · 3^n · n^{-3/2}. UNCONDITIONAL (no analytic hypotheses): Δ-domain analyticity
+-- + denominator nonvanishing + singular expansion + power-series bridge all proved, then TransferGeneral.
+#print axioms _root_.motzkinRescaledDenominator_ne_zero
+#print axioms _root_.motzkinCenteredRescaledFun_hasFPowerSeriesAt_zero
+#print axioms _root_.motzkin_isEquivalent
 
 end AnalyticCombinatorics.Ch1

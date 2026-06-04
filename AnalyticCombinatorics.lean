@@ -75,6 +75,7 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.HAdmissible
 import AnalyticCombinatorics.Ch5.Meromorphic.Transfer
 import AnalyticCombinatorics.Ch5.Meromorphic.Surjections
 import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTrees
+import AnalyticCombinatorics.Ch7.SingularityApp.Motzkin
 
 /-!
 # AnalyticCombinatorics
