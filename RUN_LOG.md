@@ -140,3 +140,8 @@
   uisai1 as scaffolding, unwired.)
 - audit lesson reaffirmed: a CLT "conditional on" an obligation that contains the mean/variance/expansion
   is not progress — refuse to bank it (substrate: 不容忍把数学负担塞进假设).
+- Schröder (codex): DONE — Schroeder.lean (852L), genuine recurrence (verified vs A006318 incl S_10),
+  S_n ~ C·(3+2√2)^n·n^{-3/2}, OGF zS²+(z-1)S+1=0. green 8341, clean. committed 820e226. (19th deliverable.)
+- coverage note: tractable frontiers largely covered (3 chapters, frameworks+instances, 3 saddle instances,
+  algebraic/explicit/meromorphic-SEQ/limit-law families). Remaining is the HARD frontier: Hardy-Ramanujan
+  circle method (partitions), bivariate saddles (set-partition blocks — flagged), multivariate, appendices.
