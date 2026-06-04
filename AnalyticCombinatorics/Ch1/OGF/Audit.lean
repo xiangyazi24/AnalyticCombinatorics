@@ -76,6 +76,7 @@ import AnalyticCombinatorics.Ch5.Meromorphic.Transfer
 import AnalyticCombinatorics.Ch5.Meromorphic.Surjections
 import AnalyticCombinatorics.Ch5.Meromorphic.Alignments
 import AnalyticCombinatorics.Ch5.Meromorphic.Tangent
+import AnalyticCombinatorics.Ch5.Meromorphic.Secant
 import AnalyticCombinatorics.Ch5.Meromorphic.SupercriticalSeq
 import AnalyticCombinatorics.Ch5.Meromorphic.SupercriticalSeqGenuine
 import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTrees
@@ -362,5 +363,9 @@ namespace AnalyticCombinatorics.Ch1
 -- T_n/n! ~ 2(2/π)^{n+1} (odd n). First two-dominant-pole transfer in the repo.
 #print axioms AnalyticCombinatorics.Ch5.Meromorphic.Tangent.tangentRemainder_radius_gt_two
 #print axioms AnalyticCombinatorics.Ch5.Meromorphic.Tangent.tangentNumber_div_factorial_odd_isEquivalent
+
+-- Ch5 secant/Euler numbers (F&S Ch V): sec z poles ±π/2 (residues ∓1), reusing the two-pole machinery;
+-- UNCONDITIONAL E_{2n}/(2n)! ~ 2(2/π)^{2k+1} (even n).
+#print axioms AnalyticCombinatorics.Ch5.Meromorphic.Secant.secantNumber_div_factorial_even_isEquivalent
 
 end AnalyticCombinatorics.Ch1
