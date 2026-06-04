@@ -171,3 +171,8 @@
 - build-integration lessons this run: (a) forgot Audit import (logsing); (b) helper-name collision
   (treefun vs fusscatalan). Both caught by the FULL build (not env-lean) → namespace agent files +
   always full-build before banking.
+- rooted forests (codex): DONE — Forests.lean (namespaced ForestsNS), rootedForest n=(n+1)^{n-1}
+  (Cayley-Prüfer), shift identity to tree function; (n+1)^{n-1}/n! ~ e^{n+1}/(√(2π)n^{3/2}). green 8348,
+  clean. committed a53289f. (26th.)
+- PIVOT to a genuinely-different limit law: fixed points of a random permutation → Poisson(1) (discrete
+  limit, not Gaussian; method of factorial moments). Opens the discrete-limit-law side of Ch IX.
