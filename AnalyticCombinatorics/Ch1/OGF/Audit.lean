@@ -69,6 +69,7 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.ExpStirling
 import AnalyticCombinatorics.Ch8.SaddlePoint.Exp
 import AnalyticCombinatorics.Ch8.SaddlePoint.BellBridge
 import AnalyticCombinatorics.Ch8.SaddlePoint.HAdmissible
+import AnalyticCombinatorics.Ch5.Meromorphic.Transfer
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -211,5 +212,13 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms _root_.tail_tendsto_zero_of_hadmissible
 #print axioms _root_.coeff_isEquivalent_saddle_of_hadmissible_limits
 #print axioms _root_.coeff_isEquivalent_saddle
+
+-- Ch5 meromorphic coefficient transfer (F&S IV.10): analytic-remainder geometric decay,
+-- principal-part subtraction, dominant simple-pole asymptotic.
+#print axioms AnalyticCombinatorics.Ch5.Meromorphic.coeff_norm_isBigO_of_hasFPowerSeriesAt_differentiableOn
+#print axioms AnalyticCombinatorics.Ch5.Meromorphic.coeff_sub_principalPart_isBigO_of_remainder_radius
+#print axioms AnalyticCombinatorics.Ch5.Meromorphic.meromorphic_coeff_transfer_simplePoleSum
+#print axioms AnalyticCombinatorics.Ch5.Meromorphic.single_simplePole_principal_isEquivalent
+#print axioms AnalyticCombinatorics.Ch5.Meromorphic.dominant_simplePole_isEquivalent
 
 end AnalyticCombinatorics.Ch1
