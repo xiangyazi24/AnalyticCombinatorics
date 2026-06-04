@@ -75,6 +75,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTrees
 import AnalyticCombinatorics.Ch7.SingularityApp.Motzkin
 import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalan
 import AnalyticCombinatorics.Ch9.LimitLaws.QuasiPowers
+import AnalyticCombinatorics.Ch9.LimitLaws.BinaryWordCLT
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -261,5 +262,10 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.quasiPowers_tendstoInDistribution_of_continuousAt
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.expectation_sub_quasiPowerCoeff_isBigO
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.variance_sub_quasiPowerCoeff_isBigO
+
+-- Ch9 first concrete instance of quasi-powers: number of ones in a uniform binary word is
+-- asymptotically Gaussian (UNCONDITIONAL) — demonstrates the (now local-hChar, faithful) framework
+-- is non-vacuous.
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.binaryWord_symbolCount_tendstoInDistribution_gaussian
 
 end AnalyticCombinatorics.Ch1

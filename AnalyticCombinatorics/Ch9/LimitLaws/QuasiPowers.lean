@@ -121,14 +121,20 @@ lemma quasiPower_exponent_eq {β u₁ u₂ t : ℝ} (hβ : 0 < β) (hu₂ : 0 < 
 def qpZ (β : ℕ → ℝ) (u₂ : ℝ) (n : ℕ) (t : ℝ) : ℂ :=
   Complex.I * (((Real.sqrt (β n * u₂))⁻¹ * t : ℝ) : ℂ)
 
+/-- If `β_n -> infinity`, then each fixed scaled real argument tends to zero. -/
+lemma quasiPower_scaledRealArgument_tendsto_zero {β : ℕ → ℝ} {u₂ t : ℝ}
+    (hβ : Tendsto β atTop atTop) (hu₂ : 0 < u₂) :
+    Tendsto (fun n => (Real.sqrt (β n * u₂))⁻¹ * t) atTop (𝓝 0) := by
+  have hprod : Tendsto (fun n => β n * u₂) atTop atTop := hβ.atTop_mul_const hu₂
+  simpa using
+    (tendsto_inv_atTop_zero.comp (Real.tendsto_sqrt_atTop.comp hprod)).mul_const t
+
 /-- If `β_n -> infinity`, then each fixed scaled imaginary point tends to zero. -/
 lemma quasiPower_scaledArgument_tendsto_zero {β : ℕ → ℝ} {u₂ t : ℝ}
     (hβ : Tendsto β atTop atTop) (hu₂ : 0 < u₂) :
     Tendsto (fun n => qpZ β u₂ n t) atTop (𝓝 0) := by
-  have hprod : Tendsto (fun n => β n * u₂) atTop atTop := hβ.atTop_mul_const hu₂
-  have hreal : Tendsto (fun n => (Real.sqrt (β n * u₂))⁻¹ * t) atTop (𝓝 0) := by
-    simpa using
-      (tendsto_inv_atTop_zero.comp (Real.tendsto_sqrt_atTop.comp hprod)).mul_const t
+  have hreal := quasiPower_scaledRealArgument_tendsto_zero
+    (β := β) (u₂ := u₂) (t := t) hβ hu₂
   simpa [qpZ] using hreal.ofReal.const_mul Complex.I
 
 /-- A continuous analytic prefactor with value `0` at the origin is negligible after scaling. -/
@@ -203,8 +209,8 @@ variable {β : ℕ → ℝ} {u₁ u₂ : ℝ} {R : ℕ → ℂ → ℂ} {V : ℂ
 converge pointwise to the standard Gaussian characteristic function. -/
 theorem quasiPowers_charFun_tendsto
     (hX : ∀ n, AEMeasurable (X n) (P n))
-    (hβpos : ∀ n, 0 < β n) (hu₂ : 0 < u₂)
-    (hChar : ∀ n s,
+    (hβ : Tendsto β atTop atTop) (hu₂ : 0 < u₂)
+    (hChar : ∃ s₀ > 0, ∀ n s, |s| ≤ s₀ →
       charFun ((P n).map (X n)) s =
         Complex.exp ((β n : ℂ) * ((u₁ : ℂ) * (Complex.I * (s : ℂ)) +
           (u₂ : ℂ) * (Complex.I * (s : ℂ)) ^ 2 / 2 + R n (Complex.I * (s : ℂ))) +
@@ -215,35 +221,42 @@ theorem quasiPowers_charFun_tendsto
       (fun n => charFun ((P n).map fun ω => (X n ω - β n * u₁) / Real.sqrt (β n * u₂)) t)
       atTop (𝓝 (Complex.exp (- (t : ℂ) ^ 2 / 2))) := by
   intro t
+  obtain ⟨s₀, hs₀, hCharLocal⟩ := hChar
+  have hβpos : ∀ᶠ n in atTop, 0 < β n := hβ.eventually_gt_atTop 0
+  have hsmall : ∀ᶠ n in atTop, |(Real.sqrt (β n * u₂))⁻¹ * t| ≤ s₀ := by
+    have htend := quasiPower_scaledRealArgument_tendsto_zero
+      (β := β) (u₂ := u₂) (t := t) hβ hu₂
+    filter_upwards [htend.eventually (eventually_norm_sub_lt (0 : ℝ) hs₀)] with n hn
+    rw [sub_zero, Real.norm_eq_abs] at hn
+    exact le_of_lt hn
   have hEq :
       (fun n =>
-        charFun ((P n).map fun ω => (X n ω - β n * u₁) / Real.sqrt (β n * u₂)) t) =
+        charFun ((P n).map fun ω => (X n ω - β n * u₁) / Real.sqrt (β n * u₂)) t) =ᶠ[atTop]
         fun n => Complex.exp
           (- (t : ℂ) ^ 2 / 2 + (β n : ℂ) * R n (qpZ β u₂ n t) +
             V (qpZ β u₂ n t)) := by
-    funext n
+    filter_upwards [hsmall, hβpos] with n hn hβn
     rw [charFun_map_center_div (hX n) (β n * u₁) (Real.sqrt (β n * u₂)) t]
-    rw [hChar n ((Real.sqrt (β n * u₂))⁻¹ * t)]
+    rw [hCharLocal n ((Real.sqrt (β n * u₂))⁻¹ * t) hn]
     rw [← Complex.exp_add]
     unfold qpZ
     rw [quasiPower_exponent_eq
-      (β := β n) (u₁ := u₁) (u₂ := u₂) (t := t) (hβpos n) hu₂]
-  rw [hEq]
+      (β := β n) (u₁ := u₁) (u₂ := u₂) (t := t) hβn hu₂]
   have harg :
       Tendsto
         (fun n => - (t : ℂ) ^ 2 / 2 + (β n : ℂ) * R n (qpZ β u₂ n t) +
           V (qpZ β u₂ n t)) atTop
         (𝓝 (- (t : ℂ) ^ 2 / 2)) := by
     simpa [add_assoc] using (tendsto_const_nhds.add ((hR t).add (hV t)))
-  simpa using harg.cexp
+  exact Tendsto.congr' hEq.symm harg.cexp
 
 /-- Version of `quasiPowers_charFun_tendsto` where the analytic prefactor is discharged from
 continuity at zero and `β_n -> infinity`. -/
 theorem quasiPowers_charFun_tendsto_of_continuousAt
     (hX : ∀ n, AEMeasurable (X n) (P n))
-    (hβpos : ∀ n, 0 < β n) (hβ : Tendsto β atTop atTop) (hu₂ : 0 < u₂)
+    (hβ : Tendsto β atTop atTop) (hu₂ : 0 < u₂)
     (hVcont : ContinuousAt V 0) (hV0 : V 0 = 0)
-    (hChar : ∀ n s,
+    (hChar : ∃ s₀ > 0, ∀ n s, |s| ≤ s₀ →
       charFun ((P n).map (X n)) s =
         Complex.exp ((β n : ℂ) * ((u₁ : ℂ) * (Complex.I * (s : ℂ)) +
           (u₂ : ℂ) * (Complex.I * (s : ℂ)) ^ 2 / 2 + R n (Complex.I * (s : ℂ))) +
@@ -253,7 +266,7 @@ theorem quasiPowers_charFun_tendsto_of_continuousAt
       (fun n => charFun ((P n).map fun ω => (X n ω - β n * u₁) / Real.sqrt (β n * u₂)) t)
       atTop (𝓝 (Complex.exp (- (t : ℂ) ^ 2 / 2))) :=
   quasiPowers_charFun_tendsto (P := P) (X := X) (β := β) (u₁ := u₁) (u₂ := u₂)
-    (R := R) (V := V) hX hβpos hu₂ hChar hR
+    (R := R) (V := V) hX hβ hu₂ hChar hR
     (fun t => quasiPower_V_tendsto_zero (β := β) (u₂ := u₂) (t := t)
       hβ hu₂ hVcont hV0)
 
@@ -263,8 +276,8 @@ variable [∀ n, IsProbabilityMeasure (P n)]
 logarithmic expansion implies convergence in distribution to `gaussianReal 0 1`. -/
 theorem quasiPowers_tendstoInDistribution
     (hX : ∀ n, AEMeasurable (X n) (P n))
-    (hβpos : ∀ n, 0 < β n) (hu₂ : 0 < u₂)
-    (hChar : ∀ n s,
+    (hβ : Tendsto β atTop atTop) (hu₂ : 0 < u₂)
+    (hChar : ∃ s₀ > 0, ∀ n s, |s| ≤ s₀ →
       charFun ((P n).map (X n)) s =
         Complex.exp ((β n : ℂ) * ((u₁ : ℂ) * (Complex.I * (s : ℂ)) +
           (u₂ : ℂ) * (Complex.I * (s : ℂ)) ^ 2 / 2 + R n (Complex.I * (s : ℂ))) +
@@ -280,15 +293,15 @@ theorem quasiPowers_tendstoInDistribution
     refine ProbabilityMeasure.tendsto_iff_tendsto_charFun.2 ?_
     intro t
     have hcf := quasiPowers_charFun_tendsto (P := P) (X := X) (β := β)
-      (u₁ := u₁) (u₂ := u₂) (R := R) (V := V) hX hβpos hu₂ hChar hR hV t
+      (u₁ := u₁) (u₂ := u₂) (R := R) (V := V) hX hβ hu₂ hChar hR hV t
     simpa [charFun_gaussianReal, neg_div] using hcf
 
 /-- Final form with `V` discharged by continuity at zero and `β_n -> infinity`. -/
 theorem quasiPowers_tendstoInDistribution_of_continuousAt
     (hX : ∀ n, AEMeasurable (X n) (P n))
-    (hβpos : ∀ n, 0 < β n) (hβ : Tendsto β atTop atTop) (hu₂ : 0 < u₂)
+    (hβ : Tendsto β atTop atTop) (hu₂ : 0 < u₂)
     (hVcont : ContinuousAt V 0) (hV0 : V 0 = 0)
-    (hChar : ∀ n s,
+    (hChar : ∃ s₀ > 0, ∀ n s, |s| ≤ s₀ →
       charFun ((P n).map (X n)) s =
         Complex.exp ((β n : ℂ) * ((u₁ : ℂ) * (Complex.I * (s : ℂ)) +
           (u₂ : ℂ) * (Complex.I * (s : ℂ)) ^ 2 / 2 + R n (Complex.I * (s : ℂ))) +
@@ -298,7 +311,7 @@ theorem quasiPowers_tendstoInDistribution_of_continuousAt
       (fun n ω => (X n ω - β n * u₁) / Real.sqrt (β n * u₂)) atTop
       (fun x : ℝ => x) P (gaussianReal 0 1) :=
   quasiPowers_tendstoInDistribution (P := P) (X := X) (β := β)
-    (u₁ := u₁) (u₂ := u₂) (R := R) (V := V) hX hβpos hu₂ hChar hR
+    (u₁ := u₁) (u₂ := u₂) (R := R) (V := V) hX hβ hu₂ hChar hR
     (fun t => quasiPower_V_tendsto_zero (β := β) (u₂ := u₂) (t := t)
       hβ hu₂ hVcont hV0)
 
