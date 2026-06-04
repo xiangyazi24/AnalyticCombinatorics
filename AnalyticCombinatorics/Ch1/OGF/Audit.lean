@@ -71,6 +71,7 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.BellBridge
 import AnalyticCombinatorics.Ch8.SaddlePoint.HAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.ExpHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.BellHAdmissible
+import AnalyticCombinatorics.Ch8.SaddlePoint.InvolutionHAdmissible
 import AnalyticCombinatorics.Ch5.Meromorphic.Transfer
 import AnalyticCombinatorics.Ch5.Meromorphic.Surjections
 import AnalyticCombinatorics.Ch5.Meromorphic.Alignments
@@ -338,5 +339,11 @@ namespace AnalyticCombinatorics.Ch1
 -- genuine combinatorial Bell count (posInt.set.counts = set partitions): B_n/n! ~ saddleScale.
 #print axioms _root_.bellHAdmissible
 #print axioms _root_.bell_number_over_factorial_isEquivalent_saddle
+
+-- Ch8 involutions HAdmissible instance (3rd Hayman instance; f = e^{z+z²/2}, saddle r+r²=n). Genuine
+-- combinatorial count parts12.set (SET of size-1-or-2 components = fixed points + transpositions =
+-- involutions, since parts12.counts = (0,1,1,0,…)). I_n/n! ~ saddleScale via the general interface.
+#print axioms _root_.InvolutionHAdmissible.involHAdmissible
+#print axioms _root_.InvolutionHAdmissible.involution_count_over_factorial_isEquivalent_saddle
 
 end AnalyticCombinatorics.Ch1
