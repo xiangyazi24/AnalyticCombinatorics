@@ -70,6 +70,7 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.Exp
 import AnalyticCombinatorics.Ch8.SaddlePoint.BellBridge
 import AnalyticCombinatorics.Ch8.SaddlePoint.HAdmissible
 import AnalyticCombinatorics.Ch5.Meromorphic.Transfer
+import AnalyticCombinatorics.Ch5.Meromorphic.Surjections
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -220,5 +221,13 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch5.Meromorphic.meromorphic_coeff_transfer_simplePoleSum
 #print axioms AnalyticCombinatorics.Ch5.Meromorphic.single_simplePole_principal_isEquivalent
 #print axioms AnalyticCombinatorics.Ch5.Meromorphic.dominant_simplePole_isEquivalent
+
+-- Ch5 surjections (Fubini / ordered-Bell numbers) asymptotic (F&S Ch V):
+-- r_n / n! ~ 1 / (2 (log 2)^(n+1)), via dominant simple pole of 1/(2 - e^z) at log 2.
+-- The hard analytic step (remainder analytic on closedBall 2) is genuinely proved.
+#print axioms AnalyticCombinatorics.Ch5.Meromorphic.Surjections.analyticRemainderFun_differentiableOn_closedBall_two
+#print axioms AnalyticCombinatorics.Ch5.Meromorphic.Surjections.remainder_radius_gt_one
+#print axioms AnalyticCombinatorics.Ch5.Meromorphic.Surjections.coeff_surjEGFℂ_isEquivalent
+#print axioms AnalyticCombinatorics.Ch5.Meromorphic.Surjections.surjectionsCount_div_factorial_isEquivalent
 
 end AnalyticCombinatorics.Ch1
