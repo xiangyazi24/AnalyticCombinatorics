@@ -76,6 +76,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.Motzkin
 import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalan
 import AnalyticCombinatorics.Ch9.LimitLaws.QuasiPowers
 import AnalyticCombinatorics.Ch9.LimitLaws.BinaryWordCLT
+import AnalyticCombinatorics.Ch9.LimitLaws.PermutationCycles
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -267,5 +268,11 @@ namespace AnalyticCombinatorics.Ch1
 -- asymptotically Gaussian (UNCONDITIONAL) — demonstrates the (now local-hChar, faithful) framework
 -- is non-vacuous.
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.binaryWord_symbolCount_tendstoInDistribution_gaussian
+
+-- Ch9 permutation cycle-count CLT (Goncharov, F&S Ch IX): the number of cycles of a uniform random
+-- permutation (Feller-coupling realization: sum of independent Bernoulli(1/k)) satisfies
+-- (C_n − H_n)/√H_n →d N(0,1), UNCONDITIONAL. cycle_hChar = the local quasi-powers hypothesis, PROVED.
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.cycle_hChar
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.permutationCycles_tendstoInDistribution_gaussian
 
 end AnalyticCombinatorics.Ch1

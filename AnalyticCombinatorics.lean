@@ -79,6 +79,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.Motzkin
 import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalan
 import AnalyticCombinatorics.Ch9.LimitLaws.QuasiPowers
 import AnalyticCombinatorics.Ch9.LimitLaws.BinaryWordCLT
+import AnalyticCombinatorics.Ch9.LimitLaws.PermutationCycles
 
 /-!
 # AnalyticCombinatorics
