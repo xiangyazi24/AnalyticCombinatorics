@@ -101,6 +101,7 @@ import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoisson
 import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesFactorialMoment
 import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonComplete
 import AnalyticCombinatorics.Ch9.LimitLaws.JointCycleMoments
+import AnalyticCombinatorics.Ch9.LimitLaws.JointCycleMomentsGeneral
 import AnalyticCombinatorics.Ch9.LimitLaws.ExpectedCycles
 import AnalyticCombinatorics.Ch9.LimitLaws.CycleVariance
 import AnalyticCombinatorics.Ch9.LimitLaws.CompositionParts
@@ -339,6 +340,15 @@ namespace AnalyticCombinatorics.Ch1
 -- (General >2-length family: documented remaining work — indexed-family deletion induction.)
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.JointCycleMomentsNS.factorialMoment_two_rCycle_of_pos
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.JointCycleMomentsNS.rCycleCount_mul_mean_eq_inv_mul_inv
+
+-- Ch9 GENERAL finite-family joint factorial moments (full Goncharov–Kolchin moment characterization,
+-- F&S Ch IX): for any Finset S of distinct positive lengths, E[∏_{r∈S} (C_{n,r})_{k_r}] = ∏_{r∈S} r^{-k_r}
+-- (Σ r·k_r ≤ n) — proved by the indexed-family deletion induction (peel one distinguished cycle, the
+-- disjointness preservation lemmas keep every other length's count intact). The joint factorial moments
+-- FACTOR as the product of independent Poisson(1/r) factorial moments ⟹ asymptotic independence of cycle
+-- counts at the moment level. Joint-mean corollary E[∏_{r∈S} C_{n,r}] = ∏_{r∈S} 1/r.
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.JointCycleMomentsGeneralNS.factorialMoment_rCycle_finset
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.JointCycleMomentsGeneralNS.rCycleCount_prod_mean_eq_prod_inv
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

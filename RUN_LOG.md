@@ -252,3 +252,14 @@
   r,s with r+s≤n. Cycle counts of distinct lengths are UNCORRELATED — second-moment shadow of
   Goncharov–Kolchin independence, from banked joint moment (factorialMoment_two_rCycle_of_pos) + means.
   lake env lean clean. (36th deliverable; Opus-authored during outage.)
+- GENERAL finite-family joint factorial moments (codex, GFM — resumed after outage): JointCycleMomentsGeneral.lean
+  (563L, namespace JointCycleMomentsGeneralNS). BANKED unconditional, 0 blocked — completes the Goncharov–Kolchin
+  factorial-moment characterization:
+  * factorialMoment_rCycle_finset: for any Finset S of distinct positive lengths, E[∏_{r∈S}(C_{n,r})_{k_r}]
+    = ∏_{r∈S} r^{-k_r} (Σ r·k_r ≤ n), via the integer identity rCycleCount_factorialMoment_sum_finset
+    (indexed-family deletion induction + disjointness preservation lemmas).
+  * rCycleCount_prod_mean_eq_prod_inv: joint mean E[∏_{r∈S} C_{n,r}] = ∏_{r∈S} 1/r.
+  The joint factorial moments FACTOR as the product of independent Poisson(1/r) factorial moments ⟹ asymptotic
+  independence of cycle counts at the moment level. Genuine, no Mathlib re-wrapper. (37th deliverable.)
+- Cycle-statistics cluster now comprehensively complete: r-cycles→Poisson(1/r) UNCONDITIONAL; all factorial
+  moments =r^{-k}; full general-family joint moments; expected #cycles=H_n; Var=1/r; Cov(distinct)=0.
