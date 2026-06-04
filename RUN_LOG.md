@@ -181,3 +181,8 @@
   Full weak-convergence reported-open (Mathlib lacks pmf⟹weak bridge for ℕ). green 8349, clean. 36f7a74. (27th.)
 - LIMIT-LAW LANDSCAPE now covers BOTH Gaussian (binary-word/cycle/composition-parts) AND Poisson
   (fixed points) — the two canonical F&S Ch IX universal laws.
+- pmf⟹weak bridge + full Poisson (codex): DONE — PMFToDistribution.lean (namespaced), reusable
+  probabilityMeasure_nat_tendsto_of_tendsto_singleton (portmanteau), fixed-points → FULL
+  TendstoInDistribution Poisson(1). Filled the Mathlib gap. green 8350, clean. committed 4c59db5. (28th.)
+- This unlocks more discrete limit laws (the bridge is reusable). Ch IX now: Gaussian (3 instances) +
+  Poisson (fixed points, full weak convergence) + reusable Gaussian (quasi-powers) & discrete (pmf) bridges.
