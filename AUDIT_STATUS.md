@@ -45,3 +45,15 @@ Conclusion so far: spot-checks across ALL existing chapters (Ch1 OGF, Ch2 EGF, C
 Ch4 complex+singularity, Ch8 saddle) — every core transfer rule and payoff theorem is a genuine,
 correctly-constanted statement. The rebuilt tree is honest, unlike the old whole-repo impostor.
 Continue spot-checks chapter by chapter as coverage grows.
+
+### New work 2026-06-03 (Ch5 meromorphic transfer, codex brick, audited)
+
+| Theorem | F&S | Statement (abridged) | Verdict |
+|---------|-----|----------------------|---------|
+| `Ch5.Meromorphic.coeff_norm_isBigO_of_hasFPowerSeriesAt_differentiableOn` | IV.10 | g analytic on closedBall R ⟹ `‖coeff n‖ =O(R^{-n})` (Cauchy estimate) | FAITHFUL — real proof via `norm_coeff_le_of_circleIntegral` |
+| `Ch5.Meromorphic.coeff_sub_principalPart_isBigO_of_remainder_radius` | IV.10 | `f=S+g`, g analytic past R ⟹ `coeff f − coeff S =O(R^{-n})` | FAITHFUL |
+| `Ch5.Meromorphic.meromorphic_coeff_transfer_simplePoleSum` | IV.10 | finite simple-pole sum + remainder ⟹ `coeff f − Σ cᵢaᵢⁿ =O(R^{-n})` | FAITHFUL |
+| `Ch5.Meromorphic.single_simplePole_principal_isEquivalent` | — | `coeff` of `c/(ρ−X)` `~ c·ρ^{-(n+1)}` | FAITHFUL |
+| `Ch5.Meromorphic.dominant_simplePole_isEquivalent` | IV.10 | simple pole at ρ + remainder analytic past R>‖ρ‖ ⟹ `coeff f ~ c·ρ^{-(n+1)}` | FAITHFUL — genuine remainder-radius hypothesis, not buried |
+
+All 5 `#print axioms` = {propext, Classical.choice, Quot.sound}; full build green (8323 jobs).

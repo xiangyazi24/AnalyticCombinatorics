@@ -8,6 +8,9 @@
   remote (uisai1 git checkout, .lake preserved, rsync retired); baseline green (8322 jobs, axioms clean);
   dedicated codex worker ac-codex up; C-group spot-audit Catalan/Fib/Transfer-VI.3/Bell/Surjections = FAITHFUL (AUDIT_STATUS.md, 42bff08); UNDERSTANDING corrected (0b820c6).
 - avenue (a) progress:
-  - meromorphic-transfer brick dispatched to codex (PID 1036932), 3 sub-bricks. [grinding]
+  - meromorphic-transfer brick (codex): DONE — Ch5/Meromorphic/Transfer.lean, 7 theorems, FAITHFUL,
+    all #print axioms clean, full build green (8323 jobs), committed 1d0f262.
+  - surjections asymptotic brick (codex PID 1069696): dispatched — r_n/n! ~ 1/(2(log2)^(n+1))
+    via dominant_simplePole_isEquivalent on EGF 1/(2-e^z). [grinding]
 - end: <fill on close>
 - final result: <fill on close>
