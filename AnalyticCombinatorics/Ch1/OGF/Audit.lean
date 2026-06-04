@@ -100,6 +100,7 @@ import AnalyticCombinatorics.Ch9.LimitLaws.PMFToDistribution
 import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoisson
 import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesFactorialMoment
 import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonComplete
+import AnalyticCombinatorics.Ch9.LimitLaws.JointCycleMoments
 import AnalyticCombinatorics.Ch9.LimitLaws.CompositionParts
 
 /-!
@@ -328,6 +329,14 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.Complete.finite_pmf_eq_factorial_moment_sum
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.Complete.rCyclePMF_eq_formula
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.Complete.rCycles_tendstoInDistribution_poisson
+
+-- Ch9 JOINT cycle factorial moments (Goncharov–Kolchin foundation, F&S Ch IX): for two DISTINCT positive
+-- lengths, the mixed factorial moment E[(C_{n,r})_a (C_{n,s})_b] = r^{-a}·s^{-b} (r·a+s·b ≤ n) — proved by
+-- extending the deletion bijection with cross-length cycle DISJOINTNESS. ⟹ cycle counts of two different
+-- lengths are uncorrelated/independent at the factorial-moment level; incl. covariance E[C_{n,r}C_{n,s}]=1/(rs).
+-- (General >2-length family: documented remaining work — indexed-family deletion induction.)
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.JointCycleMomentsNS.factorialMoment_two_rCycle_of_pos
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.JointCycleMomentsNS.rCycleCount_mul_mean_eq_inv_mul_inv
 
 -- Ch9 permutation cycle-count CLT (Goncharov, F&S Ch IX): the number of cycles of a uniform random
 -- permutation (Feller-coupling realization: sum of independent Bernoulli(1/k)) satisfies

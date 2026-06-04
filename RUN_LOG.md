@@ -228,3 +228,11 @@
   * substitute EXACT moments r^{-k} (factorialMoment_rCycle) ⟹ rCyclePMF = rCyclePMFFormula (exact Goncharov pmf),
   * discharge hformula ⟹ rCycles_tendstoInDistribution_poisson (full weak conv to Poisson(1/r)).
   Genuine, no Mathlib re-wrapper. r-cycles avenue driven to terminal: CONDITIONAL→UNCONDITIONAL. (32nd deliverable.)
+- JOINT cycle factorial moments (codex, JFM): JointCycleMoments.lean (636L, namespace JointCycleMomentsNS).
+  BANKED unconditional (two distinct lengths): factorialMoment_two_rCycle_of_pos — E[(C_{n,r})_a (C_{n,s})_b]
+  = r^{-a}·s^{-b} for distinct positive r,s with r·a+s·b≤n (incl. fixed-point branch r or s =1), proved by
+  extending the FM deletion bijection with cross-length cycle DISJOINTNESS (Equiv.Perm.Disjoint). Covariance
+  corollary rCycleCount_mul_mean_eq_inv_mul_inv: E[C_{n,r}C_{n,s}]=1/(rs) (counts of two different lengths
+  uncorrelated). Foundation of Goncharov–Kolchin (asymptotic independence of cycle-length counts).
+  BLOCKED/documented: general >2-length family (indexed-family deletion induction is the remaining work).
+  Genuine, no Mathlib re-wrapper. (33rd deliverable.)
