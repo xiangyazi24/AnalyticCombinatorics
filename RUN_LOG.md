@@ -263,3 +263,12 @@
   independence of cycle counts at the moment level. Genuine, no Mathlib re-wrapper. (37th deliverable.)
 - Cycle-statistics cluster now comprehensively complete: r-cycles→Poisson(1/r) UNCONDITIONAL; all factorial
   moments =r^{-k}; full general-family joint moments; expected #cycles=H_n; Var=1/r; Cov(distinct)=0.
+- BIVARIATE Goncharov–Kolchin IN DISTRIBUTION (codex, BIV): BivariateCyclePoisson.lean (675L, namespace
+  RCyclesPoissonNS.Bivariate). FLAGSHIP, 0 blocked — cycle counts of two distinct lengths are asymptotically
+  INDEPENDENT Poissons:
+  * jointLaw_tendsto_poissonProduct: joint law of (C_{n,r},C_{n,s}) →weak Poisson(1/r) ⊗ Poisson(1/s) (r≠s).
+  * probabilityMeasure_nat_prod_tendsto_of_tendsto_singleton: reusable ℕ×ℕ pmf⟹weak bridge (generalizes the
+    1-D bridge; fills a Mathlib gap).
+  * jointRCyclePMF_eq_formula + jointRCyclePMF_tendsto_poisson_product: bivariate pmf inversion (tensor of the
+    1-D factorial-moment kernel) + exact joint moments r^{-a}s^{-b} ⟹ joint pmf → product Poisson pmf.
+  Genuine end-to-end, no Mathlib re-wrapper. (38th deliverable; distributional Goncharov–Kolchin, bivariate.)

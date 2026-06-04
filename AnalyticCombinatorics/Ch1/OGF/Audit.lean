@@ -102,6 +102,7 @@ import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesFactorialMoment
 import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonComplete
 import AnalyticCombinatorics.Ch9.LimitLaws.JointCycleMoments
 import AnalyticCombinatorics.Ch9.LimitLaws.JointCycleMomentsGeneral
+import AnalyticCombinatorics.Ch9.LimitLaws.BivariateCyclePoisson
 import AnalyticCombinatorics.Ch9.LimitLaws.ExpectedCycles
 import AnalyticCombinatorics.Ch9.LimitLaws.CycleVariance
 import AnalyticCombinatorics.Ch9.LimitLaws.CompositionParts
@@ -349,6 +350,16 @@ namespace AnalyticCombinatorics.Ch1
 -- counts at the moment level. Joint-mean corollary E[∏_{r∈S} C_{n,r}] = ∏_{r∈S} 1/r.
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.JointCycleMomentsGeneralNS.factorialMoment_rCycle_finset
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.JointCycleMomentsGeneralNS.rCycleCount_prod_mean_eq_prod_inv
+
+-- Ch9 BIVARIATE Goncharov–Kolchin IN DISTRIBUTION (flagship, F&S Ch IX): the joint law of two cycle counts
+-- (C_{n,r}, C_{n,s}) for distinct r≠s converges WEAKLY to the PRODUCT Poisson(1/r) ⊗ Poisson(1/s) — i.e.
+-- cycle counts of distinct lengths are asymptotically INDEPENDENT Poissons. Closed end-to-end via: bivariate
+-- pmf inversion (tensor of the 1-D factorial-moment kernel) + EXACT joint moments r^{-a}s^{-b} ⟹ joint pmf →
+-- product Poisson pmf; then the reusable ℕ×ℕ pmf⟹weak bridge. The ℕ×ℕ bridge generalizes the 1-D one and
+-- fills a Mathlib gap on its own.
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.Bivariate.probabilityMeasure_nat_prod_tendsto_of_tendsto_singleton
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.Bivariate.jointRCyclePMF_tendsto_poisson_product
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.Bivariate.jointLaw_tendsto_poissonProduct
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
