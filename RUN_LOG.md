@@ -290,3 +290,11 @@
 - The permutation-cycle-statistics arc is now COMPLETE at full generality: marginal Poisson(1/r) (1-var),
   bivariate product Poisson, general multivariate product Poisson, all factorial moments, H_n mean, variance,
   covariance — the entire Goncharov–Kolchin theorem family formalized end-to-end.
+- Ramanujan Q-function (codex, Q — diversification to Ch2/Mappings): RamanujanQ.lean (429L, namespace
+  Ch2.Mappings.RamanujanQNS). PARTIAL banked honestly:
+  * ramanujanQ_le_one_add_sqrt_pi_mul_nat_div_two: Q(n) ≤ 1 + √(πn/2) — the sharp upper Gaussian envelope
+    (Laplace-for-sums upper comparison, genuinely new analytic technique for the repo).
+  * ramanujanQ_isTheta_sqrt: Q =Θ[atTop] √n (order-sharp; eventual lower √n/4).
+  NOT claimed: full Q ~ √(πn/2) — blocked on the sharp lower head expansion (two-sided log-product on
+  k=o(n^{2/3}) + tail). Follow-up dispatched. Genuine sum-of-products def, lake env lean clean. (40th
+  deliverable, partial.)

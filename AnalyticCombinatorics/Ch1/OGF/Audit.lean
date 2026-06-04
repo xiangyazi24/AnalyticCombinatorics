@@ -35,6 +35,7 @@ import AnalyticCombinatorics.Ch3.BGF.LabelledSetMarked
 import AnalyticCombinatorics.Ch3.BGF.LabelledBGFApplications
 import AnalyticCombinatorics.Ch3.BGF.CompositionMoments
 import AnalyticCombinatorics.Ch3.BGF.BinaryWordMoments
+import AnalyticCombinatorics.Ch2.Mappings.RamanujanQ
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -371,6 +372,13 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.Multivariate.probabilityMeasure_pi_nat_tendsto_of_tendsto_singleton
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.Multivariate.multivariatePMF_tendsto_poissonPiPMF
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.Multivariate.multivariateLaw_tendsto_poissonPi
+
+-- Ch2 Ramanujan Q-function (birthday paradox / random-mappings scale, F&S II.3): PARTIAL — order-sharp
+-- Θ(√n) with the sharp upper Gaussian envelope Q(n) ≤ 1 + √(πn/2) (Laplace-for-sums upper comparison) and
+-- an eventual lower √n/4. The full equivalence Q ~ √(πn/2) needs the sharp lower head expansion — flagged
+-- remaining work, NOT claimed. Genuine sum-of-products definition.
+#print axioms AnalyticCombinatorics.Ch2.Mappings.RamanujanQNS.ramanujanQ_le_one_add_sqrt_pi_mul_nat_div_two
+#print axioms AnalyticCombinatorics.Ch2.Mappings.RamanujanQNS.ramanujanQ_isTheta_sqrt
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
