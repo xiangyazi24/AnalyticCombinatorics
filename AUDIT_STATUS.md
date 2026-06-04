@@ -19,6 +19,19 @@ Verdict legend: FAITHFUL / CONDITIONAL-honest / FRAGMENT / IMPOSTOR.
 | `exp_coeff_isEquivalent_saddle` | VIII | exp coeff ~ saddleScale (= e^n/(n^n√(2πn))) | FAITHFUL, unconditional |
 | `coeff_isEquivalent_saddle` (HAdmissible) | VIII.4 | given `HAdmissible f p`, `p.coeff n ~ saddleScale` | CONDITIONAL-honest — general transfer, no concrete instance yet |
 
+### Checked 2026-06-03 (symbolic method + moments)
+
+| Theorem | F&S | Statement (abridged) | Verdict |
+|---------|-----|----------------------|---------|
+| `CombClass.ogf_prod` | I.1 | `(C×D).ogf = C.ogf·D.ogf` | FAITHFUL |
+| `CombClass.ogf_sum` | I.1 | `(C+D).ogf = C.ogf+D.ogf` | FAITHFUL |
+| `CombClass.ogf_seq_mul` | I.2 | `C.seq.ogf·(1-C.ogf)=1` (quasi-inverse SEQ) | FAITHFUL |
+| `CombClass.ogf_mset` | I.2 | `MSET(C).ogf = ∏_i ∑_k multichoose(c_i,k)X^{ik}` | FAITHFUL |
+| `CombClass.ogf_partitions` | I.3 | `∏_i ∑_j X^{(i+1)j}` (= ∏ 1/(1-X^{i+1}), Euler) | FAITHFUL |
+| `CombClass.ogf_pset` | I.2 | `PSET(C).ogf = ∏_i ∑_k choose(c_i,k)X^{ik}` | FAITHFUL |
+| `ParamClass.mean_eq` | III | `mean = (Σ param)/count` | FAITHFUL |
+| `ParamClass.variance_eq` | III | `variance = (Σ param²)/count − mean²` | FAITHFUL |
+
 Conclusion so far: the rebuilt tree's headline asymptotics are genuine `IsEquivalent`
 statements with correct constants — not the trivially-true projections of the old impostor
 tree. Continue spot-checks chapter by chapter as coverage grows.
