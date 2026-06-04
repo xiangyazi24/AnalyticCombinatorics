@@ -277,3 +277,16 @@
   Incremental rebuild succeeded: 8359 jobs green, 3 flagship headlines clean-3, CLEAN. (Lesson: uisai1 shared;
   heavy Audit job can OOM under concurrent builds — re-run incremental.) BivariateCyclePoisson uses
   maxHeartbeats 1000000 on heavy bivariate-measure proofs (style-linter warns for a comment; audit unaffected).
+- GENERAL MULTIVARIATE Goncharov–Kolchin IN DISTRIBUTION (codex, MV — THE capstone): MultivariateCyclePoisson.lean
+  (815L, namespace RCyclesPoissonNS.Multivariate). 0 blocked. THE fully general theorem:
+  * multivariateLaw_tendsto_poissonPi: for ANY finite family of distinct positive lengths (injective
+    lengths : Fin m → ℕ), the joint law of (C_{n,r_i})_i →weak ⨂_i Poisson(1/r_i) (ProbabilityMeasure.pi).
+    Cycle counts asymptotically independent Poissons, fully general, unconditional, end-to-end.
+  * probabilityMeasure_pi_nat_tendsto_of_tendsto_singleton (+pmfReal variant): reusable (Fin m → ℕ)
+    pmf⟹weak bridge — generalizes the 1-D and ℕ×ℕ bridges, fills a Mathlib gap.
+  * multivariatePMF_eq_formula + multivariatePMF_tendsto_poissonPiPMF: exact m-fold tensor pmf inversion
+    (from the general joint factorial moments) + the joint local limit law.
+  maxHeartbeats 800000 with explanatory comment (per instruction). Genuine throughout. (39th deliverable.)
+- The permutation-cycle-statistics arc is now COMPLETE at full generality: marginal Poisson(1/r) (1-var),
+  bivariate product Poisson, general multivariate product Poisson, all factorial moments, H_n mean, variance,
+  covariance — the entire Goncharov–Kolchin theorem family formalized end-to-end.

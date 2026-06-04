@@ -103,6 +103,7 @@ import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonComplete
 import AnalyticCombinatorics.Ch9.LimitLaws.JointCycleMoments
 import AnalyticCombinatorics.Ch9.LimitLaws.JointCycleMomentsGeneral
 import AnalyticCombinatorics.Ch9.LimitLaws.BivariateCyclePoisson
+import AnalyticCombinatorics.Ch9.LimitLaws.MultivariateCyclePoisson
 import AnalyticCombinatorics.Ch9.LimitLaws.ExpectedCycles
 import AnalyticCombinatorics.Ch9.LimitLaws.CycleVariance
 import AnalyticCombinatorics.Ch9.LimitLaws.CompositionParts
@@ -360,6 +361,16 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.Bivariate.probabilityMeasure_nat_prod_tendsto_of_tendsto_singleton
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.Bivariate.jointRCyclePMF_tendsto_poisson_product
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.Bivariate.jointLaw_tendsto_poissonProduct
+
+-- Ch9 GENERAL MULTIVARIATE Goncharov–Kolchin IN DISTRIBUTION (THE theorem, F&S Ch IX — capstone): for ANY
+-- finite family of distinct positive lengths r_1,…,r_m, the joint law of (C_{n,r_1},…,C_{n,r_m}) converges
+-- WEAKLY to the product ⨂_i Poisson(1/r_i) on Fin m → ℕ. Cycle counts are asymptotically INDEPENDENT
+-- Poissons — fully general, end-to-end, unconditional. Via: m-fold tensor pmf inversion + exact general
+-- joint moments ∏ r_i^{-k_i} ⟹ joint pmf → product pmf; the reusable (Fin m → ℕ) pmf⟹weak bridge
+-- (generalizes the 1-D and ℕ×ℕ bridges; itself fills a Mathlib gap).
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.Multivariate.probabilityMeasure_pi_nat_tendsto_of_tendsto_singleton
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.Multivariate.multivariatePMF_tendsto_poissonPiPMF
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.Multivariate.multivariateLaw_tendsto_poissonPi
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
