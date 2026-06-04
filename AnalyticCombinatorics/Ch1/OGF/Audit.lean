@@ -73,6 +73,7 @@ import AnalyticCombinatorics.Ch5.Meromorphic.Transfer
 import AnalyticCombinatorics.Ch5.Meromorphic.Surjections
 import AnalyticCombinatorics.Ch5.Meromorphic.Alignments
 import AnalyticCombinatorics.Ch5.Meromorphic.SupercriticalSeq
+import AnalyticCombinatorics.Ch5.Meromorphic.SupercriticalSeqGenuine
 import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTrees
 import AnalyticCombinatorics.Ch7.SingularityApp.Motzkin
 import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalan
@@ -316,5 +317,11 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms _root_.TwoRegularClass.undirectedCycle_card_of_three_le
 #print axioms _root_.TwoRegularClass.twoRegularClass_counts_eq_twoRegularGraphCount
 #print axioms _root_.TwoRegularClass.twoRegularClass_counts_div_factorial_isEquivalent
+
+-- Ch5 GENUINE supercritical-sequence schema (F&S V.2): the principal+remainder decomposition is now
+-- DERIVED from the supercritical data (C(ρ)=1, analytic, C'(ρ)≠0, ρ dominant), not assumed —
+-- closing the earlier thin-wrapper's flagged future-work. coeff(1/(1-C)) ~ (1/(ρC'(ρ)))ρ^{-n}.
+#print axioms AnalyticCombinatorics.Ch5.Meromorphic.SupercriticalSeqGenuine.supercriticalSeq_decomposition_from_supercritical_data
+#print axioms AnalyticCombinatorics.Ch5.Meromorphic.SupercriticalSeqGenuine.supercriticalSeq_isEquivalent_from_supercritical_data
 
 end AnalyticCombinatorics.Ch1
