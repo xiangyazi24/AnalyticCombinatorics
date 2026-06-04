@@ -68,6 +68,7 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.GaussianCore
 import AnalyticCombinatorics.Ch8.SaddlePoint.ExpStirling
 import AnalyticCombinatorics.Ch8.SaddlePoint.Exp
 import AnalyticCombinatorics.Ch8.SaddlePoint.BellBridge
+import AnalyticCombinatorics.Ch8.SaddlePoint.HAdmissible
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -202,5 +203,13 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms CombClass.ogf_cyc
 #print axioms counts_necklaces_k
 #print axioms card_fixedBy_rotation
+
+-- Ch8 saddle-point: H-admissible (Hayman) coefficient asymptotics.
+-- CONDITIONAL on the `HAdmissible` structure (transfer theorem); instances
+-- (proving a concrete f is H-admissible) are not yet supplied.
+#print axioms _root_.central_tendsto_one_of_hadmissible
+#print axioms _root_.tail_tendsto_zero_of_hadmissible
+#print axioms _root_.coeff_isEquivalent_saddle_of_hadmissible_limits
+#print axioms _root_.coeff_isEquivalent_saddle
 
 end AnalyticCombinatorics.Ch1

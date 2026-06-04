@@ -34,6 +34,13 @@ theorem numDerangements_isTheta :
       (fun n : ℕ => (n.factorial : ℝ) * Real.exp (-1)) := by
   exact numDerangements_isEquivalent.isTheta
 
+theorem coeff_invOneSubPow_isTheta_of_one_le (k : ℕ) (hk : 1 ≤ k) :
+    (fun n : ℕ =>
+      PowerSeries.coeff (R := ℂ) n (PowerSeries.invOneSubPow ℂ k).val)
+      =Θ[atTop]
+    (fun n : ℕ => (n : ℂ)^(k - 1) / ((k - 1).factorial : ℂ)) := by
+  exact (coeff_invOneSubPow_isEquivalent_of_one_le k hk).isTheta
+
 theorem centralBinom_isBigO :
     (fun n : ℕ => (n.centralBinom : ℝ)) =O[atTop]
       (fun n : ℕ => (4 : ℝ)^n / Real.sqrt (Real.pi * (n : ℝ))) := by
@@ -55,6 +62,13 @@ theorem numDerangements_isBigO :
     (fun n : ℕ => (numDerangements n : ℝ)) =O[atTop]
       (fun n : ℕ => (n.factorial : ℝ) * Real.exp (-1)) := by
   exact numDerangements_isEquivalent.isBigO
+
+theorem coeff_invOneSubPow_isBigO_of_one_le (k : ℕ) (hk : 1 ≤ k) :
+    (fun n : ℕ =>
+      PowerSeries.coeff (R := ℂ) n (PowerSeries.invOneSubPow ℂ k).val)
+      =O[atTop]
+    (fun n : ℕ => (n : ℂ)^(k - 1) / ((k - 1).factorial : ℂ)) := by
+  exact (coeff_invOneSubPow_isEquivalent_of_one_le k hk).isBigO
 
 theorem centralBinom_ratio_tendsto :
     Tendsto (fun n : ℕ => (n.centralBinom : ℝ) * Real.sqrt (n : ℝ) / (4 : ℝ)^n)
@@ -95,4 +109,4 @@ theorem centralBinom_ratio_tendsto :
   field_simp [hpow, hsqrtn, hsqrtpi]
 
 -- The derangement ratio limit is already named `derangement_prob_tendsto`
--- in `Derangements.lean` and is re-exported by this import-only API file.
+-- in `Derangements.lean` and is available to importers of this API file.
