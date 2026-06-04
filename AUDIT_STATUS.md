@@ -88,3 +88,15 @@ Ch5 meromorphic) — all FAITHFUL. The rebuilt tree passes C-group audit for its
 
 The hard transcendental step (remainder radius) is genuinely proved, not buried. All headline
 `#print axioms` clean; full build green (8324 jobs).
+
+### New work 2026-06-04 (Ch7 ternary trees — Fuss-Catalan, F&S Ch VII)
+
+| Theorem | F&S | Statement (abridged) | Verdict |
+|---------|-----|----------------------|---------|
+| `ternary_choose_dvd` | — | `2n+1 ∣ C(3n,n)` (Fuss-Catalan integrality) | FAITHFUL — choose recurrence + coprimality |
+| `choose_three_mul_isEquivalent` | VII | `C(3n,n) ~ (27/4)^n √3/(2√(πn))` | FAITHFUL (Stirling) |
+| `ternaryTreeCount_isEquivalent` | VII | `C(3n,n)/(2n+1) ~ (27/4)^n √3/(4√π · n^{3/2})` | FAITHFUL |
+
+Note: codex correctly REJECTED the (wrong, self-inconsistent) target constant in the dispatch brief
+and proved the true Stirling value √3/(4√π) — verified by hand. Healthy "有来有往" (not 传声筒).
+All `#print axioms` = {propext, Classical.choice, Quot.sound}; full build green (8325 jobs).

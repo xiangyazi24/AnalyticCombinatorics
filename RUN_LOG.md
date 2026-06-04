@@ -15,7 +15,12 @@
     surjectionsCount n/n! ~ 1/(2(log2)^(n+1)) (Fubini numbers), build green 8324 jobs, axioms clean,
     committed fa90671. Avenue (a) Ch V core delivered.
 - avenue (b) Ch VII opened:
-  - ternary trees / Fuss-Catalan brick (codex PID 1154821): dispatched — T_n=C(3n,n)/(2n+1) ~
-    (27/4)^n √3/(2√(3π) n^{3/2}) via Stirling. [grinding]
+  - ternary trees / Fuss-Catalan brick (codex): DONE — Ch7/SingularityApp/TernaryTrees.lean, 20 thms,
+    FAITHFUL, T_n=C(3n,n)/(2n+1) ~ (27/4)^n √3/(4√π n^{3/2}). codex rejected my wrong target constant,
+    proved true Stirling value (有来有往). build green 8325, axioms clean, committed 126b7c6.
+  - DISCOVERY: TransferGeneral.transfer_theorem covers ALL α (α≠-m), incl √-singularities (α=-1/2).
+    Singularity-analysis framework is complete → Ch VI/VII tree results unlocked.
+  - Motzkin brick (codex PID 1205778): dispatched — M_n ~ K·3^n·n^{-3/2} via general transfer
+    (√-singularity at 1/3); constant derived+numerically-verified, not asserted. [grinding]
 - end: <fill on close>
 - final result: <fill on close>
