@@ -102,6 +102,7 @@ import AnalyticCombinatorics.Ch9.LimitLaws.FixedPointsPoisson
 import AnalyticCombinatorics.Ch9.LimitLaws.PMFToDistribution
 import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoisson
 import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesFactorialMoment
+import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonComplete
 import AnalyticCombinatorics.Ch9.LimitLaws.CompositionParts
 
 /-!

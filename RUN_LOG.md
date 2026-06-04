@@ -218,3 +218,13 @@
   This is the genuine combinatorial HEART the conditional r-cycles→Poisson(1/r) was missing. Full
   distribution-level Poisson(1/r) still needs a factorial-moment⟹law bridge (separate Mathlib gap).
   0 blocked. (31st deliverable — strongest since the pmf⟹weak bridge.)
+- r-cycles → Poisson(1/r) COMPLETED UNCONDITIONAL (codex, INV): RCyclesPoissonComplete.lean (349L,
+  namespace RCyclesPoissonNS.Complete). 17 theorems, 0 blocked. FLAGSHIP — the number of length-r cycles
+  in a uniform random permutation →d Poisson(1/r), end-to-end unconditional. Chain:
+  * rCycleCount ≤ ⌊n/r⌋ (boundedness: Multiset.count_mul_le_sum + cycleType.sum=card),
+  * finite_pmf_eq_factorial_moment_sum — GENERAL method-of-factorial-moments pmf inversion for bounded
+    ℕ-valued r.v. on a finite space, via alternating-binomial kernel factorial_kernel_sum_eq_indicator
+    (reusable Mathlib-gap filler),
+  * substitute EXACT moments r^{-k} (factorialMoment_rCycle) ⟹ rCyclePMF = rCyclePMFFormula (exact Goncharov pmf),
+  * discharge hformula ⟹ rCycles_tendstoInDistribution_poisson (full weak conv to Poisson(1/r)).
+  Genuine, no Mathlib re-wrapper. r-cycles avenue driven to terminal: CONDITIONAL→UNCONDITIONAL. (32nd deliverable.)

@@ -99,6 +99,7 @@ import AnalyticCombinatorics.Ch9.LimitLaws.FixedPointsPoisson
 import AnalyticCombinatorics.Ch9.LimitLaws.PMFToDistribution
 import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoisson
 import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesFactorialMoment
+import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonComplete
 import AnalyticCombinatorics.Ch9.LimitLaws.CompositionParts
 
 /-!
@@ -318,6 +319,15 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.FM.cycleType_count_factorialMoment_sum_in
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.rCycle_mean_eq_inv
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.factorialMoment_rCycle
+
+-- Ch9 r-cycles → Poisson(1/r) COMPLETED to UNCONDITIONAL (F&S Ch IX, Goncharov, flagship). Closes the gap
+-- via the finite method-of-factorial-moments: rCycleCount ≤ ⌊n/r⌋ (bounded) + finite_pmf_eq_factorial_moment_sum
+-- (the general pmf-inversion for bounded ℕ-valued r.v. on a finite space, a reusable Mathlib-gap filler) +
+-- the EXACT moments r^{-k} ⟹ rCyclePMF = rCyclePMFFormula (exact Goncharov pmf) ⟹ full TendstoInDistribution
+-- to Poisson(1/r). The number of length-r cycles of a uniform random permutation →d Poisson(1/r), end-to-end.
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.Complete.finite_pmf_eq_factorial_moment_sum
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.Complete.rCyclePMF_eq_formula
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.Complete.rCycles_tendstoInDistribution_poisson
 
 -- Ch9 permutation cycle-count CLT (Goncharov, F&S Ch IX): the number of cycles of a uniform random
 -- permutation (Feller-coupling realization: sum of independent Bernoulli(1/k)) satisfies
