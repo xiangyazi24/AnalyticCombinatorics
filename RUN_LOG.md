@@ -165,3 +165,9 @@
 - blocks≤3 saddle (codex): DONE — Blocks3HAdmissible.lean (1067L), 4th Hayman instance e^{z+z²/2+z³/6},
   genuine count parts123.set (set partitions blocks ≤3). green 8346, clean. committed 4a8d953. (24th.)
 - PIVOT to implicit-function schema (F&S VII.4): tree function T=ze^{T}, √-singularity at 1/e.
+- tree function / Cayley (codex): DONE — TreeFunction.lean (namespaced TreeFunctionNS to avoid helper
+  collision with FussCatalan), n^{n-1}/n! ~ e^n/(√(2π)n^{3/2}); codex corrected my exponent (3/2 not 5/2).
+  green 8347, clean. committed 8f9101e (+145a36f namespace fix). (25th deliverable.)
+- build-integration lessons this run: (a) forgot Audit import (logsing); (b) helper-name collision
+  (treefun vs fusscatalan). Both caught by the FULL build (not env-lean) → namespace agent files +
+  always full-build before banking.
