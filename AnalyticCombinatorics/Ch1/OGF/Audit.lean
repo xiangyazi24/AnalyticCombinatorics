@@ -101,6 +101,7 @@ import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoisson
 import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesFactorialMoment
 import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonComplete
 import AnalyticCombinatorics.Ch9.LimitLaws.JointCycleMoments
+import AnalyticCombinatorics.Ch9.LimitLaws.ExpectedCycles
 import AnalyticCombinatorics.Ch9.LimitLaws.CompositionParts
 
 /-!
@@ -337,6 +338,11 @@ namespace AnalyticCombinatorics.Ch1
 -- (General >2-length family: documented remaining work — indexed-family deletion induction.)
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.JointCycleMomentsNS.factorialMoment_two_rCycle_of_pos
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.JointCycleMomentsNS.rCycleCount_mul_mean_eq_inv_mul_inv
+
+-- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
+-- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
+-- E[#cycles] = E[∑_{r=1}^n C_{n,r}] = ∑_{r=1}^n 1/r = H_n (∼ log n cycles in a random permutation).
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoissonNS.expected_totalCycles_eq_harmonic
 
 -- Ch9 permutation cycle-count CLT (Goncharov, F&S Ch IX): the number of cycles of a uniform random
 -- permutation (Feller-coupling realization: sum of independent Bernoulli(1/k)) satisfies

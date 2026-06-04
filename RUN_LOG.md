@@ -236,3 +236,10 @@
   uncorrelated). Foundation of Goncharov–Kolchin (asymptotic independence of cycle-length counts).
   BLOCKED/documented: general >2-length family (indexed-family deletion induction is the remaining work).
   Genuine, no Mathlib re-wrapper. (33rd deliverable.)
+- CODEX OUTAGE (usage limit, reset 15:29 CDT). Per protocol: Opus-authored a genuine brick myself
+  (build server free, separate compute) + bridging GFM to auto-resume at reset.
+- Expected number of cycles = harmonic number (Opus): ExpectedCycles.lean (namespace RCyclesPoissonNS).
+  BANKED: expected_totalCycles_eq_harmonic — E[∑_{r=1}^n C_{n,r}] = ∑_{r=1}^n 1/r = H_n, by linearity
+  (uniformPermExpectation_finset_sum) over the banked per-length means rCycle_mean_eq_inv. Classic Goncharov
+  (a random permutation has ∼ log n cycles). Genuine consequence of the factorial-moment machinery,
+  lake env lean clean. (34th deliverable; Opus-authored during outage.)
