@@ -130,7 +130,8 @@ PROVED in Lean, not asserted. All `#print axioms` clean; full build green (8327 
 
 | Theorem | F&S | Statement (abridged) | Verdict |
 |---------|-----|----------------------|---------|
-| `quasiPowers_tendstoInDistribution_of_continuousAt` | IX.8 | quasi-powers charFun form + β→∞ + scaled-remainder→0 ⟹ `(X_n−β_n u₁)/√(β_n u₂) →d N(0,1)` | ⚠ OVER-STRONG HYPOTHESIS (fix in progress) — see note below |
+| `quasiPowers_tendstoInDistribution_of_continuousAt` | IX.8 | LOCAL quasi-powers charFun form (∃s₀>0,∀|s|≤s₀) + β→∞ + scaled-remainder→0 ⟹ `(X_n−β_n u₁)/√(β_n u₂) →d N(0,1)` | FAITHFUL (local hChar = Hwang's hypothesis; now instantiable) |
+| `binaryWord_symbolCount_tendstoInDistribution_gaussian` | IX | #ones in uniform binary word: `(X_n−n/2)/√(n/4) →d N(0,1)` | FAITHFUL, UNCONDITIONAL — instantiates the framework (sign sum, u₁=0,u₂=1,s₀=1/2) |
 | `expectation_sub_quasiPowerCoeff_isBigO` | IX | `E[X_n] = β_n u₁ + O(1)` from cgf | FAITHFUL |
 | `variance_sub_quasiPowerCoeff_isBigO` | IX | `Var[X_n] = β_n u₂ + O(1)` from cgf | FAITHFUL |
 
@@ -151,3 +152,9 @@ an over-narrow / non-faithful IX.8. FIX: weaken `hChar` to a local-neighborhood 
 hypothesis), then instantiate the binary-word CLT. Until fixed, this result is NOT counted as FAITHFUL.
 This is exactly the over-strong-hypothesis failure mode the audit exists to catch — same family as the
 Motzkin-v1 vacuous impostor.
+
+RESOLVED 2026-06-04 (commit 5a0f4b8): `hChar` weakened to the LOCAL form
+`∃ s₀>0, ∀ n s, |s|≤s₀ → charFun = exp(quasi-powers)` — exactly Hwang's local quasi-powers hypothesis.
+The framework theorems were re-proved (the proof only evaluates charFun at scaled args → 0, which
+eventually lie in `|s|≤s₀`). The binary-word CLT then instantiates it unconditionally, confirming the
+fixed framework is faithful AND non-vacuous. Full build green (8329 jobs); both `#print axioms` clean.

@@ -38,7 +38,15 @@
 - Session FAITHFUL deliverables (6): Ch5 meromorphic transfer (IV.10), Ch5 surjections/Fubini,
   Ch7 ternary, Ch7 Motzkin (impostor caught+fixed), Ch7 Fuss-Catalan general, Ch9 quasi-powers limit law.
   Opened Ch V, Ch VII, Ch IX. Whole-tree Group-A/C audit clean. Caught+fixed 1 vacuous impostor.
-- next: quasi-powers concrete instance (compositions-by-parts → Gaussian, reuse Ch3 BGF), then more
-  Ch IX/Ch V/Ch VII applications; appendices.
+  - quasi-powers fidelity fix + instance (codex): DONE — instance-attempt PROVED the committed hChar was
+    over-strong (global exp identity unsatisfiable for lattice laws; charFun oneBitCountLaw π=0). Honestly
+    downgraded (9dd62c4), then weakened hChar to LOCAL form (faithful Hwang) + proved unconditional
+    binary-word CLT (#ones →d N(0,1)). build green 8329, axioms clean, committed 5a0f4b8. Ch IX now has a
+    faithful framework + a non-vacuous instance.
+- Session FAITHFUL deliverables (7): Ch5 meromorphic transfer (IV.10), Ch5 surjections/Fubini, Ch7 ternary,
+  Ch7 Motzkin (impostor caught+fixed), Ch7 Fuss-Catalan general, Ch9 quasi-powers limit law (over-strong
+  hChar caught+fixed), Ch9 binary-word CLT instance. Opened Ch V, VII, IX. Whole-tree Group-A/C audit clean.
+  Trust-but-verify caught + fixed 2 fidelity issues (Motzkin-v1 vacuous, quasi-powers hChar over-strong).
+- next: more Ch IX/Ch V/Ch VII applications; appendices; F&S Ch VI singularity-analysis remaining.
 - end: <ongoing — automode>
 - final result: <ongoing>
