@@ -84,6 +84,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegular
 import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalanInstances
 import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularClass
 import AnalyticCombinatorics.Ch7.SingularityApp.Schroeder
+import AnalyticCombinatorics.Ch7.SingularityApp.Riordan
 import AnalyticCombinatorics.Ch9.LimitLaws.QuasiPowers
 import AnalyticCombinatorics.Ch9.LimitLaws.BinaryWordCLT
 import AnalyticCombinatorics.Ch9.LimitLaws.PermutationCycles
@@ -350,5 +351,9 @@ namespace AnalyticCombinatorics.Ch1
 -- Ch7 large Schröder numbers (F&S Ch VII, algebraic √-singularity): genuine recurrence
 -- S(n+1)=S(n)+ΣS(k)S(n-k), OGF zS²+(z-1)S+1=0, ρ=3-2√2; S_n ~ C·(3+2√2)^n·n^{-3/2} via general transfer.
 #print axioms _root_.schroeder_isEquivalent
+
+-- Ch7 Riordan numbers (F&S Ch VII, Motzkin-sister √-singularity at 1/3): genuine first-return def
+-- R_{n+2}=Σ M_k R_{n-k} (R=1+z²MR); R_n ~ (3√3/(8√π))·3^n·n^{-3/2} via general transfer.
+#print axioms _root_.riordan_isEquivalent
 
 end AnalyticCombinatorics.Ch1
