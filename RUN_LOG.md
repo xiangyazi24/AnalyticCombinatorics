@@ -119,3 +119,11 @@
 - end: <comprehensive capstone; all flagged gaps closed; campaign continues per doctrine across sessions>
 - final result: <ongoing — book is multi-session; this run delivered 16 faithful results + opened 3 chapters>
 
+
+## Run continued — hard saddle phase
+- Bell HAdmissible (codex): DONE — BellHAdmissible.lean (849L), full instance for e^{e^z-1} (Hayman
+  flagship), saddle r·e^r=n genuine, all fields incl local/tail uniform proved, B_n/n! ~ saddleScale via
+  the general interface, tied to posInt.set.counts. Deep-audited genuine. green 8339, axioms clean,
+  committed 4235801. (17th deliverable; 92 files.)
+- next: involutions (e^{z+z²/2}, another Hayman instance); then Hardy-Ramanujan partitions (circle method,
+  hard); breadth; appendices.
