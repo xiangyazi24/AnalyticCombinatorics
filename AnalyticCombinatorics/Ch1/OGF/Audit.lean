@@ -74,6 +74,7 @@ import AnalyticCombinatorics.Ch5.Meromorphic.Surjections
 import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTrees
 import AnalyticCombinatorics.Ch7.SingularityApp.Motzkin
 import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalan
+import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegular
 import AnalyticCombinatorics.Ch9.LimitLaws.QuasiPowers
 import AnalyticCombinatorics.Ch9.LimitLaws.BinaryWordCLT
 import AnalyticCombinatorics.Ch9.LimitLaws.PermutationCycles
@@ -274,5 +275,13 @@ namespace AnalyticCombinatorics.Ch1
 -- (C_n − H_n)/√H_n →d N(0,1), UNCONDITIONAL. cycle_hChar = the local quasi-powers hypothesis, PROVED.
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.cycle_hChar
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.permutationCycles_tendstoInDistribution_gaussian
+
+-- Ch7 2-regular labelled graphs (F&S Ch VI/VII, √-singularity): coefficients of the EGF
+-- exp(-z/2-z²/4)/√(1-z) satisfy g_n/n! ~ (e^{-3/4}/√π)·n^{-1/2}, via the general transfer (α=1/2,
+-- entire prefactor). NOTE: twoRegularGraphCount is DEFINED as n!·[z^n] of that EGF — a GF-coefficient
+-- asymptotic; the identity "this EGF counts 2-regular graphs" is the (standard, numerically-checked)
+-- combinatorial input, not proved in Lean here.
+#print axioms _root_.twoRegularGraphCount_div_factorial_isEquivalent
+#print axioms _root_.twoRegularAsymptoticConstant_eq
 
 end AnalyticCombinatorics.Ch1
