@@ -320,3 +320,11 @@
   — elegantly avoided the dependent-Sigma HEq entirely — + the banked Abel-binomial engine. A famous classic
   formula, not in Mathlib. Unblocks the random-mappings arc: next c_n = n^{n-1}·Q(n) ⟹ with banked
   ramanujanQ_isEquivalent, P(random mapping connected) ~ √(π/(2n)). (43rd deliverable.)
+- PROTOCOL BUG caught & fixed: the per-bank sync step `git stash -u; git pull` on uisai1 STASHED codex's
+  in-flight UNCOMMITTED ConnectedMappings.lean (MAPCONN machinery, deliberately left in the working tree for
+  MAPCONN2 to extend). Restored from stash@{0} (+ /tmp safety copy, 692L). RULE going forward: before any
+  stash+pull sync, safety-copy in-flight worker .lean files; prefer `git stash` (no -u) — untracked files
+  do not block pulls except when banking that same path (then the local copy is identical; remove + pull).
+- Outage #2 (codex usage limit, reset 20:31): bridge armed to auto-re-dispatch MAPCONN2 at 20:32. Opus work
+  during outage: Cayley named corollary n^{n-2} (instantiation, honest label) + AUDIT_STATUS continuation
+  summary.
