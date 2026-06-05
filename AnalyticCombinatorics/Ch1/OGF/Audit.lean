@@ -71,6 +71,7 @@ import AnalyticCombinatorics.Ch8.Partitions.SigmaSummatory
 import AnalyticCombinatorics.Ch8.Partitions.ErdosKernel
 import AnalyticCombinatorics.Ch8.Partitions.ErdosKernelClose
 import AnalyticCombinatorics.Ch8.Partitions.SummatoryWindow
+import AnalyticCombinatorics.Ch8.Partitions.ErdosIntegral
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -650,6 +651,12 @@ namespace AnalyticCombinatorics.Ch1
 -- DIFFERENCE S(β√n) − S(α√n) = (π²/12)n(β²−α²) + O((α+β)√n·log(2β√n)) — the estimate the kernel window
 -- limit consumes, pure triangle algebra from the banked summatory.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Sigma.summatory_window_diff
+
+-- Ch8 HR Stage I.3 infra (Opus): the kernel density integral — ∫₀^∞ t·e^{−rt} dt = 1/r² (via Mathlib's
+-- scaled Gamma) and the normalization (π²/6)·∫₀^∞ y·e^{−(C/2)y} dy = 1 (C² = 4A). The closed form the
+-- kernel total-mass theorem consumes.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.integral_id_mul_exp_neg_mul_Ioi
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.kernel_density_integral_one
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

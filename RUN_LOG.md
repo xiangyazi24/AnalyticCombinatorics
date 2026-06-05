@@ -497,3 +497,7 @@
 - HR Stage I.3 infra (Opus, during outage): SummatoryWindow.lean. BANKED: summatory_window_diff —
   S(β√n)−S(α√n) = (π²/12)n(β²−α²) + O((α+β)√n log(2β√n)), explicit K, clean first-compile. The estimate
   the kernel window limit consumes. (77th deliverable; Opus-solo.)
+- HR Stage I.3 infra (Opus, during outage): ErdosIntegral.lean. BANKED: integral_id_mul_exp_neg_mul_Ioi
+  (∫₀^∞ t·e^{−rt} = 1/r², via Mathlib scaled Gamma) + kernel_density_integral_one ((π²/6)∫₀^∞ ye^{−(C/2)y}
+  = 1, the C²=4A normalization). Two pieces of PARTE5 now banked solo (window-diff + integral); remaining:
+  the uniform replacements + sub-block Riemann assembly. (78th deliverable; Opus-solo.)
