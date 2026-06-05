@@ -378,3 +378,6 @@
   * polya_card_orbits_mul_card_group: #orbits(G on D→C)·|G| = Σ_g |C|^{#orbits⟨g⟩} (with Mathlib Burnside).
   * card_binary_necklaces: #binary necklaces(n)·n = Σ_{k∈ZMod n} 2^{gcd(n,k)} (orbit-of-rotation = gcd lemma).
   φ-form (Σ_{d|n}φ(d)2^{n/d}) honestly deferred. Famous gap (only Burnside was in Mathlib). (52nd deliverable.)
+- Necklace φ-form (codex, PET2): Ch1/Polya/NecklacePhi.lean (124L). BANKED: card_binary_necklaces_phi_standard
+  — #necklaces(n)·n = Σ_{d|n} φ(d)·2^{n/d} (the classical form), via the reusable gcd-fiber regrouping
+  sum_zmod_by_gcd. Pólya/necklace cluster complete. (53rd deliverable.)

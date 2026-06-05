@@ -48,6 +48,7 @@ import AnalyticCombinatorics.Ch1.Lagrange.ImplicitSeries
 import AnalyticCombinatorics.Ch1.Lagrange.Residue
 import AnalyticCombinatorics.Ch1.Lagrange.Applications
 import AnalyticCombinatorics.Ch1.Polya.Enumeration
+import AnalyticCombinatorics.Ch1.Polya.NecklacePhi
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -479,6 +480,11 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch1.Polya.card_fixedBy_colorings
 #print axioms AnalyticCombinatorics.Ch1.Polya.polya_card_orbits_mul_card_group
 #print axioms AnalyticCombinatorics.Ch1.Polya.card_binary_necklaces
+
+-- Ch1 necklace φ-form (classical): #necklaces(n)·n = Σ_{d|n} φ(d)·2^{n/d}, via the reusable gcd-fiber
+-- regrouping Σ_{a∈ZMod n} F(gcd(n,a)) = Σ_{d|n} φ(n/d)·F(d).
+#print axioms AnalyticCombinatorics.Ch1.Polya.NecklacePhi.sum_zmod_by_gcd
+#print axioms AnalyticCombinatorics.Ch1.Polya.NecklacePhi.card_binary_necklaces_phi_standard
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
