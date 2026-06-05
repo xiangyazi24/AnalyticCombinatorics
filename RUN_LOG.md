@@ -372,3 +372,9 @@
   * coeff_implicitSeries_exp: T = X·e^T has coeff n = n^{n-1}/n! — CAYLEY VIA LAGRANGE, an independent
     algebraic second proof cross-validating the analytic TreeFunctionNS coefficients.
   (Nat.catalan is an export-alias of Mathlib's root catalan — same constant, no redefinition.) (51st.)
+- PÓLYA ENUMERATION + NECKLACES (codex, PET): Ch1/Polya/Enumeration.lean (209L). BANKED unconditional,
+  0 blocked on required layers:
+  * card_fixedBy_colorings: {f // g•f = f} ≃ (orbits of ⟨g⟩ → C) ⟹ count = |C|^{#orbits} (the PET core).
+  * polya_card_orbits_mul_card_group: #orbits(G on D→C)·|G| = Σ_g |C|^{#orbits⟨g⟩} (with Mathlib Burnside).
+  * card_binary_necklaces: #binary necklaces(n)·n = Σ_{k∈ZMod n} 2^{gcd(n,k)} (orbit-of-rotation = gcd lemma).
+  φ-form (Σ_{d|n}φ(d)2^{n/d}) honestly deferred. Famous gap (only Burnside was in Mathlib). (52nd deliverable.)

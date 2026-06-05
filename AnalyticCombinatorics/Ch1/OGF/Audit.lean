@@ -47,6 +47,7 @@ import AnalyticCombinatorics.Ch2.Mappings.MappingComponentsSharp
 import AnalyticCombinatorics.Ch1.Lagrange.ImplicitSeries
 import AnalyticCombinatorics.Ch1.Lagrange.Residue
 import AnalyticCombinatorics.Ch1.Lagrange.Applications
+import AnalyticCombinatorics.Ch1.Polya.Enumeration
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -470,6 +471,14 @@ namespace AnalyticCombinatorics.Ch1
 -- coefficients n^{n-1}/n! (independent algebraic proof, cross-validating the analytic TreeFunctionNS route).
 #print axioms AnalyticCombinatorics.Ch1.Lagrange.Applications.coeff_implicitSeries_one_add_X_sq
 #print axioms AnalyticCombinatorics.Ch1.Lagrange.Applications.coeff_implicitSeries_exp
+
+-- Ch1 PÓLYA ENUMERATION (unweighted; famous gap — Mathlib has only Burnside) + NECKLACES (F&S Ch I):
+-- colorings fixed by g ≃ (orbits of ⟨g⟩ → C) ⟹ |C|^{#cycles(g)}; combined with Mathlib's Burnside:
+-- #orbits(G on D→C)·|G| = Σ_g |C|^{#orbits ⟨g⟩}; and the binary necklace count
+-- #necklaces(n)·n = Σ_{k∈ZMod n} 2^{gcd(n,k)} (rotation orbits = gcd; φ-form deferred, flagged).
+#print axioms AnalyticCombinatorics.Ch1.Polya.card_fixedBy_colorings
+#print axioms AnalyticCombinatorics.Ch1.Polya.polya_card_orbits_mul_card_group
+#print axioms AnalyticCombinatorics.Ch1.Polya.card_binary_necklaces
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
