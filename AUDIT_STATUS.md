@@ -244,3 +244,20 @@ Also: Fibonacci OGF Nat.fib(n+1) ~ φ^{n+1}/√5 (golden-ratio dominant pole); r
 inclusion-exclusion formula. Honest rejections: derangements →1/e (already Mathlib, re-wrapper refused).
 Standard remains: every headline #print-axioms = {propext, Classical.choice, Quot.sound}; statement read
 for fidelity; no def:Prop bundling; full build before banking.
+
+## Summary update (2026-06-05, continuation cont'd)
+
+~120 files; certified headlines ~235; build green (8375 jobs); standard unchanged (clean-3, 0 forbidden).
+FIVE major completions this continuation:
+1. **Goncharov–Kolchin, fully general, in distribution** (Ch IX): marginal/bivariate/multivariate product-
+   Poisson weak convergence + all joint factorial moments + 3 reusable pmf⟹weak bridges.
+2. **Random mappings sharp suite** (Ch II.3): Q ~ √(πn/2) (Laplace-for-sums), GENERALIZED CAYLEY k·n^{n-k-1}
+   (+ n^{n-2} corollary), P(connected) ~ √(π/2n), E[#cyclic] = Q(n), E[#components] = Σ(n)_k/(k·n^k) ~ ½log n.
+3. **LAGRANGE INVERSION** (famous Mathlib gap): implicit series T = X·φ(T) + self-built formal residue
+   calculus + n·[Xⁿ]T = [X^{n-1}]φⁿ + Catalan/Cayley applications.
+4. **PÓLYA ENUMERATION** (famous gap): fixed-coloring |C|^{#cycles}, unweighted PET, binary necklaces
+   (gcd + φ forms), WEIGHTED cycle-index theorem.
+5. Fibonacci golden-ratio asymptotic; cycle-statistics trio (H_n mean / Var / Cov).
+Honest rejections/deferrals: derangements (already Mathlib), components sharp const (later closed), φ-form
+(later closed). Hard frontiers remaining: Hardy–Ramanujan (circle method), general-β log transfer, Bell
+bivariate block CLT, Mellin appendix, multivariate Ch IX beyond product-Poisson.
