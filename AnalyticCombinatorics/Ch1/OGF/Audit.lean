@@ -516,9 +516,9 @@ namespace AnalyticCombinatorics.Ch1
 -- Ch2 second moment + variance of the block count (Bell frontier, exact layer complete): the weighted
 -- add-element fiber identity ⟹ B_{n+2} = Σ_P #p² + 2Σ_P #p + 2B_n (sanity n=1: 5=1+2+2 ✓) ⟹ the exact
 -- rational variance of #blocks of a uniform random set partition in Bell-ratio form.
-#print axioms AnalyticCombinatorics.Ch2.SetPartitions.sum_parts_succ
-#print axioms AnalyticCombinatorics.Ch2.SetPartitions.bellNumber_add_two_eq
-#print axioms AnalyticCombinatorics.Ch2.SetPartitions.variance_blocks_eq
+#print axioms AnalyticCombinatorics.Ch2.SetPartitions.BellVariance.sum_parts_succ
+#print axioms AnalyticCombinatorics.Ch2.SetPartitions.BellVariance.bellNumber_add_two_eq
+#print axioms AnalyticCombinatorics.Ch2.SetPartitions.BellVariance.variance_blocks_eq
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
