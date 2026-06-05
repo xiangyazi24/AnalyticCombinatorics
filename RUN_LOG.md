@@ -464,3 +464,9 @@
   glaisher_log_asymptotic — ∀m≥2, log r_m(n)/√n → π√(2(1−1/m)/3) for the genuine no-part-divisible-by-m
   count (Euler split to banked limits at t,mt; the same Tauberian; add-a-1 monotonicity); m=2 cross-check
   rpart_two_eq_opart. An infinite canonical family in one theorem — the pipeline's second reuse. (70th.)
+- GENERAL COMPOSITIONS family, PARTIAL (codex, COMPGEN): CompositionsGeneral.lean (546L). BANKED:
+  partPoly_rhoS (unique positive root ρ_S ∈ (0,1)) and THE PERRON-STYLE DOMINANCE root_eq_rhoS_of_gcd
+  (gcd(S)=1 ⟹ any root with |z|≤ρ_S equals ρ_S — same-ray triangle equality + gcd phase argument; the
+  genuinely new content); genuine list count + first-part recurrence; conditional transfer. BLOCKED:
+  the OGF coefficient bridge (dependent-sigma blow-up) + explicit decomposition — COMPGEN2 dispatched.
+  (71st deliverable, partial.)

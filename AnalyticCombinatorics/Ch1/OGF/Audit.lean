@@ -113,6 +113,7 @@ import AnalyticCombinatorics.Ch5.Meromorphic.Secant
 import AnalyticCombinatorics.Ch5.Meromorphic.SupercriticalSeq
 import AnalyticCombinatorics.Ch5.Meromorphic.SupercriticalSeqGenuine
 import AnalyticCombinatorics.Ch5.Meromorphic.FibonacciCompositions
+import AnalyticCombinatorics.Ch5.Meromorphic.CompositionsGeneral
 import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTrees
 import AnalyticCombinatorics.Ch7.SingularityApp.Motzkin
 import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalan
@@ -723,6 +724,14 @@ namespace AnalyticCombinatorics.Ch1
 -- coeff = Nat.fib(n+1) from the recurrence, residue -1/√5 ⟹ UNCONDITIONAL Nat.fib(n+1) ~ φ^{n+1}/√5
 -- via the banked dominant_simplePole_isEquivalent. Stated for the genuine Mathlib Nat.fib.
 #print axioms AnalyticCombinatorics.Ch5.Meromorphic.FibonacciCompositionsNS.natFib_succ_isEquivalent_phi
+
+-- Ch5 GENERAL COMPOSITIONS family, PARTIAL (the crux banked): for any finite alphabet S (|S|≥2, 0∉S),
+-- the unique positive root ρ_S ∈ (0,1) of Σ_{s∈S} x^s = 1, and — the Perron-style theorem — STRICT
+-- DOMINANCE under gcd(S)=1: every complex root with |z| ≤ ρ_S equals ρ_S (triangle-equality same-ray +
+-- gcd phase argument). Genuine list count compS + first-part recurrence. Assembly (OGF identity +
+-- explicit decomposition ⟹ unconditional asymptotic) = COMPGEN2, in flight.
+#print axioms AnalyticCombinatorics.Ch5.Meromorphic.CompositionsGeneral.partPoly_rhoS
+#print axioms AnalyticCombinatorics.Ch5.Meromorphic.CompositionsGeneral.root_eq_rhoS_of_gcd
 
 -- Ch4/VI log-singularity coefficient scale (leading order, β=1): genuine [z^n](1-z)^{-α}log(1/(1-z))
 -- = Ring.choose(α+n-1,n)·Σ_{j<n}(α+j)⁻¹ ~ (n^{α-1}/Γα)·log n (α>1). Full Δ-domain log-transfer + general β
