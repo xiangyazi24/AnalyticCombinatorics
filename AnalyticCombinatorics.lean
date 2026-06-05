@@ -56,6 +56,7 @@ import AnalyticCombinatorics.Ch1.Polya.Bracelets
 import AnalyticCombinatorics.Ch2.SetPartitions.BellMean
 import AnalyticCombinatorics.Ch2.SetPartitions.BellVariance
 import AnalyticCombinatorics.Ch5.ContinuedFractions.Flajolet
+import AnalyticCombinatorics.Ch5.ContinuedFractions.FlajoletPathSum
 import AnalyticCombinatorics.Ch8.Partitions.UpperBound
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles

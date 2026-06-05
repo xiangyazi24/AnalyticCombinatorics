@@ -54,6 +54,7 @@ import AnalyticCombinatorics.Ch1.Polya.Bracelets
 import AnalyticCombinatorics.Ch2.SetPartitions.BellMean
 import AnalyticCombinatorics.Ch2.SetPartitions.BellVariance
 import AnalyticCombinatorics.Ch5.ContinuedFractions.Flajolet
+import AnalyticCombinatorics.Ch5.ContinuedFractions.FlajoletPathSum
 import AnalyticCombinatorics.Ch8.Partitions.UpperBound
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -522,13 +523,14 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch2.SetPartitions.BellVariance.bellNumber_add_two_eq
 #print axioms AnalyticCombinatorics.Ch2.SetPartitions.BellVariance.variance_blocks_eq
 
--- Ch5 Flajolet continued fractions, ALGEBRA LAYER (F&S V.4, Flajolet 1980): the first-return recursion
--- W(h+1) = 1 + c₀XW + a₀b₀X²·W_shift·W unfolds by induction to the finite J-fraction: flajolet_cf
--- W h = JFraction h. HONEST CAVEAT: W is defined via the first-return recursive coefficients (Wcoeff);
--- the bridge WpathSum = Wcoeff (literal Finset path-weight sum) is the dispatched remaining piece (FCF2) —
--- until it lands this is the recursion⇒CF theorem, NOT yet claimed as the full combinatorial statement.
+-- Ch5 FLAJOLET CONTINUED-FRACTION THEOREM, COMPLETE (F&S V.4, Flajolet 1980 — famous): the first-return
+-- recursion unfolds to the finite J-fraction (flajolet_cf: W h = JFraction h), AND the path-sum bridge is
+-- PROVED (FCF2): coeff_JFraction_eq_pathSum — the J-fraction coefficients equal the LITERAL Finset sums of
+-- weighted Motzkin-path weights at height ≤ h. Fully combinatorial, end-to-end.
 #print axioms AnalyticCombinatorics.Ch5.ContinuedFractions.W_first_return_series
 #print axioms AnalyticCombinatorics.Ch5.ContinuedFractions.flajolet_cf
+#print axioms AnalyticCombinatorics.Ch5.ContinuedFractions.PathSum.WpathSum_eq_Wcoeff
+#print axioms AnalyticCombinatorics.Ch5.ContinuedFractions.PathSum.coeff_JFraction_eq_pathSum
 
 -- Ch8 PARTITION CAMPAIGN Milestone A (route: HANDOFF/partition-campaign-route-R1.md): the sharp elementary
 -- upper bound p(n) ≤ e^{π√(2n/3)} for the GENUINE part n = card (Nat.Partition n) — GF inequality

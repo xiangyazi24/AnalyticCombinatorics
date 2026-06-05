@@ -411,3 +411,8 @@
   (p(n) ≤ e^{π√(2n/3)}, all n) for the GENUINE part n = card (Nat.Partition n). Elementary GF route per
   the ChatGPT-R1 map. Milestones B (Laplace t·log P(e^{-t})→π²/6), C (log-Tauberian), D (transfer) queued.
   (59th deliverable.)
+- FLAJOLET CF THEOREM COMPLETE (codex, FCF2): FlajoletPathSum.lean (154L). BANKED unconditional, 0 blocked:
+  WpathSum_eq_Wcoeff (the path-sum bridge — constructor-split induction beat the transport noise) +
+  coeff_JFraction_eq_pathSum (J-fraction coefficients = LITERAL weighted Motzkin path sums). The famous
+  Flajolet 1980 theorem is now fully combinatorial end-to-end; the fidelity caveat from FCF is discharged
+  and the Audit comment upgraded. (60th deliverable.)
