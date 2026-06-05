@@ -328,3 +328,12 @@
 - Outage #2 (codex usage limit, reset 20:31): bridge armed to auto-re-dispatch MAPCONN2 at 20:32. Opus work
   during outage: Cayley named corollary n^{n-2} (instantiation, honest label) + AUDIT_STATUS continuation
   summary.
+- CONNECTED RANDOM MAPPINGS COMPLETE (codex, MAPCONN2 — resumed after outage #2): ConnectedMappings.lean
+  (1102L, namespace ConnectedMappingsNS). BANKED unconditional, 0 blocked — the second flagship arc:
+  * card_connectedMappings: exact count c_n = Σ_{k∈Icc 1 n} (n-1)_{k-1}·n^{n-k} via global fiber sum over
+    (periodic core P, induced single-cycle σ), fibers ≃ RootedForests P (banked Cayley machinery).
+  * card_connectedMappings_eq_q: c_n = n^{n-1}·ramanujanQ n EXACTLY.
+  * connectedProbability_isEquivalent: P(uniform random mapping on [n] connected) ~ √(π/(2n)) — the famous
+    asymptotic, via Sharp.ramanujanQ_isEquivalent.
+  Arc anatomy: Laplace-for-sums (Q) + generalized Cayley (forests) + periodic-core classification = a
+  three-technique end-to-end result. (45th deliverable.)

@@ -40,6 +40,7 @@ import AnalyticCombinatorics.Ch2.Mappings.RamanujanQSharp
 import AnalyticCombinatorics.Ch2.Mappings.ForestCount
 import AnalyticCombinatorics.Ch2.Mappings.ForestCountComplete
 import AnalyticCombinatorics.Ch2.Mappings.CayleyFormula
+import AnalyticCombinatorics.Ch2.Mappings.ConnectedMappings
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -409,6 +410,15 @@ namespace AnalyticCombinatorics.Ch1
 -- Ch2 Cayley's formula, arborescence form (named instantiation corollary, k=1 of the above):
 -- parent maps toward a fixed root = n^{n-2}.
 #print axioms AnalyticCombinatorics.Ch2.Mappings.ForestCountNS.card_rootedForests_singleton
+
+-- Ch2 CONNECTED RANDOM MAPPINGS, COMPLETE ARC (F&S II.3/VIII — flagship): genuine iteration connectivity
+-- (∀ x y, ∃ i j, f^[i] x = f^[j] y); periodic-core classification (core perm is a single cycle ⟺ connected,
+-- fixed-core fiber ≃ rooted forests); global fiber sum ⟹ exact count c_n = Σ_k (n-1)_{k-1}·n^{n-k};
+-- the EXACT identity c_n = n^{n-1}·Q(n) (Ramanujan Q); and with Q ~ √(πn/2):
+-- P(a uniform random mapping on [n] is connected) ~ √(π/(2n)) — UNCONDITIONAL, end-to-end.
+#print axioms AnalyticCombinatorics.Ch2.Mappings.ConnectedMappingsNS.card_connectedMappings
+#print axioms AnalyticCombinatorics.Ch2.Mappings.ConnectedMappingsNS.card_connectedMappings_eq_q
+#print axioms AnalyticCombinatorics.Ch2.Mappings.ConnectedMappingsNS.connectedProbability_isEquivalent
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
