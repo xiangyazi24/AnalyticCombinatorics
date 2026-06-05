@@ -440,3 +440,8 @@
   via the prescribed unimodal-boundary decomposition (boundary algebra 2√c−c=1−(√c−1)², concavity-of-√
   tail decay, poly/geom absorption) + 9 supporting lemmas. Remaining: assembly layers (global eventual
   Cum bound, Abel localization, limsup, liminf diagonal, full theorem) → PARTC3. (65th deliverable.)
+- THE LOG-TAUBERIAN THEOREM COMPLETE (codex, PARTC3 — Milestone C done): TauberianAssembly.lean (634L).
+  BANKED unconditional, 0 blocked, all four layers: tauberian_cum_limsup, tauberian_cum_global_bound,
+  tauberian_exists_large_cum_near_saddle (Abel localization), tauberian_cum_eventual_lower +
+  log_tauberian_cumulative_sqrt (t·logF→K ⟹ logCum/√N → 2√K). The campaign's central reusable asset.
+  Milestone D (monotone transfer → log p(n) ~ π√(2n/3)) dispatched. (66th deliverable.)

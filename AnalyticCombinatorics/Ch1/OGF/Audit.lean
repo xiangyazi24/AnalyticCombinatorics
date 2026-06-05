@@ -61,6 +61,7 @@ import AnalyticCombinatorics.Ch8.Partitions.EulerProduct
 import AnalyticCombinatorics.Ch8.Partitions.LaplaceLimit
 import AnalyticCombinatorics.Ch8.Partitions.Tauberian
 import AnalyticCombinatorics.Ch8.Partitions.TauberianFull
+import AnalyticCombinatorics.Ch8.Partitions.TauberianAssembly
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -577,6 +578,13 @@ namespace AnalyticCombinatorics.Ch1
 -- + concavity-of-√ tail decay + poly/geometric absorption. Assembly (localization/limsup/liminf/full
 -- theorem) = PARTC3, in flight.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Tauberian.sqrt_laplace_restricted_gap_strong
+
+-- Ch8 THE LOGARITHMIC TAUBERIAN THEOREM, COMPLETE (Milestone C — the campaign's central reusable asset):
+-- for nonneg a with t·log(Σa_n e^{−tn}) → K: log(Σ_{n≤N} a_n)/√N → 2√K. Full assembly: limsup (Chernoff
+-- t-choice), global eventual bound, Abel localization at the saddle window (contradiction via the strong +
+-- inside gaps), liminf diagonalization. Reusable across analytic combinatorics.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Tauberian.tauberian_exists_large_cum_near_saddle
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Tauberian.log_tauberian_cumulative_sqrt
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

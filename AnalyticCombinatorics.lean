@@ -63,6 +63,7 @@ import AnalyticCombinatorics.Ch8.Partitions.EulerProduct
 import AnalyticCombinatorics.Ch8.Partitions.LaplaceLimit
 import AnalyticCombinatorics.Ch8.Partitions.Tauberian
 import AnalyticCombinatorics.Ch8.Partitions.TauberianFull
+import AnalyticCombinatorics.Ch8.Partitions.TauberianAssembly
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
