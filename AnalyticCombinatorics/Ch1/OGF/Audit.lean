@@ -51,6 +51,7 @@ import AnalyticCombinatorics.Ch1.Polya.Enumeration
 import AnalyticCombinatorics.Ch1.Polya.NecklacePhi
 import AnalyticCombinatorics.Ch1.Polya.Weighted
 import AnalyticCombinatorics.Ch1.Polya.Bracelets
+import AnalyticCombinatorics.Ch2.SetPartitions.BellMean
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -502,6 +503,14 @@ namespace AnalyticCombinatorics.Ch1
 -- all n>0 (degenerate small-n covered).
 #print axioms AnalyticCombinatorics.Ch1.Polya.Bracelets.card_reflection_zpowers_orbitQuotient_mul_two
 #print axioms AnalyticCombinatorics.Ch1.Polya.Bracelets.card_binary_bracelets
+
+-- Ch2 BELL NUMBERS as genuine partition counts (Mathlib gap: only multiset-shaped bell existed) + the
+-- Bell recurrence B_{n+1} = Σ C(n,k)B_{n-k} (root-block fiber bijection) + the classic first-moment
+-- identity Σ_P #blocks = B_{n+1} − B_n ⟹ E[#blocks of a uniform set partition] = B_{n+1}/B_n − 1.
+-- First exact step toward the Bell block-count CLT frontier.
+#print axioms AnalyticCombinatorics.Ch2.SetPartitions.bellNumber_succ
+#print axioms AnalyticCombinatorics.Ch2.SetPartitions.bellNumber_succ_eq_sum_parts_add
+#print axioms AnalyticCombinatorics.Ch2.SetPartitions.expected_blocks_eq
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

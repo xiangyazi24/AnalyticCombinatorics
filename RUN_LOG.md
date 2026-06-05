@@ -390,3 +390,7 @@
   (n/2)·2^{n/2}). Full dihedral machinery: MulAction of DihedralGroup n on ZMod n (Mathlib convention
   r i ↦ x-i documented), reflection fixed-points (1 / parity-split 2,0), reflection orbits ((n+1)/2 etc.),
   rotation orbits = gcd. The Pólya cluster now covers necklaces AND bracelets. (55th deliverable.)
+- BELL NUMBERS + mean blocks (codex, BELL): Ch2/SetPartitions/BellMean.lean (677L). BANKED unconditional,
+  0 blocked, all 4 layers: bellNumber n := card (Finpartition univ(Fin n)) (genuine; Mathlib lacked it),
+  sanity 1/1/2/5, the Bell recurrence (root-block fiber), Σ_P #blocks = B_{n+1}−B_n (+ addition form),
+  E[#blocks] = B_{n+1}/B_n − 1 over ℚ. First exact probe of the Bell block-CLT frontier. (56th deliverable.)
