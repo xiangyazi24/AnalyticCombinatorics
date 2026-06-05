@@ -394,3 +394,9 @@
   0 blocked, all 4 layers: bellNumber n := card (Finpartition univ(Fin n)) (genuine; Mathlib lacked it),
   sanity 1/1/2/5, the Bell recurrence (root-block fiber), Σ_P #blocks = B_{n+1}−B_n (+ addition form),
   E[#blocks] = B_{n+1}/B_n − 1 over ℚ. First exact probe of the Bell block-CLT frontier. (56th deliverable.)
+- Bell second moment + variance (codex, BELL2): Ch2/SetPartitions/BellVariance.lean (700L). BANKED
+  unconditional, 0 blocked: sum_parts_succ (weighted add-element fiber), bellNumber_add_two_eq
+  (B_{n+2} = Σ#p² + 2Σ#p + 2B_n), variance_blocks_eq (exact rational variance in Bell ratios). The exact
+  moment layer of the Bell block-count frontier is complete (mean + variance). (57th deliverable.)
+- Three-front state: FCF (Flajolet CF) + PARTA (partition upper bound, campaign opener per ChatGPT R1
+  route, archived HANDOFF/partition-campaign-route-R1.md) still grinding.
