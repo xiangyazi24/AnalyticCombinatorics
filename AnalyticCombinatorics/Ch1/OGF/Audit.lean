@@ -70,6 +70,7 @@ import AnalyticCombinatorics.Ch8.Partitions.SigmaRecurrence
 import AnalyticCombinatorics.Ch8.Partitions.SigmaSummatory
 import AnalyticCombinatorics.Ch8.Partitions.ErdosKernel
 import AnalyticCombinatorics.Ch8.Partitions.ErdosKernelClose
+import AnalyticCombinatorics.Ch8.Partitions.SummatoryWindow
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -644,6 +645,11 @@ namespace AnalyticCombinatorics.Ch1
 -- (block decomposition by ⌊m/√n⌋ + per-block quadratic summatory bounds + the m>n/2 exponential kill).
 -- Window limit + total mass = PARTE5 (sub-block summatory differences), in flight.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Close.erdos_kernel_tail
+
+-- Ch8 HR Stage I.3 infra (Opus-authored during the codex weekly-quota outage): the summatory WINDOW
+-- DIFFERENCE S(β√n) − S(α√n) = (π²/12)n(β²−α²) + O((α+β)√n·log(2β√n)) — the estimate the kernel window
+-- limit consumes, pure triangle algebra from the banked summatory.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Sigma.summatory_window_diff
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

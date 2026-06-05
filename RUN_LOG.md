@@ -492,3 +492,8 @@
   block-reindex infra. BLOCKED precisely: window limit needs the sub-block summatory difference
   S(β√n)−S(α√n) = (π²/12)n(β²−α²)+O(√n log n) + uniform replacements + the closed-form improper integral
   — PARTE5 dispatched. (76th deliverable, partial-arc.)
+- CODEX WEEKLY QUOTA EXHAUSTED until Jun 10 7:27 PM — genuine engine hard-block, reported to Xiang with
+  options (Opus-solo + ChatGPT-draft loop / wait / credits). PARTE5 never ran. Continuing solo.
+- HR Stage I.3 infra (Opus, during outage): SummatoryWindow.lean. BANKED: summatory_window_diff —
+  S(β√n)−S(α√n) = (π²/12)n(β²−α²) + O((α+β)√n log(2β√n)), explicit K, clean first-compile. The estimate
+  the kernel window limit consumes. (77th deliverable; Opus-solo.)

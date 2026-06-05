@@ -72,6 +72,7 @@ import AnalyticCombinatorics.Ch8.Partitions.SigmaRecurrence
 import AnalyticCombinatorics.Ch8.Partitions.SigmaSummatory
 import AnalyticCombinatorics.Ch8.Partitions.ErdosKernel
 import AnalyticCombinatorics.Ch8.Partitions.ErdosKernelClose
+import AnalyticCombinatorics.Ch8.Partitions.SummatoryWindow
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
