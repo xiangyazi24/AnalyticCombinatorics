@@ -59,6 +59,7 @@ import AnalyticCombinatorics.Ch8.Partitions.UpperBound
 import AnalyticCombinatorics.Ch8.Partitions.LaplaceAsymptotic
 import AnalyticCombinatorics.Ch8.Partitions.EulerProduct
 import AnalyticCombinatorics.Ch8.Partitions.LaplaceLimit
+import AnalyticCombinatorics.Ch8.Partitions.Tauberian
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -561,6 +562,14 @@ namespace AnalyticCombinatorics.Ch1
 -- genuine partition counts. (Milestone C: the reusable log-Tauberian; D: monotone transfer.)
 #print axioms AnalyticCombinatorics.Ch8.Partitions.log_partLaplace_eq
 #print axioms AnalyticCombinatorics.Ch8.Partitions.partition_laplace_log_asymptotic
+
+-- Ch8 Tauberian infrastructure, PARTIAL (Milestone C in progress): Abel summation F = (1−e^{−t})ΣCum·e^{−tN};
+-- the inside-window gap (B = 2√K−ε full sum ≤ e^{(K−ρ)/t}); the full-sum gap for any B < 2√K; the limsup
+-- core inequality. BLOCKED precisely (PARTC2): the STRONG restricted gap (B = 2√K+η outside the saddle
+-- window) ⟹ localization ⟹ liminf ⟹ the full log-Tauberian. NOT yet claimed.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Tauberian.laplace_eq_abel_cum
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Tauberian.sqrt_laplace_bad_inside_gap
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Tauberian.sqrt_laplace_full_gap
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

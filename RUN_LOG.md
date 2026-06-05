@@ -429,3 +429,9 @@
   BANKED unconditional, 0 blocked: log_partLaplace_eq, log_series_regroup, and THE LAPLACE ASYMPTOTIC
   partition_laplace_log_asymptotic — t·log P(e^{−t}) → π²/6 for the genuine partition counts. Milestone C
   (log-Tauberian, the central reusable asset) dispatched next. (63rd deliverable.)
+- Tauberian PARTIAL (codex, PARTC): Tauberian.lean (633L). BANKED: laplace_eq_abel_cum (Abel),
+  sqrt_laplace_bad_inside_gap, sqrt_laplace_full_gap (B<2√K), log_Cum_le_laplace (limsup core) + the
+  exp(B√N−tN) summability/bound toolbox. BLOCKED precisely: the STRONG restricted gap (B=2√K+η off-window)
+  → localization → liminf → full theorem. PARTC2 dispatched with the unimodal-boundary decomposition
+  (g(cK/t²)=(K/t)(B′√c−c); 2√c−c=1−(√c−1)²<1; lower tail poly×gap; upper tail linear-decay geometric).
+  (64th deliverable, partial.)
