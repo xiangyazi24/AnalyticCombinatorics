@@ -37,6 +37,7 @@ import AnalyticCombinatorics.Ch3.BGF.CompositionMoments
 import AnalyticCombinatorics.Ch3.BGF.BinaryWordMoments
 import AnalyticCombinatorics.Ch2.Mappings.RamanujanQ
 import AnalyticCombinatorics.Ch2.Mappings.RamanujanQSharp
+import AnalyticCombinatorics.Ch2.Mappings.ForestCount
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -386,6 +387,14 @@ namespace AnalyticCombinatorics.Ch1
 -- + Gaussian sum-integral comparison both sides + tails). Birthday-paradox / random-mappings scale, F&S II.3.
 #print axioms AnalyticCombinatorics.Ch2.Mappings.RamanujanQNS.Sharp.ramanujanQ_tendsto_ratio_one
 #print axioms AnalyticCombinatorics.Ch2.Mappings.RamanujanQNS.Sharp.ramanujanQ_isEquivalent
+
+-- Ch2 generalized-Cayley forest count, PARTIAL: genuine functional formulation (absorbing step / Reaches /
+-- RootedForests subtype) with base cases (k=n → 1; k+1=n → k·n^0) and the ABEL-BINOMIAL ENGINE
+-- Σ_i C(m-1,i)·k^{i+1}·m^{m-1-i} = k·(m+k)^{m-1} (exactly what the depth-one decomposition needs to yield
+-- k·n^{n-k-1}). The sigma-bijection (partition by first-generation children) is dispatched follow-up work;
+-- the full formula is NOT yet claimed.
+#print axioms AnalyticCombinatorics.Ch2.Mappings.ForestCountNS.abel_forest_reindexed_identity
+#print axioms AnalyticCombinatorics.Ch2.Mappings.ForestCountNS.card_rootedForests_one_nonRoot_formula
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

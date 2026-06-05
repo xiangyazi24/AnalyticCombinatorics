@@ -303,3 +303,11 @@
   expansion (k=o(n^{2/3}), exp(-k(k+1)/2n - O(k³/n²))) + two-sided Gaussian sum-integral comparison + tail
   estimates; ratio → 1 (ramanujanQ_tendsto_ratio_one). 21 theorems. Completes the Laplace-method-for-sums
   technique started in RamanujanQ.lean. The Θ partial upgraded to the full equivalence same-session. (41st.)
+- Generalized-Cayley forest count (codex, FOREST — PARTIAL): ForestCount.lean (224L, namespace ForestCountNS).
+  Genuine functional formulation (absorbing step / Reaches / RootedForests subtype). BANKED partial:
+  * abel_forest_reindexed_identity: Σ_i C(m-1,i)·k^{i+1}·m^{m-1-i} = k·(m+k)^{m-1} — the Abel-binomial
+    engine (exactly what the depth-one decomposition needs for k·n^{n-k-1}).
+  * base cases: k=n → 1; k+1=n → k·n^{n-k-1} (exponent 0).
+  BLOCKED (precise): the sigma-bijection — partition forests by the first-generation set S (parents in R),
+  restrict to sub-forest rooted at S, first-hit argument + Σ-equivalence. FOREST2 dispatched on this gap.
+  Full k·n^{n-k-1} NOT yet claimed. (42nd deliverable, partial.)
