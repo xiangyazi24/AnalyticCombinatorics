@@ -277,3 +277,11 @@ bivariate block CLT, Mellin appendix, multivariate Ch IX beyond product-Poisson.
 - ChatGPT Pro channel "ac" active for frontier route design (R1 delivered the partition route).
 Outage protocol exercised 3×; sync protocol hardened (no stash -u with in-flight worker files; backup +
 targeted rm + pull).
+
+## ★ Milestone (2026-06-05 evening): HARDY–RAMANUJAN LOG-ASYMPTOTIC COMPLETE
+
+partition_log_asymptotic: log p(n)/√n → π√(2/3) (+ IsEquivalent form), genuine card (Nat.Partition n),
+clean-3, fully elementary (no circle method/modular forms). Pipeline (1 day): ChatGPT-R1 route → PARTA
+(GF upper bound) → PARTB×3 (Euler product K-sandwich + Laplace t·log P → π²/6) → PARTC×3 (THE reusable
+log-Tauberian: limsup/Abel/strong saddle gap/localization/liminf) → PARTD (monotone transfer). 67 banked
+deliverables total; build green 8388 jobs. Remaining true frontier: the sharp HR constant (circle method).
