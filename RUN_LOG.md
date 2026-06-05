@@ -475,3 +475,7 @@
   composition count ~ c_S·ρ_S^{−n}. OGF bridge (per-fixed-s fiber bijection beat the sigma blow-up),
   deriv>0, dominant annulus from the Perron theorem, assembly via banked SupercriticalSeqGenuine.
   A family theorem covering every finite alphabet — generalizes the Fibonacci instance. (72nd deliverable.)
+- HR-CONSTANT Stage I.1 (codex, PARTE1): SigmaRecurrence.lean (326L). BANKED: partition_sigma_recurrence —
+  n·p(n) = Σ σ₁(m)·p(n−m) (part-occurrence double count, add-k-copies bijection, genuine
+  ArithmeticFunction.sigma). Summatory estimate honestly deferred (precise plan reported) → PARTE2.
+  (73rd deliverable.)

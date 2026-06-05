@@ -66,6 +66,7 @@ import AnalyticCombinatorics.Ch8.Partitions.LogAsymptotic
 import AnalyticCombinatorics.Ch8.Partitions.DistinctParts
 import AnalyticCombinatorics.Ch8.Partitions.OddParts
 import AnalyticCombinatorics.Ch8.Partitions.GlaisherAsymptotic
+import AnalyticCombinatorics.Ch8.Partitions.SigmaRecurrence
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -619,6 +620,11 @@ namespace AnalyticCombinatorics.Ch1
 -- monotonicity. m=2 cross-checked against the odd-parts count.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Glaisher.glaisher_log_asymptotic
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Glaisher.rpart_two_eq_opart
+
+-- Ch8 HR-CONSTANT campaign Stage I.1 (route: HANDOFF/partition-HR-constant-route-R2.md): the classical
+-- σ-RECURRENCE n·p(n) = Σ_{m≤n} σ₁(m)·p(n−m) — part-occurrence double count via the add-k-copies bijection,
+-- genuine Mathlib ArithmeticFunction.sigma. Foundation of the Erdős route to p(n) ~ e^{π√(2n/3)}/(4n√3).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Sigma.partition_sigma_recurrence
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
