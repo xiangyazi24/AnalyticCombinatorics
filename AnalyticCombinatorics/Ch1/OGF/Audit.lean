@@ -38,6 +38,7 @@ import AnalyticCombinatorics.Ch3.BGF.BinaryWordMoments
 import AnalyticCombinatorics.Ch2.Mappings.RamanujanQ
 import AnalyticCombinatorics.Ch2.Mappings.RamanujanQSharp
 import AnalyticCombinatorics.Ch2.Mappings.ForestCount
+import AnalyticCombinatorics.Ch2.Mappings.ForestCountComplete
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -395,6 +396,14 @@ namespace AnalyticCombinatorics.Ch1
 -- the full formula is NOT yet claimed.
 #print axioms AnalyticCombinatorics.Ch2.Mappings.ForestCountNS.abel_forest_reindexed_identity
 #print axioms AnalyticCombinatorics.Ch2.Mappings.ForestCountNS.card_rootedForests_one_nonRoot_formula
+
+-- Ch2 GENERALIZED CAYLEY FORMULA, COMPLETE (classic; not in Mathlib): the number of forests of k rooted
+-- trees on n labeled vertices with a SPECIFIED root set (functional formulation: parent maps where every
+-- vertex reaches R) equals k·n^{n-k-1} (0<k<n) — proved by strong induction over an arbitrary Fintype
+-- carrier via fixed-S fiber equivalences (depth-one decomposition, no HEq needed) + the Abel-binomial
+-- engine. Foundation of the random-mappings arc (c_n = n^{n-1}·Q(n) next).
+#print axioms AnalyticCombinatorics.Ch2.Mappings.ForestCountNS.Complete.card_gRootedForests
+#print axioms AnalyticCombinatorics.Ch2.Mappings.ForestCountNS.Complete.card_rootedForests
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

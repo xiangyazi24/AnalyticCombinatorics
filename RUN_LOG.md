@@ -311,3 +311,12 @@
   BLOCKED (precise): the sigma-bijection — partition forests by the first-generation set S (parents in R),
   restrict to sub-forest rooted at S, first-hit argument + Σ-equivalence. FOREST2 dispatched on this gap.
   Full k·n^{n-k-1} NOT yet claimed. (42nd deliverable, partial.)
+- GENERALIZED CAYLEY FORMULA COMPLETE (codex, FOREST3): ForestCountComplete.lean (932L, namespace
+  ForestCountNS.Complete). BANKED unconditional, 0 blocked:
+  * card_rootedForests: #(forests of k rooted trees on n labeled vertices with specified root set R) =
+    k·n^{n-k-1} (0<k<n), functional reaches-R formulation.
+  * card_gRootedForests: the generalized-Fintype-carrier version (strong-induction substrate).
+  Route: fixed-S FIBER equivalences (depth-one decomposition counted fiber-by-fiber, summed by subset size)
+  — elegantly avoided the dependent-Sigma HEq entirely — + the banked Abel-binomial engine. A famous classic
+  formula, not in Mathlib. Unblocks the random-mappings arc: next c_n = n^{n-1}·Q(n) ⟹ with banked
+  ramanujanQ_isEquivalent, P(random mapping connected) ~ √(π/(2n)). (43rd deliverable.)
