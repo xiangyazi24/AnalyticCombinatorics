@@ -487,3 +487,8 @@
   Erdős recurrence) + boundaryTerm_negligible + supports (C²=4A, σ ≤ n², summatory quadratic bound).
   BLOCKED precisely: tail/window/total need (i) the ⌊m/√n⌋ block-decomposition reindex lemma and (ii) Abel
   summation against the σ-summatory with uniform window replacements — PARTE4 dispatched. (75th, partial.)
+- HR Stage I.3 tail (codex, PARTE4): ErdosKernelClose.lean (767L). BANKED: erdos_kernel_tail (∀ε∃R kernel
+  mass beyond R√n eventually ≤ ε; block decomposition + quadratic summatory + exponential kill) + the
+  block-reindex infra. BLOCKED precisely: window limit needs the sub-block summatory difference
+  S(β√n)−S(α√n) = (π²/12)n(β²−α²)+O(√n log n) + uniform replacements + the closed-form improper integral
+  — PARTE5 dispatched. (76th deliverable, partial-arc.)
