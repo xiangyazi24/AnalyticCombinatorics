@@ -457,3 +457,6 @@
   genuine Nodup-partition count. Full pipeline reuse: the log(1+y)=log(1−y²)−log(1−y) reduction (K = π²/12
   from the banked limits at t,2t), the SAME log-Tauberian, largest-part monotonicity. First reuse of the
   central asset — one brick. (68th deliverable.)
+- ODD-PARTS asymptotic (Opus): OddParts.lean. BANKED: opart_eq_qpart (Euler's partition theorem transported,
+  via Mathlib card_odds_eq_card_distincts) + odd_log_asymptotic (log o(n)/√n → π√(1/3)) for the genuine
+  odds count. (69th deliverable; Opus-authored.) Partition family: p, q(distinct), o(odd) all asymptotic.

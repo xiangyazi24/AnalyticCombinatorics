@@ -64,6 +64,7 @@ import AnalyticCombinatorics.Ch8.Partitions.TauberianFull
 import AnalyticCombinatorics.Ch8.Partitions.TauberianAssembly
 import AnalyticCombinatorics.Ch8.Partitions.LogAsymptotic
 import AnalyticCombinatorics.Ch8.Partitions.DistinctParts
+import AnalyticCombinatorics.Ch8.Partitions.OddParts
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -602,6 +603,12 @@ namespace AnalyticCombinatorics.Ch1
 -- at t and 2t ⟹ K = π²/12; the same log-Tauberian; largest-part monotonicity). The Tauberian's first reuse.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Distinct.distinct_log_asymptotic
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Distinct.distinct_log_isEquivalent
+
+-- Ch8 ODD-PARTS partitions (Opus-authored): via Mathlib's Euler partition theorem
+-- (card_odds_eq_card_distincts), the genuine odd-parts count has the SAME asymptotic:
+-- log o(n)/√n → π√(1/3).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Odd.opart_eq_qpart
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Odd.odd_log_asymptotic
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
