@@ -62,6 +62,7 @@ import AnalyticCombinatorics.Ch8.Partitions.LaplaceLimit
 import AnalyticCombinatorics.Ch8.Partitions.Tauberian
 import AnalyticCombinatorics.Ch8.Partitions.TauberianFull
 import AnalyticCombinatorics.Ch8.Partitions.TauberianAssembly
+import AnalyticCombinatorics.Ch8.Partitions.LogAsymptotic
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -585,6 +586,15 @@ namespace AnalyticCombinatorics.Ch1
 -- inside gaps), liminf diagonalization. Reusable across analytic combinatorics.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Tauberian.tauberian_exists_large_cum_near_saddle
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Tauberian.log_tauberian_cumulative_sqrt
+
+-- Ch8 ★ THE HARDY–RAMANUJAN LOG-ASYMPTOTIC (campaign FINALE, F&S VIII / the named hard frontier):
+-- log p(n)/√n → π√(2/3), equivalently log p(n) ~ π√(2n/3), for the GENUINE p(n) = card (Nat.Partition n) —
+-- fully elementary end-to-end: GF upper bound → Euler product (K-sandwich) → Laplace asymptotic
+-- t·log P(e^{−t}) → π²/6 → the reusable LOG-TAUBERIAN → monotone transfer. No circle method, no modular
+-- forms. (The sharp polynomial factor e^{...}/(4n√3) remains the true circle-method frontier.)
+#print axioms AnalyticCombinatorics.Ch8.Partitions.partition_cum_log_asymptotic
+#print axioms AnalyticCombinatorics.Ch8.Partitions.partition_log_asymptotic
+#print axioms AnalyticCombinatorics.Ch8.Partitions.partition_log_isEquivalent
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

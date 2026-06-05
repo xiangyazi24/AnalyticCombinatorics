@@ -445,3 +445,10 @@
   tauberian_exists_large_cum_near_saddle (Abel localization), tauberian_cum_eventual_lower +
   log_tauberian_cumulative_sqrt (t·logF→K ⟹ logCum/√N → 2√K). The campaign's central reusable asset.
   Milestone D (monotone transfer → log p(n) ~ π√(2n/3)) dispatched. (66th deliverable.)
+- ★ PARTITION CAMPAIGN COMPLETE (codex, PARTD — finale): LogAsymptotic.lean (242L). BANKED unconditional,
+  0 blocked: part_mono, partition_cum_log_asymptotic, two_sqrt_A_const_eq, and THE PRIZE —
+  partition_log_asymptotic (log p(n)/√n → π√(2/3)) + partition_log_isEquivalent (log p(n) ~ π√(2n/3)),
+  for the genuine card (Nat.Partition n). THE HARDY–RAMANUJAN LOG-ASYMPTOTIC — the long-flagged hard
+  frontier — formalized fully elementarily in ONE day: ChatGPT-R1 route (Tauberian, no circle method) +
+  7 codex bricks (A, B×3, C×3, D), every layer audited clean-3. The log-Tauberian is a permanent reusable
+  asset. (67th deliverable.) Remaining true frontier: the sharp HR constant e^{π√(2n/3)}/(4n√3) (circle method).
