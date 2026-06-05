@@ -643,7 +643,7 @@ namespace AnalyticCombinatorics.Ch1
 -- Ch8 HR Stage I.3: KERNEL TAIL TIGHTNESS — ∀ε ∃R: the erdosWeight mass beyond R√n is eventually ≤ ε
 -- (block decomposition by ⌊m/√n⌋ + per-block quadratic summatory bounds + the m>n/2 exponential kill).
 -- Window limit + total mass = PARTE5 (sub-block summatory differences), in flight.
-#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.erdos_kernel_tail
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Close.erdos_kernel_tail
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
