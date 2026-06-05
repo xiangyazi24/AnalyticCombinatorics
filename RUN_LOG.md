@@ -483,3 +483,7 @@
   sigma_summatory_asymptotic — Σ_{m≤x}σ₁(m) = π²x²/12 + O(x log x), explicit K = 8+π² (hyperbola +
   Basel tail + harmonic + floor lift). (74th deliverable.) Next: Stage I.3 kernel package (erdosWeight
   total mass / tail tightness / window limit).
+- HR Stage I.3 layer 1 (codex, PARTE3): ErdosKernel.lean (278L). BANKED: u_recurrence (the normalized
+  Erdős recurrence) + boundaryTerm_negligible + supports (C²=4A, σ ≤ n², summatory quadratic bound).
+  BLOCKED precisely: tail/window/total need (i) the ⌊m/√n⌋ block-decomposition reindex lemma and (ii) Abel
+  summation against the σ-summatory with uniform window replacements — PARTE4 dispatched. (75th, partial.)

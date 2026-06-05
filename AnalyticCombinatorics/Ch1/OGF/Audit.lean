@@ -68,6 +68,7 @@ import AnalyticCombinatorics.Ch8.Partitions.OddParts
 import AnalyticCombinatorics.Ch8.Partitions.GlaisherAsymptotic
 import AnalyticCombinatorics.Ch8.Partitions.SigmaRecurrence
 import AnalyticCombinatorics.Ch8.Partitions.SigmaSummatory
+import AnalyticCombinatorics.Ch8.Partitions.ErdosKernel
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -631,6 +632,12 @@ namespace AnalyticCombinatorics.Ch1
 -- constant K = 8+π² (triangular hyperbola identity + Basel tail + harmonic absorption + floor lift).
 -- Reusable elementary number theory.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Sigma.sigma_summatory_asymptotic
+
+-- Ch8 HR-CONSTANT Stage I.3 layer 1: the NORMALIZED ERDŐS RECURRENCE u(n) = Σ erdosWeight(n,m)·u(n−m) +
+-- boundary, with boundary → 0 (u = n·p(n)·e^{−C√n}). Kernel tail/window/total = PARTE4 (block decomposition
+-- + Abel against the summatory), in flight.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.u_recurrence
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boundaryTerm_negligible
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
