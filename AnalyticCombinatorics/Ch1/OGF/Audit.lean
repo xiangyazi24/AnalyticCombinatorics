@@ -63,6 +63,7 @@ import AnalyticCombinatorics.Ch8.Partitions.Tauberian
 import AnalyticCombinatorics.Ch8.Partitions.TauberianFull
 import AnalyticCombinatorics.Ch8.Partitions.TauberianAssembly
 import AnalyticCombinatorics.Ch8.Partitions.LogAsymptotic
+import AnalyticCombinatorics.Ch8.Partitions.DistinctParts
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -595,6 +596,12 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.partition_cum_log_asymptotic
 #print axioms AnalyticCombinatorics.Ch8.Partitions.partition_log_asymptotic
 #print axioms AnalyticCombinatorics.Ch8.Partitions.partition_log_isEquivalent
+
+-- Ch8 DISTINCT-PARTS partitions (Erdős): log q(n)/√n → π√(1/3), q(n) = genuine card of Nodup partitions —
+-- full pipeline REUSE (∏(1+x^k) via log(1+y) = log(1−y²)−log(1−y) reduction to the banked nonneg machinery
+-- at t and 2t ⟹ K = π²/12; the same log-Tauberian; largest-part monotonicity). The Tauberian's first reuse.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Distinct.distinct_log_asymptotic
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Distinct.distinct_log_isEquivalent
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

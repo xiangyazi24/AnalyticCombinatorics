@@ -452,3 +452,8 @@
   frontier — formalized fully elementarily in ONE day: ChatGPT-R1 route (Tauberian, no circle method) +
   7 codex bricks (A, B×3, C×3, D), every layer audited clean-3. The log-Tauberian is a permanent reusable
   asset. (67th deliverable.) Remaining true frontier: the sharp HR constant e^{π√(2n/3)}/(4n√3) (circle method).
+- DISTINCT-PARTS asymptotic (codex, DISTINCT): DistinctParts.lean (848L). BANKED unconditional, 0 blocked:
+  distinct_log_asymptotic (log q(n)/√n → π√(1/3)) + IsEquivalent (log q(n) ~ π√(n/3)) — Erdős, for the
+  genuine Nodup-partition count. Full pipeline reuse: the log(1+y)=log(1−y²)−log(1−y) reduction (K = π²/12
+  from the banked limits at t,2t), the SAME log-Tauberian, largest-part monotonicity. First reuse of the
+  central asset — one brick. (68th deliverable.)
