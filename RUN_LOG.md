@@ -358,3 +358,11 @@
   formula n·[Xⁿ]T = [X^{n-1}]φⁿ NOT yet claimed — blocked precisely on formal residue infrastructure
   (res(F')=0 + change-of-variables res(H∘G·G')=res(H); the hard case res(G'/G)=1 reduces via G=X·u).
   LAG2 dispatched on exactly that plan (Stanley's residue proof). Famous Mathlib gap. (49th deliverable.)
+- LAGRANGE INVERSION PROVED (codex, LAG2 — campaign prize, 2 bricks total): Ch1/Lagrange/Residue.lean (382L).
+  BANKED unconditional, 0 blocked:
+  * lagrange_inversion: (n:R)·[Xⁿ](implicitSeries φ) = [X^{n-1}](φⁿ) over any ℚ-algebra, φ with unit
+    constant term (+ lagrange_inversion_divided). Stanley EC2 5.4.2 route.
+  * Self-built mini formal-residue calculus (lightweight X^{-N}·F representation): res-of-derivative = 0,
+    unit-kernel residues (res(G'/G)=1 core), change-of-variables residue_subst_unit — reusable framework.
+  * Catalan sanity (φ=(1+X)²: coeff 1 = 1, coeff 2 = 2 ✓).
+  A FAMOUS Mathlib gap closed. The book's tree-enumeration tool is now native to the repo. (50th deliverable.)

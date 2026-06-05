@@ -47,6 +47,7 @@ import AnalyticCombinatorics.Ch2.Mappings.CyclicPoints
 import AnalyticCombinatorics.Ch2.Mappings.MappingComponents
 import AnalyticCombinatorics.Ch2.Mappings.MappingComponentsSharp
 import AnalyticCombinatorics.Ch1.Lagrange.ImplicitSeries
+import AnalyticCombinatorics.Ch1.Lagrange.Residue
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational

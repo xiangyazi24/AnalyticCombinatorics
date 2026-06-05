@@ -45,6 +45,7 @@ import AnalyticCombinatorics.Ch2.Mappings.CyclicPoints
 import AnalyticCombinatorics.Ch2.Mappings.MappingComponents
 import AnalyticCombinatorics.Ch2.Mappings.MappingComponentsSharp
 import AnalyticCombinatorics.Ch1.Lagrange.ImplicitSeries
+import AnalyticCombinatorics.Ch1.Lagrange.Residue
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -453,6 +454,15 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch1.Lagrange.ImplicitSeries.implicitSeries_spec
 #print axioms AnalyticCombinatorics.Ch1.Lagrange.ImplicitSeries.implicitSeries_unique
 #print axioms AnalyticCombinatorics.Ch1.Lagrange.ImplicitSeries.derivative_implicitSeries
+
+-- Ch1 LAGRANGE INVERSION (F&S A.6 — famous Mathlib gap, CLOSED): over any ℚ-algebra R, for φ with unit
+-- constant term and T = implicitSeries φ (the unique T = X·φ(T)): n·[Xⁿ]T = [X^{n-1}]φⁿ (+ divided form).
+-- Proved via a self-built mini formal-residue calculus on the lightweight X^{-N}·F representation:
+-- residue-of-derivative = 0, unit-kernel residues (the res(G'/G)=1 core), and the change-of-variables
+-- theorem residue_subst_unit (Stanley EC2 Thm 5.4.2 route). Catalan sanity verified.
+#print axioms AnalyticCombinatorics.Ch1.Lagrange.Residue.residue_subst_unit
+#print axioms AnalyticCombinatorics.Ch1.Lagrange.Residue.lagrange_inversion
+#print axioms AnalyticCombinatorics.Ch1.Lagrange.Residue.lagrange_inversion_divided
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
