@@ -347,3 +347,8 @@
   candidate-cycle linearity (component ⟺ core cycle; #{f : f|_C = σ_C} = n^{n-k}); weighted-Ramanujan form
   Σ term_i/(i+1); sanity n=1→1, n=2→5/4 as theorems. PARTIAL honest: harmonic sandwich H(√n)/2 ≤ E ≤ H(n)
   (log order); sharp ~½log n flagged remaining (Gaussian-damped harmonic transfer). (47th deliverable.)
+- SHARP components asymptotic (codex, MAPCOMP2): MappingComponentsSharp.lean (499L, namespace
+  MappingComponentsNS.Sharp). BANKED unconditional, 0 blocked: expected_components_isEquivalent —
+  E[#components] ~ (1/2)·log n (ratio→1), via L-windowed Gaussian-damped harmonic estimates. The
+  random-mapping statistics suite is now SHARP across the board: P(connected)~√(π/2n), E[#cyclic]=Q(n)
+  ~√(πn/2), E[#components]=Σ(n)_k/(k·n^k)~½log n — all exact + asymptotic, end-to-end. (48th deliverable.)
