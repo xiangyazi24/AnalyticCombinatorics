@@ -501,3 +501,8 @@
   (∫₀^∞ t·e^{−rt} = 1/r², via Mathlib scaled Gamma) + kernel_density_integral_one ((π²/6)∫₀^∞ ye^{−(C/2)y}
   = 1, the C²=4A normalization). Two pieces of PARTE5 now banked solo (window-diff + integral); remaining:
   the uniform replacements + sub-block Riemann assembly. (78th deliverable; Opus-solo.)
+- HR Stage I.3 infra (Opus, during outage): ErdosUniform.lean. BANKED: sqrt_diff_eq (exact
+  rationalization), sqrt_diff_window_approx (|·−m/(2√n)| ≤ b²/(2√n)), inv_window_approx
+  (|1/(n−m)−1/n| ≤ 2b/n^{3/2}) — the uniform erdosWeight→model-kernel conversion estimates.
+  PARTE5 solo progress: 3 of ~5 pieces banked (window-diff, integral, replacements); remaining:
+  the sub-block Riemann assembly + the window/total theorems. (79th deliverable; Opus-solo.)

@@ -72,6 +72,7 @@ import AnalyticCombinatorics.Ch8.Partitions.ErdosKernel
 import AnalyticCombinatorics.Ch8.Partitions.ErdosKernelClose
 import AnalyticCombinatorics.Ch8.Partitions.SummatoryWindow
 import AnalyticCombinatorics.Ch8.Partitions.ErdosIntegral
+import AnalyticCombinatorics.Ch8.Partitions.ErdosUniform
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -657,6 +658,13 @@ namespace AnalyticCombinatorics.Ch1
 -- kernel total-mass theorem consumes.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.integral_id_mul_exp_neg_mul_Ioi
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.kernel_density_integral_one
+
+-- Ch8 HR Stage I.3 infra (Opus): the UNIFORM WINDOW REPLACEMENTS — the exact rationalization
+-- √n−√(n−m) = m/(√n+√(n−m)); |(√n−√(n−m)) − m/(2√n)| ≤ b²/(2√n) on m ≤ b√n; and
+-- |1/(n−m) − 1/n| ≤ 2b/n^{3/2} (2m ≤ n). The erdosWeight → model-kernel conversion estimates.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sqrt_diff_eq
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sqrt_diff_window_approx
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.inv_window_approx
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
