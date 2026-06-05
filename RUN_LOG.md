@@ -342,3 +342,8 @@
   fiber equivalence — same count as connected mappings, the classic curiosity), expected_cyclicPoints_eq_q
   (E[#cyclic] = ramanujanQ n EXACTLY, double-count + reused Q algebra), expected_cyclicPoints_isEquivalent
   (~ √(πn/2)). Third Q-tied random-mapping statistic. (46th deliverable.)
+- Expected components of a random mapping (codex, MAPCOMP): MappingComponents.lean (456L, namespace
+  MappingComponentsNS). BANKED: expected_components_eq — EXACT E[#components] = Σ_k (n)_k/(k·n^k) via
+  candidate-cycle linearity (component ⟺ core cycle; #{f : f|_C = σ_C} = n^{n-k}); weighted-Ramanujan form
+  Σ term_i/(i+1); sanity n=1→1, n=2→5/4 as theorems. PARTIAL honest: harmonic sandwich H(√n)/2 ≤ E ≤ H(n)
+  (log order); sharp ~½log n flagged remaining (Gaussian-damped harmonic transfer). (47th deliverable.)

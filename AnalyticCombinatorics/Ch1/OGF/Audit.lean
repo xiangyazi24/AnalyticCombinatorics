@@ -42,6 +42,7 @@ import AnalyticCombinatorics.Ch2.Mappings.ForestCountComplete
 import AnalyticCombinatorics.Ch2.Mappings.CayleyFormula
 import AnalyticCombinatorics.Ch2.Mappings.ConnectedMappings
 import AnalyticCombinatorics.Ch2.Mappings.CyclicPoints
+import AnalyticCombinatorics.Ch2.Mappings.MappingComponents
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -427,6 +428,14 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch2.Mappings.CyclicPointsNS.card_periodicAt
 #print axioms AnalyticCombinatorics.Ch2.Mappings.CyclicPointsNS.expected_cyclicPoints_eq_q
 #print axioms AnalyticCombinatorics.Ch2.Mappings.CyclicPointsNS.expected_cyclicPoints_isEquivalent
+
+-- Ch2 expected number of COMPONENTS of a uniform random mapping (F&S II.3/VII): EXACT formula
+-- E[#components] = Σ_{k∈Icc 1 n} (n)_k/(k·n^k) via candidate-cycle linearity (component ⟺ core cycle;
+-- f|_C = σ_C forced, rest free). PARTIAL asymptotic, honest: harmonic sandwich H(√n)/2 ≤ E ≤ H(n) (log
+-- order pinned; the sharp ~½log n Gaussian-damped harmonic transfer is flagged remaining work, NOT claimed).
+#print axioms AnalyticCombinatorics.Ch2.Mappings.MappingComponentsNS.expected_components_eq
+#print axioms AnalyticCombinatorics.Ch2.Mappings.MappingComponentsNS.componentExpectationFormula_le_harmonic
+#print axioms AnalyticCombinatorics.Ch2.Mappings.MappingComponentsNS.half_harmonic_sqrt_le_componentExpectationFormula
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
