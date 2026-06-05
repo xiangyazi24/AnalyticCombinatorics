@@ -261,3 +261,19 @@ FIVE major completions this continuation:
 Honest rejections/deferrals: derangements (already Mathlib), components sharp const (later closed), φ-form
 (later closed). Hard frontiers remaining: Hardy–Ramanujan (circle method), general-β log transfer, Bell
 bivariate block CLT, Mellin appendix, multivariate Ch IX beyond product-Poisson.
+
+## Summary update (2026-06-05 mid-day)
+
+62 banked deliverables; build green (8383 jobs); standard unchanged. New since last update:
+- **FLAJOLET CONTINUED-FRACTION THEOREM, COMPLETE** (Ch V.4, famous): first-return recursion ⇒ finite
+  J-fraction + the path-sum bridge (J-fraction coefficients = literal weighted Motzkin path Finset sums).
+- **Bell block-count exact moments**: B_n := card(Finpartition univ) (genuine; Mathlib lacked it), Bell
+  recurrence, Σ#blocks = B_{n+1}−B_n, E[#blocks] = B_{n+1}/B_n−1, B_{n+2}-second-moment, exact variance.
+- **PARTITION CAMPAIGN** (route: HANDOFF/partition-campaign-route-R1.md, target log p(n) ~ π√(2n/3)):
+  Milestone A ✓ (p(n) ≤ e^{π√(2n/3)}, elementary GF); B analytic-half ✓ (Euler-series Laplace limit → π²/6);
+  Euler product bridge ✓ (bounded-partition equivalence, finite product identity, K-sandwich tendsto);
+  B-closer (log + tsum_comm) in flight (codex outage #3 bridged, resumes 10:15); then C (reusable
+  log-Tauberian — the central asset) and D (monotonicity transfer).
+- ChatGPT Pro channel "ac" active for frontier route design (R1 delivered the partition route).
+Outage protocol exercised 3×; sync protocol hardened (no stash -u with in-flight worker files; backup +
+targeted rm + pull).
