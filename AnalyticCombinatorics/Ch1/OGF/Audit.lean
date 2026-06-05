@@ -39,6 +39,7 @@ import AnalyticCombinatorics.Ch2.Mappings.RamanujanQ
 import AnalyticCombinatorics.Ch2.Mappings.RamanujanQSharp
 import AnalyticCombinatorics.Ch2.Mappings.ForestCount
 import AnalyticCombinatorics.Ch2.Mappings.ForestCountComplete
+import AnalyticCombinatorics.Ch2.Mappings.CayleyFormula
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -404,6 +405,10 @@ namespace AnalyticCombinatorics.Ch1
 -- engine. Foundation of the random-mappings arc (c_n = n^{n-1}·Q(n) next).
 #print axioms AnalyticCombinatorics.Ch2.Mappings.ForestCountNS.Complete.card_gRootedForests
 #print axioms AnalyticCombinatorics.Ch2.Mappings.ForestCountNS.Complete.card_rootedForests
+
+-- Ch2 Cayley's formula, arborescence form (named instantiation corollary, k=1 of the above):
+-- parent maps toward a fixed root = n^{n-2}.
+#print axioms AnalyticCombinatorics.Ch2.Mappings.ForestCountNS.card_rootedForests_singleton
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

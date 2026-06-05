@@ -217,3 +217,30 @@ Motzkin, general+p=4/5/6 Fuss-Catalan, 2-regular genuine), Ch IX (quasi-powers f
 cycle + composition-parts CLTs). 3 fidelity issues caught & fixed (Motzkin-v1 vacuous, quasi-powers hChar
 over-strong, supercrit decorative hyps); 1 fidelity gap closed (2-regular). Whole book remains
 multi-session (hard saddle/circle-method: Bell/partitions/Hardy-Ramanujan; more breadth; appendices).
+
+## Summary update (2026-06-04 evening, continuation)
+
+102→~115 files; certified headlines ~200+; build green (8364 jobs at last full verify); 0 sorry/admit/
+native_decide/custom-axiom throughout. Major arcs COMPLETED this continuation:
+
+**Goncharov–Kolchin (Ch IX), FULLY GENERAL, in distribution** — the crown of the run:
+- r-cycles →d Poisson(1/r) (marginal, unconditional, end-to-end: factorial moments r^{-k} from first
+  principles → bounded finite method-of-factorial-moments pmf inversion → reusable ℕ pmf⟹weak bridge).
+- Bivariate (C_r,C_s) →weak Poisson⊗Poisson; GENERAL multivariate (C_{r_1},…,C_{r_m}) →weak ⨂Poisson(1/r_i)
+  (Fin-m product measure; reusable ℕ×ℕ and (Fin m → ℕ) pmf⟹weak bridges — Mathlib-gap fillers).
+- Joint factorial moments for arbitrary finite families = ∏ r^{-k_r} (indexed-family deletion bijections);
+  E[#cycles]=H_n; Var(C_r)=1/r; Cov(C_r,C_s)=0.
+
+**Random mappings arc (Ch II.3), substantially built**:
+- Ramanujan Q-function: genuine def; Θ(√n) + sharp upper 1+√(πn/2); FULL Q ~ √(πn/2) (Laplace method for
+  sums — new analytic technique for the repo).
+- GENERALIZED CAYLEY FORMULA: #(forests of k rooted trees, specified roots) = k·n^{n-k-1} (fiber-equivalence
+  induction + Abel-binomial engine); named Cayley corollary n^{n-2} (arborescence form).
+- Connected mappings: periodic-core classification machinery + fixed-core fiber ≃ forests + single-cycle
+  count (k-1)! all PROVED; global fiber-sum assembly (→ c_n = n^{n-1}Q(n) → P(connected) ~ √(π/(2n)))
+  IN FLIGHT (codex usage-limit pause, auto-resumes 20:31).
+
+Also: Fibonacci OGF Nat.fib(n+1) ~ φ^{n+1}/√5 (golden-ratio dominant pole); r-cycle exact pmf = Goncharov
+inclusion-exclusion formula. Honest rejections: derangements →1/e (already Mathlib, re-wrapper refused).
+Standard remains: every headline #print-axioms = {propext, Classical.choice, Quot.sound}; statement read
+for fidelity; no def:Prop bundling; full build before banking.

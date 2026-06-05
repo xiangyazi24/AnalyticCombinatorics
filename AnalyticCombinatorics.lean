@@ -41,6 +41,7 @@ import AnalyticCombinatorics.Ch2.Mappings.RamanujanQ
 import AnalyticCombinatorics.Ch2.Mappings.RamanujanQSharp
 import AnalyticCombinatorics.Ch2.Mappings.ForestCount
 import AnalyticCombinatorics.Ch2.Mappings.ForestCountComplete
+import AnalyticCombinatorics.Ch2.Mappings.CayleyFormula
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
