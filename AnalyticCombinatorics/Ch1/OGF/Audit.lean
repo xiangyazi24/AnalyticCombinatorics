@@ -67,6 +67,7 @@ import AnalyticCombinatorics.Ch8.Partitions.DistinctParts
 import AnalyticCombinatorics.Ch8.Partitions.OddParts
 import AnalyticCombinatorics.Ch8.Partitions.GlaisherAsymptotic
 import AnalyticCombinatorics.Ch8.Partitions.SigmaRecurrence
+import AnalyticCombinatorics.Ch8.Partitions.SigmaSummatory
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -625,6 +626,11 @@ namespace AnalyticCombinatorics.Ch1
 -- σ-RECURRENCE n·p(n) = Σ_{m≤n} σ₁(m)·p(n−m) — part-occurrence double count via the add-k-copies bijection,
 -- genuine Mathlib ArithmeticFunction.sigma. Foundation of the Erdős route to p(n) ~ e^{π√(2n/3)}/(4n√3).
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Sigma.partition_sigma_recurrence
+
+-- Ch8 HR-CONSTANT Stage I.2: the divisor summatory Σ_{m≤x}σ₁(m) = π²x²/12 + O(x log x) with EXPLICIT
+-- constant K = 8+π² (triangular hyperbola identity + Basel tail + harmonic absorption + floor lift).
+-- Reusable elementary number theory.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Sigma.sigma_summatory_asymptotic
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

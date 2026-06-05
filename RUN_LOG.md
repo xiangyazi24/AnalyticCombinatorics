@@ -479,3 +479,7 @@
   n·p(n) = Σ σ₁(m)·p(n−m) (part-occurrence double count, add-k-copies bijection, genuine
   ArithmeticFunction.sigma). Summatory estimate honestly deferred (precise plan reported) → PARTE2.
   (73rd deliverable.)
+- HR-CONSTANT Stage I.2 (codex, PARTE2): SigmaSummatory.lean (459L). BANKED unconditional, 0 blocked:
+  sigma_summatory_asymptotic — Σ_{m≤x}σ₁(m) = π²x²/12 + O(x log x), explicit K = 8+π² (hyperbola +
+  Basel tail + harmonic + floor lift). (74th deliverable.) Next: Stage I.3 kernel package (erdosWeight
+  total mass / tail tightness / window limit).
