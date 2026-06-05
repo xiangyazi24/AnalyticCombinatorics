@@ -46,6 +46,7 @@ import AnalyticCombinatorics.Ch2.Mappings.MappingComponents
 import AnalyticCombinatorics.Ch2.Mappings.MappingComponentsSharp
 import AnalyticCombinatorics.Ch1.Lagrange.ImplicitSeries
 import AnalyticCombinatorics.Ch1.Lagrange.Residue
+import AnalyticCombinatorics.Ch1.Lagrange.Applications
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -463,6 +464,12 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch1.Lagrange.Residue.residue_subst_unit
 #print axioms AnalyticCombinatorics.Ch1.Lagrange.Residue.lagrange_inversion
 #print axioms AnalyticCombinatorics.Ch1.Lagrange.Residue.lagrange_inversion_divided
+
+-- Ch1 Lagrange applications: the binary-tree equation T = X(1+T)² has Catalan coefficients (Mathlib's
+-- catalan, via the choose identity n·catalan n = C(2n,n-1)); and Cayley VIA LAGRANGE — T = X·e^T has
+-- coefficients n^{n-1}/n! (independent algebraic proof, cross-validating the analytic TreeFunctionNS route).
+#print axioms AnalyticCombinatorics.Ch1.Lagrange.Applications.coeff_implicitSeries_one_add_X_sq
+#print axioms AnalyticCombinatorics.Ch1.Lagrange.Applications.coeff_implicitSeries_exp
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

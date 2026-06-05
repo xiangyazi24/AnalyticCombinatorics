@@ -366,3 +366,9 @@
     unit-kernel residues (res(G'/G)=1 core), change-of-variables residue_subst_unit — reusable framework.
   * Catalan sanity (φ=(1+X)²: coeff 1 = 1, coeff 2 = 2 ✓).
   A FAMOUS Mathlib gap closed. The book's tree-enumeration tool is now native to the repo. (50th deliverable.)
+- Lagrange applications (codex, LAG3): Ch1/Lagrange/Applications.lean (119L). BANKED unconditional, 0 blocked:
+  * coeff_implicitSeries_one_add_X_sq: T = X(1+T)² has coeff n = catalan n (Mathlib's catalan via
+    n·catalan n = C(2n,n-1)); binary trees ↔ Catalan, from the new inversion.
+  * coeff_implicitSeries_exp: T = X·e^T has coeff n = n^{n-1}/n! — CAYLEY VIA LAGRANGE, an independent
+    algebraic second proof cross-validating the analytic TreeFunctionNS coefficients.
+  (Nat.catalan is an export-alias of Mathlib's root catalan — same constant, no redefinition.) (51st.)
