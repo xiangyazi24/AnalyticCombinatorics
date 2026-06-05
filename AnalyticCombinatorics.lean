@@ -43,6 +43,7 @@ import AnalyticCombinatorics.Ch2.Mappings.ForestCount
 import AnalyticCombinatorics.Ch2.Mappings.ForestCountComplete
 import AnalyticCombinatorics.Ch2.Mappings.CayleyFormula
 import AnalyticCombinatorics.Ch2.Mappings.ConnectedMappings
+import AnalyticCombinatorics.Ch2.Mappings.CyclicPoints
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational

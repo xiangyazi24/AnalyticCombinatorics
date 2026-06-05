@@ -337,3 +337,8 @@
     asymptotic, via Sharp.ramanujanQ_isEquivalent.
   Arc anatomy: Laplace-for-sums (Q) + generalized Cayley (forests) + periodic-core classification = a
   three-technique end-to-end result. (45th deliverable.)
+- Expected cyclic points (codex, MAPCYC): CyclicPoints.lean (687L, namespace CyclicPointsNS). BANKED
+  unconditional, 0 blocked: card_periodicAt (#{f : x₀ periodic} = Σ_k (n-1)_{k-1}·n^{n-k} via first-return
+  fiber equivalence — same count as connected mappings, the classic curiosity), expected_cyclicPoints_eq_q
+  (E[#cyclic] = ramanujanQ n EXACTLY, double-count + reused Q algebra), expected_cyclicPoints_isEquivalent
+  (~ √(πn/2)). Third Q-tied random-mapping statistic. (46th deliverable.)

@@ -41,6 +41,7 @@ import AnalyticCombinatorics.Ch2.Mappings.ForestCount
 import AnalyticCombinatorics.Ch2.Mappings.ForestCountComplete
 import AnalyticCombinatorics.Ch2.Mappings.CayleyFormula
 import AnalyticCombinatorics.Ch2.Mappings.ConnectedMappings
+import AnalyticCombinatorics.Ch2.Mappings.CyclicPoints
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -419,6 +420,13 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch2.Mappings.ConnectedMappingsNS.card_connectedMappings
 #print axioms AnalyticCombinatorics.Ch2.Mappings.ConnectedMappingsNS.card_connectedMappings_eq_q
 #print axioms AnalyticCombinatorics.Ch2.Mappings.ConnectedMappingsNS.connectedProbability_isEquivalent
+
+-- Ch2 expected number of CYCLIC points of a uniform random mapping (Knuth/F&S): per-point first-return
+-- fiber count #{f : x₀ periodic} = Σ_k (n-1)_{k-1}·n^{n-k} (= the connected count!), double count ⟹
+-- E[#cyclic] = Q(n) EXACTLY, hence ~ √(πn/2). Third Q-tied mapping statistic, end-to-end.
+#print axioms AnalyticCombinatorics.Ch2.Mappings.CyclicPointsNS.card_periodicAt
+#print axioms AnalyticCombinatorics.Ch2.Mappings.CyclicPointsNS.expected_cyclicPoints_eq_q
+#print axioms AnalyticCombinatorics.Ch2.Mappings.CyclicPointsNS.expected_cyclicPoints_isEquivalent
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
