@@ -65,6 +65,7 @@ import AnalyticCombinatorics.Ch8.Partitions.TauberianAssembly
 import AnalyticCombinatorics.Ch8.Partitions.LogAsymptotic
 import AnalyticCombinatorics.Ch8.Partitions.DistinctParts
 import AnalyticCombinatorics.Ch8.Partitions.OddParts
+import AnalyticCombinatorics.Ch8.Partitions.GlaisherAsymptotic
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -609,6 +610,13 @@ namespace AnalyticCombinatorics.Ch1
 -- log o(n)/√n → π√(1/3).
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Odd.opart_eq_qpart
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Odd.odd_log_asymptotic
+
+-- Ch8 GLAISHER-m FAMILY (generalizes Erdős m=2): for every m ≥ 2, the genuine count of partitions with no
+-- part divisible by m satisfies log r_m(n)/√n → π√(2(1−1/m)/3) — Euler-product split ∏_{m∤k} = ∏_all/∏_{m|k}
+-- reduces to the banked Laplace limits at t and mt (K_m = (1−1/m)π²/6); the same log-Tauberian; add-a-1
+-- monotonicity. m=2 cross-checked against the odd-parts count.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Glaisher.glaisher_log_asymptotic
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Glaisher.rpart_two_eq_opart
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

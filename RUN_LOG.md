@@ -460,3 +460,7 @@
 - ODD-PARTS asymptotic (Opus): OddParts.lean. BANKED: opart_eq_qpart (Euler's partition theorem transported,
   via Mathlib card_odds_eq_card_distincts) + odd_log_asymptotic (log o(n)/√n → π√(1/3)) for the genuine
   odds count. (69th deliverable; Opus-authored.) Partition family: p, q(distinct), o(odd) all asymptotic.
+- GLAISHER-m FAMILY (codex, GLAISHER): GlaisherAsymptotic.lean (864L). BANKED unconditional, 0 blocked:
+  glaisher_log_asymptotic — ∀m≥2, log r_m(n)/√n → π√(2(1−1/m)/3) for the genuine no-part-divisible-by-m
+  count (Euler split to banked limits at t,mt; the same Tauberian; add-a-1 monotonicity); m=2 cross-check
+  rpart_two_eq_opart. An infinite canonical family in one theorem — the pipeline's second reuse. (70th.)

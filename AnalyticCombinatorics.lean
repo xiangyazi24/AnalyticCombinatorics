@@ -67,6 +67,7 @@ import AnalyticCombinatorics.Ch8.Partitions.TauberianAssembly
 import AnalyticCombinatorics.Ch8.Partitions.LogAsymptotic
 import AnalyticCombinatorics.Ch8.Partitions.DistinctParts
 import AnalyticCombinatorics.Ch8.Partitions.OddParts
+import AnalyticCombinatorics.Ch8.Partitions.GlaisherAsymptotic
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
