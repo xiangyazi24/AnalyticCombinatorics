@@ -50,6 +50,7 @@ import AnalyticCombinatorics.Ch1.Lagrange.Applications
 import AnalyticCombinatorics.Ch1.Polya.Enumeration
 import AnalyticCombinatorics.Ch1.Polya.NecklacePhi
 import AnalyticCombinatorics.Ch1.Polya.Weighted
+import AnalyticCombinatorics.Ch1.Polya.Bracelets
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -494,6 +495,13 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch1.Polya.Weighted.sum_weight_fixedBy
 #print axioms AnalyticCombinatorics.Ch1.Polya.Weighted.weighted_burnside
 #print axioms AnalyticCombinatorics.Ch1.Polya.Weighted.weighted_polya
+
+-- Ch1 BRACELETS (dihedral PET application, F&S Ch I): full DihedralGroup action on ZMod n + reflection
+-- fixed-point/orbit counts (odd: (n+1)/2; even: n/2+1 / n/2 split) ⟹ the classical bracelet formula
+-- #bracelets·2n = Σ_k 2^{gcd(n,k)} + (n odd: n·2^{(n+1)/2}; n even: (n/2)·2^{n/2+1} + (n/2)·2^{n/2}),
+-- all n>0 (degenerate small-n covered).
+#print axioms AnalyticCombinatorics.Ch1.Polya.Bracelets.card_reflection_zpowers_orbitQuotient_mul_two
+#print axioms AnalyticCombinatorics.Ch1.Polya.Bracelets.card_binary_bracelets
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

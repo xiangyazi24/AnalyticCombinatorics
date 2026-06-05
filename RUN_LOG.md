@@ -385,3 +385,8 @@
   0 blocked: sum_weight_fixedBy (fixed-coloring weight sum = ∏_{cycles σ} Σ_c w(c)^{|σ|}), weighted_burnside,
   weighted_polya (|G|·Σ_O W(O) = Σ_g ∏_σ Σ_c w^{|σ|} — THE Pólya theorem), w≡1 sanity recovers unweighted.
   Pólya framework now complete (Burnside→unweighted→necklaces gcd+φ→weighted/cycle-index). (54th deliverable.)
+- BRACELETS (codex, BRACE): Ch1/Polya/Bracelets.lean (589L). BANKED unconditional, 0 blocked, ALL n>0:
+  card_binary_bracelets — #bracelets·2n = Σ_k 2^{gcd(n,k)} + (odd: n·2^{(n+1)/2}; even: (n/2)·2^{n/2+1} +
+  (n/2)·2^{n/2}). Full dihedral machinery: MulAction of DihedralGroup n on ZMod n (Mathlib convention
+  r i ↦ x-i documented), reflection fixed-points (1 / parity-split 2,0), reflection orbits ((n+1)/2 etc.),
+  rotation orbits = gcd. The Pólya cluster now covers necklaces AND bracelets. (55th deliverable.)
