@@ -38,6 +38,7 @@ import AnalyticCombinatorics.Ch3.BGF.LabelledBGFApplications
 import AnalyticCombinatorics.Ch3.BGF.CompositionMoments
 import AnalyticCombinatorics.Ch3.BGF.BinaryWordMoments
 import AnalyticCombinatorics.Ch2.Mappings.RamanujanQ
+import AnalyticCombinatorics.Ch2.Mappings.RamanujanQSharp
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational

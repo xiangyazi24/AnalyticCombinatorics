@@ -36,6 +36,7 @@ import AnalyticCombinatorics.Ch3.BGF.LabelledBGFApplications
 import AnalyticCombinatorics.Ch3.BGF.CompositionMoments
 import AnalyticCombinatorics.Ch3.BGF.BinaryWordMoments
 import AnalyticCombinatorics.Ch2.Mappings.RamanujanQ
+import AnalyticCombinatorics.Ch2.Mappings.RamanujanQSharp
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -379,6 +380,12 @@ namespace AnalyticCombinatorics.Ch1
 -- remaining work, NOT claimed. Genuine sum-of-products definition.
 #print axioms AnalyticCombinatorics.Ch2.Mappings.RamanujanQNS.ramanujanQ_le_one_add_sqrt_pi_mul_nat_div_two
 #print axioms AnalyticCombinatorics.Ch2.Mappings.RamanujanQNS.ramanujanQ_isTheta_sqrt
+
+-- Ch2 Ramanujan Q FULL asymptotic (upgrade of the Θ result): Q(n) ~ √(πn/2) UNCONDITIONAL — the complete
+-- Laplace-method-for-sums (sharp lower head expansion k=o(n^{2/3}) with exp(-k(k+1)/2n - O(k³/n²)) envelope
+-- + Gaussian sum-integral comparison both sides + tails). Birthday-paradox / random-mappings scale, F&S II.3.
+#print axioms AnalyticCombinatorics.Ch2.Mappings.RamanujanQNS.Sharp.ramanujanQ_tendsto_ratio_one
+#print axioms AnalyticCombinatorics.Ch2.Mappings.RamanujanQNS.Sharp.ramanujanQ_isEquivalent
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

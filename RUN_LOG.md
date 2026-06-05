@@ -298,3 +298,8 @@
   NOT claimed: full Q ~ √(πn/2) — blocked on the sharp lower head expansion (two-sided log-product on
   k=o(n^{2/3}) + tail). Follow-up dispatched. Genuine sum-of-products def, lake env lean clean. (40th
   deliverable, partial.)
+- Ramanujan Q FULL asymptotic (codex, Q2): RamanujanQSharp.lean (525L, namespace RamanujanQNS.Sharp).
+  BANKED unconditional, 0 blocked: ramanujanQ_isEquivalent — Q(n) ~ √(πn/2), via the sharp lower head
+  expansion (k=o(n^{2/3}), exp(-k(k+1)/2n - O(k³/n²))) + two-sided Gaussian sum-integral comparison + tail
+  estimates; ratio → 1 (ramanujanQ_tendsto_ratio_one). 21 theorems. Completes the Laplace-method-for-sums
+  technique started in RamanujanQ.lean. The Θ partial upgraded to the full equivalence same-session. (41st.)
