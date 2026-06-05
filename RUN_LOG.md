@@ -416,3 +416,8 @@
   coeff_JFraction_eq_pathSum (J-fraction coefficients = LITERAL weighted Motzkin path sums). The famous
   Flajolet 1980 theorem is now fully combinatorial end-to-end; the fidelity caveat from FCF is discharged
   and the Audit comment upgraded. (60th deliverable.)
+- Partition Milestone B PARTIAL (codex, PARTB): LaplaceAsymptotic.lean (221L). BANKED honestly:
+  partLaplace_summable + partition_laplace_series_asymptotic (the Euler log-series limit → π²/6 — the
+  analytic half: termwise + domination + ℕ+ Basel). BLOCKED precisely: the real Euler product bridge
+  PartLaplace = ∏'(1−e^{−tk})⁻¹. PARTB2 dispatched on the K-sandwich route (finite product = sum over
+  partitions with parts ≤ K — finite combinatorics; monotone limits both sides). (61st deliverable, partial.)

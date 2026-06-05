@@ -56,6 +56,7 @@ import AnalyticCombinatorics.Ch2.SetPartitions.BellVariance
 import AnalyticCombinatorics.Ch5.ContinuedFractions.Flajolet
 import AnalyticCombinatorics.Ch5.ContinuedFractions.FlajoletPathSum
 import AnalyticCombinatorics.Ch8.Partitions.UpperBound
+import AnalyticCombinatorics.Ch8.Partitions.LaplaceAsymptotic
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -538,6 +539,13 @@ namespace AnalyticCombinatorics.Ch1
 -- log-asymptotic log p(n) ~ π√(2n/3) (Milestones B–D: Laplace asymptotic, log-Tauberian, transfer).
 #print axioms AnalyticCombinatorics.Ch8.Partitions.partition_log_upper
 #print axioms AnalyticCombinatorics.Ch8.Partitions.partition_upper_exp
+
+-- Ch8 partition Milestone B, PARTIAL (honest): PartLaplace summability + the ANALYTIC half — the Euler
+-- log-series Laplace limit t·Σ_j 1/(j(e^{tj}−1)) → π²/6 (termwise + domination + Basel over ℕ+).
+-- BLOCKED (precise, PARTB2 dispatched): the real Euler product bridge PartLaplace = ∏'(1−e^{−tk})⁻¹
+-- (K-sandwich route). The PartLaplace limit itself is NOT yet claimed.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.partLaplace_summable
+#print axioms AnalyticCombinatorics.Ch8.Partitions.partition_laplace_series_asymptotic
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
