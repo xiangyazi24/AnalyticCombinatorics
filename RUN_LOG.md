@@ -352,3 +352,9 @@
   E[#components] ~ (1/2)·log n (ratio→1), via L-windowed Gaussian-damped harmonic estimates. The
   random-mapping statistics suite is now SHARP across the board: P(connected)~√(π/2n), E[#cyclic]=Q(n)
   ~√(πn/2), E[#components]=Σ(n)_k/(k·n^k)~½log n — all exact + asymptotic, end-to-end. (48th deliverable.)
+- LAGRANGE INVERSION campaign opened (codex, LAG — layer 1 banked): Ch1/Lagrange/ImplicitSeries.lean (218L).
+  BANKED: implicitSeries φ (the unique T = X·φ(T), coefficient recursion, any CommRing), spec/uniqueness/
+  constantCoeff/derivative identity; sanity φ=1+X (T = X/(1-X), coeffs 1). PARTIAL honest: the inversion
+  formula n·[Xⁿ]T = [X^{n-1}]φⁿ NOT yet claimed — blocked precisely on formal residue infrastructure
+  (res(F')=0 + change-of-variables res(H∘G·G')=res(H); the hard case res(G'/G)=1 reduces via G=X·u).
+  LAG2 dispatched on exactly that plan (Stanley's residue proof). Famous Mathlib gap. (49th deliverable.)

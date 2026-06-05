@@ -44,6 +44,7 @@ import AnalyticCombinatorics.Ch2.Mappings.ConnectedMappings
 import AnalyticCombinatorics.Ch2.Mappings.CyclicPoints
 import AnalyticCombinatorics.Ch2.Mappings.MappingComponents
 import AnalyticCombinatorics.Ch2.Mappings.MappingComponentsSharp
+import AnalyticCombinatorics.Ch1.Lagrange.ImplicitSeries
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -444,6 +445,14 @@ namespace AnalyticCombinatorics.Ch1
 -- P(connected)~√(π/2n), E[#cyclic]=Q(n)~√(πn/2), E[#components]~½log n.
 #print axioms AnalyticCombinatorics.Ch2.Mappings.MappingComponentsNS.Sharp.componentExpectationFormula_isEquivalent
 #print axioms AnalyticCombinatorics.Ch2.Mappings.MappingComponentsNS.Sharp.expected_components_isEquivalent
+
+-- Ch1 Lagrange-inversion campaign, layer 1 (framework infra; full inversion is the documented frontier —
+-- blocked precisely on formal residue infrastructure, LAG2 dispatched): the IMPLICIT SERIES T = X·φ(T) —
+-- existence (coefficient recursion), uniqueness, constant term 0, the derivative identity — over any
+-- CommRing; sanity φ=1+X ⟹ T = X/(1-X) with all positive coefficients 1.
+#print axioms AnalyticCombinatorics.Ch1.Lagrange.ImplicitSeries.implicitSeries_spec
+#print axioms AnalyticCombinatorics.Ch1.Lagrange.ImplicitSeries.implicitSeries_unique
+#print axioms AnalyticCombinatorics.Ch1.Lagrange.ImplicitSeries.derivative_implicitSeries
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
