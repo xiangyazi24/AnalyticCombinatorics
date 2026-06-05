@@ -54,6 +54,7 @@ import AnalyticCombinatorics.Ch1.Polya.Bracelets
 import AnalyticCombinatorics.Ch2.SetPartitions.BellMean
 import AnalyticCombinatorics.Ch2.SetPartitions.BellVariance
 import AnalyticCombinatorics.Ch5.ContinuedFractions.Flajolet
+import AnalyticCombinatorics.Ch8.Partitions.UpperBound
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -528,6 +529,13 @@ namespace AnalyticCombinatorics.Ch1
 -- until it lands this is the recursion⇒CF theorem, NOT yet claimed as the full combinatorial statement.
 #print axioms AnalyticCombinatorics.Ch5.ContinuedFractions.W_first_return_series
 #print axioms AnalyticCombinatorics.Ch5.ContinuedFractions.flajolet_cf
+
+-- Ch8 PARTITION CAMPAIGN Milestone A (route: HANDOFF/partition-campaign-route-R1.md): the sharp elementary
+-- upper bound p(n) ≤ e^{π√(2n/3)} for the GENUINE part n = card (Nat.Partition n) — GF inequality
+-- p(n)xⁿ ≤ ∏(1-x^k)⁻¹, log-bound A·x/(1-x) via 1-x^k ≥ (1-x)kx^{k-1} + Basel, optimal x. Toward the
+-- log-asymptotic log p(n) ~ π√(2n/3) (Milestones B–D: Laplace asymptotic, log-Tauberian, transfer).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.partition_log_upper
+#print axioms AnalyticCombinatorics.Ch8.Partitions.partition_upper_exp
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

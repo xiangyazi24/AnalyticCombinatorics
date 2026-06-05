@@ -406,3 +406,8 @@
   recursive-coefficient series; the WpathSum = Wcoeff bridge (literal Finset path-sum) is NOT yet proved —
   FCF2 dispatched on exactly that gap (transport noise through the recursive path type was the blocker).
   Genuine path model (MotzkinPath/pathWeight/WpathSum) is in the file. (58th deliverable, fidelity-labeled.)
+- PARTITION CAMPAIGN Milestone A (codex, PARTA): Ch8/Partitions/UpperBound.lean (466L). BANKED
+  unconditional, 0 blocked: partition_log_upper (log p(n) ≤ 2√(An), n>0) + partition_upper_exp
+  (p(n) ≤ e^{π√(2n/3)}, all n) for the GENUINE part n = card (Nat.Partition n). Elementary GF route per
+  the ChatGPT-R1 map. Milestones B (Laplace t·log P(e^{-t})→π²/6), C (log-Tauberian), D (transfer) queued.
+  (59th deliverable.)
