@@ -400,3 +400,9 @@
   moment layer of the Bell block-count frontier is complete (mean + variance). (57th deliverable.)
 - Three-front state: FCF (Flajolet CF) + PARTA (partition upper bound, campaign opener per ChatGPT R1
   route, archived HANDOFF/partition-campaign-route-R1.md) still grinding.
+- Flajolet CF, algebra layer (codex, FCF): Ch5/ContinuedFractions/Flajolet.lean (456L). BANKED honestly:
+  flajolet_cf — the first-return recursion unfolds to the finite J-fraction (full induction, base h=0,
+  h=1 specialization, sanity coeffs 1/c₀/c₀²+a₀b₀). HONEST CAVEAT banked in Audit comment: W is the
+  recursive-coefficient series; the WpathSum = Wcoeff bridge (literal Finset path-sum) is NOT yet proved —
+  FCF2 dispatched on exactly that gap (transport noise through the recursive path type was the blocker).
+  Genuine path model (MotzkinPath/pathWeight/WpathSum) is in the file. (58th deliverable, fidelity-labeled.)
