@@ -49,6 +49,7 @@ import AnalyticCombinatorics.Ch1.Lagrange.Residue
 import AnalyticCombinatorics.Ch1.Lagrange.Applications
 import AnalyticCombinatorics.Ch1.Polya.Enumeration
 import AnalyticCombinatorics.Ch1.Polya.NecklacePhi
+import AnalyticCombinatorics.Ch1.Polya.Weighted
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -485,6 +486,14 @@ namespace AnalyticCombinatorics.Ch1
 -- regrouping Σ_{a∈ZMod n} F(gcd(n,a)) = Σ_{d|n} φ(n/d)·F(d).
 #print axioms AnalyticCombinatorics.Ch1.Polya.NecklacePhi.sum_zmod_by_gcd
 #print axioms AnalyticCombinatorics.Ch1.Polya.NecklacePhi.card_binary_necklaces_phi_standard
+
+-- Ch1 WEIGHTED PÓLYA (the cycle-index theorem, F&S Ch I appendix — famous): |G|·Σ_orbits W(O) =
+-- Σ_g ∏_{cycles σ of g} (Σ_c w(c)^{|σ|}). Multiplicative fixed-coloring sum (product over cycles of
+-- power-sums) + weighted Burnside (orbit-stabilizer double count, Quotient.lift weights). w≡1 recovers
+-- the unweighted PET.
+#print axioms AnalyticCombinatorics.Ch1.Polya.Weighted.sum_weight_fixedBy
+#print axioms AnalyticCombinatorics.Ch1.Polya.Weighted.weighted_burnside
+#print axioms AnalyticCombinatorics.Ch1.Polya.Weighted.weighted_polya
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

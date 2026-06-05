@@ -381,3 +381,7 @@
 - Necklace φ-form (codex, PET2): Ch1/Polya/NecklacePhi.lean (124L). BANKED: card_binary_necklaces_phi_standard
   — #necklaces(n)·n = Σ_{d|n} φ(d)·2^{n/d} (the classical form), via the reusable gcd-fiber regrouping
   sum_zmod_by_gcd. Pólya/necklace cluster complete. (53rd deliverable.)
+- WEIGHTED PÓLYA / cycle-index theorem (codex, PET3): Ch1/Polya/Weighted.lean (274L). BANKED unconditional,
+  0 blocked: sum_weight_fixedBy (fixed-coloring weight sum = ∏_{cycles σ} Σ_c w(c)^{|σ|}), weighted_burnside,
+  weighted_polya (|G|·Σ_O W(O) = Σ_g ∏_σ Σ_c w^{|σ|} — THE Pólya theorem), w≡1 sanity recovers unweighted.
+  Pólya framework now complete (Burnside→unweighted→necklaces gcd+φ→weighted/cycle-index). (54th deliverable.)
