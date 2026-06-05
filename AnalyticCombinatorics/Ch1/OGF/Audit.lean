@@ -60,6 +60,7 @@ import AnalyticCombinatorics.Ch8.Partitions.LaplaceAsymptotic
 import AnalyticCombinatorics.Ch8.Partitions.EulerProduct
 import AnalyticCombinatorics.Ch8.Partitions.LaplaceLimit
 import AnalyticCombinatorics.Ch8.Partitions.Tauberian
+import AnalyticCombinatorics.Ch8.Partitions.TauberianFull
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -570,6 +571,12 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Tauberian.laplace_eq_abel_cum
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Tauberian.sqrt_laplace_bad_inside_gap
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Tauberian.sqrt_laplace_full_gap
+
+-- Ch8 Tauberian STRONG restricted gap (PARTC2 — the route-critical estimate): for B = 2√K+η outside the
+-- δ-saddle-window, (Σ' off-window exp(B√N−tN)) ≤ e^{(K−ρ)/t} — unimodal-boundary algebra (2√c−c = 1−(√c−1)²)
+-- + concavity-of-√ tail decay + poly/geometric absorption. Assembly (localization/limsup/liminf/full
+-- theorem) = PARTC3, in flight.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Tauberian.sqrt_laplace_restricted_gap_strong
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

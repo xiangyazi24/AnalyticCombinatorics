@@ -435,3 +435,8 @@
   → localization → liminf → full theorem. PARTC2 dispatched with the unimodal-boundary decomposition
   (g(cK/t²)=(K/t)(B′√c−c); 2√c−c=1−(√c−1)²<1; lower tail poly×gap; upper tail linear-decay geometric).
   (64th deliverable, partial.)
+- Tauberian STRONG GAP (codex, PARTC2): TauberianFull.lean (892L). BANKED unconditional:
+  sqrt_laplace_restricted_gap_strong — the route-critical estimate (B=2√K+η off-window ≤ e^{(K−ρ)/t}),
+  via the prescribed unimodal-boundary decomposition (boundary algebra 2√c−c=1−(√c−1)², concavity-of-√
+  tail decay, poly/geom absorption) + 9 supporting lemmas. Remaining: assembly layers (global eventual
+  Cum bound, Abel localization, limsup, liminf diagonal, full theorem) → PARTC3. (65th deliverable.)
