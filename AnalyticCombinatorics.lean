@@ -117,6 +117,7 @@ import AnalyticCombinatorics.Ch5.Meromorphic.SupercriticalSeq
 import AnalyticCombinatorics.Ch5.Meromorphic.SupercriticalSeqGenuine
 import AnalyticCombinatorics.Ch5.Meromorphic.FibonacciCompositions
 import AnalyticCombinatorics.Ch5.Meromorphic.CompositionsGeneral
+import AnalyticCombinatorics.Ch5.Meromorphic.CompositionsGeneralClose
 import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTrees
 import AnalyticCombinatorics.Ch7.SingularityApp.Motzkin
 import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalan

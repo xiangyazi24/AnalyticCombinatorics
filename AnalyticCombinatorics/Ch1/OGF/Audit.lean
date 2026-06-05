@@ -114,6 +114,7 @@ import AnalyticCombinatorics.Ch5.Meromorphic.SupercriticalSeq
 import AnalyticCombinatorics.Ch5.Meromorphic.SupercriticalSeqGenuine
 import AnalyticCombinatorics.Ch5.Meromorphic.FibonacciCompositions
 import AnalyticCombinatorics.Ch5.Meromorphic.CompositionsGeneral
+import AnalyticCombinatorics.Ch5.Meromorphic.CompositionsGeneralClose
 import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTrees
 import AnalyticCombinatorics.Ch7.SingularityApp.Motzkin
 import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalan
@@ -732,6 +733,12 @@ namespace AnalyticCombinatorics.Ch1
 -- explicit decomposition ⟹ unconditional asymptotic) = COMPGEN2, in flight.
 #print axioms AnalyticCombinatorics.Ch5.Meromorphic.CompositionsGeneral.partPoly_rhoS
 #print axioms AnalyticCombinatorics.Ch5.Meromorphic.CompositionsGeneral.root_eq_rhoS_of_gcd
+
+-- Ch5 GENERAL COMPOSITIONS FAMILY, COMPLETE: for EVERY finite alphabet S (|S|≥2, 0∉S, gcd(S)=1), the
+-- genuine ordered-composition count satisfies compS(n) ~ c_S·ρ_S^{−n} — OGF bridge from the first-part
+-- recurrence, dominant-annulus from the Perron dominance theorem, assembled via the banked supercritical
+-- decomposition machinery. Generalizes Fibonacci to all finite part-sets at once.
+#print axioms AnalyticCombinatorics.Ch5.Meromorphic.CompositionsGeneral.Close.compS_isEquivalent
 
 -- Ch4/VI log-singularity coefficient scale (leading order, β=1): genuine [z^n](1-z)^{-α}log(1/(1-z))
 -- = Ring.choose(α+n-1,n)·Σ_{j<n}(α+j)⁻¹ ~ (n^{α-1}/Γα)·log n (α>1). Full Δ-domain log-transfer + general β

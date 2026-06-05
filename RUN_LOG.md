@@ -470,3 +470,8 @@
   genuinely new content); genuine list count + first-part recurrence; conditional transfer. BLOCKED:
   the OGF coefficient bridge (dependent-sigma blow-up) + explicit decomposition — COMPGEN2 dispatched.
   (71st deliverable, partial.)
+- GENERAL COMPOSITIONS FAMILY COMPLETE (codex, COMPGEN2): CompositionsGeneralClose.lean (439L). BANKED
+  unconditional, 0 blocked: Close.compS_isEquivalent — ∀ finite S (|S|≥2, 0∉S, gcd=1), the genuine ordered
+  composition count ~ c_S·ρ_S^{−n}. OGF bridge (per-fixed-s fiber bijection beat the sigma blow-up),
+  deriv>0, dominant annulus from the Perron theorem, assembly via banked SupercriticalSeqGenuine.
+  A family theorem covering every finite alphabet — generalizes the Fibonacci instance. (72nd deliverable.)
