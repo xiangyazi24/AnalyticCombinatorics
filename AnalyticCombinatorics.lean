@@ -60,6 +60,7 @@ import AnalyticCombinatorics.Ch5.ContinuedFractions.FlajoletPathSum
 import AnalyticCombinatorics.Ch8.Partitions.UpperBound
 import AnalyticCombinatorics.Ch8.Partitions.LaplaceAsymptotic
 import AnalyticCombinatorics.Ch8.Partitions.EulerProduct
+import AnalyticCombinatorics.Ch8.Partitions.LaplaceLimit
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational

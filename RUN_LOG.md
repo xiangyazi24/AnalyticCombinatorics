@@ -425,3 +425,7 @@
   boundedPartitionEquivCounts (genuine bounded-partition↔multiplicity), finite_euler_prod_eq
   (∏_{k≤K}(1−x^k)⁻¹ = Σ' partsLE K·xⁿ via ENNReal regrouping), partLaplace_eq_finprod_tendsto (K-sandwich:
   finite products → PartLaplace). Remaining for Milestone B: log+tsum_comm bridge → PARTB3. (62nd, partial-arc.)
+- PARTITION MILESTONE B COMPLETE (codex, PARTB3 — resumed after outage #3): LaplaceLimit.lean (332L).
+  BANKED unconditional, 0 blocked: log_partLaplace_eq, log_series_regroup, and THE LAPLACE ASYMPTOTIC
+  partition_laplace_log_asymptotic — t·log P(e^{−t}) → π²/6 for the genuine partition counts. Milestone C
+  (log-Tauberian, the central reusable asset) dispatched next. (63rd deliverable.)

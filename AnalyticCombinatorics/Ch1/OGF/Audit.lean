@@ -58,6 +58,7 @@ import AnalyticCombinatorics.Ch5.ContinuedFractions.FlajoletPathSum
 import AnalyticCombinatorics.Ch8.Partitions.UpperBound
 import AnalyticCombinatorics.Ch8.Partitions.LaplaceAsymptotic
 import AnalyticCombinatorics.Ch8.Partitions.EulerProduct
+import AnalyticCombinatorics.Ch8.Partitions.LaplaceLimit
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -554,6 +555,12 @@ namespace AnalyticCombinatorics.Ch1
 -- regrouping (PARTB3 dispatched).
 #print axioms AnalyticCombinatorics.Ch8.Partitions.finite_euler_prod_eq
 #print axioms AnalyticCombinatorics.Ch8.Partitions.partLaplace_eq_finprod_tendsto
+
+-- Ch8 partition MILESTONE B COMPLETE: log PartLaplace = Σ' −log(1−e^{−tk}) (log of the K-sandwich limit),
+-- the double-series regrouping, and THE LAPLACE ASYMPTOTIC t·log P(e^{−t}) → π²/6 — UNCONDITIONAL, for the
+-- genuine partition counts. (Milestone C: the reusable log-Tauberian; D: monotone transfer.)
+#print axioms AnalyticCombinatorics.Ch8.Partitions.log_partLaplace_eq
+#print axioms AnalyticCombinatorics.Ch8.Partitions.partition_laplace_log_asymptotic
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
