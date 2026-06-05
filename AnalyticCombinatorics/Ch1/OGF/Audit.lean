@@ -73,6 +73,7 @@ import AnalyticCombinatorics.Ch8.Partitions.ErdosKernelClose
 import AnalyticCombinatorics.Ch8.Partitions.SummatoryWindow
 import AnalyticCombinatorics.Ch8.Partitions.ErdosIntegral
 import AnalyticCombinatorics.Ch8.Partitions.ErdosUniform
+import AnalyticCombinatorics.Ch8.Partitions.ErdosModel
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -665,6 +666,14 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sqrt_diff_eq
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sqrt_diff_window_approx
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.inv_window_approx
+
+-- Ch8 HR Stage I.3 (ChatGPT-draft + Opus-fix loop, 11 rounds): the HALF-OPEN WINDOW MASS LIMIT —
+-- (S(β√n)−S(α√n))/n → (π²/12)(β²−α²) (halfOpenMass_tendsto, with the α=0 first-window case), plus the
+-- endpoint exponential squeeze on blocks. The model-kernel window limit's remaining piece: the
+-- summatory↔windowed-sum index bridge + step assembly (next).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Model.summatory_zero_to_beta_scaled_tendsto
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Model.halfOpenMass_tendsto
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Model.model_exp_endpoint_squeeze
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

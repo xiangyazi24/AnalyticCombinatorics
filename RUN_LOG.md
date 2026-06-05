@@ -506,3 +506,9 @@
   (|1/(n−m)−1/n| ≤ 2b/n^{3/2}) — the uniform erdosWeight→model-kernel conversion estimates.
   PARTE5 solo progress: 3 of ~5 pieces banked (window-diff, integral, replacements); remaining:
   the sub-block Riemann assembly + the window/total theorems. (79th deliverable; Opus-solo.)
+- HR Stage I.3 window-mass limit (ChatGPT-draft + Opus-fix loop, 11 rounds): ErdosModel.lean (391L).
+  BANKED: halfOpenMass_tendsto — (S(β√n)−S(α√n))/n → (π²/12)(β²−α²) ∀ 0≤α<β (the substantive window-mass
+  limit, with the α=0 case), summatory_zero_to_beta_scaled_tendsto, model_exp_endpoint_squeeze. The draft's
+  weighted-block squeeze hand-waved the summatory↔windowed-sum INDEX BRIDGE — truncated honestly; the
+  bridge is the next brick. Draft-loop lessons: hλ identifier breaks the parser; squeeze_zero_norm' needs
+  explicit (a := ·); div_le_div→div_le_div₀. (80th deliverable.)
