@@ -421,3 +421,7 @@
   analytic half: termwise + domination + ℕ+ Basel). BLOCKED precisely: the real Euler product bridge
   PartLaplace = ∏'(1−e^{−tk})⁻¹. PARTB2 dispatched on the K-sandwich route (finite product = sum over
   partitions with parts ≤ K — finite combinatorics; monotone limits both sides). (61st deliverable, partial.)
+- Partition Euler product bridge (codex, PARTB2): EulerProduct.lean (442L). BANKED unconditional:
+  boundedPartitionEquivCounts (genuine bounded-partition↔multiplicity), finite_euler_prod_eq
+  (∏_{k≤K}(1−x^k)⁻¹ = Σ' partsLE K·xⁿ via ENNReal regrouping), partLaplace_eq_finprod_tendsto (K-sandwich:
+  finite products → PartLaplace). Remaining for Milestone B: log+tsum_comm bridge → PARTB3. (62nd, partial-arc.)

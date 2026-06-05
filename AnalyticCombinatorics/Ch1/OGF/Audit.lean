@@ -57,6 +57,7 @@ import AnalyticCombinatorics.Ch5.ContinuedFractions.Flajolet
 import AnalyticCombinatorics.Ch5.ContinuedFractions.FlajoletPathSum
 import AnalyticCombinatorics.Ch8.Partitions.UpperBound
 import AnalyticCombinatorics.Ch8.Partitions.LaplaceAsymptotic
+import AnalyticCombinatorics.Ch8.Partitions.EulerProduct
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -546,6 +547,13 @@ namespace AnalyticCombinatorics.Ch1
 -- (K-sandwich route). The PartLaplace limit itself is NOT yet claimed.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.partLaplace_summable
 #print axioms AnalyticCombinatorics.Ch8.Partitions.partition_laplace_series_asymptotic
+
+-- Ch8 partition EULER PRODUCT bridge (PARTB2): genuine bounded-partition ↔ multiplicity equivalence;
+-- finite Euler product ∏_{k≤K}(1−x^k)⁻¹ = Σ' partsLE K n·xⁿ (ENNReal nonneg regrouping); and the
+-- K-SANDWICH: finite products → PartLaplace (tendsto). Remaining for Milestone B: log + tsum_comm
+-- regrouping (PARTB3 dispatched).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.finite_euler_prod_eq
+#print axioms AnalyticCombinatorics.Ch8.Partitions.partLaplace_eq_finprod_tendsto
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
