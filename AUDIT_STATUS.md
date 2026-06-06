@@ -384,7 +384,3 @@ Gate: per-file lake env lean exit 0 + full lib build (8409 jobs, 0 sorryAx/ofRed
 - Erdos.summable_weighted_antidiag / sigmaMoment_eq_prod_tsum (#117) — PASS clean-3
   (M_r(t) = Σ_a Σ_b a^{r+1} b^r (e^{−t})^{ab} via sigmaAntidiagonalEquivProd, Σ_{ab=e}a^{r+1}b^r=e^rσ(e);
   14-round equiv/Finset grind. Input to sigmaMoment_le_power_sharp M_r ≤ K/t^{r+2}, two-regime next.)
-
-## 2026-06-06 — Sharp moment bound foundation: inner geometric bound BANKED (#118, Audit exit 0, 0 dirty)
-- Erdos.tsum_pnat_pow_mul_geometric_le (#118) — PASS clean-3
-  (Σ'_{b≥1} b^r x^b ≤ x·2^r(r!+1)/(1−x)^{r+1}; the x-decay factor for the sharp-bound outer sum)
