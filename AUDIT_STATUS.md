@@ -352,3 +352,9 @@ Gate: per-file lake env lean exit 0 + full lib build (8409 jobs, 0 sorryAx/ofRed
 - Erdos.boseKernel_hasDerivAt / sigmaMoment_one_lambert (#109) — PASS clean-3
   (M₁ = Σ'_{k≥1} k·boseKernel2(tk) by termwise differentiation on Ioi(t/2);
   hasDerivAt_tsum_of_isPreconnected both sides + HasDerivAt.unique)
+
+## 2026-06-06 — Mass-rate M₂ Lambert + moment power bound BANKED (#110–111, Audit exit 0, 0 dirty)
+- Erdos.boseKernel2_hasDerivAt / sigmaMoment_two_lambert (#110) — PASS clean-3
+  (M₂ = Σ'_{k≥1} k²·boseKernel3(tk); boseKernel2′ = −boseKernel3 by quotient rule)
+- Erdos.tsum_pow_mul_geometric_le / sigmaMoment_le_power (#111) — PASS clean-3
+  (Σ' m^j x^m ≤ j!/(1−x)^{j+1} via m^j ≤ j!·C(m+j,j); M_r(t) ≤ (r+2)!·2^{r+3}/t^{r+3} on (0,1])
