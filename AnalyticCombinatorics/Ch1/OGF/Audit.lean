@@ -84,6 +84,8 @@ import AnalyticCombinatorics.Ch8.Partitions.PartMono
 import AnalyticCombinatorics.Ch8.Partitions.LocalLower
 import AnalyticCombinatorics.Ch8.Partitions.KernelBarriers
 import AnalyticCombinatorics.Ch8.Partitions.BarrierGap
+import AnalyticCombinatorics.Ch8.Partitions.BarrierHarmonic
+import AnalyticCombinatorics.Ch8.Partitions.BarrierInduction
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -747,6 +749,23 @@ namespace AnalyticCombinatorics.Ch1
 -- (log r <= r-1), denominator <= log^2(n+E).
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.upperBarrier_gap_on_window
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.lowerBarrier_gap_on_window
+
+-- Ch8 HR Stage I.5 (Opus): SUPER/SUBHARMONIC BARRIERS, CONDITIONAL on the o(slack) mass rate
+-- (hypothesis-parameterized, NO axioms: the rate enters as an explicit hypothesis; it is the one
+-- remaining analytic brick -- second-order cancellation, see HANDOFF/partition-stage-I5-design.md).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.upperBarrier_kernel_superharmonic_of_rate
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.lowerBarrier_kernel_subharmonic_of_rate
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.upperBarrier_mono
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.lowerBarrier_anti
+
+-- Ch8 HR Stage I.5 (Opus): BOUNDEDNESS INDUCTIONS (R6 lemmas 8-12), CONDITIONAL on the harmonic
+-- inequalities (strong induction on u_recurrence; base segment via sup'/inf'; boundary absorbed).
+-- u_pos, u_zero unconditional.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.u_pos
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.u_upper_of_superharmonic
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.u_limsup_finite_of_superharmonic
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.u_lower_of_subharmonic
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.u_liminf_positive_of_subharmonic
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

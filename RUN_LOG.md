@@ -552,3 +552,10 @@
   lowerBarrier_gap_on_window (R6 lemma 4), one core estimate A/log(n−m+E) − A/log(n+E) ≥
   (A·a₀/2)·slack via log r ≤ r−1; gcongr auto-discharges monotone div steps from context.
   (90th deliverable.)
+- HR Stage I.5 STRUCTURE CLOSED CONDITIONALLY (Opus): BarrierHarmonic.lean (super/subharmonic
+  of the log barriers, conditional on the o(slack) mass rate as explicit hypothesis; A=1 suffices
+  after fixing my own scaling bug — lower side needs ρ < a₀μ/2, so the ∀ρ form is the right
+  hypothesis) + BarrierInduction.lean (u_pos, u_upper_of_superharmonic via strong induction with
+  sup' base segment, u_limsup_finite_of_superharmonic, u_lower_of_subharmonic via inf' base,
+  u_liminf_positive_of_subharmonic). Stage I.5 now reduces FORMALLY to one brick:
+  erdos_kernel_total_log_rate (the second-order cancellation). (91st–92nd deliverables.)
