@@ -100,6 +100,8 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateIntegral
 import AnalyticCombinatorics.Ch8.Partitions.MassRateDeriv
 import AnalyticCombinatorics.Ch8.Partitions.MassRateDerivZero
 import AnalyticCombinatorics.Ch8.Partitions.MassRateDerivInt
+import AnalyticCombinatorics.Ch8.Partitions.MassRateGeom3
+import AnalyticCombinatorics.Ch8.Partitions.MassRateBasel
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -983,5 +985,14 @@ namespace AnalyticCombinatorics.Ch1
 -- Ch7 rooted-tree forests (F&S Ch VII): genuine rootedForest n = (n+1)^{n-1} (Cayley-Prüfer), tied to the
 -- tree function by the shift rootedForestCoeff n = treeFunctionCoeff (n+1); (n+1)^{n-1}/n! ~ e^{n+1}/(√(2π)n^{3/2}).
 #print axioms AnalyticCombinatorics.Ch7.SingularityApp.ForestsNS.rootedForest_over_factorial_isEquivalent
+
+-- HR mass-rate campaign, bricks 19-20: the cubic geometric sum Σ n³yⁿ = y(1+4y+y²)/(1−y)⁴ (M₂-side
+-- ingredient, via n³ = 6C(n+3,3)−12C(n+2,2)+7C(n+1,1)−C(n,0)) and the Basel split
+-- boseKernel = 1/x² + boseReg0 with Σ'_{k≥1}1/(tk)² = (π²/6)/t².
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tsum_nat_cube_mul_geometric
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tsum_pnat_cube_mul_geometric
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boseKernel_eq_inv_sq_add_reg
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tsum_if_inv_sq
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tsum_if_inv_sq_scaled
 
 end AnalyticCombinatorics.Ch1
