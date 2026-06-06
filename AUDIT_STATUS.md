@@ -358,3 +358,8 @@ Gate: per-file lake env lean exit 0 + full lib build (8409 jobs, 0 sorryAx/ofRed
   (M₂ = Σ'_{k≥1} k²·boseKernel3(tk); boseKernel2′ = −boseKernel3 by quotient rule)
 - Erdos.tsum_pow_mul_geometric_le / sigmaMoment_le_power (#111) — PASS clean-3
   (Σ' m^j x^m ≤ j!/(1−x)^{j+1} via m^j ≤ j!·C(m+j,j); M_r(t) ≤ (r+2)!·2^{r+3}/t^{r+3} on (0,1])
+
+## 2026-06-06 — Mass-rate Riemann engine + M₀ weak asymptotics BANKED (#112, Audit exit 0, 0 dirty)
+- Erdos.cell_error / riemann_boseReg0_bound / sigmaMoment_zero_asymp_weak (#112) — PASS clean-3
+  (|M₀(t) − (π²/6)/t² + 1/(2t)| ≤ ∫|boseReg0′| = O(1); cell partition + per-cell FTC;
+  self-authored replacement for the lost R12 draft)
