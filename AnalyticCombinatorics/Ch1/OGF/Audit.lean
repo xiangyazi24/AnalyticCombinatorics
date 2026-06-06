@@ -105,6 +105,7 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateBasel
 import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentOne
 import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentTwo
 import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentBound
+import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -1012,5 +1013,12 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sigmaMoment_two_lambert
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tsum_pow_mul_geometric_le
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sigmaMoment_le_power
+
+-- HR mass-rate campaign, brick 24 (the Riemann engine + M₀ weak asymptotics): right-endpoint
+-- Riemann sums of boseReg0 with mesh t differ from (1/t)∫boseReg0 = −1/(2t) by ≤ ∫|boseReg0′| (cell
+-- partition + FTC per cell + hasSum_integral_iUnion); hence |M₀(t) − (π²/6)/t² + 1/(2t)| = O(1).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.cell_error
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.riemann_boseReg0_bound
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sigmaMoment_zero_asymp_weak
 
 end AnalyticCombinatorics.Ch1
