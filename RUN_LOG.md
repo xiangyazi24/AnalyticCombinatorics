@@ -575,3 +575,7 @@
   TsumDivisorsAntidiagonal found by survey, brick shrank 300→100 lines). Precision-budget recheck:
   EM brick needs only O(1) Riemann-sum error (no −1/12 limit, no trapezoid term); R10 dispatched
   with the budget analysis + the variance-cancellation trap in the g−h split. (95th–98th deliverables.)
+- MASS-RATE Geom2 (Opus): tsum d²y^d = y(1+y)/(1−y)³ (n² = 2C(n+2,2)−3C(n+1,1)+C(n,0) over
+  choose-geometric). M₁ design: secondary integral reduces to the M₀ FTC core via the boundary
+  cancellation −z·boseKernel + 1/z → 0 at 0+ (logged in R8 HANDOFF). R11 (M₁ rearrangement draft)
+  queued behind R10. (99th deliverable.)

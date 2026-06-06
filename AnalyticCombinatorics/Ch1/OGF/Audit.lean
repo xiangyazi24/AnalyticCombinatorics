@@ -92,6 +92,7 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateExpansion
 import AnalyticCombinatorics.Ch8.Partitions.MassRateTail
 import AnalyticCombinatorics.Ch8.Partitions.MassRateCoef
 import AnalyticCombinatorics.Ch8.Partitions.MassRateLambert
+import AnalyticCombinatorics.Ch8.Partitions.MassRateGeom2
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -810,6 +811,11 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tsum_if_ne_zero_eq_pnat
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tsum_pnat_coe_mul_geometric
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sigmaMoment_zero_lambert
+
+-- Ch8 MASS-RATE: quadratic geometric sum (M1-side ingredient, Opus): Sum d^2 y^d = y(1+y)/(1-y)^3
+-- via n^2 = 2C(n+2,2) - 3C(n+1,1) + C(n,0) over Mathlib choose-geometric sums.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tsum_nat_sq_mul_geometric
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tsum_pnat_sq_mul_geometric
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
