@@ -87,6 +87,7 @@ import AnalyticCombinatorics.Ch8.Partitions.BarrierGap
 import AnalyticCombinatorics.Ch8.Partitions.BarrierHarmonic
 import AnalyticCombinatorics.Ch8.Partitions.BarrierInduction
 import AnalyticCombinatorics.Ch8.Partitions.RecordBasics
+import AnalyticCombinatorics.Ch8.Partitions.MassRateMoments
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -778,6 +779,14 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.u_tendsto_of_record_covers
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.erdos_limit_pos_of_tendsto
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.u_local_high_forward_fill
+
+-- Ch8 HR MASS-RATE CAMPAIGN opening (R8 route, Opus): Lambert moments sigmaMoment, saddle
+-- massLam = C/2 with massLam^2 = pi^2/6, Bose kernel + regularization + exp-form identity, and the
+-- CENTRAL CANCELLATION -1/(2L) + 2Z/L^3 - (C/8)6Z/L^4 = 0 (Z = L^2, C = 2L) -- the algebra that
+-- kills the n^{-1/2} term and makes |kernelMass - 1| = O(1/n) reachable.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.massLam_sq
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boseKernel_eq_exp_form
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.mass_rate_sqrt_coeff_cancel
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

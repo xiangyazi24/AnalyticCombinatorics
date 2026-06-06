@@ -564,3 +564,7 @@
   assembly u_tendsto_of_record_covers (threshold-monotone covers ⟹ Cauchy via record extrema
   on [N₀, max p q]), limit positivity, and u_local_high_forward_fill (monotone fill, h = 2ε/(CM)).
   Kernel-free layers of the R7 record route. (93rd deliverable.)
+- HR MASS-RATE opening (Opus, R8 route): MassRateMoments.lean — sigmaMoment defs, massLam = C/2
+  (λ² = π²/6), Bose kernel + regularization + exp-form, and mass_rate_sqrt_coeff_cancel (the central
+  cancellation, hand-verified before formalizing). R8 archived: Lambert-moment route replaces
+  pointwise summatory (impossible at integers — σ(n) jumps). (94th deliverable.)

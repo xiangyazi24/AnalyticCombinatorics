@@ -89,6 +89,7 @@ import AnalyticCombinatorics.Ch8.Partitions.BarrierGap
 import AnalyticCombinatorics.Ch8.Partitions.BarrierHarmonic
 import AnalyticCombinatorics.Ch8.Partitions.BarrierInduction
 import AnalyticCombinatorics.Ch8.Partitions.RecordBasics
+import AnalyticCombinatorics.Ch8.Partitions.MassRateMoments
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
