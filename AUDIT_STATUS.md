@@ -333,3 +333,4 @@ Gate: per-file lake env lean exit 0 + full lib build (8409 jobs, 0 sorryAx/ofRed
 - Erdos.erdosWeight_coef_second_order — PASS clean-3 (#97, R8 §3.5)
 - Erdos.tsum_if_ne_zero_eq_pnat / tsum_pnat_coe_mul_geometric / sigmaMoment_zero_lambert —
   PASS clean-3 (#98, R8 §2.1 Lambert via Mathlib TsumDivisorsAntidiagonal)
+- Erdos.tsum_nat_sq_mul_geometric / tsum_pnat_sq_mul_geometric — PASS clean-3 (#99, M₁ ingredient)
