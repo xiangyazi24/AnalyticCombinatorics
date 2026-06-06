@@ -78,6 +78,9 @@ import AnalyticCombinatorics.Ch8.Partitions.SummatoryBridge
 import AnalyticCombinatorics.Ch8.Partitions.BlockSqueeze
 import AnalyticCombinatorics.Ch8.Partitions.ModelAssembly
 import AnalyticCombinatorics.Ch8.Partitions.MeshEstimate
+import AnalyticCombinatorics.Ch8.Partitions.KernelWindow
+import AnalyticCombinatorics.Ch8.Partitions.KernelTotal
+import AnalyticCombinatorics.Ch8.Partitions.PartMono
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -706,6 +709,21 @@ namespace AnalyticCombinatorics.Ch1
 -- Ch8 HR Stage I.3 * THE MODEL-KERNEL WINDOW LIMIT (step assembly complete, NO axioms):
 -- (1/n)*Sum_{(a sqrt n, b sqrt n]} sigma(m)*e^{-(C/2)m/sqrt n} -> int_a^b (pi^2/6)*y*e^{-(C/2)y} dy.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Model.model_kernel_window
+
+-- Ch8 HR Stage I.3 (Opus, solo while ChatGPT capture down): the TRUE-KERNEL WINDOW LIMIT --
+-- Sum_{(a sqrt n, b sqrt n]} erdosWeight n m -> int_a^b (pi^2/6) y e^{-(C/2)y} dy.  Model-to-true
+-- conversion via the banked uniform replacements; per-term error sigma(m)*(2b+Cb^2/2)/n^{3/2},
+-- summed against the quadratic divisor mass B b^2 n => O(1/sqrt n).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Model.erdos_kernel_window
+
+-- Ch8 HR Stage I.3 CAPSTONE: the ERDOS KERNEL TOTAL MASS -- Sum_{m=1}^{n-1} erdosWeight n m -> 1.
+-- window(0,R) + tail(R) sandwich + int_0^R -> int_0^infty = 1 (ExpDecay integrability +
+-- intervalIntegral_tendsto_integral_Ioi + kernel_density_integral_one).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Model.erdos_kernel_total
+
+-- Ch8 HR Stage I.5 prerequisite (Opus): partition function monotonicity p(n) <= p(n+1),
+-- by the injection Partition n -> Partition (n+1) adding a part 1.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.part_mono
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

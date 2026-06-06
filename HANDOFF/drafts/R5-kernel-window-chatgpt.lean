@@ -1,0 +1,18 @@
+-- R5 ChatGPT draft (pasted back by Xiang after intro-only capture), kept as reference.
+-- Same target theorem erdos_kernel_window; Opus solo version went first (KernelWindow.lean).
+-- Key reusable spare parts from the R5 draft (full body in session transcript):
+--
+-- 1. |exp x − 1| ≤ exp |x| − 1 route (avoids two-sided exp-Lipschitz):
+--    private lemma one_sub_exp_neg_le_exp_sub_one {R : ℝ} (hR : 0 ≤ R) :
+--        1 - Real.exp (-R) ≤ Real.exp R - 1   -- via (1−E⁻¹)E ≤ (E−1)E, nlinarith [sq_nonneg (E−1)]
+--    private lemma abs_exp_sub_one_le_exp_abs_sub_one (x : ℝ) :
+--        |Real.exp x - 1| ≤ Real.exp |x| - 1  -- by_cases 1 ≤ exp x; neg case via the above
+--
+-- 2. coefErrorBound b n := 2b/(n√n) + (1/n)(exp(Cb²/(2√n)) − 1)  -- keeps exp form, no linearization
+--    totalErrorBound B b n := B b² (2b/√n + (exp(Cb²/(2√n)) − 1))
+--    tendsto-zero via continuity of exp at 0, not a Lipschitz bound.
+--
+-- 3. sqrt_nat_atTop := Real.tendsto_sqrt_atTop.comp tendsto_natCast_atTop_atTop
+--    (correct Mathlib name confirmed: Real.tendsto_sqrt_atTop, Mathlib/Data/Real/Sqrt.lean:137)
+--
+-- 4. Suspect line (do NOT copy): tendsto_const_nhds.div_atTop.comp hsqrt — wrong composition shape.

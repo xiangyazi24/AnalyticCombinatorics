@@ -19,32 +19,52 @@ set_option maxHeartbeats 400000
 
 noncomputable section
 
-open Filter Finset MeasureTheory
+open Filter Finset MeasureTheory Asymptotics
 open scoped BigOperators Topology
 
 namespace AnalyticCombinatorics.Ch8.Partitions.Erdos.Model
 
-/-- The kernel density is integrable on `(0,∞)`. -/
+/-- The kernel density is integrable on `(0,∞)` (continuous + exponential decay). -/
 private lemma density_integrableOn :
     IntegrableOn (fun y : ℝ => (Real.pi ^ 2 / 6) * y * Real.exp (-(C / 2) * y))
       (Set.Ioi (0 : ℝ)) := by
-  have hr : (0 : ℝ) < C / 2 := by
-    have := C_pos
-    positivity
-  -- t ↦ t^1 · e^{−(C/2)t} is integrable on (0,∞) (Gamma-type integrand)
-  have h1 : IntegrableOn (fun y : ℝ => y ^ (1 : ℝ) * Real.exp (-(C / 2) * y))
-      (Set.Ioi (0 : ℝ)) := by
-    have h2 : IntegrableOn (fun y : ℝ => y ^ (1 : ℝ) * Real.exp (-(C / 2 * y)))
-        (Set.Ioi (0 : ℝ)) := by
-      have := Real.integrable_rpow_mul_exp_neg_mul_Ioi (a := 1) hr (by norm_num)
-      simpa using this
-    refine h2.congr_fun ?_ measurableSet_Ioi
-    intro y _hy
-    ring_nf
-  refine (h1.const_mul (Real.pi ^ 2 / 6)).congr_fun ?_ measurableSet_Ioi
-  intro y hy
-  rw [Real.rpow_one]
-  ring
+  have hC := C_pos
+  have hC4 : (0 : ℝ) < C / 4 := by positivity
+  apply integrable_of_isBigO_exp_neg hC4
+  · -- continuity on [0,∞)
+    apply Continuous.continuousOn
+    have h2 : Continuous fun y : ℝ => Real.exp (-(C / 2) * y) :=
+      Real.continuous_exp.comp (continuous_const.mul continuous_id)
+    exact (continuous_const.mul continuous_id).mul h2
+  · -- f =O[atTop] e^{−(C/4)x}
+    have h4 := (Real.tendsto_pow_mul_exp_neg_atTop_nhds_zero 1).comp
+      (Tendsto.const_mul_atTop hC4 tendsto_id)
+    have h4' : Tendsto (fun y : ℝ => (C / 4 * y) ^ 1 * Real.exp (-(C / 4 * y)))
+        atTop (𝓝 0) := by
+      simpa [Function.comp] using h4
+    have hmul := (tendsto_const_nhds
+      (x := (Real.pi ^ 2 / 6) * (4 / C)) (f := atTop (α := ℝ))).mul h4'
+    rw [mul_zero] at hmul
+    have hzero : Tendsto
+        (fun y : ℝ => (Real.pi ^ 2 / 6) * y * Real.exp (-(C / 4) * y))
+        atTop (𝓝 0) := by
+      refine hmul.congr fun y => ?_
+      have harg : -(C / 4 * y) = -(C / 4) * y := by ring
+      rw [pow_one, harg]
+      field_simp
+    have h1 : (fun y : ℝ => (Real.pi ^ 2 / 6) * y * Real.exp (-(C / 4) * y))
+        =O[atTop] (fun _ : ℝ => (1 : ℝ)) := hzero.isBigO_one ℝ
+    have hmulO := h1.mul
+      (Asymptotics.isBigO_refl (fun y : ℝ => Real.exp (-(C / 4) * y)) atTop)
+    have hfeq : (fun y : ℝ => (Real.pi ^ 2 / 6) * y * Real.exp (-(C / 2) * y))
+        = fun y : ℝ => ((Real.pi ^ 2 / 6) * y * Real.exp (-(C / 4) * y)) *
+            Real.exp (-(C / 4) * y) := by
+      funext y
+      have hsplit : -(C / 2) * y = -(C / 4) * y + -(C / 4) * y := by ring
+      rw [hsplit, Real.exp_add]
+      ring
+    rw [hfeq]
+    simpa [one_mul] using hmulO
 
 /-- `∫_0^R (π²/6) y e^{−(C/2)y} dy → 1` as `R → ∞`. -/
 private lemma modelIntegral_tendsto_one :

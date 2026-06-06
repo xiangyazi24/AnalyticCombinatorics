@@ -530,3 +530,15 @@
   uisai1 tailscale outage mid-verify; uisai2 bootstrap (clone+cache) in progress as fallback. KernelTotal.lean
   (erdos_kernel_total ε-assembly: window+tail+∫₀^∞=1) drafted ahead; depends on R5 erdos_kernel_window
   (ChatGPT draft c8b26c17 in flight). No banking claims until lake-verified.
+- HR Stage I.3 KERNEL PACKAGE CLOSED (mixed ChatGPT-draft/Opus): VERIFIED per-file on uisai2
+  (uisai1 tailscale outage mid-campaign; uisai2 bootstrapped from GitHub + mathlib cache as fallback
+  build host). ModelAssembly (mesh partition/squeeze assembly) + MeshEstimate (the R4 draft's lone
+  axiom mesh_endpoint_sums_approx_integral PROVED — per-block exp-monotone sandwich + Lipschitz gap
+  C·Q·b·(b−a)·h — and model_kernel_window assembled) + KernelWindow (erdos_kernel_window: true-kernel
+  window limit, Opus solo while R5 capture was down; per-term σ(m)·(2b+Cb²/2)/n^{3/2} + quadratic mass)
+  + KernelTotal (erdos_kernel_total → 1: window+tail sandwich + ∫₀^∞=1 via ExpDecay integrability)
+  + PartMono (p(n) ≤ p(n+1), Stage I.5 prerequisite). API lessons: ∑ in removed; le_or_lt→le_or_gt;
+  abs_add→abs_add_le; private defs invisible cross-file (de-privatized Q/halfOpenMass/meshPoint_*);
+  fun_prop fails on mvar integrands (name the continuity have); field_simp often closes fully (no
+  trailing ring); filter lambdas need explicit (m : ℕ); no Mathlib integrability companion for
+  rpow·exp — use integrable_of_isBigO_exp_neg. (83rd–87th deliverables.)

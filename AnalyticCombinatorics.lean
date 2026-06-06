@@ -80,6 +80,9 @@ import AnalyticCombinatorics.Ch8.Partitions.SummatoryBridge
 import AnalyticCombinatorics.Ch8.Partitions.BlockSqueeze
 import AnalyticCombinatorics.Ch8.Partitions.ModelAssembly
 import AnalyticCombinatorics.Ch8.Partitions.MeshEstimate
+import AnalyticCombinatorics.Ch8.Partitions.KernelWindow
+import AnalyticCombinatorics.Ch8.Partitions.KernelTotal
+import AnalyticCombinatorics.Ch8.Partitions.PartMono
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
