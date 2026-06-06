@@ -111,6 +111,7 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentOneAsymp
 import AnalyticCombinatorics.Ch8.Partitions.MassRateReg3
 import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentTwoAsymp
 import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentSharp
+import AnalyticCombinatorics.Ch8.Partitions.MassRateAssembly
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1050,5 +1051,11 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sigmaMoment_eq_prod_tsum
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tsum_pnat_pow_mul_geometric_le
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sigmaMoment_le_power_sharp
+
+-- HR mass-rate campaign, brick 30 (§6 √n-cancellation): the second-order kernel-mass approximation
+-- kernelMassApprox2 n = (1/n)M₀(t)+(1/n²)M₁(t)−(C/(8n²√n))M₂(t) at t=λ/√n, and |kernelMassApprox2 n − 1|
+-- ≤ K/n eventually — the three weak moment asymptotics give leading 1, the 1/√n terms cancel exactly
+-- (mass_rate_sqrt_coeff_cancel, λ²=π²/6), all remainders O(1/n). First §5-7 assembly brick.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.kernelMassApprox2_cancel_sqrt_term
 
 end AnalyticCombinatorics.Ch1

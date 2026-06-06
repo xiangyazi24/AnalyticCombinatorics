@@ -114,6 +114,7 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateReg3
 import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentTwoAsymp
 import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentSharp
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
+import AnalyticCombinatorics.Ch8.Partitions.MassRateAssembly
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
