@@ -309,3 +309,9 @@ Jun 10 7:27 PM); output sustained via Opus-solo + ChatGPT-draft/Opus-fix loop:
 - Partitions.part_mono — PASS clean-3
 Gate: per-file lake env lean exit 0 + full lib build (8409 jobs, 0 sorryAx/ofReduceBool/trustCompiler)
 + Audit module build exit 0 with 157 clean-3 lines, on uisai2 (uisai1 outage; clone + cache bootstrap).
+
+## 2026-06-06 — Stage I.5/I.6 opening bricks BANKED (clean-3 on uisai2, Audit exit 0, 0 dirty)
+- Erdos.u_local_lower_from_monotone — PASS clean-3 (forward propagation; R6 lemma 14)
+- Erdos.erdos_kernel_fixed_window_pos — PASS clean-3 (R6 lemma 2)
+- Erdos.upperBarrier_eventually_pos_bdd / lowerBarrier_eventually_pos_bdd — PASS clean-3 (R6 lemma 3)
+- Erdos.boundaryTerm_le_barrierSlack — PASS clean-3 (R6 lemma 7)
