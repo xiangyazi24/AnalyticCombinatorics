@@ -568,3 +568,10 @@
   (λ² = π²/6), Bose kernel + regularization + exp-form, and mass_rate_sqrt_coeff_cancel (the central
   cancellation, hand-verified before formalizing). R8 archived: Lambert-moment route replaces
   pointwise summatory (impossible at integers — σ(n) jumps). (94th deliverable.)
+- MASS-RATE kernel side COMPLETE + LAMBERT (Opus): MassRateExpansion (§3.2–3.4; sqrt-drop second
+  order via 8s³E=(s−q)³(q+3s) linear_combination — no calculus), MassRateTail (§4.1 explicit
+  n³e^{−(C/2)n^{1/6}}), MassRateCoef (§3.5 combined coefficient, exact cross term −Cm³/(8s⁷)),
+  MassRateLambert (§2.1: M₀ = Σ boseKernel(tk) via Mathlib divisors-antidiagonal machinery —
+  TsumDivisorsAntidiagonal found by survey, brick shrank 300→100 lines). Precision-budget recheck:
+  EM brick needs only O(1) Riemann-sum error (no −1/12 limit, no trapezoid term); R10 dispatched
+  with the budget analysis + the variance-cancellation trap in the g−h split. (95th–98th deliverables.)

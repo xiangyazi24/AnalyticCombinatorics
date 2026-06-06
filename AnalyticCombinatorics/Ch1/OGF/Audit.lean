@@ -88,6 +88,10 @@ import AnalyticCombinatorics.Ch8.Partitions.BarrierHarmonic
 import AnalyticCombinatorics.Ch8.Partitions.BarrierInduction
 import AnalyticCombinatorics.Ch8.Partitions.RecordBasics
 import AnalyticCombinatorics.Ch8.Partitions.MassRateMoments
+import AnalyticCombinatorics.Ch8.Partitions.MassRateExpansion
+import AnalyticCombinatorics.Ch8.Partitions.MassRateTail
+import AnalyticCombinatorics.Ch8.Partitions.MassRateCoef
+import AnalyticCombinatorics.Ch8.Partitions.MassRateLambert
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -787,6 +791,25 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.massLam_sq
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boseKernel_eq_exp_form
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.mass_rate_sqrt_coeff_cancel
+
+-- Ch8 MASS-RATE kernel-expansion side COMPLETE (R8 sect 3-4, Opus): sqrt-drop second order via the
+-- algebraic identity 8s^3 E = (s-q)^3(q+3s) (linear_combination on q^2 = s^2 - m; no calculus, no
+-- smallness hypothesis); reciprocal second order (exact identity m^2/(n^2(n-m))); exponential second
+-- order (|e^x-1-x| <= x^2 with delta <= 9/32 under 4Cm^2 <= s^3); combined coefficient (R8 3.5,
+-- only cross term -Cm^3/(8s^7) exact); explicit tail n^3 e^{-(C/2)n^{1/6}} beyond m^3 > n^2.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sqrt_drop_second_order
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.inv_sub_second_order
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.exp_sqrt_drop_second_order
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.erdosWeight_coef_second_order
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sqrt_drop_ge
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.kernel_tail_beyond_cube
+
+-- Ch8 MASS-RATE: THE LAMBERT IDENTITY for M0 (R8 sect 2.1, Opus): sigmaMoment 0 t =
+-- Sum_k boseKernel(tk), via Mathlib tsum_prod_pow_eq_tsum_sigma (divisors-antidiagonal machinery)
+-- at k=1, r=e^{-t}; inner geometric-derivative sum + N <-> PNat support bridges.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tsum_if_ne_zero_eq_pnat
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tsum_pnat_coe_mul_geometric
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sigmaMoment_zero_lambert
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
