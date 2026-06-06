@@ -285,3 +285,17 @@ clean-3, fully elementary (no circle method/modular forms). Pipeline (1 day): Ch
 (GF upper bound) → PARTB×3 (Euler product K-sandwich + Laplace t·log P → π²/6) → PARTC×3 (THE reusable
 log-Tauberian: limsup/Abel/strong saddle gap/localization/liminf) → PARTD (monotone transfer). 67 banked
 deliverables total; build green 8388 jobs. Remaining true frontier: the sharp HR constant (circle method).
+
+## Summary update (2026-06-06, codex-outage period)
+
+80 banked deliverables; build green (8401 jobs); standard unchanged. Codex weekly quota exhausted (resumes
+Jun 10 7:27 PM); output sustained via Opus-solo + ChatGPT-draft/Opus-fix loop:
+- Partition campaign COMPLETE earlier: log p(n) ~ π√(2n/3) + distinct/odd/Glaisher-m family.
+- General compositions family COMPLETE (Perron gcd dominance + ρ_S asymptotic for every finite alphabet).
+- HR-CONSTANT campaign (route R2 archived) Stage I progress: σ-recurrence ✓, divisor summatory (explicit
+  K) ✓, normalized Erdős u-recurrence + boundary→0 ✓, kernel tail tightness ✓, summatory window-diff ✓,
+  kernel density integral = 1 ✓, uniform window replacements ✓, HALF-OPEN WINDOW MASS LIMIT ✓
+  ((S(β√n)−S(α√n))/n → (π²/12)(β²−α²)) + endpoint squeeze ✓.
+  Remaining Stage I.3: summatory↔windowed-sum index bridge → weighted block squeeze → step assembly →
+  window/total theorems; then I.4 boundedness, block propagation (b), Stage II Euler–Maclaurin, Stage III
+  constant. Engine note: draft-loop lessons recorded in RUN_LOG (hλ parser trap, squeeze_zero_norm', ₀-renames).
