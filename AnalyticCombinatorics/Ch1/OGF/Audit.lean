@@ -103,6 +103,8 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateDerivInt
 import AnalyticCombinatorics.Ch8.Partitions.MassRateGeom3
 import AnalyticCombinatorics.Ch8.Partitions.MassRateBasel
 import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentOne
+import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentTwo
+import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentBound
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -1001,5 +1003,14 @@ namespace AnalyticCombinatorics.Ch1
 -- Σ' m·σ(m)e^{−tm} = Σ'_{k≥1} k·boseKernel2(tk), boseKernel' = −boseKernel2.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boseKernel_hasDerivAt
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sigmaMoment_one_lambert
+
+-- HR mass-rate campaign, bricks 22-23: the M₂ Lambert identity (Σ' m²σ(m)e^{−tm} = Σ'_{k≥1}
+-- k²·boseKernel3(tk), boseKernel2' = −boseKernel3 by quotient rule, termwise differentiation of M₁)
+-- and the crude moment power bound M_r(t) ≤ (r+2)!·2^{r+3}/t^{r+3} on (0,1] (m^j ≤ j!·C(m+j,j)
+-- via descFactorial + choose-geometric sum) — tail input for the §5–7 assembly.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boseKernel2_hasDerivAt
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sigmaMoment_two_lambert
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tsum_pow_mul_geometric_le
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sigmaMoment_le_power
 
 end AnalyticCombinatorics.Ch1
