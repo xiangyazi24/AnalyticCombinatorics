@@ -40,7 +40,6 @@ theorem u_local_lower_from_monotone {n : ℕ} (r : ℕ) (hn : 1 ≤ n) :
             (Real.exp (-C * (Real.sqrt ((n + r : ℕ) : ℝ) - Real.sqrt (n : ℝ))) *
               Real.exp (-C * Real.sqrt (n : ℝ))) := by
     field_simp
-    ring
   rw [hkey, hexp_merge]
   -- now compare (n+r)·p(n)·E ≤ (n+r)·p(n+r)·E
   have hfac : (0 : ℝ) ≤ ((n + r : ℕ) : ℝ) *

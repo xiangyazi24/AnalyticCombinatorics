@@ -81,6 +81,8 @@ import AnalyticCombinatorics.Ch8.Partitions.MeshEstimate
 import AnalyticCombinatorics.Ch8.Partitions.KernelWindow
 import AnalyticCombinatorics.Ch8.Partitions.KernelTotal
 import AnalyticCombinatorics.Ch8.Partitions.PartMono
+import AnalyticCombinatorics.Ch8.Partitions.LocalLower
+import AnalyticCombinatorics.Ch8.Partitions.KernelBarriers
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -724,6 +726,20 @@ namespace AnalyticCombinatorics.Ch1
 -- Ch8 HR Stage I.5 prerequisite (Opus): partition function monotonicity p(n) <= p(n+1),
 -- by the injection Partition n -> Partition (n+1) adding a part 1.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.part_mono
+
+-- Ch8 HR Stage I.6 (Opus): FORWARD PROPAGATION -- u(n+r) >= ((n+r)/n)*e^{-C(sqrt(n+r)-sqrt n)}*u(n),
+-- from part monotonicity; the only place p-monotonicity is essential (R6 route, lemma 14).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.u_local_lower_from_monotone
+
+-- Ch8 HR Stage I.5 (Opus): BARRIER-PACKAGE FOUNDATIONS (R6 route lemmas 2,3,7; route audited,
+-- renewal lemma 20 refuted by sin(sqrt j) counterexample -- see HANDOFF/partition-stage-I56-route-R6).
+-- kernelMass/kernelWindow/upperBarrier/lowerBarrier/barrierSlack defs; positive fixed window
+-- (window (1,2] mass >= I/2 > 0 eventually); barrier range bounds; boundary <= delta*slack eventually
+-- (via n^5 e^{-C sqrt n} -> 0).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.erdos_kernel_fixed_window_pos
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.upperBarrier_eventually_pos_bdd
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.lowerBarrier_eventually_pos_bdd
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boundaryTerm_le_barrierSlack
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

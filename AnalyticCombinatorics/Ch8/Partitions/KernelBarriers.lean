@@ -152,7 +152,7 @@ private lemma nat_pow5_mul_exp_neg_sqrt_tendsto_zero :
   rw [mul_zero] at hconst
   refine hconst.congr fun n => ?_
   have hsq : Real.sqrt (n : ℝ) ^ 10 = ((n : ℝ)) ^ 5 := by
-    rw [show (10 : ℕ) = 5 * 2 by norm_num, pow_mul]
+    rw [show (10 : ℕ) = 2 * 5 by norm_num, pow_mul]
     congr 1
     exact Real.sq_sqrt (Nat.cast_nonneg n)
   have harg : -(C * Real.sqrt (n : ℝ)) = -C * Real.sqrt (n : ℝ) := by ring
@@ -183,7 +183,10 @@ lemma boundaryTerm_le_barrierSlack {E δ : ℝ} (hE : 3 ≤ E) (hδ : 0 < δ) :
   have hlog_le : Real.log ((n : ℝ) + E) ≤ 2 * (n : ℝ) := by
     have := Real.log_le_sub_one_of_pos (by linarith : (0 : ℝ) < (n : ℝ) + E)
     linarith
-  have hs_le : Real.sqrt (n : ℝ) ≤ (n : ℝ) := Real.sqrt_le_self h1n
+  have hs_le : Real.sqrt (n : ℝ) ≤ (n : ℝ) := by
+    have h1 : (n : ℝ) ≤ (n : ℝ) ^ 2 := by nlinarith
+    calc Real.sqrt (n : ℝ) ≤ Real.sqrt ((n : ℝ) ^ 2) := Real.sqrt_le_sqrt h1
+      _ = (n : ℝ) := Real.sqrt_sq hnpos.le
   have hfac : Real.sqrt (n : ℝ) * (Real.log ((n : ℝ) + E)) ^ 2 ≤ 4 * (n : ℝ) ^ 3 := by
     have hlogsq : (Real.log ((n : ℝ) + E)) ^ 2 ≤ 4 * (n : ℝ) ^ 2 := by
       nlinarith [hlogpos.le, hlog_le]

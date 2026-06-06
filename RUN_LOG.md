@@ -542,3 +542,9 @@
   fun_prop fails on mvar integrands (name the continuity have); field_simp often closes fully (no
   trailing ring); filter lambdas need explicit (m : ℕ); no Mathlib integrability companion for
   rpow·exp — use integrable_of_isBigO_exp_neg. (83rd–87th deliverables.)
+- HR Stage I.5/I.6 OPENING BRICKS (Opus): LocalLower.lean (u_local_lower_from_monotone — forward
+  propagation from part_mono; R6 lemma 14) + KernelBarriers.lean (kernelMass/kernelWindow/barrier/slack
+  defs; erdos_kernel_fixed_window_pos via window(1,2] limit + integral positivity; barrier range bounds;
+  boundaryTerm ≤ δ·slack via n⁵e^{−C√n}→0). R6 route audited: barrier package (A–C) accepted; renewal
+  lemma 20 REFUTED (v j = sin√j counterexample — o(1) residual too weak); R7 challenge dispatched for
+  corrected statement / percolation route. (88th–89th deliverables.)
