@@ -320,3 +320,5 @@ Gate: per-file lake env lean exit 0 + full lib build (8409 jobs, 0 sorryAx/ofRed
 - Erdos.upperBarrier_mono / lowerBarrier_anti / u_pos — PASS clean-3 (unconditional)
 - Erdos.u_upper_of_superharmonic / u_limsup_finite_of_superharmonic — PASS clean-3 (conditional on harmonic hyp)
 - Erdos.u_lower_of_subharmonic / u_liminf_positive_of_subharmonic — PASS clean-3 (conditional on harmonic hyp)
+- Erdos.exists_highRecordFrom / exists_lowRecordFrom / u_tendsto_of_record_covers /
+  erdos_limit_pos_of_tendsto / u_local_high_forward_fill — PASS clean-3 (R7 kernel-free layers)
