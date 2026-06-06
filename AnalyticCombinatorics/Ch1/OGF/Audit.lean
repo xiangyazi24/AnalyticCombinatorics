@@ -1049,5 +1049,6 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.summable_weighted_antidiag
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sigmaMoment_eq_prod_tsum
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tsum_pnat_pow_mul_geometric_le
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sigmaMoment_le_power_sharp
 
 end AnalyticCombinatorics.Ch1
