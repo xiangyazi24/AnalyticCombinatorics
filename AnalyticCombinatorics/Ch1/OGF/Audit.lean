@@ -1072,4 +1072,10 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.model_error_moment_bound
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.erdosWeight_sub_model_le
 
+-- HR mass-rate campaign, brick 34 (§5 main-range sum): ∑_{m=1}^{⌊n^{2/3}⌋} |erdosWeight − modelSummand|
+-- ≤ K/n. Per-term #97×σ(m) (brick 33) on the cutoff range (mainCut_cond gives 2m≤n, 4Cm²≤√n³ for
+-- m≤⌊n^{2/3}⌋), then the finite divisor sums ≤ the full Lambert moments (sum_le_hasSum), reducing to
+-- the O(1/n) error-moment bound (brick 32). Main-range part of kernelMass_sub_approx2.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.main_range_error_le
+
 end AnalyticCombinatorics.Ch1

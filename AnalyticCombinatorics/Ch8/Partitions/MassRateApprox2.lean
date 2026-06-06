@@ -224,4 +224,144 @@ theorem erdosWeight_sub_model_le {n m : ℕ} (hn : 1 ≤ n) (hm1 : 1 ≤ m)
   exact mul_le_mul_of_nonneg_left
     (erdosWeight_coef_second_order hn hm1 h2m hsmall) hσnn
 
+/-- The main cutoff `⌊n^{2/3}⌋`: for `n` large, every `1 ≤ m ≤ ⌊n^{2/3}⌋` satisfies the two
+side-conditions of `erdosWeight_coef_second_order` (#97): `2m ≤ n` and `4Cm² ≤ √n³`. -/
+private lemma mainCut_cond :
+    ∀ᶠ n : ℕ in Filter.atTop, ∀ m : ℕ, 1 ≤ m → m ≤ ⌊(n:ℝ) ^ (2/3 : ℝ)⌋₊ →
+      2 * m ≤ n ∧ 4 * C * (m:ℝ) ^ 2 ≤ Real.sqrt (n:ℝ) ^ 3 := by
+  have hCpos : 0 < C := C_pos
+  rw [Filter.eventually_atTop]
+  refine ⟨max 8 (⌈(4 * C) ^ 6⌉₊ + 1), fun n hn m hm1 hmle => ?_⟩
+  have hn8 : 8 ≤ n := le_trans (le_max_left _ _) hn
+  have hnC : ⌈(4 * C) ^ 6⌉₊ + 1 ≤ n := le_trans (le_max_right _ _) hn
+  have hnpos : (0:ℝ) < (n:ℝ) := by
+    have : 0 < n := by omega
+    exact_mod_cast this
+  have hp23 : (0:ℝ) ≤ (n:ℝ) ^ (2/3 : ℝ) := Real.rpow_nonneg hnpos.le _
+  -- (m:ℝ) ≤ n^{2/3}
+  have hmr : (m:ℝ) ≤ (n:ℝ) ^ (2/3 : ℝ) :=
+    le_trans (by exact_mod_cast hmle) (Nat.floor_le hp23)
+  have hmr0 : (0:ℝ) ≤ (m:ℝ) := by positivity
+  -- cube root: 2 ≤ n^{1/3}
+  have hcubrt : (2:ℝ) ≤ (n:ℝ) ^ (1/3 : ℝ) := by
+    have h8 : (8:ℝ) ≤ (n:ℝ) := by exact_mod_cast hn8
+    have hmono : (8:ℝ) ^ (1/3 : ℝ) ≤ (n:ℝ) ^ (1/3 : ℝ) :=
+      Real.rpow_le_rpow (by norm_num) h8 (by norm_num)
+    have h83 : (8:ℝ) ^ (1/3 : ℝ) = 2 := by
+      rw [show (8:ℝ) = 2 ^ (3:ℕ) by norm_num, ← Real.rpow_natCast 2 3,
+        ← Real.rpow_mul (by norm_num)]
+      norm_num
+    rwa [h83] at hmono
+  -- sixth root: 4C ≤ n^{1/6}
+  have hsixrt : 4 * C ≤ (n:ℝ) ^ (1/6 : ℝ) := by
+    have hbase : ((4 * C) ^ 6 : ℝ) ≤ (n:ℝ) := by
+      have h1 : ((4 * C) ^ 6 : ℝ) ≤ (⌈(4 * C) ^ 6⌉₊ : ℝ) := Nat.le_ceil _
+      have h2 : ((⌈(4 * C) ^ 6⌉₊ : ℕ):ℝ) ≤ (n:ℝ) := by
+        have : ⌈(4 * C) ^ 6⌉₊ ≤ n := by omega
+        exact_mod_cast this
+      linarith
+    have hmono : ((4 * C) ^ 6 : ℝ) ^ (1/6 : ℝ) ≤ (n:ℝ) ^ (1/6 : ℝ) :=
+      Real.rpow_le_rpow (by positivity) hbase (by norm_num)
+    have hid : ((4 * C) ^ 6 : ℝ) ^ (1/6 : ℝ) = 4 * C := by
+      rw [← Real.rpow_natCast (4 * C) 6, ← Real.rpow_mul (by positivity)]
+      norm_num
+    rwa [hid] at hmono
+  -- power identities
+  have hn1 : (n:ℝ) = (n:ℝ) ^ (1/3 : ℝ) * (n:ℝ) ^ (2/3 : ℝ) := by
+    rw [← Real.rpow_add hnpos]; norm_num
+  have hsqrtcube : Real.sqrt (n:ℝ) ^ 3 = ((n:ℝ) ^ (2/3 : ℝ)) ^ 2 * (n:ℝ) ^ (1/6 : ℝ) := by
+    rw [Real.sqrt_eq_rpow, ← Real.rpow_natCast ((n:ℝ) ^ (1/2 : ℝ)) 3,
+      ← Real.rpow_mul hnpos.le, ← Real.rpow_natCast ((n:ℝ) ^ (2/3 : ℝ)) 2,
+      ← Real.rpow_mul hnpos.le, ← Real.rpow_add hnpos]
+    norm_num
+  refine ⟨?_, ?_⟩
+  · -- 2 m ≤ n
+    have hreal : 2 * (m:ℝ) ≤ (n:ℝ) := by
+      calc 2 * (m:ℝ) ≤ 2 * (n:ℝ) ^ (2/3 : ℝ) := by linarith
+        _ ≤ (n:ℝ) ^ (1/3 : ℝ) * (n:ℝ) ^ (2/3 : ℝ) := by
+            apply mul_le_mul_of_nonneg_right hcubrt hp23
+        _ = (n:ℝ) := hn1.symm
+    exact_mod_cast hreal
+  · -- 4 C m² ≤ √n³
+    have hm2 : (m:ℝ) ^ 2 ≤ ((n:ℝ) ^ (2/3 : ℝ)) ^ 2 := by
+      exact pow_le_pow_left₀ hmr0 hmr 2
+    calc 4 * C * (m:ℝ) ^ 2 ≤ 4 * C * ((n:ℝ) ^ (2/3 : ℝ)) ^ 2 := by
+          apply mul_le_mul_of_nonneg_left hm2 (by positivity)
+      _ ≤ (n:ℝ) ^ (1/6 : ℝ) * ((n:ℝ) ^ (2/3 : ℝ)) ^ 2 := by
+          apply mul_le_mul_of_nonneg_right hsixrt (by positivity)
+      _ = Real.sqrt (n:ℝ) ^ 3 := by rw [hsqrtcube]; ring
+
+/-- **Main-range error sum** (§5 brick 4): `∑_{m=1}^{⌊n^{2/3}⌋} |erdosWeight − modelSummand| ≤ K/n`.
+Per-term `#97×σ(m)` (brick 3) on the cutoff range, then the finite divisor sums are `≤` the full
+Lambert moments (`sum_le_tsum`), reducing to the `O(1/n)` moment bound (brick 2). -/
+theorem main_range_error_le :
+    ∃ K : ℝ, 0 < K ∧ ∀ᶠ n : ℕ in Filter.atTop,
+      (∑ m ∈ Finset.Icc 1 ⌊(n:ℝ) ^ (2/3 : ℝ)⌋₊, |erdosWeight n m - modelSummand n m|)
+        ≤ K / (n:ℝ) := by
+  obtain ⟨K, hKpos, hKbound⟩ := model_error_moment_bound
+  have hCpos : 0 < C := C_pos
+  refine ⟨K, hKpos, ?_⟩
+  filter_upwards [mainCut_cond, hKbound, Filter.eventually_ge_atTop 1] with n hcond hKb hn1
+  have hnpos : (0:ℝ) < (n:ℝ) := by exact_mod_cast hn1
+  have hs0 : 0 < Real.sqrt (n:ℝ) := Real.sqrt_pos.mpr hnpos
+  have ht0 : 0 < massLam / Real.sqrt (n:ℝ) := div_pos massLam_pos hs0
+  set M : ℕ := ⌊(n:ℝ) ^ (2/3 : ℝ)⌋₊ with hM
+  -- step 1: per-term #97×σ
+  have hstep1 : (∑ m ∈ Finset.Icc 1 M, |erdosWeight n m - modelSummand n m|)
+      ≤ ∑ m ∈ Finset.Icc 1 M, Sigma.sigmaR m * ((3 * C ^ 2 + 5 * C + 2) *
+          Real.exp (-(massLam / Real.sqrt (n:ℝ)) * (m:ℝ)) *
+          ((m:ℝ) ^ 2 / (n:ℝ) ^ 3 + (m:ℝ) ^ 3 / ((n:ℝ) ^ 3 * Real.sqrt (n:ℝ))
+            + (m:ℝ) ^ 4 / (n:ℝ) ^ 4)) := by
+    apply Finset.sum_le_sum
+    intro m hm
+    rw [Finset.mem_Icc] at hm
+    obtain ⟨hm1, hmle⟩ := hm
+    obtain ⟨h2m, hsmall⟩ := hcond m hm1 hmle
+    exact erdosWeight_sub_model_le hn1 hm1 h2m hsmall
+  -- step 2: rearrange each summand into the three moment summands
+  have hrw : ∀ m : ℕ, Sigma.sigmaR m * ((3 * C ^ 2 + 5 * C + 2) *
+        Real.exp (-(massLam / Real.sqrt (n:ℝ)) * (m:ℝ)) *
+        ((m:ℝ) ^ 2 / (n:ℝ) ^ 3 + (m:ℝ) ^ 3 / ((n:ℝ) ^ 3 * Real.sqrt (n:ℝ))
+          + (m:ℝ) ^ 4 / (n:ℝ) ^ 4))
+      = (3 * C ^ 2 + 5 * C + 2) *
+          ((1 / (n:ℝ) ^ 3) * ((m:ℝ) ^ 2 * Sigma.sigmaR m * Real.exp (-(massLam / Real.sqrt (n:ℝ)) * (m:ℝ)))
+           + (1 / ((n:ℝ) ^ 3 * Real.sqrt (n:ℝ))) * ((m:ℝ) ^ 3 * Sigma.sigmaR m * Real.exp (-(massLam / Real.sqrt (n:ℝ)) * (m:ℝ)))
+           + (1 / (n:ℝ) ^ 4) * ((m:ℝ) ^ 4 * Sigma.sigmaR m * Real.exp (-(massLam / Real.sqrt (n:ℝ)) * (m:ℝ)))) := by
+    intro m; ring
+  rw [Finset.sum_congr rfl (fun m _ => hrw m), ← Finset.mul_sum,
+    Finset.sum_add_distrib, Finset.sum_add_distrib, ← Finset.mul_sum, ← Finset.mul_sum,
+    ← Finset.mul_sum] at hstep1
+  -- step 3: each finite divisor sum ≤ the full Lambert moment
+  have hfin : ∀ r : ℕ, (∑ m ∈ Finset.Icc 1 M,
+        (m:ℝ) ^ r * Sigma.sigmaR m * Real.exp (-(massLam / Real.sqrt (n:ℝ)) * (m:ℝ)))
+      ≤ sigmaMoment r (massLam / Real.sqrt (n:ℝ)) := by
+    intro r
+    have hge0 : ∀ k : ℕ, 0 ≤ (if k = 0 then (0:ℝ)
+        else (k:ℝ) ^ r * Sigma.sigmaR k * Real.exp (-(massLam / Real.sqrt (n:ℝ)) * (k:ℝ))) := by
+      intro k; rcases eq_or_ne k 0 with h | h
+      · simp [h]
+      · rw [if_neg h]
+        exact mul_nonneg (mul_nonneg (by positivity) (sigmaR_nonneg k)) (Real.exp_pos _).le
+    have hsumm := summable_sigma_exp r ht0
+    have hle := sum_le_hasSum (Finset.Icc 1 M) (fun k _ => hge0 k) hsumm.hasSum
+    rw [sigmaMoment]
+    refine le_trans (le_of_eq ?_) hle
+    apply Finset.sum_congr rfl
+    intro m hm
+    rw [Finset.mem_Icc] at hm
+    rw [if_neg (by omega : ¬ m = 0)]
+  -- combine
+  have hmono : (3 * C ^ 2 + 5 * C + 2) *
+        ((1 / (n:ℝ) ^ 3) * (∑ m ∈ Finset.Icc 1 M, (m:ℝ) ^ 2 * Sigma.sigmaR m * Real.exp (-(massLam / Real.sqrt (n:ℝ)) * (m:ℝ)))
+         + (1 / ((n:ℝ) ^ 3 * Real.sqrt (n:ℝ))) * (∑ m ∈ Finset.Icc 1 M, (m:ℝ) ^ 3 * Sigma.sigmaR m * Real.exp (-(massLam / Real.sqrt (n:ℝ)) * (m:ℝ)))
+         + (1 / (n:ℝ) ^ 4) * (∑ m ∈ Finset.Icc 1 M, (m:ℝ) ^ 4 * Sigma.sigmaR m * Real.exp (-(massLam / Real.sqrt (n:ℝ)) * (m:ℝ))))
+      ≤ (3 * C ^ 2 + 5 * C + 2) *
+        ((1 / (n:ℝ) ^ 3) * sigmaMoment 2 (massLam / Real.sqrt (n:ℝ))
+         + (1 / ((n:ℝ) ^ 3 * Real.sqrt (n:ℝ))) * sigmaMoment 3 (massLam / Real.sqrt (n:ℝ))
+         + (1 / (n:ℝ) ^ 4) * sigmaMoment 4 (massLam / Real.sqrt (n:ℝ))) := by
+    have hcoef : 0 ≤ 3 * C ^ 2 + 5 * C + 2 := by positivity
+    apply mul_le_mul_of_nonneg_left _ hcoef
+    gcongr <;> [exact hfin 2; exact hfin 3; exact hfin 4]
+  exact le_trans hstep1 (le_trans hmono hKb)
+
 end AnalyticCombinatorics.Ch8.Partitions.Erdos
