@@ -1048,5 +1048,6 @@ namespace AnalyticCombinatorics.Ch1
 -- sharp bound M_r ≤ K/t^{r+2} (two-regime, in progress) needed for §5 M₃/M₄ error terms.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.summable_weighted_antidiag
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sigmaMoment_eq_prod_tsum
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tsum_pnat_pow_mul_geometric_le
 
 end AnalyticCombinatorics.Ch1

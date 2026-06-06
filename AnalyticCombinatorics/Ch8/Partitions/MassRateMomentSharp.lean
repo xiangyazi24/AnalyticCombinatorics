@@ -114,4 +114,82 @@ lemma sigmaMoment_eq_prod_tsum (r : ℕ) {t : ℝ} (ht : 0 < t) :
     field_simp
   rw [hkey]
 
+/-- Inner geometric bound (with the `x`-decay factor): `Σ'_{b≥1} b^r x^b ≤ x·2^r(r!+1)/(1−x)^{r+1}`
+for `0 ≤ x < 1`. -/
+lemma tsum_pnat_pow_mul_geometric_le (r : ℕ) {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x < 1) :
+    (∑' b : ℕ+, ((b : ℕ) : ℝ) ^ r * x ^ (b : ℕ))
+      ≤ x * (2 ^ r * (Nat.factorial r + 1)) / (1 - x) ^ (r + 1) := by
+  have hxn : ‖x‖ < 1 := by rwa [Real.norm_eq_abs, abs_of_nonneg hx0]
+  have h1mx : (0:ℝ) < 1 - x := by linarith
+  -- Σ'_{b:ℕ+} b^r x^b = x · Σ'_{c:ℕ} (c+1)^r x^c
+  have hstep : (∑' b : ℕ+, ((b : ℕ) : ℝ) ^ r * x ^ (b : ℕ))
+      = x * ∑' c : ℕ, ((c : ℝ) + 1) ^ r * x ^ c := by
+    rw [tsum_pnat_eq_tsum_succ (f := fun b : ℕ => ((b : ℝ)) ^ r * x ^ b)]
+    rw [← tsum_mul_left]
+    refine tsum_congr fun c => ?_
+    push_cast
+    rw [pow_succ]
+    ring
+  rw [hstep]
+  -- Σ_c (c+1)^r x^c ≤ 2^r(r!+1)/(1-x)^{r+1}
+  have hcr : Summable (fun c : ℕ => (c : ℝ) ^ r * x ^ c) :=
+    summable_pow_mul_geometric_of_norm_lt_one (R := ℝ) r hxn
+  have hgeo : Summable (fun c : ℕ => x ^ c) := summable_geometric_of_lt_one hx0 hx1
+  have hterm : ∀ c : ℕ, ((c : ℝ) + 1) ^ r * x ^ c
+      ≤ 2 ^ r * ((c : ℝ) ^ r * x ^ c) + 2 ^ r * x ^ c := by
+    intro c
+    have hxc : (0:ℝ) ≤ x ^ c := by positivity
+    have hcr1 : ((c : ℝ) + 1) ^ r ≤ 2 ^ r * ((c : ℝ) ^ r + 1) := by
+      have h2 : (c : ℝ) + 1 ≤ 2 * max (c : ℝ) (1:ℝ) := by
+        rcases le_or_gt (c : ℝ) 1 with h | h
+        · rw [max_eq_right h]; linarith
+        · rw [max_eq_left h.le]; linarith [(Nat.cast_nonneg c : (0:ℝ) ≤ (c:ℝ))]
+      calc ((c : ℝ) + 1) ^ r ≤ (2 * max (c : ℝ) (1:ℝ)) ^ r := by gcongr
+        _ = 2 ^ r * (max (c : ℝ) (1:ℝ)) ^ r := by rw [mul_pow]
+        _ ≤ 2 ^ r * ((c : ℝ) ^ r + 1) := by
+            apply mul_le_mul_of_nonneg_left _ (by positivity)
+            rcases le_or_gt (c : ℝ) 1 with h | h
+            · rw [max_eq_right h]; simp only [one_pow]
+              linarith [pow_nonneg (Nat.cast_nonneg c : (0:ℝ) ≤ (c:ℝ)) r]
+            · rw [max_eq_left h.le]
+              nlinarith [pow_nonneg (Nat.cast_nonneg c : (0:ℝ) ≤ (c:ℝ)) r]
+    calc ((c : ℝ) + 1) ^ r * x ^ c ≤ (2 ^ r * ((c : ℝ) ^ r + 1)) * x ^ c :=
+          mul_le_mul_of_nonneg_right hcr1 hxc
+      _ = 2 ^ r * ((c : ℝ) ^ r * x ^ c) + 2 ^ r * x ^ c := by ring
+  have hdom : Summable (fun c : ℕ => 2 ^ r * ((c : ℝ) ^ r * x ^ c) + 2 ^ r * x ^ c) :=
+    (hcr.mul_left _).add (hgeo.mul_left _)
+  have hsummC : Summable (fun c : ℕ => ((c : ℝ) + 1) ^ r * x ^ c) :=
+    Summable.of_nonneg_of_le (fun c => by positivity) hterm hdom
+  have hbnd : (∑' c : ℕ, ((c : ℝ) + 1) ^ r * x ^ c)
+      ≤ (2 ^ r * (Nat.factorial r + 1)) / (1 - x) ^ (r + 1) := by
+    have hmono := hsummC.tsum_le_tsum hterm hdom
+    refine hmono.trans ?_
+    rw [(hcr.mul_left _).tsum_add (hgeo.mul_left _), tsum_mul_left, tsum_mul_left,
+      tsum_geometric_of_lt_one hx0 hx1]
+    have hpbnd := tsum_pow_mul_geometric_le r hx0 hx1
+    have hpow_le : (1 - x) ^ (r + 1) ≤ 1 - x := by
+      calc (1 - x) ^ (r + 1) ≤ (1 - x) ^ 1 :=
+            pow_le_pow_of_le_one (by linarith) (by linarith) (by omega)
+        _ = 1 - x := pow_one _
+    have hinv : (1 - x)⁻¹ ≤ 1 / (1 - x) ^ (r + 1) := by
+      rw [inv_eq_one_div]
+      exact one_div_le_one_div_of_le (by positivity) hpow_le
+    have hpbnd' : (∑' c : ℕ, (c : ℝ) ^ r * x ^ c) ≤ (Nat.factorial r : ℝ) / (1 - x) ^ (r + 1) :=
+      hpbnd
+    have hfr : (0:ℝ) ≤ (2:ℝ) ^ r := by positivity
+    have he1 : (2:ℝ) ^ r * (∑' c : ℕ, (c : ℝ) ^ r * x ^ c)
+        ≤ 2 ^ r * ((Nat.factorial r : ℝ) / (1 - x) ^ (r + 1)) :=
+      mul_le_mul_of_nonneg_left hpbnd' hfr
+    have he2 : (2:ℝ) ^ r * (1 - x)⁻¹ ≤ 2 ^ r * (1 / (1 - x) ^ (r + 1)) :=
+      mul_le_mul_of_nonneg_left hinv hfr
+    have hcombine : 2 ^ r * ((Nat.factorial r : ℝ) / (1 - x) ^ (r + 1))
+        + 2 ^ r * (1 / (1 - x) ^ (r + 1))
+        = (2 ^ r * (Nat.factorial r + 1)) / (1 - x) ^ (r + 1) := by
+      field_simp
+    linarith [he1, he2, hcombine.le, hcombine.ge]
+  calc x * ∑' c : ℕ, ((c : ℝ) + 1) ^ r * x ^ c
+      ≤ x * ((2 ^ r * (Nat.factorial r + 1)) / (1 - x) ^ (r + 1)) :=
+        mul_le_mul_of_nonneg_left hbnd hx0
+    _ = x * (2 ^ r * (Nat.factorial r + 1)) / (1 - x) ^ (r + 1) := by ring
+
 end AnalyticCombinatorics.Ch8.Partitions.Erdos
