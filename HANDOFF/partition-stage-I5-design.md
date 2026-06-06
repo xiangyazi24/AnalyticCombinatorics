@@ -53,3 +53,16 @@ not enough alone; need mass-concentration argument again. Same conclusion: I.5/I
 
 Next ChatGPT round (R6, after R5 lands & banks): ask for the FULL I.5+I.6 renewal/block plan as
 one route map with Lean-statement granularity (not code), then brick it.
+
+## 2026-06-06 budget check (Opus): the mass-rate brick is unavoidable and hard
+
+Superharmonic needs |kernelMass n − 1| ≲ slack = 1/(√n log²(n+E)).
+- Abel summation of erdosWeight against S(t) = Σ_{m≤t}σ(m) with the BANKED error O(t log t)
+  gives only |mass − 1| = O(log n/√n)  (∫|φ'|·t log t ~ (1/n√n)·n log n).
+- No barrier shape can absorb O(log n/√n): per-block error ~ log j/j, Σ log j/j diverges;
+  any bounded barrier has finite total drift budget. Checked for 1−A/log^j, 1−A/n^α.
+- Hence R6 lemma 1's cancellation claim is the real content: need
+  (i) σ-summatory SECOND-order: S(x) = π²x²/12 − x/2·(?) + O(x^{2/3}·polylog) (hyperbola refinement),
+  (ii) kernel second-order expansion (exponent m²-correction + 1/(n−m) expansion),
+  (iii) the 1/√n contributions cancel pairwise, leaving O(log n/n).
+  Multi-brick campaign; dispatch as R8 with this budget analysis attached.
