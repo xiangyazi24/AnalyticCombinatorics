@@ -579,3 +579,8 @@
   choose-geometric). M₁ design: secondary integral reduces to the M₀ FTC core via the boundary
   cancellation −z·boseKernel + 1/z → 0 at 0+ (logged in R8 HANDOFF). R11 (M₁ rearrangement draft)
   queued behind R10. (99th deliverable.)
+- MASS-RATE boseReg0 ANALYSIS CORE COMPLETE (Opus, R10 bricks 1–18): ExpBounds (#100, first-try),
+  Bose bounds (#101), Antideriv+FTC+limits (#102), THE INTEGRAL ∫boseReg0 = −1/2 (#103, FTC anchor),
+  Deriv closed form + tail (#104), DerivZero (#105, hand-computed degree-6 certificate, first-try
+  ring verification), DerivInt in final verify. R12 (Riemann O(1) general lemma, full proof plan
+  attached) dispatched; R11 (M₁ rearrangement) v1 extracted. (100th–105th deliverables.)

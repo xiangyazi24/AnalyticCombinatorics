@@ -95,6 +95,12 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateTail
 import AnalyticCombinatorics.Ch8.Partitions.MassRateCoef
 import AnalyticCombinatorics.Ch8.Partitions.MassRateLambert
 import AnalyticCombinatorics.Ch8.Partitions.MassRateGeom2
+import AnalyticCombinatorics.Ch8.Partitions.MassRateExpBounds
+import AnalyticCombinatorics.Ch8.Partitions.MassRateBose
+import AnalyticCombinatorics.Ch8.Partitions.MassRateAntideriv
+import AnalyticCombinatorics.Ch8.Partitions.MassRateIntegral
+import AnalyticCombinatorics.Ch8.Partitions.MassRateDeriv
+import AnalyticCombinatorics.Ch8.Partitions.MassRateDerivZero
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational

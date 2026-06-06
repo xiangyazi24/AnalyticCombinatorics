@@ -93,6 +93,12 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateTail
 import AnalyticCombinatorics.Ch8.Partitions.MassRateCoef
 import AnalyticCombinatorics.Ch8.Partitions.MassRateLambert
 import AnalyticCombinatorics.Ch8.Partitions.MassRateGeom2
+import AnalyticCombinatorics.Ch8.Partitions.MassRateExpBounds
+import AnalyticCombinatorics.Ch8.Partitions.MassRateBose
+import AnalyticCombinatorics.Ch8.Partitions.MassRateAntideriv
+import AnalyticCombinatorics.Ch8.Partitions.MassRateIntegral
+import AnalyticCombinatorics.Ch8.Partitions.MassRateDeriv
+import AnalyticCombinatorics.Ch8.Partitions.MassRateDerivZero
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -816,6 +822,23 @@ namespace AnalyticCombinatorics.Ch1
 -- via n^2 = 2C(n+2,2) - 3C(n+1,1) + C(n,0) over Mathlib choose-geometric sums.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tsum_nat_sq_mul_geometric
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tsum_pnat_sq_mul_geometric
+
+-- Ch8 MASS-RATE boseReg0 analysis core (R10 bricks 1-17, Opus): exp polynomial bounds (orders 3,4
+-- via Real.exp_bound); boseReg0 rational form + |boseReg0| <= 4 near 0 (exact numerator identity
+-- x^4/4 - 2x*delta - delta^2) + tail 4e^{-x} + 1/x^2; antiderivative F = 1/x - 1/(e^x-1) with F' =
+-- boseReg0, F(0+) = 1/2, F(inf) = 0, finite FTC; THE INTEGRAL int boseReg0 = -1/2 (FTC anchor);
+-- derivative closed form + tail bound + |boseReg0'| <= 32 near 0 (hand-computed degree-6
+-- cancellation certificate B = -x^6/4 - x^7/6 - x^8/12 - x^9/54, ring-verified).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.exp_sub_one_bounds_order3
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.exp_sub_one_order4_bound
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boseReg0_bdd_near_zero
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boseReg0_tail_bound
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boseAntideriv_hasDerivAt
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boseAntideriv_tendsto_zero_right
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.integral_boseReg0_Ioi
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boseReg0_hasDerivAt
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boseReg0Deriv_tail_bound
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boseReg0Deriv_bdd_near_zero
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
