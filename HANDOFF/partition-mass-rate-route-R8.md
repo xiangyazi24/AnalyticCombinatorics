@@ -575,3 +575,21 @@ This is the route that actually delivers the rate needed by both the barrier pac
 - Remaining hard core therefore: (a) ∫boseReg0 = −1/2 (FTC + integrability), (b) EM-O(1) Riemann
   bound for boseReg0-type kernels (R10 pending), (c) two-exponent antidiagonal rearrangements
   (M₁ = Σ'_{(d,c)} d²c x^{dc} etc.; mimic Mathlib TsumDivisorsAntidiagonal whose aux is private).
+
+## 2026-06-06 Opus design supplement 2: the ∫boseReg0 = −1/2 brick (execution-ready)
+
+- Antiderivative F(x) = 1/x − 1/(e^x−1); F′ = boseReg0 (via banked boseKernel_eq_exp_form).
+- F(0+) = 1/2: F = (e^x−1−x)/(x(e^x−1)); with Real.exp_bound (n=3, |x|≤1): e^x−1 = x + x²/2 + δ,
+  |δ| ≤ 2x³/9; F = (1/2 + δ/x²)/(1 + x/2 + δ/x) → 1/2 by tendsto algebra (δ/x² ≤ 2x/9 → 0).
+- F(∞) = 0 (1/x → 0; 1/(e^x−1) → 0).
+- Split ∫_{Ioi 0} = ∫_{Ioc 0 1} + ∫_{Ioi 1} (Set.Ioc_union_Ioi_eq_Ioi + setIntegral_union):
+  · Ioc 0 1: extend F̃(0) := 1/2 continuous on [0,1] (the F(0+) limit);
+    intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le ⇒ ∫ = F(1) − 1/2.
+  · Ioi 1: MeasureTheory.integral_Ioi_of_hasDerivAt_of_tendsto ⇒ ∫ = 0 − F(1).
+  · Total −1/2.
+- Integrability: (0,1]: |boseReg0| ≤ 1 — numerator analysis x²e^x − (e^x−1)² = x⁴/4 − 2xδ − δ²
+  (with the SAME δ), |num| ≤ x⁴(1/4+4/9+4/81) ≤ x⁴; denominator x²(e^x−1)² ≥ x⁴ (e^x−1 ≥ x);
+  bounded + continuous on (0,1] + finite measure ⇒ integrable.
+  Ioi 1: |boseReg0| ≤ boseKernel + 1/x²; boseKernel(x) ≤ e^{−x}/(1−e^{−1})² (x ≥ 1) +
+  exp_neg_integrableOn_Ioi; 1/x² integrable on Ioi 1.
+- All exp-Taylor needs are covered by Real.exp_bound at n = 3 (no series manipulation).
