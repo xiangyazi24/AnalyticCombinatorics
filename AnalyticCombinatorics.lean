@@ -101,6 +101,7 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateAntideriv
 import AnalyticCombinatorics.Ch8.Partitions.MassRateIntegral
 import AnalyticCombinatorics.Ch8.Partitions.MassRateDeriv
 import AnalyticCombinatorics.Ch8.Partitions.MassRateDerivZero
+import AnalyticCombinatorics.Ch8.Partitions.MassRateDerivInt
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational

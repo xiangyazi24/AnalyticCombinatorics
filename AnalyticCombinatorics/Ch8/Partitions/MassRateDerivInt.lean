@@ -56,6 +56,7 @@ lemma boseReg0Deriv_integrableOn_Ioi1 : IntegrableOn boseReg0Deriv (Set.Ioi 1) :
   rw [ae_restrict_iff' hmeas]
   filter_upwards with x hx
   rw [Real.norm_eq_abs]
+  simp only [Pi.add_apply]
   have hb := boseReg0Deriv_tail_bound hx.le
   have heq : (2 : ℝ) / x ^ 3 = 2 * (1 / x ^ 3) := by ring
   linarith [le_of_eq heq]

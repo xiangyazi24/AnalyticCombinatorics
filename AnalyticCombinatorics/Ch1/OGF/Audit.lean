@@ -99,6 +99,7 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateAntideriv
 import AnalyticCombinatorics.Ch8.Partitions.MassRateIntegral
 import AnalyticCombinatorics.Ch8.Partitions.MassRateDeriv
 import AnalyticCombinatorics.Ch8.Partitions.MassRateDerivZero
+import AnalyticCombinatorics.Ch8.Partitions.MassRateDerivInt
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -839,6 +840,8 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boseReg0_hasDerivAt
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boseReg0Deriv_tail_bound
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boseReg0Deriv_bdd_near_zero
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boseReg0_integrable_Ioi
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boseReg0Deriv_integrable_Ioi
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
