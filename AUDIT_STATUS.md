@@ -299,3 +299,13 @@ Jun 10 7:27 PM); output sustained via Opus-solo + ChatGPT-draft/Opus-fix loop:
   Remaining Stage I.3: summatory↔windowed-sum index bridge → weighted block squeeze → step assembly →
   window/total theorems; then I.4 boundedness, block propagation (b), Stage II Euler–Maclaurin, Stage III
   constant. Engine note: draft-loop lessons recorded in RUN_LOG (hλ parser trap, squeeze_zero_norm', ₀-renames).
+
+## 2026-06-05/06 — HR Stage I.3 kernel package BANKED (clean-3 verified on uisai2)
+- Erdos.Model.blockSum_eventually_between_mesh_eps — PASS clean-3
+- Erdos.Model.mesh_endpoint_sums_approx_integral — PASS clean-3 (was the R4 draft's axiom; proved)
+- Erdos.Model.model_kernel_window — PASS clean-3
+- Erdos.Model.erdos_kernel_window — PASS clean-3 (true kernel)
+- Erdos.Model.erdos_kernel_total — PASS clean-3 (kernel mass → 1)
+- Partitions.part_mono — PASS clean-3
+Gate: per-file lake env lean exit 0 + full lib build (8409 jobs, 0 sorryAx/ofReduceBool/trustCompiler)
++ Audit module build exit 0 with 157 clean-3 lines, on uisai2 (uisai1 outage; clone + cache bootstrap).
