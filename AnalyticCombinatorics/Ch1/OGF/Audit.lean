@@ -1065,4 +1065,11 @@ namespace AnalyticCombinatorics.Ch1
 -- per-term estimate erdosWeight_coef_second_order (#97, ×σ(m)≥0) is compared against in §5.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.kernelMassApprox2_eq_tsum_model
 
+-- HR mass-rate campaign, bricks 32-33 (§5 error core): the divisor-weighted error majorant
+-- (3C²+5C+2)·[(1/n³)M₂+(1/(n³√n))M₃+(1/n⁴)M₄](λ/√n) ≤ K/n (pure sharp #119 at r=2,3,4), and the
+-- per-term error |erdosWeight n m − modelSummand n m| ≤ σ(m)·#97RHS on the main range (the
+-- σ(m)-weighted form of erdosWeight_coef_second_order). Together: main-range error sums to O(1/n).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.model_error_moment_bound
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.erdosWeight_sub_model_le
+
 end AnalyticCombinatorics.Ch1

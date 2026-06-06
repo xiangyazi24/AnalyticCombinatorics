@@ -673,3 +673,35 @@ KEY INSIGHT (avoids two-regime — use a GLOBAL dominator):
 ~100 lines, mechanical. Draft attempted (hden clean version works); per-a algebra + D-sum remain.
 
 THEN §5 assembly uses sigmaMoment_le_power_sharp for r=2,3,4 (the M₃,M₄ error terms).
+
+---
+
+## §5 装配精确分解（Opus, 2026-06-06，实现中）
+
+文件 `MassRateApprox2.lean`。已 banked: sub-lemma 1。
+
+**关键发现**：`erdosWeight n m = σ(m)·[1/(n−m)·exp(−C(√n−√(n−m)))]`，σ(m) 是 divisor 权重。
+#97 (`erdosWeight_coef_second_order`) bound 的是 bracket（不含 σ），exp 因子是 `exp(−(C/2)m/s)=exp(−tm)`，
+t=λ/√n（**同一个 t**，不是 C/4！）。误差 RHS 分母 s⁶/s⁷/s⁸ = n³/n³s/n⁴。
+`modelSummand n m = σ(m)·#97model`，所以 `erdosWeight−modelSummand = σ(m)·(#97 inner diff)`。
+
+- **sub-lemma 1** `kernelMassApprox2_eq_tsum_model` ✅ banked (ababbf0):
+  kernelMassApprox2 n = ∑' m, modelSummand n m，modelSummand = σ(m)e^{−tm}(1/n+m/n²−Cm²/(8n²√n))。
+- **sub-lemma 2** `model_error_moment_bound`（写好，待验）:
+  (3C²+5C+2)·[(1/n³)M₂+(1/(n³√n))M₃+(1/n⁴)M₄](t) ≤ K/n。纯 sharp #119 三连（r=2,3,4），t=λ/√n。
+- **sub-lemma 3** `erdosWeight_sub_model_le`（per-term，待写）:
+  对 1≤m, 2m≤n, 4Cm²≤s³: |erdosWeight−modelSummand| ≤ σ(m)(3C²+5C+2)e^{−tm}(m²/n³+m³/(n³s)+m⁴/n⁴)。
+  证：erdosWeight−modelSummand=σ·(#97inner)，|·|=σ|#97inner|≤σ·#97RHS（×σ≥0），s⁶=n³ 等转换。
+- **sub-lemma 4** `main_range_error_le`（main 和，待写）:
+  Σ_{m∈Icc 1 ⌊n^{2/3}⌋}|err| ≤ Σ_{Icc}σ·#97RHS ≤ Σ'_m σ·#97RHS [sum_le_tsum,nonneg]
+  = sub-lemma 2 表达式 ≤ K/n。需 #97 条件在 Icc 上成立（n≥max((4C)^6,8)）+ tsum 线性（同 sub-lemma 1）。
+- **sub-lemma 5** 尾界（待写/可派 Codex）:
+  (a) Σ_{⌊n^{2/3}⌋<m≤n−1} erdosWeight：右半 (n<2m) 有 `right_half_kernel_sum_le` = n³exp(−(C/10)√n) exp-small；
+      左半远区 (n^{2/3}<m≤n/2) 需 quantitative 尾（n^{2/3}>√n·n^{1/6}≥R√n，但现有 erdos_kernel_tail 是 ε-form 定性，
+      可能需新 quantitative 引理或用 leftBlockMajorant 几何尾）。
+  (b) tail_model = Σ'_{m>⌊n^{2/3}⌋} modelSummand：exp-small。
+      bound: modelSummand≤σ(m)e^{−tm}(1/n+m/n²+Cm²/(8n²s))，m>n^{2/3}⟹tm>λn^{1/6}，
+      Σ'_{m>M}σm^k e^{−tm}≤e^{−tM/2}M_k(t/2)=exp-small·poly→exp-small。
+- **assemble** `kernelMass_sub_approx2`:
+  kernelMass−kernelMassApprox2 = Σ_{main}(err) + Σ_{far}erdosWeight − tail_model；三角 + 上述。
+- 然后 `kernelMass_sub_one_rate`（= sub_approx2 + cancel #banked），barrier 实例化，R7 records，erdos_partition_limit_exists。
