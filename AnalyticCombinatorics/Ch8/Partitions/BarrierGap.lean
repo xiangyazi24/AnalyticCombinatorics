@@ -27,7 +27,7 @@ open scoped BigOperators Topology
 namespace AnalyticCombinatorics.Ch8.Partitions.Erdos
 
 /-- Core gap estimate: on the window, `A/log(n−m+E) − A/log(n+E) ≥ (A a₀/2)·slack`. -/
-private lemma barrier_core_gap_on_window
+lemma barrier_core_gap_on_window
     {A E a₀ b₀ : ℝ} (hA : 0 < A) (hE : 3 ≤ E)
     (ha₀ : 0 < a₀) (hab₀ : a₀ < b₀) :
     ∀ᶠ n : ℕ in atTop, ∀ m : ℕ,

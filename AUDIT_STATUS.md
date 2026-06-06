@@ -315,3 +315,4 @@ Gate: per-file lake env lean exit 0 + full lib build (8409 jobs, 0 sorryAx/ofRed
 - Erdos.erdos_kernel_fixed_window_pos — PASS clean-3 (R6 lemma 2)
 - Erdos.upperBarrier_eventually_pos_bdd / lowerBarrier_eventually_pos_bdd — PASS clean-3 (R6 lemma 3)
 - Erdos.boundaryTerm_le_barrierSlack — PASS clean-3 (R6 lemma 7)
+- Erdos.upperBarrier_gap_on_window / lowerBarrier_gap_on_window — PASS clean-3 (R6 lemma 4)
