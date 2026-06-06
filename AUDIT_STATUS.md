@@ -322,3 +322,5 @@ Gate: per-file lake env lean exit 0 + full lib build (8409 jobs, 0 sorryAx/ofRed
 - Erdos.u_lower_of_subharmonic / u_liminf_positive_of_subharmonic — PASS clean-3 (conditional on harmonic hyp)
 - Erdos.exists_highRecordFrom / exists_lowRecordFrom / u_tendsto_of_record_covers /
   erdos_limit_pos_of_tendsto / u_local_high_forward_fill — PASS clean-3 (R7 kernel-free layers)
+- Erdos.massLam_sq / boseKernel_eq_exp_form / mass_rate_sqrt_coeff_cancel — PASS clean-3
+  (mass-rate campaign opening, R8 route)
