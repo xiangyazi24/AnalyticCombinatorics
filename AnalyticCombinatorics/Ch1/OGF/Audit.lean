@@ -105,6 +105,9 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateBasel
 import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentOne
 import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentTwo
 import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentBound
+import AnalyticCombinatorics.Ch8.Partitions.MassRateTailInvSq
+import AnalyticCombinatorics.Ch8.Partitions.MassRateWeightedSum
+import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentOneAsymp
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1020,5 +1023,13 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.cell_error
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.riemann_boseReg0_bound
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sigmaMoment_zero_asymp_weak
+
+-- HR mass-rate campaign, bricks 25-26 (weighted-decay keystone + M₁ weak asymptotics): the
+-- reusable Σ' k^j|f(tk)| ≤ K/t^{j+1} bound (near-origin Cf + exp tail + Basel tail), and its first
+-- instantiation |M₁(t) − 2(π²/6)/t³| ≤ 388/t² via boseKernel2 = 2/z³ − boseReg0′.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tail_inv_sq_shift
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.weighted_decay_sum_bound
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boseKernel2_eq_inv_cube_sub_deriv
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sigmaMoment_one_asymp_weak
 
 end AnalyticCombinatorics.Ch1
