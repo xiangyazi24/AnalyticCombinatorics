@@ -110,6 +110,7 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateWeightedSum
 import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentOneAsymp
 import AnalyticCombinatorics.Ch8.Partitions.MassRateReg3
 import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentTwoAsymp
+import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentSharp
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1040,5 +1041,12 @@ namespace AnalyticCombinatorics.Ch1
 -- keystone (j=2). Completes the M₀/M₁/M₂ moment-asymptotics layer.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.reg3_bdd_near_zero
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sigmaMoment_two_asymp_weak
+
+-- HR mass-rate campaign, brick 29 (sharp-moment-bound foundations): the weighted divisor Fubini
+-- M_r(t) = Σ_a Σ_b a^{r+1} b^r (e^{−t})^{ab} (via sigmaAntidiagonalEquivProd; Σ_{ab=e} a^{r+1}b^r
+-- = e^r σ(e)) and the ℕ+×ℕ+ summability of the weighted antidiagonal summand. Input to the
+-- sharp bound M_r ≤ K/t^{r+2} (two-regime, in progress) needed for §5 M₃/M₄ error terms.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.summable_weighted_antidiag
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sigmaMoment_eq_prod_tsum
 
 end AnalyticCombinatorics.Ch1
