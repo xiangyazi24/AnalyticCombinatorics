@@ -23,6 +23,7 @@ set_option maxHeartbeats 800000
 noncomputable section
 
 open Filter Finset intervalIntegral
+open scoped BigOperators Topology Interval
 
 namespace AnalyticCombinatorics.Ch8.Partitions.Erdos.Model
 
@@ -33,6 +34,23 @@ private lemma two_Q : Real.pi ^ 2 / 6 = 2 * Q := by
 private lemma Q_pos' : (0 : ℝ) < Q := by
   simp only [Q]
   positivity
+
+/-- The model density is interval-integrable. -/
+private lemma density_intervalIntegrable (C α β : ℝ) :
+    IntervalIntegrable (fun y : ℝ => (Real.pi ^ 2 / 6) * y * Real.exp (-(C / 2) * y))
+      MeasureTheory.volume α β := by
+  have hc : Continuous fun y : ℝ => (Real.pi ^ 2 / 6) * y * Real.exp (-(C / 2) * y) := by
+    have h1 : Continuous fun y : ℝ => (Real.pi ^ 2 / 6) * y :=
+      continuous_const.mul continuous_id
+    have h2 : Continuous fun y : ℝ => Real.exp (-(C / 2) * y) :=
+      Real.continuous_exp.comp (continuous_const.mul continuous_id)
+    exact h1.mul h2
+  exact hc.intervalIntegrable α β
+
+/-- Linear integrands are interval-integrable. -/
+private lemma linear_intervalIntegrable (c α β : ℝ) :
+    IntervalIntegrable (fun y : ℝ => c * y) MeasureTheory.volume α β :=
+  (continuous_const.mul continuous_id).intervalIntegrable α β
 
 /-- Lipschitz bound for `e^{−x}` on the nonnegative half-line. -/
 private lemma exp_neg_sub_exp_neg_le {u v : ℝ} (hu : 0 ≤ u) (huv : u ≤ v) :
@@ -54,7 +72,7 @@ private lemma block_const_integral (K α β : ℝ) :
   ring
 
 /-- Lower block bound: `e^{−(C/2)β}·Q·(β²−α²) ≤ ∫_α^β (π²/6) y e^{−(C/2)y} dy`. -/
-private lemma block_lower_le_integral {C α β : ℝ} (hα : 0 ≤ α) (hαβ : α ≤ β) :
+private lemma block_lower_le_integral {C α β : ℝ} (hC : 0 < C) (hα : 0 ≤ α) (hαβ : α ≤ β) :
     Real.exp (-(C / 2) * β) * Q * (β ^ 2 - α ^ 2)
       ≤ ∫ y in α..β, (Real.pi ^ 2 / 6) * y * Real.exp (-(C / 2) * y) := by
   have hK : Real.exp (-(C / 2) * β) * Q * (β ^ 2 - α ^ 2)
@@ -63,13 +81,14 @@ private lemma block_lower_le_integral {C α β : ℝ} (hα : 0 ≤ α) (hαβ : 
     ring
   rw [hK]
   apply intervalIntegral.integral_mono_on hαβ
-  · exact Continuous.intervalIntegrable (by fun_prop)
-  · exact Continuous.intervalIntegrable (by fun_prop)
+  · exact linear_intervalIntegrable _ _ _
+  · exact density_intervalIntegrable _ _ _
   · intro y hy
     have hy0 : 0 ≤ y := le_trans hα hy.1
     have hexp : Real.exp (-(C / 2) * β) ≤ Real.exp (-(C / 2) * y) := by
       apply Real.exp_le_exp.mpr
-      nlinarith [hy.2]
+      have h0 : 0 ≤ (C / 2) * (β - y) := mul_nonneg (by linarith) (by linarith [hy.2])
+      nlinarith [h0]
     rw [two_Q]
     calc (2 * Q * Real.exp (-(C / 2) * β)) * y
         = (2 * Q * y) * Real.exp (-(C / 2) * β) := by ring
@@ -80,7 +99,7 @@ private lemma block_lower_le_integral {C α β : ℝ} (hα : 0 ≤ α) (hαβ : 
       _ = 2 * Q * y * Real.exp (-(C / 2) * y) := by ring
 
 /-- Upper block bound: `∫_α^β (π²/6) y e^{−(C/2)y} dy ≤ e^{−(C/2)α}·Q·(β²−α²)`. -/
-private lemma block_integral_le_upper {C α β : ℝ} (hα : 0 ≤ α) (hαβ : α ≤ β) :
+private lemma block_integral_le_upper {C α β : ℝ} (hC : 0 < C) (hα : 0 ≤ α) (hαβ : α ≤ β) :
     (∫ y in α..β, (Real.pi ^ 2 / 6) * y * Real.exp (-(C / 2) * y))
       ≤ Real.exp (-(C / 2) * α) * Q * (β ^ 2 - α ^ 2) := by
   have hK : Real.exp (-(C / 2) * α) * Q * (β ^ 2 - α ^ 2)
@@ -89,13 +108,14 @@ private lemma block_integral_le_upper {C α β : ℝ} (hα : 0 ≤ α) (hαβ : 
     ring
   rw [hK]
   apply intervalIntegral.integral_mono_on hαβ
-  · exact Continuous.intervalIntegrable (by fun_prop)
-  · exact Continuous.intervalIntegrable (by fun_prop)
+  · exact density_intervalIntegrable _ _ _
+  · exact linear_intervalIntegrable _ _ _
   · intro y hy
     have hy0 : 0 ≤ y := le_trans hα hy.1
     have hexp : Real.exp (-(C / 2) * y) ≤ Real.exp (-(C / 2) * α) := by
       apply Real.exp_le_exp.mpr
-      nlinarith [hy.1]
+      have h0 : 0 ≤ (C / 2) * (y - α) := mul_nonneg (by linarith) (by linarith [hy.1])
+      nlinarith [h0]
     rw [two_Q]
     calc 2 * Q * y * Real.exp (-(C / 2) * y)
         = (2 * Q * y) * Real.exp (-(C / 2) * y) := by ring
@@ -109,8 +129,9 @@ private lemma block_integral_le_upper {C α β : ℝ} (hα : 0 ≤ α) (hαβ : 
 private lemma meshPoint_mono {a h : ℝ} (hh : 0 ≤ h) {k N : ℕ} (hkN : k ≤ N) :
     meshPoint a h k ≤ meshPoint a h N := by
   dsimp [meshPoint]
-  have : (k : ℝ) ≤ (N : ℝ) := by exact_mod_cast hkN
-  nlinarith [mul_le_mul_of_nonneg_right this hh]
+  have hcast : (k : ℝ) ≤ (N : ℝ) := by exact_mod_cast hkN
+  have := mul_le_mul_of_nonneg_right hcast hh
+  linarith
 
 /-- The right end of the mesh is `b` when `h = (b−a)/N`. -/
 private lemma meshPoint_last {a b : ℝ} {N : ℕ} (hN : 0 < N) :
@@ -118,9 +139,10 @@ private lemma meshPoint_last {a b : ℝ} {N : ℕ} (hN : 0 < N) :
   have hNposR : (0 : ℝ) < (N : ℝ) := by exact_mod_cast hN
   dsimp [meshPoint]
   field_simp
+  ring
 
 /-- The integral splits over the mesh and is sandwiched by the endpoint sums. -/
-private lemma mesh_sandwich {C a b : ℝ} (ha : 0 ≤ a) (hab : a < b)
+private lemma mesh_sandwich {C a b : ℝ} (hC : 0 < C) (ha : 0 ≤ a) (hab : a < b)
     {N : ℕ} (hN : 0 < N) :
     lowerMesh C a ((b - a) / (N : ℝ)) N ≤ modelIntegral C a b ∧
       modelIntegral C a b ≤ upperMesh C a ((b - a) / (N : ℝ)) N := by
@@ -141,8 +163,11 @@ private lemma mesh_sandwich {C a b : ℝ} (ha : 0 ≤ a) (hab : a < b)
     have := intervalIntegral.sum_integral_adjacent_intervals
       (a := fun k => meshPoint a h k) (n := N)
       (f := fun y => (Real.pi ^ 2 / 6) * y * Real.exp (-(C / 2) * y))
-      (fun k _hk => Continuous.intervalIntegrable (by fun_prop) _ _)
-    rw [this, hfirst, hlast, modelIntegral]
+      (fun k _hk => density_intervalIntegrable C _ _)
+    rw [this]
+    dsimp only
+    rw [hfirst, hlast]
+    rfl
   constructor
   · -- lowerMesh ≤ ∫
     rw [← hsplit, lowerMesh]
@@ -151,7 +176,7 @@ private lemma mesh_sandwich {C a b : ℝ} (ha : 0 ≤ a) (hab : a < b)
     have hαk : 0 ≤ meshPoint a h k := meshPoint_nonneg ha hhnonneg k
     have hαβ : meshPoint a h k ≤ meshPoint a h (k + 1) :=
       meshPoint_mono hhnonneg (Nat.le_succ k)
-    exact block_lower_le_integral hαk hαβ
+    exact block_lower_le_integral hC hαk hαβ
   · -- ∫ ≤ upperMesh
     rw [← hsplit, upperMesh]
     refine Finset.sum_le_sum ?_
@@ -159,7 +184,7 @@ private lemma mesh_sandwich {C a b : ℝ} (ha : 0 ≤ a) (hab : a < b)
     have hαk : 0 ≤ meshPoint a h k := meshPoint_nonneg ha hhnonneg k
     have hαβ : meshPoint a h k ≤ meshPoint a h (k + 1) :=
       meshPoint_mono hhnonneg (Nat.le_succ k)
-    exact block_integral_le_upper hαk hαβ
+    exact block_integral_le_upper hC hαk hαβ
 
 /-- The upper−lower mesh gap is at most `C·Q·b·(b−a)·h`. -/
 private lemma mesh_gap_le {C a b : ℝ} (hC : 0 < C) (ha : 0 ≤ a) (hab : a < b)
@@ -299,11 +324,12 @@ theorem mesh_endpoint_sums_approx_integral
     have hkey : C * Q * b * (b - a) ^ 2 < (N : ℝ) * ε := by
       have := (div_lt_iff₀ hε).mp hMN
       linarith [this]
-    rw [div_lt_iff₀ hNposR] at hkey ⊢
-    calc C * Q * b * (b - a) * (b - a) = C * Q * b * (b - a) ^ 2 := by ring
-      _ < (N : ℝ) * ε := hkey
-      _ = ε * (N : ℝ) := by ring
-  obtain ⟨hlow_le, hle_up⟩ := mesh_sandwich (C := C) ha hab hN
+    have hform : C * Q * b * (b - a) * ((b - a) / (N : ℝ))
+        = (C * Q * b * (b - a) ^ 2) / (N : ℝ) := by
+      ring
+    rw [hform, div_lt_iff₀ hNposR]
+    linarith [hkey]
+  obtain ⟨hlow_le, hle_up⟩ := mesh_sandwich (C := C) hC ha hab hN
   have hgap := mesh_gap_le (C := C) hC ha hab hN
   constructor
   · -- upperMesh ≤ ∫ + ε

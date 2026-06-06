@@ -68,14 +68,14 @@ noncomputable def upperSeq (C a h : ℝ) (k n : ℕ) : ℝ :=
   Real.exp (-(C / 2) * meshPoint a h k) *
     halfOpenMass (meshPoint a h k) (meshPoint a h (k + 1)) n
 
-private lemma meshPoint_nonneg
+lemma meshPoint_nonneg
     {a h : ℝ} (ha : 0 ≤ a) (hh : 0 ≤ h) (k : ℕ) :
     0 ≤ meshPoint a h k := by
   dsimp [meshPoint]
   have hk : 0 ≤ (k : ℝ) := by positivity
   nlinarith [mul_nonneg hk hh]
 
-private lemma meshPoint_succ_lt
+lemma meshPoint_succ_lt
     {a h : ℝ} (hh : 0 < h) (k : ℕ) :
     meshPoint a h k < meshPoint a h (k + 1) := by
   dsimp [meshPoint]
@@ -134,7 +134,7 @@ private lemma blockSum_add
       rw [if_pos hab, if_neg h1, if_pos h2, zero_add]
     · have hab : ¬ (a * Real.sqrt (n : ℝ) < (m : ℝ) ∧ (m : ℝ) ≤ b * Real.sqrt (n : ℝ)) := by
         intro h
-        rcases le_or_lt (m : ℝ) (c * Real.sqrt (n : ℝ)) with hc | hc
+        rcases le_or_gt (m : ℝ) (c * Real.sqrt (n : ℝ)) with hc | hc
         · exact h1 ⟨h.1, hc⟩
         · exact h2 ⟨hc, h.2⟩
       rw [if_neg hab, if_neg h1, if_neg h2, add_zero]
@@ -270,6 +270,7 @@ theorem blockSum_eventually_between_mesh_eps
   have hb_eq : b = a + (N : ℝ) * h := by
     rw [hdef]
     field_simp
+    ring
   have hlow_tendsto :
       Tendsto
         (fun n : ℕ => ∑ k ∈ Finset.range N, lowerSeq C a h k n)
