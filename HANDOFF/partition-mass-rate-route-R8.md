@@ -616,3 +616,38 @@ Two-regime over d (d≤1/t poly bucket gives Σ_{d≤1/t} d^{r+1}·r!/(td)^{r+1}
 d>1/t exp bucket Σ d^{r+1}e^{−td} ~ /t^{r+2}). Mirrors weighted_decay_sum_bound structure.
 Then §5 assembly (kernelMassApprox2, cancel_sqrt_term via mass_rate_sqrt_coeff_cancel #94,
 kernelMass_sub_one_rate) proceeds.
+
+## 2026-06-06 (cont.) Sharp moment bound — progress + remaining
+
+File: AnalyticCombinatorics/Ch8/Partitions/MassRateMomentSharp.lean (WIP, NOT committed/imported).
+
+DONE (verified, EXIT 0): `summable_weighted_antidiag (r) (0<ρ<1) : Summable (fun c:ℕ+×ℕ+ =>
+  c.1^{r+1} c.2^r ρ^{c.1·c.2})` — via ρ^{ab} ≤ ρ^{a+b-1} (ab≥a+b-1) ⟹ dominated by
+  ρ⁻¹(a^{r+1}ρ^a)(b^rρ^b), product of two `summable_pow_mul_geometric ∘ PNat.coe_injective`.
+
+IN PROGRESS: `sigmaMoment_eq_prod_tsum (r) : M_r t = Σ_a Σ_b a^{r+1} b^r (e^{-t})^{ab}`.
+  Structure (mirrors Mathlib tsum_prod_pow_eq_tsum_sigma), all structural blockers RESOLVED:
+  - M_r in ℕ+ σ-form (tsum_if_ne_zero_eq_pnat + sigmaR_eq_sigma_one + exp=ρ^).
+  - `← hsumm.tsum_prod` to Σ_{ℕ+×ℕ+}.
+  - `← Equiv.tsum_eq _root_.sigmaAntidiagonalEquivProd F` (MUST use _root_. — name is
+    ambiguous with Finset.sigmaAntidiagonalEquivProd; this caused rounds 2-7 of failures).
+  - `hg.tsum_sigma` with hg : Summable in APPLICATION form (not ∘) via Equiv.summable_iff.
+  - `unfold _root_.sigmaAntidiagonalEquivProd _root_.divisorsAntidiagonalFactors;
+     simp only [Equiv.coe_fn_mk, PNat.mk_coe]` to expose explicit factors (simp/dsimp can't
+     name-unfold the Equiv def; `unfold` works WITH _root_ qualification).
+  - `Finset.sum_coe_sort` (NOT sum_attach — goal is ∑ b:↥s not ∑∈s.attach).
+  BLOCKER (last step, line ~102): `Nat.sum_divisorsAntidiagonal (f := ... : ℕ→ℕ→ℝ) (n := e)`
+  gives "AddCommMonoid ?m metavariable stuck". The per-e identity Σ_{(a,b):ab=e} a^{r+1}b^r
+  = e^r σ(e) is mathematically: a^{r+1}b^r = a·(ab)^r = a·e^r, Σ a = σ(e). FIX OPTIONS:
+  (i) @Nat.sum_divisorsAntidiagonal ℝ _ f e with full explicit args (find exact sig);
+  (ii) factor ρ^e out first (constant on antidiag since ab=e), then prove
+       Σ_{x∈antidiag e} x.1^{r+1}x.2^r = e^r σ(e) via per-x rewrite x.1^{r+1}x.2^r = e^r·x.1
+       + a divisors↔antidiag first-projection sum lemma.
+
+THEN: singular two-regime bound `sigmaMoment_le_power_sharp (r) : ∃K, M_r t ≤ K/t^{r+2}` on
+  (0,1]: M_r = Σ_a a^{r+1} g(ta), g(z)=Σ_b b^r e^{-zb}, g(z) ≤ r!2^{r+1}/z^{r+1} (z≤1) and
+  ≤ C_r e^{-z} (z≥1); two-regime over a (a≤1/t poly bucket = r!2^{r+1}/t^{r+2};
+  a>1/t exp bucket via tsum_pow_mul_geometric_le = K/t^{r+2}). This is a SINGULAR-g variant
+  of weighted_decay_sum_bound (#113, which has bounded g).
+
+THEN §5 assembly uses sigmaMoment_le_power_sharp for M₃,M₄ + the banked M₀/M₁/M₂ weak asymptotics.
