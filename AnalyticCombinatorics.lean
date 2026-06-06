@@ -104,6 +104,7 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateDerivZero
 import AnalyticCombinatorics.Ch8.Partitions.MassRateDerivInt
 import AnalyticCombinatorics.Ch8.Partitions.MassRateGeom3
 import AnalyticCombinatorics.Ch8.Partitions.MassRateBasel
+import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentOne
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational

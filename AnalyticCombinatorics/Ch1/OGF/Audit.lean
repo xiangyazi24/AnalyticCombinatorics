@@ -102,6 +102,7 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateDerivZero
 import AnalyticCombinatorics.Ch8.Partitions.MassRateDerivInt
 import AnalyticCombinatorics.Ch8.Partitions.MassRateGeom3
 import AnalyticCombinatorics.Ch8.Partitions.MassRateBasel
+import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentOne
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -994,5 +995,11 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boseKernel_eq_inv_sq_add_reg
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tsum_if_inv_sq
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tsum_if_inv_sq_scaled
+
+-- HR mass-rate campaign, brick 21 (M₁ Lambert): termwise differentiation of the Lambert identity on
+-- Ioi(t/2) via hasDerivAt_tsum_of_isPreconnected on both the σ-side and the Bose side;
+-- Σ' m·σ(m)e^{−tm} = Σ'_{k≥1} k·boseKernel2(tk), boseKernel' = −boseKernel2.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boseKernel_hasDerivAt
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sigmaMoment_one_lambert
 
 end AnalyticCombinatorics.Ch1
