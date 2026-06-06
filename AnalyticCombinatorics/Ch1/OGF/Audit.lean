@@ -86,6 +86,7 @@ import AnalyticCombinatorics.Ch8.Partitions.KernelBarriers
 import AnalyticCombinatorics.Ch8.Partitions.BarrierGap
 import AnalyticCombinatorics.Ch8.Partitions.BarrierHarmonic
 import AnalyticCombinatorics.Ch8.Partitions.BarrierInduction
+import AnalyticCombinatorics.Ch8.Partitions.RecordBasics
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -766,6 +767,17 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.u_limsup_finite_of_superharmonic
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.u_lower_of_subharmonic
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.u_liminf_positive_of_subharmonic
+
+-- Ch8 HR Stage I.6 (Opus): RECORD BASICS + CONVERGENCE ASSEMBLY (R7 route, kernel-free layers).
+-- Records exist on finite intervals (with interval-wide extremality); threshold-monotone record
+-- covers => CauchySeq => limit exists (and positive given the liminf bound); local monotone
+-- forward fill u n - eps <= u(n+r) for r <= h*sqrt n. Remaining: record pullback/percolation
+-- (kernel-dependent; needs the mass-rate brick).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.exists_highRecordFrom
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.exists_lowRecordFrom
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.u_tendsto_of_record_covers
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.erdos_limit_pos_of_tendsto
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.u_local_high_forward_fill
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

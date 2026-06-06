@@ -559,3 +559,8 @@
   sup' base segment, u_limsup_finite_of_superharmonic, u_lower_of_subharmonic via inf' base,
   u_liminf_positive_of_subharmonic). Stage I.5 now reduces FORMALLY to one brick:
   erdos_kernel_total_log_rate (the second-order cancellation). (91st–92nd deliverables.)
+- HR Stage I.6 RECORD BASICS (Opus): RecordBasics.lean — records + finite-interval existence
+  (strengthened to interval-wide extremality after the k ≤ H coverage bug), the convergence
+  assembly u_tendsto_of_record_covers (threshold-monotone covers ⟹ Cauchy via record extrema
+  on [N₀, max p q]), limit positivity, and u_local_high_forward_fill (monotone fill, h = 2ε/(CM)).
+  Kernel-free layers of the R7 record route. (93rd deliverable.)
