@@ -316,3 +316,7 @@ Gate: per-file lake env lean exit 0 + full lib build (8409 jobs, 0 sorryAx/ofRed
 - Erdos.upperBarrier_eventually_pos_bdd / lowerBarrier_eventually_pos_bdd — PASS clean-3 (R6 lemma 3)
 - Erdos.boundaryTerm_le_barrierSlack — PASS clean-3 (R6 lemma 7)
 - Erdos.upperBarrier_gap_on_window / lowerBarrier_gap_on_window — PASS clean-3 (R6 lemma 4)
+- Erdos.upperBarrier_kernel_superharmonic_of_rate / lowerBarrier_kernel_subharmonic_of_rate — PASS clean-3 (CONDITIONAL: o(slack) mass rate as explicit hypothesis)
+- Erdos.upperBarrier_mono / lowerBarrier_anti / u_pos — PASS clean-3 (unconditional)
+- Erdos.u_upper_of_superharmonic / u_limsup_finite_of_superharmonic — PASS clean-3 (conditional on harmonic hyp)
+- Erdos.u_lower_of_subharmonic / u_liminf_positive_of_subharmonic — PASS clean-3 (conditional on harmonic hyp)
