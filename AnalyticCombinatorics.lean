@@ -85,6 +85,7 @@ import AnalyticCombinatorics.Ch8.Partitions.KernelTotal
 import AnalyticCombinatorics.Ch8.Partitions.PartMono
 import AnalyticCombinatorics.Ch8.Partitions.LocalLower
 import AnalyticCombinatorics.Ch8.Partitions.KernelBarriers
+import AnalyticCombinatorics.Ch8.Partitions.BarrierGap
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational

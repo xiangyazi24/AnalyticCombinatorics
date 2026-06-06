@@ -548,3 +548,7 @@
   boundaryTerm ≤ δ·slack via n⁵e^{−C√n}→0). R6 route audited: barrier package (A–C) accepted; renewal
   lemma 20 REFUTED (v j = sin√j counterexample — o(1) residual too weak); R7 challenge dispatched for
   corrected statement / percolation route. (88th–89th deliverables.)
+- HR Stage I.5 BARRIER GAP (Opus): BarrierGap.lean — upperBarrier_gap_on_window +
+  lowerBarrier_gap_on_window (R6 lemma 4), one core estimate A/log(n−m+E) − A/log(n+E) ≥
+  (A·a₀/2)·slack via log r ≤ r−1; gcongr auto-discharges monotone div steps from context.
+  (90th deliverable.)

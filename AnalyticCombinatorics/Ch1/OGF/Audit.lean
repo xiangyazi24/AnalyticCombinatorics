@@ -83,6 +83,7 @@ import AnalyticCombinatorics.Ch8.Partitions.KernelTotal
 import AnalyticCombinatorics.Ch8.Partitions.PartMono
 import AnalyticCombinatorics.Ch8.Partitions.LocalLower
 import AnalyticCombinatorics.Ch8.Partitions.KernelBarriers
+import AnalyticCombinatorics.Ch8.Partitions.BarrierGap
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -740,6 +741,12 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.upperBarrier_eventually_pos_bdd
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.lowerBarrier_eventually_pos_bdd
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boundaryTerm_le_barrierSlack
+
+-- Ch8 HR Stage I.5 (Opus): BARRIER GAP ON THE WINDOW (R6 lemma 4, both forms) -- on a0*sqrt n < m
+-- <= b0*sqrt n the barrier moves by >= (A*a0/2)*barrierSlack: log(n+E)-log(n-m+E) >= m/(n+E)
+-- (log r <= r-1), denominator <= log^2(n+E).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.upperBarrier_gap_on_window
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.lowerBarrier_gap_on_window
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
