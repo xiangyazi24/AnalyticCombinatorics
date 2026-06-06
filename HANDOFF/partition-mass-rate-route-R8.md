@@ -560,3 +560,18 @@ erdos_kernel_total_log_rate.
 
 
 This is the route that actually delivers the rate needed by both the barrier package and the record shell-error package.
+## 2026-06-06 Opus design supplement: M₁ reduces to the M₀ core
+
+- G(z) := Σ_d d²e^{−dz} = −boseKernel′(z)  [sign verified]
+- M₁(t) = (1/t)·Σ_c h(tc), h(z) = z·G(z), singular part 2/z² (so Σ 2/(tc)² = 2ζ(2)/t² gives the
+  leading 2Z/t³ after the 1/t prefactor)
+- ∫₀^∞ (h − 2/z²) via antiderivative assembly: h − 2/z² = d/dz[−z·boseKernel] + boseReg0 − 1/z²;
+  F(z) = −z·boseKernel(z) + 1/z has F(0+) = 0 (the −1/z + 1/z cancellation!) and F(∞) = 0, so
+  ∫ (h − 2/z²) = ∫ boseReg0 = −1/2  — EXACTLY the M₁ secondary, no new integral needed.
+- Same EM-O(1) core then gives M₁ = 2Z/t³ − 1/(2t²)·(1/t-scaled…) wait: M₁ = (1/t)[2Z/t² + (1/t)(−1/2) + O(1)]
+  = 2Z/t³ − 1/(2t²) + O(1/t) ✓ matches R8.
+- M₂ analogously: Σ d³e^{−dz} = boseKernel″, h₂(z) = z²·boseKernel″-form, singular 6/z²·…; same
+  pattern (boundary algebra + the SAME two cores).
+- Remaining hard core therefore: (a) ∫boseReg0 = −1/2 (FTC + integrability), (b) EM-O(1) Riemann
+  bound for boseReg0-type kernels (R10 pending), (c) two-exponent antidiagonal rearrangements
+  (M₁ = Σ'_{(d,c)} d²c x^{dc} etc.; mimic Mathlib TsumDivisorsAntidiagonal whose aux is private).
