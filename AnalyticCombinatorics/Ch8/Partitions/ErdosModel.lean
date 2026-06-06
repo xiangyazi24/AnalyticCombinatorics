@@ -38,7 +38,7 @@ local notation "σR" => Sigma.sigmaR
 local notation "Sσ" => Sigma.summatory
 
 /-- Main quadratic constant for the summatory divisor function. -/
-private noncomputable def Q : ℝ := Real.pi ^ 2 / 12
+noncomputable def Q : ℝ := Real.pi ^ 2 / 12
 
 /-- The model density. -/
 private noncomputable def modelDensity (C : ℝ) (y : ℝ) : ℝ :=
@@ -54,7 +54,7 @@ private noncomputable def modelKernelWindowSum (C a b : ℝ) (n : ℕ) : ℝ :=
        else 0)
 
 /-- Half-open unweighted mass `(α√n, β√n]`, scaled by `1/n`. -/
-private noncomputable def halfOpenMass (α β : ℝ) (n : ℕ) : ℝ :=
+noncomputable def halfOpenMass (α β : ℝ) (n : ℕ) : ℝ :=
   (1 / (n : ℝ)) *
     (Sσ (β * Real.sqrt (n : ℝ)) - Sσ (α * Real.sqrt (n : ℝ)))
 

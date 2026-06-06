@@ -76,6 +76,8 @@ import AnalyticCombinatorics.Ch8.Partitions.ErdosUniform
 import AnalyticCombinatorics.Ch8.Partitions.ErdosModel
 import AnalyticCombinatorics.Ch8.Partitions.SummatoryBridge
 import AnalyticCombinatorics.Ch8.Partitions.BlockSqueeze
+import AnalyticCombinatorics.Ch8.Partitions.ModelAssembly
+import AnalyticCombinatorics.Ch8.Partitions.MeshEstimate
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -689,6 +691,21 @@ namespace AnalyticCombinatorics.Ch1
 -- limit (step assembly next).
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Model.floor_beta_sqrt_le_eventually
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Model.weighted_window_block_squeeze
+
+-- Ch8 HR Stage I.3 (ChatGPT-draft + Opus-fix): MESH ASSEMBLY -- the half-open block (a√n,b√n] partitions
+-- into N uniform mesh blocks (blockSum_add/blockSum_arith_partition), each squeezed by endpoint
+-- exponentials x its half-open mass; as n -> oo the mesh sums converge to the Stieltjes endpoint sums, so
+-- eventually lowerMesh - eps <= blockSum n <= upperMesh + eps for any fixed mesh.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Model.blockSum_eventually_between_mesh_eps
+
+-- Ch8 HR Stage I.3 (Opus): the MESH ESTIMATE -- the draft's lone axiom, now PROVED: per-block sandwich
+-- by exp monotonicity, upper-lower gap <= C*Q*b*(b-a)*h via the Lipschitz bound e^{-u}-e^{-v} <= v-u;
+-- then N large finishes.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Model.mesh_endpoint_sums_approx_integral
+
+-- Ch8 HR Stage I.3 * THE MODEL-KERNEL WINDOW LIMIT (step assembly complete, NO axioms):
+-- (1/n)*Sum_{(a sqrt n, b sqrt n]} sigma(m)*e^{-(C/2)m/sqrt n} -> int_a^b (pi^2/6)*y*e^{-(C/2)y} dy.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Model.model_kernel_window
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:

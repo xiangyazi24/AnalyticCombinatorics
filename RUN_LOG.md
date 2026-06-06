@@ -522,3 +522,11 @@
   bridge; termwise endpoint exponentials; compiled essentially first-try). Stage I.3 toolkit now complete:
   the step assembly (δ-mesh over [a,b] + the squeeze + halfOpenMass_tendsto ⟹ erdos_kernel_window) is the
   remaining piece, then total mass. (82nd deliverable; Opus-solo.)
+- HR Stage I.3 STEP ASSEMBLY (R4 ChatGPT-draft + Opus): ModelAssembly.lean (mesh defs, blockSum_add,
+  arith partition, lowerSeq/upperSeq tendsto, blockSum_eventually_between_mesh_eps) + MeshEstimate.lean
+  (Opus: the R4 draft's LONE AXIOM mesh_endpoint_sums_approx_integral PROVED — per-block sandwich by exp
+  monotonicity + Lipschitz gap C·Q·b·(b−a)·h — and model_kernel_window assembled: blockSum → modelIntegral).
+  Q/halfOpenMass de-privatized in ErdosModel for cross-file use. STATUS: written, NOT yet verified —
+  uisai1 tailscale outage mid-verify; uisai2 bootstrap (clone+cache) in progress as fallback. KernelTotal.lean
+  (erdos_kernel_total ε-assembly: window+tail+∫₀^∞=1) drafted ahead; depends on R5 erdos_kernel_window
+  (ChatGPT draft c8b26c17 in flight). No banking claims until lake-verified.
