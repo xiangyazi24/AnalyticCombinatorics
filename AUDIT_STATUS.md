@@ -324,3 +324,12 @@ Gate: per-file lake env lean exit 0 + full lib build (8409 jobs, 0 sorryAx/ofRed
   erdos_limit_pos_of_tendsto / u_local_high_forward_fill — PASS clean-3 (R7 kernel-free layers)
 - Erdos.massLam_sq / boseKernel_eq_exp_form / mass_rate_sqrt_coeff_cancel — PASS clean-3
   (mass-rate campaign opening, R8 route)
+
+## 2026-06-06 — Mass-rate campaign: kernel side + Lambert BANKED (clean-3, Audit exit 0, 0 dirty)
+- Erdos.massLam_sq / boseKernel_eq_exp_form / mass_rate_sqrt_coeff_cancel — PASS clean-3 (#94)
+- Erdos.sqrt_drop_second_order / sqrt_drop_second_order_nonneg / inv_sub_second_order /
+  exp_sqrt_drop_second_order — PASS clean-3 (#95, R8 §3.2–3.4)
+- Erdos.sqrt_drop_ge / kernel_tail_beyond_cube — PASS clean-3 (#96, R8 §4.1)
+- Erdos.erdosWeight_coef_second_order — PASS clean-3 (#97, R8 §3.5)
+- Erdos.tsum_if_ne_zero_eq_pnat / tsum_pnat_coe_mul_geometric / sigmaMoment_zero_lambert —
+  PASS clean-3 (#98, R8 §2.1 Lambert via Mathlib TsumDivisorsAntidiagonal)
