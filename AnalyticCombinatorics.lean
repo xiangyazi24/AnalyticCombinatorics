@@ -76,6 +76,7 @@ import AnalyticCombinatorics.Ch8.Partitions.SummatoryWindow
 import AnalyticCombinatorics.Ch8.Partitions.ErdosIntegral
 import AnalyticCombinatorics.Ch8.Partitions.ErdosUniform
 import AnalyticCombinatorics.Ch8.Partitions.ErdosModel
+import AnalyticCombinatorics.Ch8.Partitions.SummatoryBridge
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational

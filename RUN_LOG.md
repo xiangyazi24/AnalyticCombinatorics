@@ -512,3 +512,8 @@
   weighted-block squeeze hand-waved the summatory↔windowed-sum INDEX BRIDGE — truncated honestly; the
   bridge is the next brick. Draft-loop lessons: hλ identifier breaks the parser; squeeze_zero_norm' needs
   explicit (a := ·); div_le_div→div_le_div₀. (80th deliverable.)
+- HR Stage I.3 INDEX BRIDGE (Opus): SummatoryBridge.lean. BANKED: window_filter_eq_Ioc +
+  summatory_diff_eq_window_sum — S(β√n)−S(α√n) = Σ_{Icc 1 (n−1)} if-window σ(m) (the floor/filter/
+  Ioc-telescope identity the ChatGPT draft hand-waved). The half-open masses now connect to the
+  model-kernel windowed sums. Remaining Stage I.3: weighted block squeeze (rehabilitate from the draft
+  with this bridge) → step assembly → window/total. (81st deliverable; Opus-solo.)

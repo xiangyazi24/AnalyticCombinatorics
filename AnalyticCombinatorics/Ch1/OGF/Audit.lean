@@ -74,6 +74,7 @@ import AnalyticCombinatorics.Ch8.Partitions.SummatoryWindow
 import AnalyticCombinatorics.Ch8.Partitions.ErdosIntegral
 import AnalyticCombinatorics.Ch8.Partitions.ErdosUniform
 import AnalyticCombinatorics.Ch8.Partitions.ErdosModel
+import AnalyticCombinatorics.Ch8.Partitions.SummatoryBridge
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -674,6 +675,12 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Model.summatory_zero_to_beta_scaled_tendsto
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Model.halfOpenMass_tendsto
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Model.model_exp_endpoint_squeeze
+
+-- Ch8 HR Stage I.3 (Opus): the SUMMATORY ↔ WINDOWED-SUM INDEX BRIDGE — S(β√n) − S(α√n) =
+-- Σ_{m∈Icc 1 (n−1)} [α√n < m ≤ β√n]·σ(m) (⌊β√n⌋ ≤ n−1), the floor/filter/Ioc-telescope identity the
+-- draft hand-waved. Closes the gap between half-open masses and the model-kernel windowed sums.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Sigma.window_filter_eq_Ioc
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Sigma.summatory_diff_eq_window_sum
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
