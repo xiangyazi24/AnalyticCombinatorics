@@ -517,3 +517,8 @@
   Ioc-telescope identity the ChatGPT draft hand-waved). The half-open masses now connect to the
   model-kernel windowed sums. Remaining Stage I.3: weighted block squeeze (rehabilitate from the draft
   with this bridge) → step assembly → window/total. (81st deliverable; Opus-solo.)
+- HR Stage I.3 BLOCK SQUEEZE (Opus): BlockSqueeze.lean. BANKED: floor_beta_sqrt_le_eventually +
+  weighted_window_block_squeeze — the rehabilitated squeeze (both sides on Icc 1 (n−1) via the index
+  bridge; termwise endpoint exponentials; compiled essentially first-try). Stage I.3 toolkit now complete:
+  the step assembly (δ-mesh over [a,b] + the squeeze + halfOpenMass_tendsto ⟹ erdos_kernel_window) is the
+  remaining piece, then total mass. (82nd deliverable; Opus-solo.)

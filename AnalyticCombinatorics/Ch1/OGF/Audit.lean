@@ -75,6 +75,7 @@ import AnalyticCombinatorics.Ch8.Partitions.ErdosIntegral
 import AnalyticCombinatorics.Ch8.Partitions.ErdosUniform
 import AnalyticCombinatorics.Ch8.Partitions.ErdosModel
 import AnalyticCombinatorics.Ch8.Partitions.SummatoryBridge
+import AnalyticCombinatorics.Ch8.Partitions.BlockSqueeze
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
@@ -681,6 +682,13 @@ namespace AnalyticCombinatorics.Ch1
 -- draft hand-waved. Closes the gap between half-open masses and the model-kernel windowed sums.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Sigma.window_filter_eq_Ioc
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Sigma.summatory_diff_eq_window_sum
+
+-- Ch8 HR Stage I.3 (Opus): the WEIGHTED BLOCK SQUEEZE — eventually,
+-- e^{−(C/2)β}·M_n(α,β) ≤ (1/n)·Σ_window σ(m)e^{−(C/2)m/√n} ≤ e^{−(C/2)α}·M_n(α,β), both sides on the
+-- SAME index set via the bridge. Combined with halfOpenMass_tendsto this yields the model-kernel window
+-- limit (step assembly next).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Model.floor_beta_sqrt_le_eventually
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Model.weighted_window_block_squeeze
 
 -- Ch9 expected number of cycles = harmonic number (F&S Ch IX, Goncharov; Opus-authored). By linearity of
 -- the uniform-permutation expectation over the banked per-length means E[C_{n,r}]=1/r:
