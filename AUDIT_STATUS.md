@@ -363,3 +363,10 @@ Gate: per-file lake env lean exit 0 + full lib build (8409 jobs, 0 sorryAx/ofRed
 - Erdos.cell_error / riemann_boseReg0_bound / sigmaMoment_zero_asymp_weak (#112) — PASS clean-3
   (|M₀(t) − (π²/6)/t² + 1/(2t)| ≤ ∫|boseReg0′| = O(1); cell partition + per-cell FTC;
   self-authored replacement for the lost R12 draft)
+
+## 2026-06-06 — Weighted-decay keystone + M₁ weak asymptotics BANKED (#113-114, Audit exit 0, 0 dirty)
+- Erdos.tail_inv_sq_shift / weighted_decay_sum_bound (#113) — PASS clean-3
+  (KEYSTONE: Σ'_{k≥1} k^j|f(tk)| ≤ (Cf·2^{j+1}+Bf·j!·4^{j+1}+2Df)/t^{j+1} on (0,1];
+  near-origin ⌊1/t⌋ split + exp tail + Basel tail; reusable for M₁/M₂)
+- Erdos.boseKernel2_eq_inv_cube_sub_deriv / sigmaMoment_one_asymp_weak (#114) — PASS clean-3
+  (boseKernel2 = 2/z³ − boseReg0′; |M₁(t) − 2(π²/6)/t³| ≤ 388/t² on (0,1])
