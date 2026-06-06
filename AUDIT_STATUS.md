@@ -370,3 +370,12 @@ Gate: per-file lake env lean exit 0 + full lib build (8409 jobs, 0 sorryAx/ofRed
   near-origin ⌊1/t⌋ split + exp tail + Basel tail; reusable for M₁/M₂)
 - Erdos.boseKernel2_eq_inv_cube_sub_deriv / sigmaMoment_one_asymp_weak (#114) — PASS clean-3
   (boseKernel2 = 2/z³ − boseReg0′; |M₁(t) − 2(π²/6)/t³| ≤ 388/t² on (0,1])
+
+## 2026-06-06 — Mass-rate M₂ weak asymptotics BANKED (#115-116, Audit exit 0, 0 dirty)
+- Erdos.reg3_bdd_near_zero (#115) — PASS clean-3
+  (|boseKernel3 z − 6/z⁴| ≤ 3600 on (0,1]; degree-8 cancellation certificate:
+  w order-7 Taylor + δ-decomposition, degree-28 ring numerator identity (maxHeartbeats 0),
+  4 polynomial coefficient-sum bounds, denominator z⁴w⁴ ≥ z⁸/16. The hardest analytic brick.)
+- Erdos.sigmaMoment_two_asymp_weak (#116) — PASS clean-3
+  (|M₂(t) − 6(π²/6)/t⁴| ≤ K/t³ on (0,1] via boseKernel3 = 6/z⁴ + reg3 + weighted-decay keystone j=2)
+- ⟹ M₀/M₁/M₂ moment-asymptotics LAYER COMPLETE.
