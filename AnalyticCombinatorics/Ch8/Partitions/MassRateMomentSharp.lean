@@ -192,4 +192,186 @@ lemma tsum_pnat_pow_mul_geometric_le (r : ℕ) {x : ℝ} (hx0 : 0 ≤ x) (hx1 : 
         mul_le_mul_of_nonneg_left hbnd hx0
     _ = x * (2 ^ r * (Nat.factorial r + 1)) / (1 - x) ^ (r + 1) := by ring
 
+/-- **Sharp moment bound**: `M_r(t) ≤ K_r/t^{r+2}` on `0 < t ≤ 1`. Global dominator
+`F(a) ≤ E·2^{r+1}(ρ^a/t^{r+1} + a^{r+1}ρ^a)` using `1−e^{−ta} ≥ ta/(1+ta)`. -/
+lemma sigmaMoment_le_power_sharp (r : ℕ) :
+    ∃ K : ℝ, 0 ≤ K ∧ ∀ t : ℝ, 0 < t → t ≤ 1 →
+      sigmaMoment r t ≤ K / t ^ (r + 2) := by
+  refine ⟨(2 ^ r * (Nat.factorial r + 1)) * 2 ^ (r + 1)
+      * (2 + Nat.factorial (r + 1) * 2 ^ (r + 2)), by positivity, fun t ht0 ht1 => ?_⟩
+  set ρ : ℝ := Real.exp (-t) with hρdef
+  have hρ0 : 0 < ρ := Real.exp_pos _
+  have hρ1 : ρ < 1 := by rw [hρdef, Real.exp_lt_one_iff]; linarith
+  have hρn : ‖ρ‖ < 1 := by rwa [Real.norm_eq_abs, abs_of_pos hρ0]
+  set E : ℝ := 2 ^ r * (Nat.factorial r + 1) with hEdef
+  have hEpos : 0 ≤ E := by rw [hEdef]; positivity
+  have h1ρ : (0:ℝ) < 1 - ρ := by linarith
+  have h1ρhalf : t / 2 ≤ 1 - ρ := by
+    rw [hρdef]; have := one_sub_exp_neg_ge_half ht0 ht1; linarith
+  rw [sigmaMoment_eq_prod_tsum r ht0]
+  -- abbreviations
+  set h : ℕ+ × ℕ+ → ℝ := fun c =>
+    ((c.1 : ℕ) : ℝ) ^ (r + 1) * ((c.2 : ℕ) : ℝ) ^ r * ρ ^ ((c.1 : ℕ) * (c.2 : ℕ)) with hhdef
+  have hh_nonneg : ∀ c, 0 ≤ h c := fun c => by rw [hhdef]; positivity
+  have hh_summ : Summable h := summable_weighted_antidiag r hρ0 hρ1
+  have hF_summ : Summable (fun a : ℕ+ => ∑' b : ℕ+, h (a, b)) :=
+    ((summable_prod_of_nonneg hh_nonneg).mp hh_summ).2
+  set D : ℕ+ → ℝ := fun a => E * 2 ^ (r + 1)
+    * (ρ ^ (a : ℕ) / t ^ (r + 1) + ((a : ℕ) : ℝ) ^ (r + 1) * ρ ^ (a : ℕ)) with hDdef
+  -- per-a: F a ≤ D a
+  have hga : ∀ a : ℕ+, (∑' b : ℕ+, h (a, b)) ≤ D a := by
+    intro a
+    have hapos : (0:ℝ) < (a : ℕ) := by exact_mod_cast a.pos
+    have hρa0 : (0:ℝ) ≤ ρ ^ (a : ℕ) := by positivity
+    have hρa1 : ρ ^ (a : ℕ) < 1 := pow_lt_one₀ hρ0.le hρ1 (by positivity)
+    have hinner := tsum_pnat_pow_mul_geometric_le r hρa0 hρa1
+    have hFeq : (∑' b : ℕ+, h (a, b))
+        = ((a : ℕ) : ℝ) ^ (r + 1)
+          * ∑' b : ℕ+, ((b : ℕ) : ℝ) ^ r * (ρ ^ (a : ℕ)) ^ (b : ℕ) := by
+      rw [hhdef, ← tsum_mul_left]
+      refine tsum_congr fun b => ?_
+      rw [← pow_mul]; ring
+    rw [hFeq]
+    have hstep1 : ((a : ℕ) : ℝ) ^ (r + 1)
+        * ∑' b : ℕ+, ((b : ℕ) : ℝ) ^ r * (ρ ^ (a : ℕ)) ^ (b : ℕ)
+        ≤ ((a : ℕ) : ℝ) ^ (r + 1)
+          * (ρ ^ (a : ℕ) * (2 ^ r * (Nat.factorial r + 1)) / (1 - ρ ^ (a : ℕ)) ^ (r + 1)) :=
+      mul_le_mul_of_nonneg_left hinner (by positivity)
+    refine hstep1.trans ?_
+    -- 1 - ρ^a ≥ ta/(1+ta)
+    have hta : (0:ℝ) < t * (a : ℕ) := by positivity
+    have hρa_eq : ρ ^ (a : ℕ) = Real.exp (-(t * (a : ℕ))) := by
+      rw [hρdef, ← Real.exp_nat_mul]; congr 1; ring
+    have h1px : 1 + t * (a : ℕ) ≤ Real.exp (t * (a : ℕ)) := by
+      have := Real.add_one_le_exp (t * (a : ℕ)); linarith
+    have hden : t * (a : ℕ) / (1 + t * (a : ℕ)) ≤ 1 - ρ ^ (a : ℕ) := by
+      have hle : ρ ^ (a : ℕ) ≤ 1 / (1 + t * (a : ℕ)) := by
+        rw [hρa_eq, Real.exp_neg, inv_eq_one_div]
+        exact one_div_le_one_div_of_le (by positivity) h1px
+      have heq : (1:ℝ) - 1 / (1 + t * (a : ℕ)) = t * (a : ℕ) / (1 + t * (a : ℕ)) := by
+        field_simp; ring
+      linarith [hle, heq.ge, heq.le]
+    have hden0 : (0:ℝ) < 1 - ρ ^ (a : ℕ) := lt_of_lt_of_le (by positivity) hden
+    -- 1/(1-ρ^a)^{r+1} ≤ ((1+ta)/(ta))^{r+1}
+    have hpow_den : (t * (a : ℕ) / (1 + t * (a : ℕ))) ^ (r + 1) ≤ (1 - ρ ^ (a : ℕ)) ^ (r + 1) :=
+      pow_le_pow_left₀ (by positivity) hden (r + 1)
+    have hbase : (1 - ρ ^ (a : ℕ))⁻¹ ≤ (1 + t * (a : ℕ)) / (t * (a : ℕ)) := by
+      rw [inv_eq_one_div, div_le_div_iff₀ hden0 (by positivity)]
+      rw [div_le_iff₀ (by positivity)] at hden
+      nlinarith [hden]
+    have hinvpow : (1 - ρ ^ (a : ℕ))⁻¹ ^ (r + 1) ≤ ((1 + t * (a : ℕ)) / (t * (a : ℕ))) ^ (r + 1) :=
+      pow_le_pow_left₀ (by positivity) hbase (r + 1)
+    -- chain: a^{r+1}·(ρ^a·E/(1-ρ^a)^{r+1}) ≤ E·2^{r+1}(ρ^a/t^{r+1}+a^{r+1}ρ^a)
+    have hkey : ((a : ℕ) : ℝ) ^ (r + 1)
+        * (ρ ^ (a : ℕ) * E / (1 - ρ ^ (a : ℕ)) ^ (r + 1)) ≤ D a := by
+      rw [hDdef]
+      have hexpand : ((a : ℕ) : ℝ) ^ (r + 1) * (ρ ^ (a : ℕ) * E / (1 - ρ ^ (a : ℕ)) ^ (r + 1))
+          = E * (ρ ^ (a : ℕ) * (((a : ℕ) : ℝ) ^ (r + 1) * ((1 - ρ ^ (a : ℕ))⁻¹) ^ (r + 1))) := by
+        rw [div_eq_mul_inv, inv_pow]; ring
+      rw [hexpand]
+      have hb1 : ((a : ℕ) : ℝ) ^ (r + 1) * ((1 - ρ ^ (a : ℕ))⁻¹) ^ (r + 1)
+          ≤ ((a : ℕ) : ℝ) ^ (r + 1) * ((1 + t * (a : ℕ)) / (t * (a : ℕ))) ^ (r + 1) :=
+        mul_le_mul_of_nonneg_left hinvpow (by positivity)
+      have haeq : ((a : ℕ) : ℝ) ^ (r + 1) * ((1 + t * (a : ℕ)) / (t * (a : ℕ))) ^ (r + 1)
+          = (1 + t * (a : ℕ)) ^ (r + 1) / t ^ (r + 1) := by
+        rw [div_pow, mul_pow]; field_simp
+      have hbnd2 : (1 + t * (a : ℕ)) ^ (r + 1) ≤ 2 ^ (r + 1) * (1 + (t * (a : ℕ)) ^ (r + 1)) := by
+        have hmx : 1 + t * (a : ℕ) ≤ 2 * max 1 (t * (a : ℕ)) := by
+          rcases le_or_gt (t * (a : ℕ)) 1 with hh | hh
+          · rw [max_eq_left hh]; linarith
+          · rw [max_eq_right hh.le]; linarith
+        calc (1 + t * (a : ℕ)) ^ (r + 1) ≤ (2 * max 1 (t * (a : ℕ))) ^ (r + 1) := by gcongr
+          _ = 2 ^ (r + 1) * (max 1 (t * (a : ℕ))) ^ (r + 1) := by rw [mul_pow]
+          _ ≤ 2 ^ (r + 1) * (1 + (t * (a : ℕ)) ^ (r + 1)) := by
+              apply mul_le_mul_of_nonneg_left _ (by positivity)
+              rcases le_or_gt (t * (a : ℕ)) 1 with hh | hh
+              · rw [max_eq_left hh]; simp only [one_pow]
+                linarith [pow_nonneg hta.le (r+1)]
+              · rw [max_eq_right hh.le]; nlinarith [pow_nonneg hta.le (r+1)]
+      have htapow : (t * (a : ℕ)) ^ (r + 1) = t ^ (r + 1) * ((a : ℕ) : ℝ) ^ (r + 1) := by
+        rw [mul_pow]
+      have hfinal : (1 + t * (a : ℕ)) ^ (r + 1) / t ^ (r + 1)
+          ≤ 2 ^ (r + 1) * (1 / t ^ (r + 1) + ((a : ℕ) : ℝ) ^ (r + 1)) := by
+        have hstep : (1 + t * (a : ℕ)) ^ (r + 1) / t ^ (r + 1)
+            ≤ 2 ^ (r + 1) * (1 + (t * (a : ℕ)) ^ (r + 1)) / t ^ (r + 1) := by gcongr
+        refine hstep.trans (le_of_eq ?_)
+        rw [htapow]; field_simp
+      calc E * (ρ ^ (a : ℕ) * (((a : ℕ) : ℝ) ^ (r + 1) * ((1 - ρ ^ (a : ℕ))⁻¹) ^ (r + 1)))
+          ≤ E * (ρ ^ (a : ℕ) * ((1 + t * (a : ℕ)) ^ (r + 1) / t ^ (r + 1))) := by
+            apply mul_le_mul_of_nonneg_left _ hEpos
+            apply mul_le_mul_of_nonneg_left _ hρa0
+            rw [← haeq]; exact hb1
+        _ ≤ E * (ρ ^ (a : ℕ) * (2 ^ (r + 1) * (1 / t ^ (r + 1) + ((a : ℕ) : ℝ) ^ (r + 1)))) := by
+            apply mul_le_mul_of_nonneg_left _ hEpos
+            apply mul_le_mul_of_nonneg_left hfinal hρa0
+        _ = E * 2 ^ (r + 1) * (ρ ^ (a : ℕ) / t ^ (r + 1) + ((a : ℕ) : ℝ) ^ (r + 1) * ρ ^ (a : ℕ)) := by
+            ring
+    exact hkey
+  -- D summable
+  have hgeo_pnat : Summable (fun a : ℕ+ => ρ ^ (a : ℕ)) :=
+    (summable_geometric_of_lt_one hρ0.le hρ1).comp_injective PNat.coe_injective
+  have hpow_pnat : Summable (fun a : ℕ+ => ((a : ℕ) : ℝ) ^ (r + 1) * ρ ^ (a : ℕ)) :=
+    (summable_pow_mul_geometric_of_norm_lt_one (R := ℝ) (r + 1) hρn).comp_injective PNat.coe_injective
+  have hD_summ : Summable D := by
+    rw [hDdef]
+    exact ((hgeo_pnat.mul_right (t ^ (r + 1))⁻¹).congr (fun a => by rw [div_eq_mul_inv]) |>.add hpow_pnat).mul_left (E * 2 ^ (r + 1))
+  -- Σ F ≤ Σ D
+  have hmain := hF_summ.tsum_le_tsum hga hD_summ
+  refine hmain.trans ?_
+  -- Σ D = E2^{r+1}(Σρ^a/t^{r+1} + Σ a^{r+1}ρ^a) ≤ K/t^{r+2}
+  have hDsum_eq : (∑' a : ℕ+, D a)
+      = E * 2 ^ (r + 1)
+        * ((∑' a : ℕ+, ρ ^ (a : ℕ)) / t ^ (r + 1)
+          + ∑' a : ℕ+, ((a : ℕ) : ℝ) ^ (r + 1) * ρ ^ (a : ℕ)) := by
+    have hsumm1 : Summable (fun a : ℕ+ => ρ ^ (a : ℕ) / t ^ (r + 1)) := hgeo_pnat.div_const _
+    rw [hDdef, tsum_mul_left, Summable.tsum_add hsumm1 hpow_pnat, tsum_div_const]
+  rw [hDsum_eq]
+  -- bounds: Σρ^a ≤ ρ/(1-ρ) ≤ 2/t ; Σ a^{r+1}ρ^a ≤ (r+1)!/(1-ρ)^{r+2} ≤ (r+1)!2^{r+2}/t^{r+2}
+  have hgeobnd : (∑' a : ℕ+, ρ ^ (a : ℕ)) ≤ 2 / t := by
+    have hle : (∑' a : ℕ+, ρ ^ (a : ℕ)) ≤ ∑' n : ℕ, ρ ^ n :=
+      tsum_comp_le_tsum_of_inj (summable_geometric_of_lt_one hρ0.le hρ1)
+        (fun n => by positivity) PNat.coe_injective
+    rw [tsum_geometric_of_lt_one hρ0.le hρ1] at hle
+    have hinv2 : (1 - ρ)⁻¹ ≤ 2 / t := by
+      rw [inv_eq_one_div, div_le_div_iff₀ h1ρ ht0]; nlinarith [h1ρhalf]
+    linarith
+  have hpowbnd : (∑' a : ℕ+, ((a : ℕ) : ℝ) ^ (r + 1) * ρ ^ (a : ℕ))
+      ≤ (Nat.factorial (r + 1) * 2 ^ (r + 2)) / t ^ (r + 2) := by
+    have hle : (∑' a : ℕ+, ((a : ℕ) : ℝ) ^ (r + 1) * ρ ^ (a : ℕ))
+        ≤ ∑' n : ℕ, (n : ℝ) ^ (r + 1) * ρ ^ n :=
+      tsum_comp_le_tsum_of_inj (summable_pow_mul_geometric_of_norm_lt_one (R := ℝ) (r + 1) hρn)
+        (fun n => by positivity) PNat.coe_injective
+    have hb := tsum_pow_mul_geometric_le (r + 1) hρ0.le hρ1
+    have hpow : (t / 2) ^ (r + 2) ≤ (1 - ρ) ^ (r + 2) :=
+      pow_le_pow_left₀ (by positivity) h1ρhalf _
+    have hdiv2 : (t / 2) ^ (r + 2) = t ^ (r + 2) / 2 ^ (r + 2) := by rw [div_pow]
+    have ht_le : t ^ (r + 2) ≤ 2 ^ (r + 2) * (1 - ρ) ^ (r + 2) := by
+      have h := hpow
+      rw [hdiv2, div_le_iff₀ (by positivity)] at h
+      linarith [h]
+    have hb2 : (Nat.factorial (r + 1) : ℝ) / (1 - ρ) ^ (r + 2)
+        ≤ (Nat.factorial (r + 1) * 2 ^ (r + 2)) / t ^ (r + 2) := by
+      rw [div_le_div_iff₀ (by positivity) (by positivity)]
+      have hfr : (0:ℝ) ≤ (Nat.factorial (r + 1) : ℝ) := by positivity
+      nlinarith [mul_le_mul_of_nonneg_left ht_le hfr]
+    linarith [hle, hb, hb2]
+  -- combine
+  have hge0 : (0:ℝ) ≤ E * 2 ^ (r + 1) := by positivity
+  have hh1 : (∑' a : ℕ+, ρ ^ (a : ℕ)) / t ^ (r + 1) ≤ 2 / t ^ (r + 2) := by
+    rw [show (2:ℝ) / t ^ (r + 2) = (2 / t) / t ^ (r + 1) from by rw [div_div, ← pow_succ']]
+    gcongr
+  have hstep : (∑' a : ℕ+, ρ ^ (a : ℕ)) / t ^ (r + 1)
+      + ∑' a : ℕ+, ((a : ℕ) : ℝ) ^ (r + 1) * ρ ^ (a : ℕ)
+      ≤ (2 + Nat.factorial (r + 1) * 2 ^ (r + 2)) / t ^ (r + 2) := by
+    rw [add_div]
+    linarith [hh1, hpowbnd]
+  calc E * 2 ^ (r + 1)
+        * ((∑' a : ℕ+, ρ ^ (a : ℕ)) / t ^ (r + 1)
+          + ∑' a : ℕ+, ((a : ℕ) : ℝ) ^ (r + 1) * ρ ^ (a : ℕ))
+      ≤ E * 2 ^ (r + 1) * ((2 + Nat.factorial (r + 1) * 2 ^ (r + 2)) / t ^ (r + 2)) :=
+        mul_le_mul_of_nonneg_left hstep hge0
+    _ = (2 ^ r * (Nat.factorial r + 1)) * 2 ^ (r + 1)
+          * (2 + Nat.factorial (r + 1) * 2 ^ (r + 2)) / t ^ (r + 2) := by
+        rw [hEdef]; ring
+
 end AnalyticCombinatorics.Ch8.Partitions.Erdos

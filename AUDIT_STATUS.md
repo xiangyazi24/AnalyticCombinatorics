@@ -384,3 +384,11 @@ Gate: per-file lake env lean exit 0 + full lib build (8409 jobs, 0 sorryAx/ofRed
 - Erdos.summable_weighted_antidiag / sigmaMoment_eq_prod_tsum (#117) — PASS clean-3
   (M_r(t) = Σ_a Σ_b a^{r+1} b^r (e^{−t})^{ab} via sigmaAntidiagonalEquivProd, Σ_{ab=e}a^{r+1}b^r=e^rσ(e);
   14-round equiv/Finset grind. Input to sigmaMoment_le_power_sharp M_r ≤ K/t^{r+2}, two-regime next.)
+
+## 2026-06-06 — Sharp moment bound BANKED (#118-119, Audit exit 0, 0 dirty)
+- Erdos.tsum_pnat_pow_mul_geometric_le (#118) — PASS clean-3 (inner geometric bound, x-decay)
+- Erdos.sigmaMoment_le_power_sharp (#119) — PASS clean-3
+  (M_r(t) ≤ K_r/t^{r+2} on (0,1]; weighted divisor Fubini + global dominator via 1−e^{−ta}≥ta/(1+ta).
+  NOTE: a broken draft was mistakenly committed (5c5b8fa) from a stale-build false positive, reverted
+  (2e8da47), fixed offline with single-file lake env lean EXIT_0 before re-commit. Lesson banked.)
+- ⟹ Sharp moment bounds for M_3, M_4 (and M_2) now available for §5 kernelMass_sub_approx2.
