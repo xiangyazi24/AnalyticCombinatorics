@@ -1078,4 +1078,10 @@ namespace AnalyticCombinatorics.Ch1
 -- the O(1/n) error-moment bound (brick 32). Main-range part of kernelMass_sub_approx2.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.main_range_error_le
 
+-- HR mass-rate campaign, brick 35 (§5 model tail): the m>⌊n^{2/3}⌋ tail of |modelSummand| is O(1/n).
+-- Reusable engines: poly_mul_exp_neg_sixthRoot_le_inv (n^d·exp(−a n^{1/6}) ≤ 1/n, exp beats poly),
+-- sigma_geom_tail_le (m>M Lambert tail ≤ exp(−(t/2)M)·M_k(t/2)). Three moment tails (sharp #119) →
+-- surviving exp(−(λ/4)n^{1/6}) ≤ 1/n. Part of kernelMass_sub_approx2.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.model_tail_le
+
 end AnalyticCombinatorics.Ch1

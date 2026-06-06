@@ -154,3 +154,21 @@ Split each m by `n < 2m` vs `2m ≤ n`:
 `∀ a>0, ∀ d:ℕ, ∀ᶠ n, (n:ℝ)^d · exp(−a·√n) ≤ 1/n` (or `≤ K/n`). Prove via
 `Real.tendsto_pow_mul_exp_neg_atTop_nhds_zero`-style or `nat_cube_mul_exp_neg_sqrt_tendsto_zero`
 (already in ErdosKernelClose.lean for d=3) generalized; or compose `n^{d+1}exp(−a√n) → 0`.
+
+---
+
+## UPDATE 2 (Opus): Brick A banked (4364a84). Two tail-engine helpers written (verifying).
+
+Banked clean-3 on main (commit 4364a84 + earlier): bricks 1-4 = kernelMassApprox2_eq_tsum_model,
+model_error_moment_bound, erdosWeight_sub_model_le, main_range_error_le; + private mainCut_cond.
+
+Just-written (in MassRateApprox2.lean, verifying — the reusable analytic engines for BOTH tails):
+- `poly_mul_exp_neg_sixthRoot_le_inv (a)(ha:0<a)(d) : ∀ᶠ n, (n)^d·exp(−a·n^{1/6}) ≤ 1/n`
+  (template: nat_cube_mul_exp_neg_sqrt_tendsto_zero; tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero
+  with x=n^{1/6}, then →0 ⇒ n^{d+1}exp≤1 ⇒ n^d exp≤1/n).
+- `sigma_geom_tail_le (k)(ht:0<t)(M) : ∑'_m (if m≤M then 0 else m^k σ e^{−tm}) ≤ exp(−(t/2)M)·M_k(t/2)`
+  (pointwise e^{−tm} ≤ e^{−(t/2)M}e^{−(t/2)m} for m≥M; tsum_le_tsum + tsum_mul_left).
+
+Remaining: Brick C (model_tail_le, uses both helpers + sharp #119), Brick B (far-erdos tail, block
+majorants + poly helper), Brick D (assembly via Summable.sum_add_tsum_nat_add / tsum_eq_sum).
+Then kernelMass_sub_one_rate = sub_approx2 + cancel (#banked), barriers, R7 records, final theorem.
