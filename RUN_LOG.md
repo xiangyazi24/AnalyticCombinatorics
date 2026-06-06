@@ -584,3 +584,11 @@
   Deriv closed form + tail (#104), DerivZero (#105, hand-computed degree-6 certificate, first-try
   ring verification), DerivInt in final verify. R12 (Riemann O(1) general lemma, full proof plan
   attached) dispatched; R11 (M₁ rearrangement) v1 extracted. (100th–105th deliverables.)
+- MASS-RATE M₁ LAMBERT BANKED (Opus, 7 fix rounds): sigmaMoment_one_lambert + boseKernel_hasDerivAt
+  (#109), cubic geometric sum (#107), Basel split (#108). Root cause of rounds 4–6: Lean calc step
+  grammar is `term := proof` — a trailing calc swallows following `have h : T := ...` / `set x := ...`
+  tactics as further steps (probe-bisect diagnosis: truncate + read unsolved-goals context cutoff).
+  All six trailing calcs rewritten as have-chains + le_trans. Lesson banked to memory.
+  M₂ (boseKernel3 mirror) + sigmaMoment_le_power (crude (r+2)!·2^{r+3}/t^{r+3} bound, descFactorial
+  route) written, in fix rounds. R12 bridge capture failed 4× — manual paste requested. (106th–108th
+  deliverables.)

@@ -343,3 +343,12 @@ Gate: per-file lake env lean exit 0 + full lib build (8409 jobs, 0 sorryAx/ofRed
 - boseReg0_hasDerivAt / Deriv_tail_bound (#104) — PASS clean-3
 - boseReg0Deriv_bdd_near_zero (#105, degree-6 certificate) — PASS clean-3
 - boseReg0_integrable_Ioi / boseReg0Deriv_integrable_Ioi (#106) — PASS clean-3
+
+## 2026-06-06 — Mass-rate M₁ Lambert + M₂ ingredients BANKED (#107–109, Audit exit 0, 0 dirty)
+- Erdos.tsum_nat_cube_mul_geometric / tsum_pnat_cube_mul_geometric (#107) — PASS clean-3
+  (Σ n³yⁿ = y(1+4y+y²)/(1−y)⁴; C(n+3,3) cast via descFactorial route)
+- Erdos.boseKernel_eq_inv_sq_add_reg / tsum_if_inv_sq / tsum_if_inv_sq_scaled (#108) — PASS clean-3
+  (kernel split + Basel via hasSum_zeta_two, brick-22 prerequisites)
+- Erdos.boseKernel_hasDerivAt / sigmaMoment_one_lambert (#109) — PASS clean-3
+  (M₁ = Σ'_{k≥1} k·boseKernel2(tk) by termwise differentiation on Ioi(t/2);
+  hasDerivAt_tsum_of_isPreconnected both sides + HasDerivAt.unique)
