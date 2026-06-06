@@ -593,3 +593,26 @@ This is the route that actually delivers the rate needed by both the barrier pac
   Ioi 1: |boseReg0| ≤ boseKernel + 1/x²; boseKernel(x) ≤ e^{−x}/(1−e^{−1})² (x ≥ 1) +
   exp_neg_integrableOn_Ioi; 1/x² integrable on Ioi 1.
 - All exp-Taylor needs are covered by Real.exp_bound at n = 3 (no series manipulation).
+
+## 2026-06-06 Opus assembly-prerequisite finding: sharp moment bound needed
+
+M₀/M₁/M₂ weak asymptotics BANKED (#112,#114,#116): |M_r − c_r·Z/t^{r+2}| ≤ K/t^{r+1}
+(M₀ two-term O(1), M₁ |·−2Z/t³|≤388/t², M₂ |·−6Z/t⁴|≤K/t³). c_r = (r+1)!.
+
+GAP for §5 kernelMass_sub_approx2: the error terms (1/n³)M₂ + (1/(n³√n))M₃ + (1/n⁴)M₄
+need M_r ≤ K/t^{r+2} (true leading order), giving each O(1/n) at t≈C/(4√n)≈n^{−1/2}.
+- (1/n³)M₂: M₂≤K/t⁴ ✓ (have weak asymp).
+- (1/(n³√n))M₃: needs M₃≤K/t⁵=K/t^{3+2}.
+- (1/n⁴)M₄: needs M₄≤K/t⁶=K/t^{4+2}.
+BUT current sigmaMoment_le_power (#111) only gives M_r ≤ (r+2)!·2^{r+3}/t^{r+3}
+(σ(m)≤m² crude) → too weak by 1/t for r=3,4 (would give O(n^{−1/2}), breaks O(1/n)).
+
+NEXT BRICK: `sigmaMoment_le_power_sharp (r) : M_r(t) ≤ K_r/t^{r+2}` on (0,1].
+Proof route (divisor reindexing + two-regime, no new kernels):
+M_r(t) = Σ_d d^{r+1} Σ_k k^r e^{−tdk} [σ(m)=Σ_{d|m}d, m=dk]. Bound inner Σ_k k^r e^{−tdk}:
+- td ≤ 1: ≤ r!·2^{r+1}/(td)^{r+1} (tsum_pow_mul_geometric_le).
+- td > 1: ≤ C_r e^{−td} (geometric tail).
+Two-regime over d (d≤1/t poly bucket gives Σ_{d≤1/t} d^{r+1}·r!/(td)^{r+1} = r!/t^{r+1}·(1/t)=r!/t^{r+2};
+d>1/t exp bucket Σ d^{r+1}e^{−td} ~ /t^{r+2}). Mirrors weighted_decay_sum_bound structure.
+Then §5 assembly (kernelMassApprox2, cancel_sqrt_term via mass_rate_sqrt_coeff_cancel #94,
+kernelMass_sub_one_rate) proceeds.
