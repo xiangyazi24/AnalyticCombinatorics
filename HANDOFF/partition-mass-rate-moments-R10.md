@@ -657,3 +657,12 @@ sigmaMoment_two_asymp_weak
 
 
 This keeps the genuinely delicate cancellation proof localized to boseReg0 and avoids needing full trapezoid constants or derivative-based Euler-Maclaurin for M₁ and M₂.
+## 2026-06-06 Opus decision: M₁/M₂ via termwise differentiation (R11 draft retired)
+R11's antidiagonal draft treats Nat.divisorsAntidiagonal elements as ℕ+×ℕ+ (structural misuse,
+~10 type errors after projection fixes). Replacement route: M₁ = −M₀′ by termwise differentiation
+with Mathlib SmoothSeries (hasDerivAt_tsum):
+- σ-side: d/dt Σ σ(m)e^{−tm} termwise, dominated on [t₀/2,∞) by m·σ(m)e^{−t₀m/2} (summable).
+- Bose-side: d/dt Σ boseKernel(tk) termwise = Σ k·boseKernel′(tk) = −Σ k·G(tk), G = Σd²e^{−dz}
+  (boseKernel′ = −G banked-side identity; G's closed form y(1+y)/(1−y)³ = Geom2 #99).
+- Equal functions ⇒ equal derivatives ⇒ sigmaMoment_one_lambert. M₂ = M₀″ likewise.
+File kept as MassRateLambertOne.lean (uncommitted, broken) for reference; do not bank.

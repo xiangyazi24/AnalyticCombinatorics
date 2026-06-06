@@ -334,3 +334,12 @@ Gate: per-file lake env lean exit 0 + full lib build (8409 jobs, 0 sorryAx/ofRed
 - Erdos.tsum_if_ne_zero_eq_pnat / tsum_pnat_coe_mul_geometric / sigmaMoment_zero_lambert —
   PASS clean-3 (#98, R8 §2.1 Lambert via Mathlib TsumDivisorsAntidiagonal)
 - Erdos.tsum_nat_sq_mul_geometric / tsum_pnat_sq_mul_geometric — PASS clean-3 (#99, M₁ ingredient)
+
+## 2026-06-06 — Mass-rate boseReg0 analysis core BANKED (#100–106, Audit exit 0, 0 dirty)
+- exp_sub_one_bounds_order3 / order4 (#100) — PASS clean-3
+- boseReg0_bdd_near_zero / tail_bound (#101) — PASS clean-3
+- boseAntideriv_hasDerivAt / tendsto limits / FTC (#102) — PASS clean-3
+- integral_boseReg0_Ioi = −1/2 (#103, FTC anchor) — PASS clean-3
+- boseReg0_hasDerivAt / Deriv_tail_bound (#104) — PASS clean-3
+- boseReg0Deriv_bdd_near_zero (#105, degree-6 certificate) — PASS clean-3
+- boseReg0_integrable_Ioi / boseReg0Deriv_integrable_Ioi (#106) — PASS clean-3
