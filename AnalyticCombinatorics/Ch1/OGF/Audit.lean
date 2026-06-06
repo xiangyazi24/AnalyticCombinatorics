@@ -112,6 +112,7 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateReg3
 import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentTwoAsymp
 import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentSharp
 import AnalyticCombinatorics.Ch8.Partitions.MassRateAssembly
+import AnalyticCombinatorics.Ch8.Partitions.MassRateApprox2
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1057,5 +1058,11 @@ namespace AnalyticCombinatorics.Ch1
 -- ≤ K/n eventually — the three weak moment asymptotics give leading 1, the 1/√n terms cancel exactly
 -- (mass_rate_sqrt_coeff_cancel, λ²=π²/6), all remainders O(1/n). First §5-7 assembly brick.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.kernelMassApprox2_cancel_sqrt_term
+
+-- HR mass-rate campaign, brick 31 (§5 model identity): the second-order kernel-mass approximation
+-- collapses to a single divisor-weighted Lambert sum, kernelMassApprox2 n = ∑' m, modelSummand n m,
+-- where modelSummand n m = σ(m)·e^{−tm}·(1/n+m/n²−Cm²/(8n²√n)) at t=λ/√n. This is the object the
+-- per-term estimate erdosWeight_coef_second_order (#97, ×σ(m)≥0) is compared against in §5.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.kernelMassApprox2_eq_tsum_model
 
 end AnalyticCombinatorics.Ch1
