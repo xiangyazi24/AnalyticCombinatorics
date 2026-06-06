@@ -108,6 +108,8 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentBound
 import AnalyticCombinatorics.Ch8.Partitions.MassRateTailInvSq
 import AnalyticCombinatorics.Ch8.Partitions.MassRateWeightedSum
 import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentOneAsymp
+import AnalyticCombinatorics.Ch8.Partitions.MassRateReg3
+import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentTwoAsymp
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1031,5 +1033,12 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.weighted_decay_sum_bound
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.boseKernel2_eq_inv_cube_sub_deriv
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sigmaMoment_one_asymp_weak
+
+-- HR mass-rate campaign, bricks 27-28 (M₂ weak asymptotics): the degree-8 reg3 cancellation
+-- certificate |boseKernel3 z − 6/z⁴| ≤ 3600 on (0,1] (w order-7 Taylor + δ-decomposition,
+-- degree-28 ring numerator identity), and |M₂(t) − 6(π²/6)/t⁴| ≤ K/t³ via the weighted-decay
+-- keystone (j=2). Completes the M₀/M₁/M₂ moment-asymptotics layer.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.reg3_bdd_near_zero
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sigmaMoment_two_asymp_weak
 
 end AnalyticCombinatorics.Ch1

@@ -110,6 +110,8 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentBound
 import AnalyticCombinatorics.Ch8.Partitions.MassRateTailInvSq
 import AnalyticCombinatorics.Ch8.Partitions.MassRateWeightedSum
 import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentOneAsymp
+import AnalyticCombinatorics.Ch8.Partitions.MassRateReg3
+import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentTwoAsymp
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
