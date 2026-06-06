@@ -379,3 +379,8 @@ Gate: per-file lake env lean exit 0 + full lib build (8409 jobs, 0 sorryAx/ofRed
 - Erdos.sigmaMoment_two_asymp_weak (#116) — PASS clean-3
   (|M₂(t) − 6(π²/6)/t⁴| ≤ K/t³ on (0,1] via boseKernel3 = 6/z⁴ + reg3 + weighted-decay keystone j=2)
 - ⟹ M₀/M₁/M₂ moment-asymptotics LAYER COMPLETE.
+
+## 2026-06-06 — Sharp-moment-bound foundation: weighted divisor Fubini BANKED (#117, Audit exit 0, 0 dirty)
+- Erdos.summable_weighted_antidiag / sigmaMoment_eq_prod_tsum (#117) — PASS clean-3
+  (M_r(t) = Σ_a Σ_b a^{r+1} b^r (e^{−t})^{ab} via sigmaAntidiagonalEquivProd, Σ_{ab=e}a^{r+1}b^r=e^rσ(e);
+  14-round equiv/Finset grind. Input to sigmaMoment_le_power_sharp M_r ≤ K/t^{r+2}, two-regime next.)
