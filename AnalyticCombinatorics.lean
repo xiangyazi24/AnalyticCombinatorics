@@ -128,6 +128,7 @@ import AnalyticCombinatorics.Ch8.Partitions.StepContraction
 import AnalyticCombinatorics.Ch8.Partitions.KernelPow
 import AnalyticCombinatorics.Ch8.Partitions.BlockContract
 import AnalyticCombinatorics.Ch8.Partitions.CenterTracking
+import AnalyticCombinatorics.Ch8.Partitions.StepSummable
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational

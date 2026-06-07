@@ -125,6 +125,7 @@ import AnalyticCombinatorics.Ch8.Partitions.StepContraction
 import AnalyticCombinatorics.Ch8.Partitions.KernelPow
 import AnalyticCombinatorics.Ch8.Partitions.BlockContract
 import AnalyticCombinatorics.Ch8.Partitions.CenterTracking
+import AnalyticCombinatorics.Ch8.Partitions.StepSummable
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1209,5 +1210,9 @@ namespace AnalyticCombinatorics.Ch1
 -- (|h n − c(rank n)|≤V(rank n)) ⟹ h converges. Resolves the far-pair obstruction via the MONOTONE
 -- tail-sup (which contracts geometrically); no overlap for far ranks needed.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tendsto_of_center_tracking
+-- HR mass-rate campaign, brick 58 (§8 R7 Fact-B route — geometric summability): summable_of_step_le —
+-- f≥0 with f(n+B)≤q·f(n), 0≤q<1 ⟹ Summable f (uniformly bounded partial sums: S_m ≤ S_B+q·S_m).
+-- Converts the tail-sup block-osc contraction V(R)≤(1−δ)V(R−B) into Summable V for tendsto_of_center_tracking.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.summable_of_step_le
 
 end AnalyticCombinatorics.Ch1
