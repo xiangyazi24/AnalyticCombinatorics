@@ -118,6 +118,7 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateAssembly
 import AnalyticCombinatorics.Ch8.Partitions.MassRateApprox2
 import AnalyticCombinatorics.Ch8.Partitions.BarrierLimit
 import AnalyticCombinatorics.Ch8.Partitions.RecordPullback
+import AnalyticCombinatorics.Ch8.Partitions.DefectSummable
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational

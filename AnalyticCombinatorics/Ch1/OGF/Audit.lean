@@ -115,6 +115,7 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateAssembly
 import AnalyticCombinatorics.Ch8.Partitions.MassRateApprox2
 import AnalyticCombinatorics.Ch8.Partitions.BarrierLimit
 import AnalyticCombinatorics.Ch8.Partitions.RecordPullback
+import AnalyticCombinatorics.Ch8.Partitions.DefectSummable
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1111,5 +1112,9 @@ namespace AnalyticCombinatorics.Ch1
 -- — countermodel — so the honest route needs this quantitative defect, summable in t=√n.)
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.exists_window_near_max
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.exists_window_near_min
+-- HR mass-rate campaign, brick 43 (§8 R7 cover summability): the chain-independent summability
+-- building blocks for the rank-indexed error budget Σⱼ E(j) (ChatGPT c43aa296 cover induction):
+-- Σₜ B/(t+1)² (kernel-mass 1/n rate) + Σₜ tᵏe^{−ct} (boundary & far-tail exp decay).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.summable_defect_scale
 
 end AnalyticCombinatorics.Ch1
