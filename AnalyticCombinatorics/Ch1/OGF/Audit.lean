@@ -1129,5 +1129,13 @@ namespace AnalyticCombinatorics.Ch1
 -- backward chain visits each rank block ≤ once ⟹ Pot J e n ≤ Σ_{j=J}^{rank n} e j (≤ block tail).
 -- No renewal-density theory needed; only Fact B (overshoot convergence) remains hard.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.pot_le_block_sum
+-- HR mass-rate campaign, brick 46 (§8 R7 Layer 3 — Fact A for the FULL kernel, leave-probability):
+-- the full normalized kernel has small steps, but each block is left downward w.p. ≥μ (window step
+-- drops rank, window mass ≥μ); contraction induction gives μ·Pot ≤ block-sum. The 1/μ is a single
+-- constant on the summable tail, NOT the per-step μ^{−√N} that killed the record route. Plus the tail
+-- helpers (block ≤ (∑'e − partial) → 0). Fact A DONE; only Fact B (overshoot convergence) remains.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.pot_le_block_sum_of_leave
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.block_sum_le_tail
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tail_tendsto_zero
 
 end AnalyticCombinatorics.Ch1

@@ -170,4 +170,102 @@ theorem pot_le_block_sum
       rw [hsplit]
       linarith
 
+/-- A finite rank-block sum is bounded by the `J`-tail `(∑' e) − ∑_{range J} e`. -/
+lemma block_sum_le_tail {e : ℕ → ℝ} (he_nonneg : ∀ j, 0 ≤ e j) (he : Summable e) (J m : ℕ) :
+    ∑ j ∈ Finset.Icc J m, e j ≤ (∑' j, e j) - ∑ j ∈ Finset.range J, e j := by
+  have hdisj : Disjoint (Finset.Icc J m) (Finset.range J) := by
+    rw [Finset.disjoint_left]
+    intro a ha hr
+    rw [Finset.mem_Icc] at ha; rw [Finset.mem_range] at hr; omega
+  have hunion : ∑ j ∈ Finset.Icc J m, e j + ∑ j ∈ Finset.range J, e j
+      = ∑ j ∈ Finset.Icc J m ∪ Finset.range J, e j := (Finset.sum_union hdisj).symm
+  have hle : ∑ j ∈ Finset.Icc J m ∪ Finset.range J, e j ≤ ∑' j, e j :=
+    sum_le_hasSum _ (fun i _ => he_nonneg i) he.hasSum
+  linarith [hunion, hle]
+
+/-- **Layer 3 (general, `pot_le_block_sum_of_leave`).** *Fact A for the full kernel.* The full
+normalized kernel has small steps, so strict rank-drop fails; but every block is *left downward with
+probability ≥ μ* (a window step `m∈[√n,2√n]` drops `rank=⌊ρ√n⌋`, and that mass is `≥μ`). The
+contraction-style induction gives `μ·Pot ≤ block-sum`, i.e. `Pot ≤ (1/μ)·tail`.  The `1/μ` is a
+single constant on the summable tail — NOT the per-step `μ^{−√N}` compounding that killed the record
+route.  `rank` monotone, `P` a probability kernel on `range n`. -/
+theorem pot_le_block_sum_of_leave
+    {P : ℕ → ℕ → ℝ} {rank : ℕ → ℕ} {e Pot : ℕ → ℝ} {J : ℕ} {μ : ℝ}
+    (hJ1 : 1 ≤ J)
+    (he_nonneg : ∀ j, 0 ≤ e j)
+    (hP_nonneg : ∀ n k, 0 ≤ P n k)
+    (hrank_mono : Monotone rank)
+    (hP_mass : ∀ n, J ≤ rank n → ∑ k ∈ Finset.range n, P n k = 1)
+    (hP_leave : ∀ n, J ≤ rank n →
+        μ ≤ ∑ k ∈ (Finset.range n).filter (fun k => rank k < rank n), P n k)
+    (hPot : ∀ n, Pot n = if rank n < J then 0
+              else e (rank n) + ∑ k ∈ Finset.range n, P n k * Pot k) :
+    ∀ n, μ * Pot n ≤ ∑ j ∈ Finset.Icc J (rank n), e j := by
+  intro n
+  induction n using Nat.strong_induction_on with
+  | _ n ih =>
+    rw [hPot n]
+    by_cases hJ : rank n < J
+    · rw [if_pos hJ, Finset.Icc_eq_empty (by omega)]; simp
+    · rw [if_neg hJ]
+      have hJ' : J ≤ rank n := not_lt.mp hJ
+      set T := ∑ j ∈ Finset.Icc J (rank n), e j with hT
+      set Tm := ∑ j ∈ Finset.Icc J (rank n - 1), e j with hTm
+      have hTm_nonneg : 0 ≤ Tm := Finset.sum_nonneg (fun j _ => he_nonneg j)
+      have hTsplit : T = Tm + e (rank n) := by
+        rw [hT, hTm]
+        have hrn : rank n = (rank n - 1) + 1 := by omega
+        conv_lhs => rw [hrn]
+        rw [Finset.sum_Icc_succ_top (by omega : J ≤ (rank n - 1) + 1), ← hrn]
+      -- `μ · Σ P·Pot ≤ Σ P·T_k`
+      have hμPot : μ * (∑ k ∈ Finset.range n, P n k * Pot k)
+          ≤ ∑ k ∈ Finset.range n, P n k * (∑ j ∈ Finset.Icc J (rank k), e j) := by
+        rw [Finset.mul_sum]
+        refine Finset.sum_le_sum (fun k hk => ?_)
+        rw [show μ * (P n k * Pot k) = P n k * (μ * Pot k) by ring]
+        exact mul_le_mul_of_nonneg_left (ih k (Finset.mem_range.mp hk)) (hP_nonneg n k)
+      -- split `range n` into rank-drop and rank-stay parts
+      have hfP := Finset.sum_filter_add_sum_filter_not (Finset.range n)
+        (fun k => rank k < rank n) (fun k => P n k)
+      have hff := Finset.sum_filter_add_sum_filter_not (Finset.range n)
+        (fun k => rank k < rank n) (fun k => P n k * (∑ j ∈ Finset.Icc J (rank k), e j))
+      rw [hP_mass n hJ'] at hfP
+      set Ddrop := ∑ k ∈ (Finset.range n).filter (fun k => rank k < rank n), P n k with hDdrop
+      set Dsame := ∑ k ∈ (Finset.range n).filter (fun k => ¬ rank k < rank n), P n k with hDsame
+      have hDsame_nonneg : 0 ≤ Dsame := Finset.sum_nonneg (fun k _ => hP_nonneg n k)
+      have hDleave : μ ≤ Ddrop := hP_leave n hJ'
+      -- `Σ P·T_k ≤ Ddrop·Tm + Dsame·T`
+      have hbound : ∑ k ∈ Finset.range n, P n k * (∑ j ∈ Finset.Icc J (rank k), e j)
+          ≤ Ddrop * Tm + Dsame * T := by
+        rw [← hff, hDdrop, hDsame, Finset.sum_mul, Finset.sum_mul]
+        refine add_le_add (Finset.sum_le_sum (fun k hk => ?_))
+          (Finset.sum_le_sum (fun k hk => ?_))
+        · rw [Finset.mem_filter, Finset.mem_range] at hk
+          exact mul_le_mul_of_nonneg_left
+            (Finset.sum_le_sum_of_subset_of_nonneg
+              (Finset.Icc_subset_Icc_right (by omega)) (fun j _ _ => he_nonneg j))
+            (hP_nonneg n k)
+        · rw [Finset.mem_filter, Finset.mem_range] at hk
+          exact mul_le_mul_of_nonneg_left
+            (Finset.sum_le_sum_of_subset_of_nonneg
+              (Finset.Icc_subset_Icc_right (hrank_mono hk.1.le)) (fun j _ _ => he_nonneg j))
+            (hP_nonneg n k)
+      -- assemble: μ·Pot n = μ·e + μ·ΣPPot ≤ μ·e + Ddrop·Tm + Dsame·T ≤ T
+      rw [mul_add]
+      have he := he_nonneg (rank n)
+      have hkey : μ * e (rank n) + (Ddrop * Tm + Dsame * T) ≤ T := by
+        have hDd : Ddrop = 1 - Dsame := by linarith [hfP]
+        have hDsame_le : Dsame ≤ 1 - μ := by linarith [hfP, hDleave]
+        rw [hTsplit, hDd]
+        nlinarith [mul_nonneg (sub_nonneg.mpr hDsame_le) he, he, hTm_nonneg, hDsame_nonneg]
+      linarith [hμPot, hbound, hkey]
+
+/-- The `J`-tail `(∑' e) − ∑_{range J} e` of a summable series tends to `0`. -/
+lemma tail_tendsto_zero {e : ℕ → ℝ} (he : Summable e) :
+    Tendsto (fun J => (∑' j, e j) - ∑ j ∈ Finset.range J, e j) atTop (𝓝 0) := by
+  have h := he.hasSum.tendsto_sum_nat
+  have hlim : Tendsto (fun J => (∑' j, e j) - ∑ j ∈ Finset.range J, e j) atTop
+      (𝓝 ((∑' j, e j) - ∑' j, e j)) := tendsto_const_nhds.sub h
+  simpa using hlim
+
 end AnalyticCombinatorics.Ch8.Partitions.Erdos
