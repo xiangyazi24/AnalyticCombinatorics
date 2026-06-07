@@ -128,6 +128,7 @@ import AnalyticCombinatorics.Ch8.Partitions.CenterTracking
 import AnalyticCombinatorics.Ch8.Partitions.StepSummable
 import AnalyticCombinatorics.Ch8.Partitions.TailSup
 import AnalyticCombinatorics.Ch8.Partitions.KilledKernelPow
+import AnalyticCombinatorics.Ch8.Partitions.KilledHarmonic
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1226,5 +1227,11 @@ namespace AnalyticCombinatorics.Ch1
 -- support n<k→0. Foundation for the P̃^L-harmonic identity of the exactly-harmonic hitVal.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.KPowK_nonneg
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.KPowK_support
+-- HR mass-rate campaign, brick 61 (§8 R7 killed-kernel harmonicity): killed_harmonic_pow — a function
+-- harmonic above a cutoff (h n = ∑_{k<n} P n k·h k for rank n ≥ J, = φ below) is exactly harmonic for
+-- every killed power KPowK L P̃ summed over range(n+1). The η=0 exactness driving the Doeblin osc
+-- contraction for hitVal. Proof by induction on L (one-step + Finset.sum_comm + support truncation).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.killed_harmonic_one
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.killed_harmonic_pow
 
 end AnalyticCombinatorics.Ch1
