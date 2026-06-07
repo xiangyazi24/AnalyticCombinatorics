@@ -113,6 +113,7 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentTwoAsymp
 import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentSharp
 import AnalyticCombinatorics.Ch8.Partitions.MassRateAssembly
 import AnalyticCombinatorics.Ch8.Partitions.MassRateApprox2
+import AnalyticCombinatorics.Ch8.Partitions.BarrierLimit
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1095,5 +1096,12 @@ namespace AnalyticCombinatorics.Ch1
 -- barrierSlack = 1/(√n(log(n+E))²) since (log(n+E))²=o(√n) (isLittleO_log_rpow_rpow_atTop).
 -- This is exactly the hypothesis the barrier super/subharmonic theorems consume.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.kernelMass_rate_vs_slack
+
+-- HR mass-rate campaign, brick 40 (§7 unconditional u-bounds): u_limsup_finite (∃M, ∀ᶠ u n ≤ M) and
+-- u_liminf_positive (∃c>0, ∀ᶠ c ≤ u n). The banked o(slack) mass rate (#39) discharges the barrier
+-- super/subharmonic hypotheses (upperBarrier_kernel_superharmonic_of_rate now also returns the
+-- ∀k upperBarrier-pos needed by u_limsup_finite_of_superharmonic). Unconditional u boundedness.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.u_limsup_finite
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.u_liminf_positive
 
 end AnalyticCombinatorics.Ch1
