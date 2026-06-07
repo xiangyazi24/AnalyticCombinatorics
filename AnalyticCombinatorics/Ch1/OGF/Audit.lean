@@ -127,6 +127,7 @@ import AnalyticCombinatorics.Ch8.Partitions.BlockContract
 import AnalyticCombinatorics.Ch8.Partitions.CenterTracking
 import AnalyticCombinatorics.Ch8.Partitions.StepSummable
 import AnalyticCombinatorics.Ch8.Partitions.TailSup
+import AnalyticCombinatorics.Ch8.Partitions.KilledKernelPow
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1220,5 +1221,10 @@ namespace AnalyticCombinatorics.Ch1
 -- satisfies V R ≤ q·V(R−B) (monotone domination) hence Summable V. Turns the local comparable-rank
 -- contraction into a global summable bound — the resolution of the §9 far-pair obstruction.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tailsup_summable
+-- HR mass-rate campaign, brick 60 (§8 R7 killed-kernel powers): KCompK/KPowK — boundary-absorbing
+-- kernel composition (sum over range(n+1), allowing the diagonal) + L-fold power; nonnegativity and
+-- support n<k→0. Foundation for the P̃^L-harmonic identity of the exactly-harmonic hitVal.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.KPowK_nonneg
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.KPowK_support
 
 end AnalyticCombinatorics.Ch1
