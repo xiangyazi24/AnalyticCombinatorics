@@ -4,6 +4,7 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentBound
 import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentSharp
 import AnalyticCombinatorics.Ch8.Partitions.MassRateCoef
 import AnalyticCombinatorics.Ch8.Partitions.ErdosKernelClose
+import AnalyticCombinatorics.Ch8.Partitions.KernelBarriers
 
 /-!
 # Mass-rate campaign: §5 the second-order divisor calc
@@ -780,6 +781,18 @@ private lemma leftBlockMajorant_shifted_tsum_le (K : ℕ) :
           (∑' j : ℕ, ((j:ℝ) + 1) ^ 2 * Real.exp (-(C / 2)) ^ j) * Real.exp (-(C / 2) * (K:ℝ)) := by
         rw [tsum_mul_left]; ring
 
+/-- `modelSummand n` is summable (it is the divisor-weighted Lambert combination). -/
+private lemma summable_modelSummand {n : ℕ} (hn : 1 ≤ n) : Summable (modelSummand n) := by
+  have hnpos : (0:ℝ) < (n:ℝ) := by exact_mod_cast hn
+  have ht0 : 0 < massLam / Real.sqrt (n:ℝ) := div_pos massLam_pos (Real.sqrt_pos.mpr hnpos)
+  have hsum := (((summable_sigma_exp 0 ht0).mul_left (1 / (n:ℝ))).add
+      ((summable_sigma_exp 1 ht0).mul_left (1 / (n:ℝ) ^ 2))).sub
+      ((summable_sigma_exp 2 ht0).mul_left (C / (8 * (n:ℝ) ^ 2 * Real.sqrt (n:ℝ))))
+  refine hsum.congr (fun m => ?_)
+  rcases eq_or_ne m 0 with h | h
+  · subst h; simp [modelSummand]
+  · simp only [modelSummand, if_neg h]; ring
+
 /-- **Far-`erdosWeight` tail** (§5 brick 6): `∑_{m=⌊n^{2/3}⌋+1}^{n-1} erdosWeight n m ≤ K/n`. Split
 at `n<2m` (right half, `right_half_kernel_sum_le` + √n exp-beats-poly) vs `2m≤n` (left far, block
 majorants at index `Kn=⌊n^{1/6}⌋` + geometric tail + sixth-root exp-beats-poly). -/
@@ -897,5 +910,114 @@ theorem far_erdos_tail_le :
         = (8 * sigmaQuadConst * G * Real.exp (C / 2)) / (n:ℝ) := by ring
     rw [h8]; linarith
   linarith [hright, hleft, hfinal]
+
+/-- **Second-order divisor calc** (§5 assembly): `|kernelMass n − kernelMassApprox2 n| ≤ K/n`. The
+main-range error (#brick 4), the far-`erdosWeight` tail (#brick 6) and the `modelSummand` tail
+(#brick 5) each contribute `O(1/n)`. -/
+theorem kernelMass_sub_approx2 :
+    ∃ K : ℝ, 0 < K ∧ ∀ᶠ n : ℕ in Filter.atTop,
+      |kernelMass n - kernelMassApprox2 n| ≤ K / (n:ℝ) := by
+  obtain ⟨KA, hKApos, hKA⟩ := main_range_error_le
+  obtain ⟨KB, hKBpos, hKB⟩ := far_erdos_tail_le
+  obtain ⟨KC, hKCpos, hKC⟩ := model_tail_le
+  refine ⟨KA + KB + KC, by linarith, ?_⟩
+  filter_upwards [hKA, hKB, hKC, Filter.eventually_ge_atTop 2] with n hkA hkB hkC hn2
+  have hn1 : 1 ≤ n := by omega
+  have hnpos : (0:ℝ) < (n:ℝ) := by exact_mod_cast hn1
+  have hew_nn : ∀ m, 0 ≤ erdosWeight n m := fun m => by
+    rw [erdosWeight]
+    exact mul_nonneg (div_nonneg (sigmaR_nonneg m) (by positivity)) (Real.exp_pos _).le
+  set M : ℕ := ⌊(n:ℝ) ^ (2/3 : ℝ)⌋₊ with hMdef
+  -- M < n hence M ≤ n - 1
+  have hMlt : M < n := by
+    have h1 : (M:ℝ) ≤ (n:ℝ) ^ (2/3 : ℝ) := Nat.floor_le (by positivity)
+    have h2 : (n:ℝ) ^ (2/3 : ℝ) < (n:ℝ) := by
+      calc (n:ℝ) ^ (2/3 : ℝ) < (n:ℝ) ^ (1:ℝ) :=
+            Real.rpow_lt_rpow_of_exponent_lt (by exact_mod_cast hn2) (by norm_num)
+        _ = (n:ℝ) := Real.rpow_one _
+    have : (M:ℝ) < (n:ℝ) := by linarith
+    exact_mod_cast this
+  have hMn1 : M ≤ n - 1 := by omega
+  -- split kernelMass
+  have hKsplit : kernelMass n = (∑ m ∈ Finset.Icc 1 M, erdosWeight n m)
+      + (∑ m ∈ Finset.Icc (M + 1) (n - 1), erdosWeight n m) := by
+    have e1 : Finset.Icc 1 M = Finset.Ioc 0 M := by
+      ext x; simp only [Finset.mem_Icc, Finset.mem_Ioc]; omega
+    have e2 : Finset.Icc (M + 1) (n - 1) = Finset.Ioc M (n - 1) := by
+      ext x; simp only [Finset.mem_Icc, Finset.mem_Ioc]; omega
+    have e3 : Finset.Icc 1 (n - 1) = Finset.Ioc 0 (n - 1) := by
+      ext x; simp only [Finset.mem_Icc, Finset.mem_Ioc]; omega
+    rw [kernelMass, e1, e2, e3, Finset.sum_Ioc_consecutive _ (Nat.zero_le M) hMn1]
+  -- split kernelMassApprox2 = head + tail
+  have hsumm := summable_modelSummand hn1
+  have hheadsumm : Summable (fun m : ℕ => if m ≤ M then modelSummand n m else 0) :=
+    summable_of_ne_finset_zero (s := Finset.range (M + 1)) (fun b hb => by
+      rw [Finset.mem_range] at hb; rw [if_neg (by omega)])
+  have htailsumm : Summable (fun m : ℕ => if m ≤ M then (0:ℝ) else modelSummand n m) := by
+    refine (hsumm.sub hheadsumm).congr (fun m => ?_); split <;> simp
+  have hhead : (∑' m : ℕ, if m ≤ M then modelSummand n m else 0)
+      = ∑ m ∈ Finset.Icc 1 M, modelSummand n m := by
+    rw [tsum_eq_sum (s := Finset.Icc 0 M)
+      (fun b hb => by rw [Finset.mem_Icc] at hb; rw [if_neg (by omega)])]
+    rw [show Finset.Icc 0 M = insert 0 (Finset.Icc 1 M) by
+        ext x; simp only [Finset.mem_Icc, Finset.mem_insert]; omega,
+      Finset.sum_insert (by simp [Finset.mem_Icc]), if_pos (Nat.zero_le M)]
+    have h0 : modelSummand n 0 = 0 := by simp [modelSummand]
+    rw [h0, zero_add]
+    exact Finset.sum_congr rfl (fun m hm => if_pos (Finset.mem_Icc.mp hm).2)
+  have hAsplit : kernelMassApprox2 n = (∑ m ∈ Finset.Icc 1 M, modelSummand n m)
+      + (∑' m : ℕ, if m ≤ M then (0:ℝ) else modelSummand n m) := by
+    rw [kernelMassApprox2_eq_tsum_model hn1, ← hhead, ← hheadsumm.tsum_add htailsumm]
+    exact tsum_congr (fun m => by split <;> simp)
+  -- assemble
+  set tail : ℝ := ∑' m : ℕ, if m ≤ M then (0:ℝ) else modelSummand n m with htaildef
+  rw [hKsplit, hAsplit]
+  have hrw : (∑ m ∈ Finset.Icc 1 M, erdosWeight n m)
+        + (∑ m ∈ Finset.Icc (M + 1) (n - 1), erdosWeight n m)
+        - ((∑ m ∈ Finset.Icc 1 M, modelSummand n m) + tail)
+      = (∑ m ∈ Finset.Icc 1 M, (erdosWeight n m - modelSummand n m))
+        + (∑ m ∈ Finset.Icc (M + 1) (n - 1), erdosWeight n m) - tail := by
+    rw [Finset.sum_sub_distrib]; ring
+  rw [hrw]
+  have hBnn : 0 ≤ ∑ m ∈ Finset.Icc (M + 1) (n - 1), erdosWeight n m :=
+    Finset.sum_nonneg (fun m _ => hew_nn m)
+  have hAbsA : |∑ m ∈ Finset.Icc 1 M, (erdosWeight n m - modelSummand n m)|
+      ≤ KA / (n:ℝ) := le_trans (Finset.abs_sum_le_sum_abs _ _) hkA
+  have hAbsTail : |tail| ≤ KC / (n:ℝ) := by
+    rw [htaildef]
+    refine le_trans (le_trans (le_of_eq (Real.norm_eq_abs _).symm) ?_) hkC
+    refine le_trans (norm_tsum_le_tsum_norm ?_) (le_of_eq ?_)
+    · refine htailsumm.abs.congr (fun m => ?_); split <;> simp
+    · refine tsum_congr (fun m => ?_); split <;> simp
+  calc |(∑ m ∈ Finset.Icc 1 M, (erdosWeight n m - modelSummand n m))
+          + (∑ m ∈ Finset.Icc (M + 1) (n - 1), erdosWeight n m) - tail|
+      ≤ |(∑ m ∈ Finset.Icc 1 M, (erdosWeight n m - modelSummand n m))
+          + (∑ m ∈ Finset.Icc (M + 1) (n - 1), erdosWeight n m)| + |tail| := by
+        rw [sub_eq_add_neg]; exact (abs_add_le _ _).trans_eq (by rw [abs_neg])
+    _ ≤ (|∑ m ∈ Finset.Icc 1 M, (erdosWeight n m - modelSummand n m)|
+          + |∑ m ∈ Finset.Icc (M + 1) (n - 1), erdosWeight n m|) + |tail| := by
+        gcongr; exact abs_add_le _ _
+    _ ≤ KA / (n:ℝ) + KB / (n:ℝ) + KC / (n:ℝ) := by
+        rw [abs_of_nonneg hBnn]
+        have : |∑ m ∈ Finset.Icc (M + 1) (n - 1), erdosWeight n m| = ∑ m ∈ Finset.Icc (M + 1) (n - 1), erdosWeight n m := abs_of_nonneg hBnn
+        linarith [hAbsA, hkB, hAbsTail]
+    _ = (KA + KB + KC) / (n:ℝ) := by ring
+
+/-- **Kernel-mass rate** (§6 conclusion): `|kernelMass n − 1| ≤ K/n`. Triangle inequality on the
+second-order divisor calc (`kernelMass_sub_approx2`) and the √n-cancellation
+(`kernelMassApprox2_cancel_sqrt_term`). -/
+theorem kernelMass_sub_one_rate :
+    ∃ K : ℝ, 0 < K ∧ ∀ᶠ n : ℕ in Filter.atTop, |kernelMass n - 1| ≤ K / (n:ℝ) := by
+  obtain ⟨K1, hK1, h1⟩ := kernelMass_sub_approx2
+  obtain ⟨K2, hK2, h2⟩ := kernelMassApprox2_cancel_sqrt_term
+  refine ⟨K1 + K2, by linarith, ?_⟩
+  filter_upwards [h1, h2] with n hn1 hn2
+  have hrw : kernelMass n - 1
+      = (kernelMass n - kernelMassApprox2 n) + (kernelMassApprox2 n - 1) := by ring
+  calc |kernelMass n - 1|
+      = |(kernelMass n - kernelMassApprox2 n) + (kernelMassApprox2 n - 1)| := by rw [hrw]
+    _ ≤ |kernelMass n - kernelMassApprox2 n| + |kernelMassApprox2 n - 1| := abs_add_le _ _
+    _ ≤ K1 / (n:ℝ) + K2 / (n:ℝ) := by linarith [hn1, hn2]
+    _ = (K1 + K2) / (n:ℝ) := by ring
 
 end AnalyticCombinatorics.Ch8.Partitions.Erdos
