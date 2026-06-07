@@ -137,6 +137,8 @@ import AnalyticCombinatorics.Ch8.Partitions.RenewalAssembly
 import AnalyticCombinatorics.Ch8.Partitions.ErdosConcrete
 import AnalyticCombinatorics.Ch8.Partitions.HitValBound
 import AnalyticCombinatorics.Ch8.Partitions.ErdosRenewalConnect
+import AnalyticCombinatorics.Ch8.Partitions.StepContractionConst
+import AnalyticCombinatorics.Ch8.Partitions.RenewalMultiB
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1273,5 +1275,15 @@ namespace AnalyticCombinatorics.Ch1
 -- for cofinitely many cutoffs J, the normalized partition sequence u converges to a positive limit.
 -- The complete mechanical reduction; only the two analytic walls remain (Γ-convolution local limit).
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.erdos_partition_limit_exists_of_walls
+-- HR mass-rate campaign, brick 70 (§8 R7 multi-scale const engine): the escape mass below a FIXED band
+-- is constant in R (~e^{−cB}), so the escape-split engine needs the multi-scale form — bounded forcing
+-- bounds the limsup, and a null family of bounds drives the tail oscillation to 0.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.limsup_le_of_step_contraction_const
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tendsto_zero_of_limsup_le_all
+-- HR mass-rate campaign, brick 71 (§8 R7 multi-scale §9 assembly): the corrected capstone —
+-- tendsto_of_killed_doeblin_multiB drives convergence from a family of band contractions (overlap δ_B on
+-- band {rnk ≥ R−B} + escape ε_B with 3·ε_B·M/δ_B → 0), reusing doeblin_escape_bound per scale.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tendsto_of_tailOsc_multiB
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tendsto_of_killed_doeblin_multiB
 
 end AnalyticCombinatorics.Ch1
