@@ -144,6 +144,7 @@ import AnalyticCombinatorics.Ch8.Partitions.RenewalAlign
 import AnalyticCombinatorics.Ch8.Partitions.ErdosAlignConnect
 import AnalyticCombinatorics.Ch8.Partitions.ScalarRecSolve
 import AnalyticCombinatorics.Ch8.Partitions.ITERCoupling
+import AnalyticCombinatorics.Ch8.Partitions.CompContraction
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1314,5 +1315,10 @@ namespace AnalyticCombinatorics.Ch1
 -- coupling library; reduces the renewal alignment to windowed minorization (B_W) + the bad-mass bound.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.left_marginal
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.iter_window_overlap
+-- HR mass-rate campaign, brick 77 (§8 R7 center-tracking packaging): tendsto_of_comparable_contraction
+-- — a summable vanishing block-oscillation bound tracking h to its block centers forces convergence;
+-- this is the form that resolves the far-pair obstruction (only comparable-rank control needed, far
+-- pairs handled by the summable center links). The interface the windowed-coupling ITER feeds.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tendsto_of_comparable_contraction
 
 end AnalyticCombinatorics.Ch1
