@@ -107,3 +107,21 @@ band ~R^{1/3} GROWS with R, so the contraction engine wants the growing-band/tai
 B). The ONLY genuine wall left is the OVERLAP / renewal convergence V→0 (comparable-rank Doeblin →
 far-pair convergence) — dispatched to ChatGPT. model_tail_le + erdosWeight_sub_model_le give the
 model-vs-kernel control likely needed for the comparable-rank overlap too.
+
+## RESOLUTION (Opus + ChatGPT R2) — correct capstone banked; lone wall = ErdosAlignment
+ChatGPT R2 confirmed the all-pairs overlap is unprovable (matches my finding) and gave the correct
+deterministic input: the m-step terminal-law ALIGNMENT  ov(P̃^m(i,·),P̃^m(j,·)) ≥ 1−(1−δ)^m−ε (high
+starts). Then |h i−h j| = |μ_i h − μ_j h| ≤ 2M(1−ov) ≤ 2M((1−δ)^m+ε) ⟹ V∞=0. BANKED clean-3:
+  brick 73 RenewalAlign.tendsto_of_renewal_alignment (the capstone, full-support overlap + squeeze);
+  brick 74 ErdosAlignConnect.erdos_partition_limit_exists_of_alignment (reduces HR to ErdosAlignment).
+This SUPERSEDES the conditional-on-false bricks 66/69/71/72 (kept as valid-but-vacuous infra).
+
+### Lone remaining wall: ErdosAlignment J  (the m-step terminal-law overlap)
+Decomposes into:
+  (B′) comparable-rank single-step overlap δ* > 0: for rnk i = rnk j (≥ R₁),
+       ∑_k min(Pker i k, Pker j k) ≥ δ*  — kernel L¹-continuity in the start index; provable from banked
+       erdosWeight_sub_model_le + model_tail_le + kernelMass→1.
+  (ITER) descent-coupling: single-step comparable overlap ⟹ m-step terminal overlap ≥ 1−(1−δ*)^m, via
+       the two chains synchronizing at the shared lower rank levels they both descend through. THE hard
+       analytic core (needs a coupling/overlap-iteration; Mathlib has no Markov coupling). Escape (no big
+       jumps, far_erdos_tail_le) feeds both. Dispatched R3 to ChatGPT for the explicit ITER argument.
