@@ -157,3 +157,20 @@ ACTION FOR XIANG: please relay ChatGPT task 347e784c's full answer (the §9 bloc
   KILLED-kernel-harmonic, not plain-KPow-harmonic; the boundary-absorb (diagonal k=n) breaks the
   predecessor range-n framework. Needs a clean killed-kernel setup (consult should clarify).
 - File D (RESEARCH WALL): FiniteTimeRankDoeblin = Gamma(2,C) L-fold-convolution overlap δ>0. Unchanged.
+
+---
+## UPDATE 5 (Opus): §9 connection CRACKED (no consult needed — bridge capture-failed on 347e784c)
+The gap (TailOsc doesn't contract for far pairs) is resolved by the TAIL-SUP of block oscillation:
+  V R := sup_{s ≥ R} BlockOsc s     (BlockOsc R = osc of h on rank-block [R, R+A))
+V is non-increasing, so the block contraction BlockOsc R ≤ (1−δ)·sup_{R−B≤s≤R−b} BlockOsc s gives
+  V R ≤ (1−δ) · V(R−B)              [since sup_{[R−B,R−b]} BlockOsc ≤ sup_{s≥R−B} BlockOsc = V(R−B)]
+⟹ V → 0 GEOMETRICALLY ⟹ Σ_R V(R) < ∞. Block-centers c_R (h at a rep of block R) have summable links
+(|c_R − c_{R+1}| ≤ comparable-pair contraction ≤ V(R−B)), so c_R is Cauchy → L; and |h n − c_{rank n}|
+≤ BlockOsc(rank n) ≤ V(rank n) → 0, so h → L. Cauchy. NO far-pair overlap needed.
+
+### Deterministic build plan for the §9 connection (all real analysis, given the block contraction):
+1. cauchy_of_geometric_links / cauchySeq_of_summable_dist: summable consecutive distances ⟹ converges.
+2. geometric_of_step: V R ≤ q·V(R−B), V≥0 bdd, 0≤q<1 ⟹ ∃C, ∀R, V R ≤ C·q^{R/B} (⟹ Σ V <∞).
+3. assembly: BlockOsc contraction + harmonic ⟹ V contraction ⟹ centers Cauchy ⟹ h converges.
+Inputs still needed: the BLOCK CONTRACTION (pair_contract ✓ + killed-kernel harmonic + Doeblin overlap),
+i.e. only the killed-kernel harmonic setup + File D (Gamma overlap, the wall) remain hard.
