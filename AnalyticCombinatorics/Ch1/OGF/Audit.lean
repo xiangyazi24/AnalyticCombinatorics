@@ -123,6 +123,7 @@ import AnalyticCombinatorics.Ch8.Partitions.ErdosLimit
 import AnalyticCombinatorics.Ch8.Partitions.DoeblinOverlap
 import AnalyticCombinatorics.Ch8.Partitions.StepContraction
 import AnalyticCombinatorics.Ch8.Partitions.KernelPow
+import AnalyticCombinatorics.Ch8.Partitions.BlockContract
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1197,5 +1198,10 @@ namespace AnalyticCombinatorics.Ch1
 -- finite-time Doeblin overlap and the P^L-harmonic identity for hitVal.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.KPow_nonneg
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.KPow_succ_support
+-- HR mass-rate campaign, brick 56 (§8 R7 Fact-B route — pairwise contraction step): pair_contract —
+-- two points whose iterated transition laws overlap ≥δ over a common support, each η-approximately
+-- harmonic, satisfy |u i − u j| ≤ (1−δ)W + 2η (W = band width of u on the support). The deterministic
+-- heart of the renewal oscillation contraction; δ supplied by the (remaining) finite-time Doeblin overlap.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.pair_contract
 
 end AnalyticCombinatorics.Ch1
