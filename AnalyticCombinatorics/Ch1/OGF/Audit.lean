@@ -1152,5 +1152,11 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Pker_sum_mul
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Pker_mass
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.dres_eq
+-- HR mass-rate campaign, brick 49 (§8 R7 rank-drop facts, shared by both endgame routes): the floor
+-- bounds rnk n ≤ 3√n < rnk n+1, the strict rank drop from a √-gap > 1/3, and window_rank_drop — a
+-- window step m>√n forces √n−√(n−m) > 1/2 > 1/3 hence rnk(n−m) < rnk n. Feeds the leave-probability
+-- (hit-approx pot bound) and the support-slab / Doeblin overlap (oscillation-contraction route).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.rnk_sqrt_bounds
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.window_rank_drop
 
 end AnalyticCombinatorics.Ch1

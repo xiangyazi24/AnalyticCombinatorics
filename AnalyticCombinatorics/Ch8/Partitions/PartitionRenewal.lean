@@ -104,4 +104,44 @@ lemma dres_eq {n : ℕ} (hn : 2 ≤ n) :
   rw [show (∑ m ∈ Finset.Icc 1 (n - 1), erdosWeight n m * u (n - m)) = u n - boundaryTerm n by
     have hrec := u_recurrence n hn; linarith]
 
+/-- Floor bounds tying `rnk n = ⌊3√n⌋` to `√n`: `rnk n ≤ 3√n < rnk n + 1`. -/
+lemma rnk_sqrt_bounds (n : ℕ) :
+    (rnk n : ℝ) ≤ 3 * Real.sqrt n ∧ 3 * Real.sqrt n < (rnk n : ℝ) + 1 := by
+  unfold rnk
+  exact ⟨Nat.floor_le (by positivity), Nat.lt_floor_add_one _⟩
+
+/-- A `√`-gap exceeding `1/3` forces a strict rank drop (since `rnk = ⌊3√·⌋`). -/
+lemma rnk_lt_of_sqrt_gap {n k : ℕ} (h : (1:ℝ)/3 < Real.sqrt n - Real.sqrt k) :
+    rnk k < rnk n := by
+  unfold rnk
+  rw [← Nat.add_one_le_iff]
+  apply Nat.le_floor
+  push_cast
+  have hfk : (⌊3 * Real.sqrt k⌋₊ : ℝ) ≤ 3 * Real.sqrt k := Nat.floor_le (by positivity)
+  linarith
+
+/-- **Window steps drop rank.** If `√n < m` (the window lower edge `a₀=1`) then the predecessor
+`n − m` has strictly smaller rank: `√n − √(n−m) > 1/2 > 1/3`. -/
+lemma window_rank_drop {n m : ℕ} (hn : 1 ≤ n) (hmn : m < n)
+    (hmlb : Real.sqrt (n : ℝ) < (m : ℝ)) :
+    rnk (n - m) < rnk n := by
+  apply rnk_lt_of_sqrt_gap
+  have hnpos : (0:ℝ) < n := by exact_mod_cast hn
+  have ha : 0 < Real.sqrt n := Real.sqrt_pos.mpr hnpos
+  have hble : Real.sqrt ((n - m : ℕ) : ℝ) ≤ Real.sqrt n :=
+    Real.sqrt_le_sqrt (by exact_mod_cast Nat.sub_le n m)
+  have hcast : ((n - m : ℕ) : ℝ) = (n : ℝ) - m := by rw [Nat.cast_sub (le_of_lt hmn)]
+  have hprod : (Real.sqrt n - Real.sqrt ((n - m : ℕ) : ℝ))
+      * (Real.sqrt n + Real.sqrt ((n - m : ℕ) : ℝ)) = (m : ℝ) := by
+    have e1 : Real.sqrt n ^ 2 = (n : ℝ) := Real.sq_sqrt hnpos.le
+    have e2 : Real.sqrt ((n - m : ℕ) : ℝ) ^ 2 = (n : ℝ) - m := by
+      rw [Real.sq_sqrt (by positivity), hcast]
+    nlinarith [e1, e2]
+  have hsumpos : 0 < Real.sqrt n + Real.sqrt ((n - m : ℕ) : ℝ) := by linarith [Real.sqrt_nonneg ((n - m : ℕ) : ℝ)]
+  have hgap : Real.sqrt n - Real.sqrt ((n - m : ℕ) : ℝ)
+      = (m : ℝ) / (Real.sqrt n + Real.sqrt ((n - m : ℕ) : ℝ)) := by
+    rw [eq_div_iff (ne_of_gt hsumpos)]; exact hprod
+  rw [hgap, lt_div_iff₀ hsumpos]
+  nlinarith [hmlb, hble, ha]
+
 end AnalyticCombinatorics.Ch8.Partitions.Erdos
