@@ -276,3 +276,33 @@ each record so it does not accumulate). Do NOT write Lean against an uncracked d
 Building blocks ready (banked): u_recurrence, boundaryTerm_negligible, u_local_high_forward_fill,
 u_local_lower_from_monotone, erdos_kernel_fixed_window_pos, u_limsup_finite, u_liminf_positive,
 kernelMass_sub_one_rate, u_tendsto_of_record_covers (consumes hhigh/hlow), erdos_limit_pos_of_tendsto.
+
+---
+
+## UPDATE 7 (Opus): R7 RESOLVED at design level (ChatGPT Pro consult, task 19e127f1).
+
+**CRITICAL FINDING: the intended hhigh/hlow are UNPROVABLE from inputs (1)-(5) alone.**
+Countermodel: u_n = 1 + a·A(n)·sin(log log(n+e^e)), A(n)↑1 slowly. It is bounded/positive (3),
+slowly varying so b(n)→0 (1), forward-fill (4) holds (osc over O(√n) window →0), mass (2)+(5) are
+kernel facts. Yet u_n oscillates O(1) over the log-log scale → hhigh false. My (√N−√k)·const
+accumulation diagnosis was correct: a fixed-ε per-window pullback CANNOT work.
+
+**THE FIX — summable defect in t=√n.** Define the per-n defect
+  E(n) := |b(n)| + M·|kernelMass n − 1| + (kernel tail-mass beyond window)·M.
+Require Σ_{j≥J} sup_{j²≤n<(j+1)²} E(n) → 0 as J→∞ (summable when grouped by √n-windows).
+For the genuine partition kernel this HOLDS (and is the missing strong input):
+  - b(n) = boundaryTerm n = σ(n)·e^{−C√n}  → exponentially small (boundaryTerm_negligible, and
+    much stronger: summable even after ×poly).
+  - mass defect |kernelMass n − 1| ≤ K/n = O(1/t²)  → Σ_j K/j² converges. (kernelMass_sub_one_rate!)
+  - kernel tail mass beyond window: exp-small (far_erdos_tail_le / right_half_kernel_sum_le).
+The record pullback then bounds u N − u k ≤ Σ_{√k ≤ t ≤ √N} E(window_t) ≤ (tail of convergent Σ E),
+which → 0 as k→∞ — NO accumulation. This gives hhigh/hlow with ε := that tail sum.
+
+**Correct lemma chain to build (replaces the fixed-ε fill route):**
+1. `window_defect_summable` : Σ over √n-windows of E(n) converges (uses kernelMass_sub_one_rate O(1/n),
+   boundaryTerm exp-small, far tail exp-small). The 1/n grouped by t=√n gives Σ 1/t² (convergent).
+2. `record_pullback_one_window` : N high-record, window I_N mass ≥μ ⟹ u N − u(N−m) ≤ E(N)/μ-ish for
+   the window pullback (from u_recurrence: u N = Σ W u(N−m)+b, max ⟹ near-max in window up to defect).
+3. `osc_tail_le_defect_tail` : oscillation of u on [N₀,∞) ≤ Σ_{t≥√N₀} (window defects) → 0.
+4. hhigh/hlow ⟹ u_tendsto_of_record_covers ⟹ erdos_partition_limit_exists.
+Full ChatGPT answer (truncated capture) saved: HANDOFF/r7-chatgpt-summable-defect.md.
