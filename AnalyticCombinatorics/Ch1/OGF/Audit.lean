@@ -121,6 +121,7 @@ import AnalyticCombinatorics.Ch8.Partitions.RenewalHitPot
 import AnalyticCombinatorics.Ch8.Partitions.PartitionRenewal
 import AnalyticCombinatorics.Ch8.Partitions.ErdosLimit
 import AnalyticCombinatorics.Ch8.Partitions.DoeblinOverlap
+import AnalyticCombinatorics.Ch8.Partitions.StepContraction
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1185,5 +1186,9 @@ namespace AnalyticCombinatorics.Ch1
 -- The contraction coefficient for the oscillation-contraction route to Fact B (ChatGPT 12a957cc).
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.subprob_avg_diff
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.doeblin_average_diff_bound
+-- HR mass-rate campaign, brick 54 (§8 R7 Fact-B route, File C — oscillation→0 engine):
+-- tendsto_zero_of_step_contraction — W(n+L) ≤ q·W(n)+e_n with 0≤q<1, e→0 ⟹ W→0 (forcing need only
+-- vanish, not be summable). The convergence driver for the Doeblin block-oscillation contraction.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tendsto_zero_of_step_contraction
 
 end AnalyticCombinatorics.Ch1
