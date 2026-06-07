@@ -1110,5 +1110,6 @@ namespace AnalyticCombinatorics.Ch1
 -- defect Δ_N=(|b(N)|+M|S_N−1|+M·prefixTail)/μ of u N. (ChatGPT consult: (1)-(5) alone are insufficient
 -- — countermodel — so the honest route needs this quantitative defect, summable in t=√n.)
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.exists_window_near_max
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.exists_window_near_min
 
 end AnalyticCombinatorics.Ch1
