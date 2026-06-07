@@ -56,3 +56,17 @@ wiring toward (a) (tail-sup + full-support overlap). Keep (b)/(c) as fallbacks. 
 finding means the FINAL connection (`tendsto_of_killed_doeblin` / `DoeblinWalls`) will likely be
 re-stated against `tailsup_summable` rather than the escape-split — a framework revision, flagged here
 because it touches banked code.
+
+## UPDATE (resolution of the escape-constant subtlety — multi-scale engine)
+The escape-constant problem is resolved WITHOUT a growing-step recursion, by a multi-scale limit:
+  • for each fixed band width B: `V(R) ≤ (1−δ_B)·V(R−B) + δ_B·bnd B` (R ≥ R₀(B)), where
+    `bnd B = 3·ε_B·M/δ_B` and ε_B = escape mass below band B for the L_B-step kernel;
+  • `limsup_le_of_step_contraction_const` (banked) ⟹ `limsup V ≤ bnd B`;
+  • this holds for EVERY B, and `bnd B → 0` (ε_B = e^{−cB} → 0, δ_B ≥ δ₀ > 0 since L_B ~ B steps
+    over-mix the band) ⟹ `tendsto_zero_of_limsup_le_all` (banked) ⟹ `V → 0` ⟹ h converges.
+Engine banked in StepContractionConst.lean; the multi-scale capstone in RenewalMultiB.lean
+(`tendsto_of_tailOsc_multiB`, `tendsto_of_killed_doeblin_multiB`), reusing `doeblin_escape_bound`
+unchanged. The two analytic walls are now correctly B-indexed:
+  WALL 1':  ∀ B, overlap δ_B > 0 on band {rnk ≥ R−B} for the L_B-step killed kernel (δ_B ≥ δ₀);
+  WALL 2':  ∀ B, escape mass below band B ≤ ε_B, with 3·ε_B·M/δ_B → 0  (ε_B → 0 fast).
+This is the genuine renewal structure (Θ(R)-fold geometric mixing) in a form the banked engine drives.
