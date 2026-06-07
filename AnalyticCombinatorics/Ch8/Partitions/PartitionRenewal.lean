@@ -3,6 +3,9 @@ import AnalyticCombinatorics.Ch8.Partitions.ErdosKernel
 import AnalyticCombinatorics.Ch8.Partitions.KernelBarriers
 import AnalyticCombinatorics.Ch8.Partitions.RenewalSpine
 import AnalyticCombinatorics.Ch8.Partitions.RenewalHitPot
+import AnalyticCombinatorics.Ch8.Partitions.DefectSummable
+import AnalyticCombinatorics.Ch8.Partitions.MassRateApprox2
+import AnalyticCombinatorics.Ch8.Partitions.BarrierLimit
 
 /-!
 # R7 Layer 1: instantiation of the renewal spine to the partition kernel
@@ -143,5 +146,137 @@ lemma window_rank_drop {n m : ℕ} (hn : 1 ≤ n) (hmn : m < n)
     rw [eq_div_iff (ne_of_gt hsumpos)]; exact hprod
   rw [hgap, lt_div_iff₀ hsumpos]
   nlinarith [hmlb, hble, ha]
+
+set_option maxHeartbeats 1000000 in
+/-- **Residual is block-summable** (`herr`): `|dres n| ≤ errFn (rnk n)` eventually, with `errFn ≥ 0`
+summable.  This is the "small summable residual" input both endgame routes need.  Scale via
+`rnk_sqrt_bounds`: `(j/3)² ≤ n < ((j+1)/3)²`, `1/n ≤ 9/j² ≤ 36/(j+1)²`, `n² < ((j+1)/3)⁴ ≤ (16/81)j⁴`,
+`e^{−C√n} ≤ e^{−Cj/3}`. -/
+theorem dres_block_bound :
+    ∃ errFn : ℕ → ℝ, (∀ j, 0 ≤ errFn j) ∧ Summable errFn ∧
+      ∀ᶠ n in Filter.atTop, |dres n| ≤ errFn (rnk n) := by
+  obtain ⟨M, hMpos, hMev⟩ := u_limsup_finite
+  obtain ⟨K, hKpos, hKev⟩ := kernelMass_sub_one_rate
+  have hCpos := C_pos
+  refine ⟨fun j => 72 * M * K / ((j : ℝ) + 1) ^ 2
+      + (32 / 81) * (j : ℝ) ^ 4 * Real.exp (-(C / 3) * (j : ℝ)), ?_, ?_, ?_⟩
+  · intro j; have hM := hMpos.le; have hK := hKpos.le; positivity
+  · apply Summable.add
+    · exact summable_const_div_succ_sq (72 * M * K)
+    · have h := summable_pow_mul_exp_neg (show (0 : ℝ) < C / 3 by linarith) 4
+      exact (h.mul_left (32 / 81)).congr (fun j => by ring)
+  · have hhalf : ∀ᶠ n : ℕ in Filter.atTop, K / (n : ℝ) ≤ 1 / 2 := by
+      have htend : Filter.Tendsto (fun n : ℕ => K / (n : ℝ)) Filter.atTop (nhds 0) := by
+        simpa using tendsto_const_nhds.div_atTop (tendsto_natCast_atTop_atTop)
+      exact htend.eventually_le_const (by norm_num)
+    filter_upwards [hMev, hKev, hhalf, Filter.eventually_ge_atTop 2]
+      with n hMn hKn hhalfn hn2
+    have hn1 : (1 : ℕ) ≤ n := by omega
+    have hnR : (1 : ℝ) ≤ (n : ℝ) := by exact_mod_cast hn1
+    have hnpos : (0 : ℝ) < (n : ℝ) := by linarith
+    -- kernelMass ≥ 1/2 > 0
+    obtain ⟨hSlo, _⟩ := abs_le.1 hKn
+    have hSge : (1 : ℝ) / 2 ≤ kernelMass n := by linarith [hhalfn]
+    have hSpos : (0 : ℝ) < kernelMass n := by linarith
+    -- nonneg facts
+    have hu0 : 0 ≤ u n := (u_pos hn1).le
+    have hb0 : 0 ≤ boundaryTerm n := boundaryTerm_nonneg n
+    have hSabs : |kernelMass n - 1| ≤ K / (n : ℝ) := hKn
+    -- sqrt/scale bounds
+    obtain ⟨hjle, hjlt⟩ := rnk_sqrt_bounds n
+    have hsqrtpos : 0 < Real.sqrt (n : ℝ) := Real.sqrt_pos.mpr hnpos
+    have hsqrt1 : (1 : ℝ) ≤ Real.sqrt (n : ℝ) := by
+      rw [show (1 : ℝ) = Real.sqrt 1 by simp]; exact Real.sqrt_le_sqrt hnR
+    have hj1 : (1 : ℝ) ≤ (rnk n : ℝ) := by
+      have h3 : (3 : ℝ) ≤ (rnk n : ℝ) := by
+        have : (3 : ℝ) ≤ 3 * Real.sqrt (n : ℝ) := by linarith
+        calc (3 : ℝ) = ((3 : ℕ) : ℝ) := by norm_num
+          _ ≤ (rnk n : ℝ) := by
+              rw [Nat.cast_le]; unfold rnk; exact Nat.le_floor (by push_cast; linarith)
+      linarith
+    have hjpos : (0 : ℝ) < (rnk n : ℝ) := by linarith
+    have hsqrt_lb : (rnk n : ℝ) / 3 ≤ Real.sqrt (n : ℝ) := by linarith
+    have hsqrt_ub : Real.sqrt (n : ℝ) < ((rnk n : ℝ) + 1) / 3 := by linarith
+    have hsqsq : Real.sqrt (n : ℝ) ^ 2 = (n : ℝ) := Real.sq_sqrt hnpos.le
+    -- n ≥ (j/3)²  ⟹  1/n ≤ 9/j²
+    have hn_lb : ((rnk n : ℝ) / 3) ^ 2 ≤ (n : ℝ) := by
+      rw [← hsqsq]; apply pow_le_pow_left₀ (by positivity) hsqrt_lb
+    have hinv : (1 : ℝ) / (n : ℝ) ≤ 9 / (rnk n : ℝ) ^ 2 := by
+      rw [div_le_div_iff₀ hnpos (by positivity)]
+      nlinarith [hn_lb, hjpos]
+    -- n < ((j+1)/3)²  ⟹  n² < ((j+1)/3)⁴
+    have hn_ub : (n : ℝ) < (((rnk n : ℝ) + 1) / 3) ^ 2 := by
+      rw [← hsqsq]; apply pow_lt_pow_left₀ hsqrt_ub hsqrtpos.le (by norm_num)
+    have hnsq_ub : (n : ℝ) ^ 2 < (((rnk n : ℝ) + 1) / 3) ^ 4 := by
+      have h4 : (((rnk n : ℝ) + 1) / 3) ^ 4 = ((((rnk n : ℝ) + 1) / 3) ^ 2) ^ 2 := by ring
+      rw [h4]; apply pow_lt_pow_left₀ hn_ub (by positivity) (by norm_num)
+    -- e^{−C√n} ≤ e^{−Cj/3}
+    have hexp : Real.exp (-C * Real.sqrt (n : ℝ)) ≤ Real.exp (-(C / 3) * (rnk n : ℝ)) := by
+      apply Real.exp_le_exp.mpr
+      have : (C / 3) * (rnk n : ℝ) ≤ C * Real.sqrt (n : ℝ) := by nlinarith [hsqrt_lb, hCpos.le]
+      linarith
+    -- σ(n) ≤ n²  ⟹  boundaryTerm n ≤ n² e^{−C√n}
+    have hb_ub : boundaryTerm n ≤ (n : ℝ) ^ 2 * Real.exp (-C * Real.sqrt (n : ℝ)) := by
+      unfold boundaryTerm
+      apply mul_le_mul_of_nonneg_right (sigmaR_le_square hn1) (Real.exp_nonneg _)
+    -- the dres bound
+    rw [dres_eq (by omega)]
+    have hform : |u n - (u n - boundaryTerm n) / kernelMass n|
+        = |u n * (kernelMass n - 1) + boundaryTerm n| / kernelMass n := by
+      have hinside : u n - (u n - boundaryTerm n) / kernelMass n
+          = (u n * (kernelMass n - 1) + boundaryTerm n) / kernelMass n := by
+        field_simp; ring
+      rw [hinside, abs_div, abs_of_pos hSpos]
+    rw [hform]
+    -- numerator ≤ M·(K/n) + boundaryTerm n
+    have hnum : |u n * (kernelMass n - 1) + boundaryTerm n| ≤ M * (K / (n : ℝ)) + boundaryTerm n := by
+      calc |u n * (kernelMass n - 1) + boundaryTerm n|
+          ≤ |u n * (kernelMass n - 1)| + |boundaryTerm n| := abs_add_le _ _
+        _ = u n * |kernelMass n - 1| + boundaryTerm n := by
+            rw [abs_mul, abs_of_nonneg hu0, abs_of_nonneg hb0]
+        _ ≤ M * (K / (n : ℝ)) + boundaryTerm n := by
+            have hstep : u n * |kernelMass n - 1| ≤ M * (K / (n : ℝ)) :=
+              le_trans (mul_le_mul_of_nonneg_left hSabs hu0)
+                (mul_le_mul_of_nonneg_right hMn (by positivity))
+            linarith [hstep]
+    -- divide by S ≥ 1/2 and bound by errFn
+    have hdiv : |u n * (kernelMass n - 1) + boundaryTerm n| / kernelMass n
+        ≤ 2 * (M * (K / (n : ℝ)) + boundaryTerm n) := by
+      rw [div_le_iff₀ hSpos]
+      have hmkb : 0 ≤ M * (K / (n : ℝ)) + boundaryTerm n :=
+        add_nonneg (mul_nonneg hMpos.le (div_nonneg hKpos.le hnpos.le)) hb0
+      nlinarith [hnum, hSge, hmkb]
+    refine le_trans hdiv ?_
+    -- 2(MK/n + b) ≤ errFn (rnk n)
+    have hMK : 0 ≤ M * K := by positivity
+    have hinv2 : (1 : ℝ) / (n : ℝ) ≤ 36 / ((rnk n : ℝ) + 1) ^ 2 := by
+      have h9 : (9 : ℝ) / (rnk n : ℝ) ^ 2 ≤ 36 / ((rnk n : ℝ) + 1) ^ 2 := by
+        rw [div_le_div_iff₀ (by positivity) (by positivity)]
+        nlinarith [hj1]
+      linarith [hinv, h9]
+    have ht1 : 2 * (M * (K / (n : ℝ))) ≤ 72 * M * K / ((rnk n : ℝ) + 1) ^ 2 := by
+      have hrw : 2 * (M * (K / (n : ℝ))) = 2 * M * K * (1 / (n : ℝ)) := by ring
+      rw [hrw]
+      calc 2 * M * K * (1 / (n : ℝ))
+          ≤ 2 * M * K * (36 / ((rnk n : ℝ) + 1) ^ 2) :=
+            mul_le_mul_of_nonneg_left hinv2 (by positivity)
+        _ = 72 * M * K / ((rnk n : ℝ) + 1) ^ 2 := by ring
+    have ht2 : 2 * boundaryTerm n ≤ (32 / 81) * (rnk n : ℝ) ^ 4 * Real.exp (-(C / 3) * (rnk n : ℝ)) := by
+      have hb2 : boundaryTerm n ≤ (((rnk n : ℝ) + 1) / 3) ^ 4 * Real.exp (-(C / 3) * (rnk n : ℝ)) := by
+        calc boundaryTerm n ≤ (n : ℝ) ^ 2 * Real.exp (-C * Real.sqrt (n : ℝ)) := hb_ub
+          _ ≤ (((rnk n : ℝ) + 1) / 3) ^ 4 * Real.exp (-(C / 3) * (rnk n : ℝ)) := by
+              apply mul_le_mul (le_of_lt hnsq_ub) hexp (Real.exp_nonneg _) (by positivity)
+      have hpoly : (((rnk n : ℝ) + 1) / 3) ^ 4 ≤ (16 / 81) * (rnk n : ℝ) ^ 4 := by
+        have hle : (rnk n : ℝ) + 1 ≤ 2 * (rnk n : ℝ) := by linarith [hj1]
+        have hexp4 : ((rnk n : ℝ) + 1) ^ 4 ≤ 16 * (rnk n : ℝ) ^ 4 := by
+          nlinarith [pow_le_pow_left₀ (show (0:ℝ) ≤ (rnk n : ℝ) + 1 by positivity) hle 4]
+        rw [div_pow, show (3:ℝ) ^ 4 = 81 by norm_num]
+        linarith [hexp4]
+      calc 2 * boundaryTerm n
+          ≤ 2 * ((((rnk n : ℝ) + 1) / 3) ^ 4 * Real.exp (-(C / 3) * (rnk n : ℝ))) := by linarith
+        _ ≤ 2 * ((16 / 81) * (rnk n : ℝ) ^ 4 * Real.exp (-(C / 3) * (rnk n : ℝ))) := by
+            gcongr
+        _ = (32 / 81) * (rnk n : ℝ) ^ 4 * Real.exp (-(C / 3) * (rnk n : ℝ)) := by ring
+    linarith [ht1, ht2]
 
 end AnalyticCombinatorics.Ch8.Partitions.Erdos

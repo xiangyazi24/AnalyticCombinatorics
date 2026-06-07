@@ -1158,5 +1158,10 @@ namespace AnalyticCombinatorics.Ch1
 -- (hit-approx pot bound) and the support-slab / Doeblin overlap (oscillation-contraction route).
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.rnk_sqrt_bounds
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.window_rank_drop
+-- HR mass-rate campaign, brick 50 (§8 R7 residual summability `herr`): |dres n| ≤ errFn (rnk n)
+-- eventually, errFn = 72MK/(j+1)² + (32/81)j⁴e^{−(C/3)j} (≥0, summable via DefectSummable). The
+-- "small summable residual" input both endgame routes need. Scale-converted from dres_eq +
+-- kernelMass_sub_one_rate + u_limsup_finite via rnk_sqrt_bounds + boundaryTerm ≤ n²e^{−C√n}.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.dres_block_bound
 
 end AnalyticCombinatorics.Ch1
