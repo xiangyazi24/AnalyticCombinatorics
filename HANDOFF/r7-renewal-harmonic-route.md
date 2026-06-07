@@ -106,3 +106,30 @@ Pker_mass, dres_eq, dres_block_bound, hP_leave_partition, window_rank_drop, rnk_
 Everything except the Gamma-overlap local-limit (File D) is deterministic and bankable. File D is the
 genuine research bottleneck — the one hard analytic fact. Recommend isolating it as an explicit
 hypothesis (FiniteTimeRankDoeblin) so the rest closes, and attacking it separately.
+
+---
+## UPDATE 3 (Opus, autonomous): Doeblin route — both deterministic ENGINES banked clean-3
+- File A (DoeblinOverlap): doeblin_average_diff_bound ✓ clean-3 (gate GATE_EXIT_0).
+- File C (StepContraction): tendsto_zero_of_step_contraction ✓ clean-3 (W(n+L)≤qW(n)+e, q<1, e→0 ⟹ W→0).
+Both deterministic engines done. Plus the entire convergence reduced to Fact B (ErdosLimit, banked).
+
+### Remaining (precise)
+- File B (TODO, deterministic, moderate): KComp/KPow (kernel composition/power over Finset.range),
+  P^L preserves probability + predecessor support, and hitVal is P^L-harmonic above cutoff
+  (hitVal_J n = ∑ (KPow L P) n k · hitVal_J k) by induction on L from hitVal_eq.
+- CONNECTION (TODO, the subtle design — ChatGPT §9): turn the per-block Doeblin contraction
+  (doeblin_average_diff_bound applied to the P^L-harmonic hitVal: osc of hitVal over a rank-block R
+  ≤ (1−δ)·osc over the lower slab) into the step-contraction form W(R) ≤ q·W(R−B)+e_R that File C
+  consumes. KEY simplification: use a TAIL/monotone oscillation W_R so the window-sup collapses to a
+  single point W(R−B) (W non-increasing ⟹ sup over [R−B,R−b] = W(R−B)); but connecting cross-block
+  pairs (ChatGPT's "arbitrary large ranks") needs care. This design choice (block vs tail) is the
+  main remaining non-mechanical decision — worth Xiang/ChatGPT input.
+- File D (HARD CORE / research wall): FiniteTimeRankDoeblin — overlap((KPow L P) n)((KPow L P) n') ≥ δ
+  for comparable ranks, from the Gamma(2,C) √n-decrement L-fold-convolution density lower bound. NO
+  Mathlib support; the σ(m)-arithmetic local limit. The single irreducible hard analytic fact.
+- File E (TODO): Fact B from B+C+D+connection ⟹ erdos_partition_limit_exists via the banked reduction.
+
+### Bottom line
+Two deterministic engines (A, C) + the full reduction (ErdosLimit) are banked clean-3. Remaining:
+KPow (mechanical), the osc-contraction connection (design subtlety), and the Gamma overlap (research
+wall). The wall is the genuine bottleneck; everything else is deterministic and isolates it.
