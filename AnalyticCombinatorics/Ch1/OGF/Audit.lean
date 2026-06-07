@@ -124,6 +124,7 @@ import AnalyticCombinatorics.Ch8.Partitions.DoeblinOverlap
 import AnalyticCombinatorics.Ch8.Partitions.StepContraction
 import AnalyticCombinatorics.Ch8.Partitions.KernelPow
 import AnalyticCombinatorics.Ch8.Partitions.BlockContract
+import AnalyticCombinatorics.Ch8.Partitions.CenterTracking
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1203,5 +1204,10 @@ namespace AnalyticCombinatorics.Ch1
 -- harmonic, satisfy |u i − u j| ≤ (1−δ)W + 2η (W = band width of u on the support). The deterministic
 -- heart of the renewal oscillation contraction; δ supplied by the (remaining) finite-time Doeblin overlap.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.pair_contract
+-- HR mass-rate campaign, brick 57 (§8 R7 Fact-B route — §9 convergence engine): tendsto_of_center_tracking
+-- — summable tail-sup V of block oscillation + center links (|c(R+1)−c R|≤V R) + tracking
+-- (|h n − c(rank n)|≤V(rank n)) ⟹ h converges. Resolves the far-pair obstruction via the MONOTONE
+-- tail-sup (which contracts geometrically); no overlap for far ranks needed.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tendsto_of_center_tracking
 
 end AnalyticCombinatorics.Ch1
