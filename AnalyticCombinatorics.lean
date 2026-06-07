@@ -143,6 +143,8 @@ import AnalyticCombinatorics.Ch8.Partitions.ErdosRenewalConnect
 import AnalyticCombinatorics.Ch8.Partitions.StepContractionConst
 import AnalyticCombinatorics.Ch8.Partitions.RenewalMultiB
 import AnalyticCombinatorics.Ch8.Partitions.ErdosRenewalConnectMultiB
+import AnalyticCombinatorics.Ch8.Partitions.RenewalAlign
+import AnalyticCombinatorics.Ch8.Partitions.ErdosAlignConnect
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational

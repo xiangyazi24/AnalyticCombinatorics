@@ -140,6 +140,8 @@ import AnalyticCombinatorics.Ch8.Partitions.ErdosRenewalConnect
 import AnalyticCombinatorics.Ch8.Partitions.StepContractionConst
 import AnalyticCombinatorics.Ch8.Partitions.RenewalMultiB
 import AnalyticCombinatorics.Ch8.Partitions.ErdosRenewalConnectMultiB
+import AnalyticCombinatorics.Ch8.Partitions.RenewalAlign
+import AnalyticCombinatorics.Ch8.Partitions.ErdosAlignConnect
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1291,5 +1293,15 @@ namespace AnalyticCombinatorics.Ch1
 -- {rnk ≥ R−B} + escape ≤ ε_B with ε_B/δ_B → 0) hold cofinitely, then u → a > 0. The SATISFIABLE form
 -- of the reduction (the escape need not vanish at any fixed band width).
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.erdos_partition_limit_exists_of_walls_multiB
+-- HR mass-rate campaign, brick 73 (§8 R7 renewal-alignment capstone): tendsto_of_renewal_alignment —
+-- the CORRECT convergence (the all-pairs single-step overlap is false for far-rank pairs). A bounded
+-- function harmonic for every kernel power, whose m-step terminal laws align
+-- (overlap ≥ 1−(1−δ)^m−ε for high starts), converges. Full-support overlap algebra + antitone squeeze.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tendsto_of_renewal_alignment
+-- HR mass-rate campaign, brick 74 (§8 R7 HARDY–RAMANUJAN REDUCTION, correct form):
+-- erdos_partition_limit_exists_of_alignment — if the renewal-alignment (m-step terminal-law overlap
+-- ≥ 1−(1−δ)^m−ε for high-rank starts) holds cofinitely, then u → a > 0. The SATISFIABLE reduction;
+-- the lone remaining analytic wall is ErdosAlignment (comparable-rank overlap + descent coupling).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.erdos_partition_limit_exists_of_alignment
 
 end AnalyticCombinatorics.Ch1
