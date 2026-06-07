@@ -132,6 +132,11 @@ import AnalyticCombinatorics.Ch8.Partitions.StepSummable
 import AnalyticCombinatorics.Ch8.Partitions.TailSup
 import AnalyticCombinatorics.Ch8.Partitions.KilledKernelPow
 import AnalyticCombinatorics.Ch8.Partitions.KilledHarmonic
+import AnalyticCombinatorics.Ch8.Partitions.KilledStochastic
+import AnalyticCombinatorics.Ch8.Partitions.TailOscConverge
+import AnalyticCombinatorics.Ch8.Partitions.DoeblinEscape
+import AnalyticCombinatorics.Ch8.Partitions.TailBand
+import AnalyticCombinatorics.Ch8.Partitions.RenewalAssembly
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational

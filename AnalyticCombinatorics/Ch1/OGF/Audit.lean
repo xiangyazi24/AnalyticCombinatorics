@@ -129,6 +129,11 @@ import AnalyticCombinatorics.Ch8.Partitions.StepSummable
 import AnalyticCombinatorics.Ch8.Partitions.TailSup
 import AnalyticCombinatorics.Ch8.Partitions.KilledKernelPow
 import AnalyticCombinatorics.Ch8.Partitions.KilledHarmonic
+import AnalyticCombinatorics.Ch8.Partitions.KilledStochastic
+import AnalyticCombinatorics.Ch8.Partitions.TailOscConverge
+import AnalyticCombinatorics.Ch8.Partitions.DoeblinEscape
+import AnalyticCombinatorics.Ch8.Partitions.TailBand
+import AnalyticCombinatorics.Ch8.Partitions.RenewalAssembly
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1233,5 +1238,24 @@ namespace AnalyticCombinatorics.Ch1
 -- contraction for hitVal. Proof by induction on L (one-step + Finset.sum_comm + support truncation).
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.killed_harmonic_one
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.killed_harmonic_pow
+-- HR mass-rate campaign, brick 62 (§8 R7 killed-kernel stochasticity): killedKer/KPowK row-stochastic
+-- over range(n+1); the probability-vector hypothesis for the Doeblin contraction.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.killedKer_row_sum
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.KPowK_row_sum
+-- HR mass-rate campaign, brick 63 (§8 R7 tail-osc → convergence): a vanishing tail-oscillation
+-- dominator forces h to be Cauchy along rank→atTop, hence convergent (the §9 endgame).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tendsto_of_tail_osc_to_zero
+-- HR mass-rate campaign, brick 64 (§8 R7 escape-split Doeblin): doeblin_escape_bound — overlap δ on a
+-- high-rank good band + escape mass η gives |∑p·f−∑q·f| ≤ (1−δ)·W + 3ηM (wide-support contraction).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.doeblin_escape_bound
+-- HR mass-rate campaign, brick 65 (§8 R7 tail band): tailOsc sup/inf band — antitone, ≤2M, dominates
+-- pairwise |h i−h j|, and is bounded above by a uniform pairwise bound (lo/W for the escape contraction).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tailOsc_abs_le
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tailOsc_le_of_pairwise
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tail_band
+-- HR mass-rate campaign, brick 66 (§8 R7 §9 FINAL ASSEMBLY): tendsto_of_killed_doeblin — a bounded
+-- KPowK L P̃-harmonic function converges given finite-time Doeblin overlap δ>0 on the high-rank band and
+-- vanishing escape mass. Reduces Hardy–Ramanujan convergence to exactly two analytic kernel facts.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tendsto_of_killed_doeblin
 
 end AnalyticCombinatorics.Ch1
