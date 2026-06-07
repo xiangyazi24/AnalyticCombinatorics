@@ -76,3 +76,33 @@ So {window steps} ⊆ {rank-drop predecessors k=n−m}; ∑_{drop} Pker ≥ ∑_
 - hhit (Fact B): ∀ᶠ J, ∃L, Tendsto (hitVal Pker rnk J u) atTop (𝓝 L).  *** STILL OPEN — consult 12a957cc ***
 - erdos_partition_limit_exists := tendsto_of_uniform_hit_approx (u bdd: u_limsup_finite/u_liminf_positive)
   hbound hhit tail→0; positivity from u_liminf_positive.
+
+---
+## UPDATE 2 (Opus, autonomous): convergence DONE modulo Fact B; Doeblin route File A banked
+MILESTONE: erdos_partition_limit_exists_of_hit (ErdosLimit.lean) BANKED clean-3 — the entire
+Hardy–Ramanujan convergence reduced to ONE hypothesis Fact B = (∀ᶠ J, ∃L, Tendsto (hitVal Pker rnk J u) (𝓝 L)).
+Full chain clean-3: RenewalSpine + RenewalHitPot + PartitionRenewal (Layer 1 complete: Pker/rnk/dres,
+Pker_mass, dres_eq, dres_block_bound, hP_leave_partition, window_rank_drop, rnk_ge_of) + ErdosLimit.
+
+### Doeblin route to Fact B (ChatGPT 12a957cc), progress + plan
+- File A (DoeblinOverlap.lean) BANKED clean-3: subprob_avg_diff, doeblin_average_diff_bound
+  (|∑p f − ∑q f| ≤ (1−δ)·W for overlap≥δ, f in band [lo,lo+W]). The contraction coefficient.
+- File B (TODO): KPow (kernel composition/power) P^L; P^L preserves prob + predecessor support;
+  hitVal is P^L-harmonic above cutoff (hitVal_J n = ∑ (P^L) n k · hitVal_J k). [KComp/KPow defs +
+  prob/support preservation by induction on L.]
+- File C (TODO): osc→0 engine. delayed contraction: W bounded ≥0, e→0, W_R ≤ q·(window-sup W)+e_R,
+  q<1 ⟹ W→0. Cleanest via limsup: Λ=limsup W; limsup(window-sup)=Λ; Λ≤qΛ⟹Λ=0. (Formulation note:
+  the Finset.sup' nonempty in the statement is the annoyance — use limsup or a supplied-bound form.)
+- File D (HARD CORE — the research wall): FiniteTimeRankDoeblin — finite-time overlap
+  overlap((P^L) n)((P^L) n') ≥ δ for ranks within A, from the Gamma(2,C) √n-decrement local limit
+  (L-fold convolution density bounded below on a compact interval). NO Mathlib renewal/local-limit.
+  This is the single irreducible hard analytic fact for the partition kernel (σ(m) arithmetic +
+  n-dependence). Likely needs dedicated effort / Ho-Lin-level input; isolate as a hypothesis.
+- File E (TODO): Fact B from A+B+C+D — hitVal_J is P^L-harmonic, so by doeblin_average_diff_bound its
+  oscillation contracts by (1−δ) per L steps ⟹ vanishing tail osc ⟹ hitVal_J Cauchy ⟹ converges.
+  Then erdos_partition_limit_exists := erdos_partition_limit_exists_of_hit (this).
+
+### Bottom line
+Everything except the Gamma-overlap local-limit (File D) is deterministic and bankable. File D is the
+genuine research bottleneck — the one hard analytic fact. Recommend isolating it as an explicit
+hypothesis (FiniteTimeRankDoeblin) so the rest closes, and attacking it separately.
