@@ -117,6 +117,7 @@ import AnalyticCombinatorics.Ch8.Partitions.BarrierLimit
 import AnalyticCombinatorics.Ch8.Partitions.RecordPullback
 import AnalyticCombinatorics.Ch8.Partitions.DefectSummable
 import AnalyticCombinatorics.Ch8.Partitions.RenewalSpine
+import AnalyticCombinatorics.Ch8.Partitions.RenewalHitPot
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1137,5 +1138,11 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.pot_le_block_sum_of_leave
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.block_sum_le_tail
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tail_tendsto_zero
+-- HR mass-rate campaign, brick 47 (§8 R7 Hit/Pot well-founded construction): the harmonic-extension
+-- and residual-potential functions built by WF recursion on n (sum over (range n).attach carries the
+-- k<n membership for termination), with defining equations recovered via Finset.sum_attach. These
+-- supply the Hit/Pot fixed-point hypotheses that rec_iter_bound and pot_le_block_sum_of_leave consume.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.hitVal_eq
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.potVal_eq
 
 end AnalyticCombinatorics.Ch1
