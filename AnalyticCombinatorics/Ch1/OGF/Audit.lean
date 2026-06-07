@@ -118,6 +118,7 @@ import AnalyticCombinatorics.Ch8.Partitions.RecordPullback
 import AnalyticCombinatorics.Ch8.Partitions.DefectSummable
 import AnalyticCombinatorics.Ch8.Partitions.RenewalSpine
 import AnalyticCombinatorics.Ch8.Partitions.RenewalHitPot
+import AnalyticCombinatorics.Ch8.Partitions.PartitionRenewal
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1144,5 +1145,12 @@ namespace AnalyticCombinatorics.Ch1
 -- supply the Hit/Pot fixed-point hypotheses that rec_iter_bound and pot_le_block_sum_of_leave consume.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.hitVal_eq
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.potVal_eq
+-- HR mass-rate campaign, brick 48 (§8 R7 Layer 1 — partition-kernel instantiation): the predecessor
+-- transition kernel Pker = erdosWeight n (n−k)/kernelMass n, rank ⌊3√n⌋, residual dres, with the
+-- step-reflection reindex (k↦n−k), the folding identity Pker_sum_mul, the probability normalization
+-- Pker_mass (=1), and the residual formula dres_eq = u n − (u n − boundaryTerm n)/kernelMass n.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Pker_sum_mul
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Pker_mass
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.dres_eq
 
 end AnalyticCombinatorics.Ch1

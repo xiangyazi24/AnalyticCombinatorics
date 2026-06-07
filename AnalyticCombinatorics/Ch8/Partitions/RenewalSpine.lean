@@ -84,7 +84,7 @@ theorem rec_iter_bound
     {P : ℕ → ℕ → ℝ} {rank : ℕ → ℕ} {u d e Hit Pot : ℕ → ℝ} {J : ℕ}
     (hP_nonneg : ∀ n k, 0 ≤ P n k)
     (hrec : ∀ n, J ≤ rank n → u n = (∑ k ∈ Finset.range n, P n k * u k) + d n)
-    (herr : ∀ n, |d n| ≤ e (rank n))
+    (herr : ∀ n, J ≤ rank n → |d n| ≤ e (rank n))
     (hHit : ∀ n, Hit n = if rank n < J then u n
               else ∑ k ∈ Finset.range n, P n k * Hit k)
     (hPot : ∀ n, Pot n = if rank n < J then 0
@@ -117,7 +117,7 @@ theorem rec_iter_bound
                 _ ≤ ∑ k ∈ Finset.range n, P n k * Pot k :=
                     Finset.sum_le_sum (fun k hk =>
                       mul_le_mul_of_nonneg_left (ih k (Finset.mem_range.mp hk)) (hP_nonneg n k))
-            · exact herr n
+            · exact herr n hJ'
 
 /-- **Layer 3: potential ≤ block tail (`pot_le_block_sum`).** *Fact A is elementary*: when each
 kernel step strictly decreases `rank` (true for `rank n = ⌊ρ√n⌋`, `ρ > 2/α`, since `m > α√n` forces
