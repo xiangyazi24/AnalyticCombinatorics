@@ -139,6 +139,7 @@ import AnalyticCombinatorics.Ch8.Partitions.HitValBound
 import AnalyticCombinatorics.Ch8.Partitions.ErdosRenewalConnect
 import AnalyticCombinatorics.Ch8.Partitions.StepContractionConst
 import AnalyticCombinatorics.Ch8.Partitions.RenewalMultiB
+import AnalyticCombinatorics.Ch8.Partitions.ErdosRenewalConnectMultiB
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1285,5 +1286,10 @@ namespace AnalyticCombinatorics.Ch1
 -- band {rnk ≥ R−B} + escape ε_B with 3·ε_B·M/δ_B → 0), reusing doeblin_escape_bound per scale.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tendsto_of_tailOsc_multiB
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tendsto_of_killed_doeblin_multiB
+-- HR mass-rate campaign, brick 72 (§8 R7 multi-scale HARDY–RAMANUJAN REDUCTION):
+-- erdos_partition_limit_exists_of_walls_multiB — if the B-indexed Doeblin walls (overlap δ_B on band
+-- {rnk ≥ R−B} + escape ≤ ε_B with ε_B/δ_B → 0) hold cofinitely, then u → a > 0. The SATISFIABLE form
+-- of the reduction (the escape need not vanish at any fixed band width).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.erdos_partition_limit_exists_of_walls_multiB
 
 end AnalyticCombinatorics.Ch1
