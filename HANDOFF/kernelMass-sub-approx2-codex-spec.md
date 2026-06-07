@@ -231,3 +231,48 @@ MISSING: the symmetric low/backward fill, and the percolation assembling hhigh/h
 the u bounds (u_limsup_finite M, u_liminf_positive c). Then:
 `erdos_partition_limit_exists : ∃ L>0, Tendsto u atTop (𝓝 L)` = u_tendsto_of_record_covers (hhigh)(hlow)
 + erdos_limit_pos_of_tendsto (u_liminf_positive).
+
+---
+
+## UPDATE 5 (Opus): §7 u-bounds BANKED (f0164d9). R7 percolation = the remaining hard brick.
+
+origin/main = f0164d9: + u_limsup_finite, u_liminf_positive (unconditional, brick 40). NOTE: uisai2
+github pull is timing out (network) — bank via local push (works); verify via scp files + gate on
+working tree (git HEAD on uisai2 may lag, but the gate builds the scp'd f0164d9 files).
+
+### R7 percolation design notes (the remaining work to erdos_partition_limit_exists)
+u_tendsto_of_record_covers (BANKED) needs hhigh/hlow. Analysis of what's derivable:
+- **hlow one-step**: for k∈[N₀',N], N=lowRecord(min), `u_local_high_forward_fill` at k with r=N−k
+  gives `u k − ε ≤ u(k+r) = u N` ⟹ `u k ≤ u N + ε` — BUT only when `N−k ≤ h√k`. Wide windows
+  (N−k > h√k) need CHAINING, and naive chaining accumulates ~√N·ε (too much).
+- **hhigh**: forward fill gives the WRONG direction (it lower-bounds forward values). hhigh
+  (u N−ε ≤ u k, k≤N, N=max) needs a BACKWARD fill OR the percolation.
+- The hard part is the **record-structured percolation**: partition [N₀',N] at intermediate records
+  so the fill applies within each segment without error accumulation. This is the "kernel-dependent
+  record pullback / percolation" the RecordBasics docstring flags as remaining (it replaced a refuted
+  finite-renewal lemma — so it is genuinely subtle, design carefully, do not guess).
+- Likely need: a symmetric `u_local_low_backward_fill` (mirror of forward fill via
+  u_local_lower_from_monotone read backward) + the percolation lemma assembling hhigh/hlow.
+Then: erdos_partition_limit_exists := u_tendsto_of_record_covers hhigh hlow, +
+erdos_limit_pos_of_tendsto (u_liminf_positive) for L>0.
+
+---
+
+## UPDATE 6 (Opus): R7 crux DIAGNOSED — forward-fill chaining is insufficient (concrete finding).
+
+Attacked hhigh/hlow concretely. Result: the banked `u_local_high_forward_fill` (u n−ε ≤ u(n+r) for
+r ≤ h√n, h=2ε/(CM)) CANNOT establish the covers for wide records:
+- chaining single steps over [k,N] needs ≈(√N−√k)·(2/h) = (√N−√k)·CM/ε steps, each costing ε,
+  so accumulated error ≈ (√N−√k)·CM — grows with window width, NOT ≤ ε.
+- the kernel average (u_recurrence: u n = Σ W(n,m)u(n−m)+boundaryTerm, ΣW→1) shows the MAX u N
+  forces a near-max past value (∃m, u(N−m) ≥ u N−ε/ΣW), but spreading this to ALL window values
+  needs an induction/percolation over intermediate records that I have not closed.
+The correct mechanism (the "record pullback / percolation" RecordBasics flags as remaining — it
+replaced a *refuted* finite-renewal lemma) is genuinely subtle. NEXT: either (a) consult the Erdős
+elementary-proof literature / ChatGPT-Pro for the exact percolation argument, or (b) develop it
+(likely: near-max-pullback by averaging + a record-indexed induction that resets the ε-budget at
+each record so it does not accumulate). Do NOT write Lean against an uncracked design.
+
+Building blocks ready (banked): u_recurrence, boundaryTerm_negligible, u_local_high_forward_fill,
+u_local_lower_from_monotone, erdos_kernel_fixed_window_pos, u_limsup_finite, u_liminf_positive,
+kernelMass_sub_one_rate, u_tendsto_of_record_covers (consumes hhigh/hlow), erdos_limit_pos_of_tendsto.
