@@ -116,6 +116,7 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateApprox2
 import AnalyticCombinatorics.Ch8.Partitions.BarrierLimit
 import AnalyticCombinatorics.Ch8.Partitions.RecordPullback
 import AnalyticCombinatorics.Ch8.Partitions.DefectSummable
+import AnalyticCombinatorics.Ch8.Partitions.RenewalSpine
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1116,5 +1117,12 @@ namespace AnalyticCombinatorics.Ch1
 -- building blocks for the rank-indexed error budget Σⱼ E(j) (ChatGPT c43aa296 cover induction):
 -- Σₜ B/(t+1)² (kernel-mass 1/n rate) + Σₜ tᵏe^{−ct} (boundary & far-tail exp decay).
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.summable_defect_scale
+-- HR mass-rate campaign, brick 44 (§8 R7 renewal route — replaces record-cover, whose 1/μ amplification
+-- is proven intrinsic): the design-independent convergence spine. tendsto_of_uniform_hit_approx (Layer 5:
+-- uniform hit-approximation + vanishing J-tail ⟹ u converges) and rec_iter_bound (Layer 2: Hit/Pot
+-- potential controls the hit-approximation error, strong induction over predecessors). Hard renewal core
+-- (occupation bound + overshoot convergence, from the Gamma(2,C) √n-decrement law) remains open.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tendsto_of_uniform_hit_approx
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.rec_iter_bound
 
 end AnalyticCombinatorics.Ch1
