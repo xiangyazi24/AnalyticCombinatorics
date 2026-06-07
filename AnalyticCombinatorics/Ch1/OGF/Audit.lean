@@ -1090,4 +1090,10 @@ namespace AnalyticCombinatorics.Ch1
 -- + sixth-root exp-beats-poly. Last tail brick for kernelMass_sub_approx2.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.far_erdos_tail_le
 
+-- HR mass-rate campaign, brick 39 (§6→§7 bridge): the kernel-mass rate in o(slack) form —
+-- ∀ρ>0, ∀ᶠ n, |kernelMass n − 1| ≤ ρ·barrierSlack E n. The 1/n rate (#38) beats
+-- barrierSlack = 1/(√n(log(n+E))²) since (log(n+E))²=o(√n) (isLittleO_log_rpow_rpow_atTop).
+-- This is exactly the hypothesis the barrier super/subharmonic theorems consume.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.kernelMass_rate_vs_slack
+
 end AnalyticCombinatorics.Ch1

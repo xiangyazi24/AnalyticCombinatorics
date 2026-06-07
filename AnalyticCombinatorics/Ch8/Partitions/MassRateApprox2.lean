@@ -1020,4 +1020,68 @@ theorem kernelMass_sub_one_rate :
     _ ≤ K1 / (n:ℝ) + K2 / (n:ℝ) := by linarith [hn1, hn2]
     _ = (K1 + K2) / (n:ℝ) := by ring
 
+/-- **Mass rate in `o(slack)` form** (R6 input to the barriers): for every `ρ > 0`, eventually
+`|kernelMass n − 1| ≤ ρ·barrierSlack E n`. The `1/n` rate (`kernelMass_sub_one_rate`) beats
+`barrierSlack E n = 1/(√n·(log(n+E))²)` because `(log(n+E))² = o(√n)`. -/
+theorem kernelMass_rate_vs_slack {E : ℝ} (hE : 3 ≤ E) :
+    ∀ ρ : ℝ, 0 < ρ → ∀ᶠ n : ℕ in Filter.atTop,
+      |kernelMass n - 1| ≤ ρ * barrierSlack E n := by
+  obtain ⟨K, hKpos, hK⟩ := kernelMass_sub_one_rate
+  intro ρ hρ
+  have hElt : (0:ℝ) < E := by linarith
+  have hlittleo : (fun x : ℝ => Real.log x ^ (2:ℝ)) =o[Filter.atTop] (fun x => x ^ (1/2 : ℝ)) :=
+    isLittleO_log_rpow_rpow_atTop (2:ℝ) (by norm_num)
+  have hevR : ∀ᶠ x : ℝ in Filter.atTop,
+      (Real.log x) ^ 2 ≤ (ρ / (4 * K)) * x ^ (1/2 : ℝ) := by
+    have h := hlittleo.def (show (0:ℝ) < ρ / (4 * K) by positivity)
+    filter_upwards [h, Filter.eventually_ge_atTop (1:ℝ)] with x hx hx1
+    have e : Real.log x ^ (2:ℝ) = (Real.log x) ^ 2 := by
+      rw [show (2:ℝ) = ((2:ℕ):ℝ) by norm_num, Real.rpow_natCast]
+    rw [Real.norm_eq_abs, Real.norm_eq_abs, e, abs_of_nonneg (sq_nonneg _),
+      abs_of_nonneg (Real.rpow_nonneg (by linarith) _)] at hx
+    exact hx
+  have hcomp : Filter.Tendsto (fun n : ℕ => (n:ℝ) + E) Filter.atTop Filter.atTop :=
+    Filter.tendsto_atTop_add_const_right _ E tendsto_natCast_atTop_atTop
+  filter_upwards [hK, hcomp.eventually hevR, Filter.eventually_ge_atTop (⌈E⌉₊ + 2)]
+    with n hk hlogn hnE
+  have hn2 : 2 ≤ n := by omega
+  have hnpos : (0:ℝ) < (n:ℝ) := by exact_mod_cast (by omega : 0 < n)
+  have hnE_le : (E:ℝ) ≤ (n:ℝ) := by
+    have h1 : (⌈E⌉₊ : ℝ) ≤ (n:ℝ) := by exact_mod_cast (by omega : ⌈E⌉₊ ≤ n)
+    exact le_trans (Nat.le_ceil _) h1
+  have hL : 0 < Real.log ((n:ℝ) + E) := Real.log_pos (by linarith)
+  have hLsq : 0 < (Real.log ((n:ℝ) + E)) ^ 2 := by positivity
+  have hsqrtn : 0 < Real.sqrt (n:ℝ) := Real.sqrt_pos.mpr hnpos
+  -- (n+E)^{1/2} ≤ 2 √n
+  have hsqrt2 : Real.sqrt 2 ≤ 2 := by
+    rw [show (2:ℝ) = Real.sqrt 4 by rw [show (4:ℝ) = 2 ^ 2 by norm_num, Real.sqrt_sq (by norm_num)]]
+    exact Real.sqrt_le_sqrt (by norm_num)
+  have hroot_le : ((n:ℝ) + E) ^ (1/2 : ℝ) ≤ 2 * Real.sqrt (n:ℝ) := by
+    rw [← Real.sqrt_eq_rpow]
+    calc Real.sqrt ((n:ℝ) + E) ≤ Real.sqrt (2 * (n:ℝ)) := Real.sqrt_le_sqrt (by linarith)
+      _ = Real.sqrt 2 * Real.sqrt (n:ℝ) := Real.sqrt_mul (by norm_num) _
+      _ ≤ 2 * Real.sqrt (n:ℝ) := mul_le_mul_of_nonneg_right hsqrt2 (Real.sqrt_nonneg _)
+  -- hence (log(n+E))² ≤ (ρ/(2K)) √n
+  have hLbound : (Real.log ((n:ℝ) + E)) ^ 2 ≤ (ρ / (2 * K)) * Real.sqrt (n:ℝ) := by
+    calc (Real.log ((n:ℝ) + E)) ^ 2 ≤ (ρ / (4 * K)) * ((n:ℝ) + E) ^ (1/2 : ℝ) := hlogn
+      _ ≤ (ρ / (4 * K)) * (2 * Real.sqrt (n:ℝ)) :=
+          mul_le_mul_of_nonneg_left hroot_le (by positivity)
+      _ = (ρ / (2 * K)) * Real.sqrt (n:ℝ) := by ring
+  -- assemble: K/n ≤ ρ·barrierSlack
+  have hkey : K / (n:ℝ) ≤ ρ * barrierSlack E n := by
+    rw [barrierSlack, mul_one_div, le_div_iff₀ (by positivity), div_mul_eq_mul_div,
+      div_le_iff₀ hnpos]
+    -- K * (√n * L²) ≤ ρ * n
+    have hstep : K * (Real.sqrt (n:ℝ) * (Real.log ((n:ℝ) + E)) ^ 2)
+        ≤ K * (Real.sqrt (n:ℝ) * ((ρ / (2 * K)) * Real.sqrt (n:ℝ))) :=
+      mul_le_mul_of_nonneg_left (mul_le_mul_of_nonneg_left hLbound hsqrtn.le) hKpos.le
+    have heq : K * (Real.sqrt (n:ℝ) * ((ρ / (2 * K)) * Real.sqrt (n:ℝ))) = (ρ / 2) * (n:ℝ) := by
+      rw [show K * (Real.sqrt (n:ℝ) * ((ρ / (2 * K)) * Real.sqrt (n:ℝ)))
+          = (K / (2 * K)) * ρ * (Real.sqrt (n:ℝ) * Real.sqrt (n:ℝ)) by ring,
+        Real.mul_self_sqrt hnpos.le, show K / (2 * K) = 1 / 2 by field_simp]
+      ring
+    rw [heq] at hstep
+    nlinarith [hstep, hρ, hnpos]
+  exact le_trans hk hkey
+
 end AnalyticCombinatorics.Ch8.Partitions.Erdos
