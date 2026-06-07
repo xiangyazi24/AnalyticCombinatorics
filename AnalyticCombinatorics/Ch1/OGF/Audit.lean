@@ -126,6 +126,7 @@ import AnalyticCombinatorics.Ch8.Partitions.KernelPow
 import AnalyticCombinatorics.Ch8.Partitions.BlockContract
 import AnalyticCombinatorics.Ch8.Partitions.CenterTracking
 import AnalyticCombinatorics.Ch8.Partitions.StepSummable
+import AnalyticCombinatorics.Ch8.Partitions.TailSup
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1214,5 +1215,10 @@ namespace AnalyticCombinatorics.Ch1
 -- f≥0 with f(n+B)≤q·f(n), 0≤q<1 ⟹ Summable f (uniformly bounded partial sums: S_m ≤ S_B+q·S_m).
 -- Converts the tail-sup block-osc contraction V(R)≤(1−δ)V(R−B) into Summable V for tendsto_of_center_tracking.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.summable_of_step_le
+-- HR mass-rate campaign, brick 59 (§8 R7 Fact-B route — tail-sup summability): tailsup_summable —
+-- bounded W≥0 with slab contraction W R ≤ q·sSup(W''{s≥R−B}) ⟹ its tail-sup V R := sSup(W''{s≥R})
+-- satisfies V R ≤ q·V(R−B) (monotone domination) hence Summable V. Turns the local comparable-rank
+-- contraction into a global summable bound — the resolution of the §9 far-pair obstruction.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tailsup_summable
 
 end AnalyticCombinatorics.Ch1
