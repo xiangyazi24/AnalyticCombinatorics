@@ -182,3 +182,27 @@ ALIGNMENT is now mechanized as finite-sum algebra (~20 lemmas, no probabilistic 
 
 So HR is now reduced — on the mechanical side, essentially completely — to the single bad-mass/recurrence
 fact (plus the L¹-continuity estimate). That recurrence is the genuine analytic frontier of path A.
+
+## REFINED STRUCTURE (Opus) — center-tracking resolves far pairs; ITER is for COMPARABLE pairs only
+The far-pair obstruction recurs at every "overlap-for-all-pairs" formulation (incl. the E-corrected one):
+a far pair (rnk i = R, rnk j = R+G, G≫m) has overlap ≈ 0 at any fixed m, so V(R)=sup over ALL pairs
+can't be squeezed by overlap. The CORRECT resolution uses the banked `tendsto_of_center_tracking`:
+  • block centers c(R); block oscillation V_blk(R) = osc over COMPARABLE pairs (|rnk i − rnk j| ≤ W);
+  • h converges if  V_blk → 0  AND  ∑_R |c(R+1) − c(R)| < ∞  (summable center links)  AND
+    |h n − c(rnk n)| ≤ V_blk(rnk n)  (tracking).  [exactly the banked CenterTracking interface]
+Far pairs are handled by  |h i − h j| ≤ V_blk(rnk i) + |c(rnk i) − c(rnk j)| + V_blk(rnk j), the middle
+term ≤ tail of the summable links → 0.  The ITER overlap is then needed ONLY for COMPARABLE pairs
+(|rnk i − rnk j| ≤ W) — which IS satisfiable (comparable starts are in the window, so badMass is small
+and they align: overlap ≥ 1 − (1−δ)^m − small).
+
+### So the corrected remaining build:
+(C1) `tendsto_of_block_overlap` capstone: comparable-pair m-step overlap (≥ 1−(1−δ)^m − small) ⟹
+     V_blk → 0 and summable links ⟹ via `tendsto_of_center_tracking` ⟹ h converges. [mechanical]
+(C2) instantiate ITER for the killed kernel (Mpow ↔ KPowK) restricted to comparable pairs. [glue]
+(C3) (B_W) windowed minorization δ ≤ cmass (L¹-continuity). [hard estimate, within reach]
+(C4) comparable-pair bad-mass: for |rnk i − rnk j| ≤ W (≥ J), badMass_t → 0 as both chains descend to
+     the absorbing boundary {rnk < J} (which lies entirely inside the window W ≥ J, so all boundary
+     pairs are "good"). The RATE (geometric in R, for the summable links) is the analytic content —
+     now about COMPARABLE-pair absorption, NOT the far-pair recurrence. Still analysis, but tractable.
+The deep far-pair recurrence/local-CLT is AVOIDED by center-tracking. The lone analytic content is the
+comparable-pair bad-mass decay (C4) + the L¹-continuity (C3). Both lean on the banked model machinery.
