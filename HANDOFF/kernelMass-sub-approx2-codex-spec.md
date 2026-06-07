@@ -203,3 +203,31 @@ kernelMassApprox2 = ∑_{Icc 1 M} modelSummand + ∑'_m (if m≤M then modelSumm
 use `tsum_eq_sum` for the head (finite support on range(M+1)) + the indicator tail; then triangle
 `|∑'_{m>M} modelSummand| ≤ ∑'_m (if m≤M then 0 else |modelSummand|)` (norm_tsum_le_tsum_norm-style).
 Combine: |kernelMass − kernelMassApprox2| ≤ main_range_error_le + far_erdos_tail_le + model_tail_le ≤ K/n.
+
+---
+
+## UPDATE 4 (Opus): ENTIRE §5-6 + bridge BANKED (942e9e8). §7 in progress.
+
+Banked clean-3 this campaign (GitHub main): bricks 30-39 =
+kernelMassApprox2_cancel_sqrt_term, kernelMassApprox2_eq_tsum_model, model_error_moment_bound,
+erdosWeight_sub_model_le, main_range_error_le, model_tail_le, far_erdos_tail_le,
+kernelMass_sub_approx2, kernelMass_sub_one_rate, kernelMass_rate_vs_slack.
+**= the complete kernel-mass rate |kernelMass n − 1| ≤ K/n and its o(slack) form.**
+
+### §7 barrier instantiation (in flight, verifying)
+- Edited BarrierHarmonic: added `upperBarrier_one_pos` + a `∀k,0<upperBarrier A E k` conjunct to
+  `upperBarrier_kernel_superharmonic_of_rate` (A=1<log3, only Audit referenced it → safe sig change).
+- New BarrierLimit.lean: `u_limsup_finite`, `u_liminf_positive` (unconditional u bounds), via the
+  super/subharmonic theorems fed by kernelMass_rate_vs_slack + u_limsup_finite_of_superharmonic /
+  u_liminf_positive_of_subharmonic.
+
+### §7 REMAINING (R7 record percolation — flagged "remain" in RecordBasics docstring)
+The final `∃L, Tendsto u atTop (𝓝 L)` needs `u_tendsto_of_record_covers` (BANKED) fed by:
+- `hhigh : ∀ε>0, ∃N₀, ∀N₀'≥N₀, ∀N highRecordFrom N₀' N, ∀k∈[N₀',N], u N−ε ≤ u k`
+- `hlow  : ∀ε>0, ∃N₀, ∀N₀'≥N₀, ∀N lowRecordFrom  N₀' N, ∀k∈[N₀',N], u k ≤ u N+ε`
+Building blocks (BANKED): `u_local_high_forward_fill {M}(hM)(hupper:∀ᶠ u≤M)` (high values propagate
+forward in a √n-window), `u_local_lower_from_monotone` (per-step), `erdos_limit_pos_of_tendsto`.
+MISSING: the symmetric low/backward fill, and the percolation assembling hhigh/hlow from the fills +
+the u bounds (u_limsup_finite M, u_liminf_positive c). Then:
+`erdos_partition_limit_exists : ∃ L>0, Tendsto u atTop (𝓝 L)` = u_tendsto_of_record_covers (hhigh)(hlow)
++ erdos_limit_pos_of_tendsto (u_liminf_positive).

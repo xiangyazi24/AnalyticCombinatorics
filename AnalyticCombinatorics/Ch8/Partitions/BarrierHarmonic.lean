@@ -97,11 +97,22 @@ private lemma kernel_sum_split (a b : ℝ) (n : ℕ) (g : ℕ → ℝ) :
 if `|kernelMass n − 1| ≤ ρ·barrierSlack E n` eventually, then for a suitable `A` the kernel
 average of `upperBarrier A E` sits below `upperBarrier A E n − δ·slack`.
 -/
+lemma upperBarrier_one_pos {E : ℝ} (hE : 3 ≤ E) (k : ℕ) : 0 < upperBarrier 1 E k := by
+  have hkE : (0:ℝ) < (k:ℝ) + E := by have := Nat.cast_nonneg (α := ℝ) k; linarith
+  have hlog : 1 < Real.log ((k:ℝ) + E) := by
+    rw [Real.lt_log_iff_exp_lt hkE]
+    have := Real.exp_one_lt_three
+    have hk := Nat.cast_nonneg (α := ℝ) k
+    linarith
+  rw [upperBarrier]
+  have hdiv : 1 / Real.log ((k:ℝ) + E) < 1 := by rw [div_lt_one (by linarith)]; linarith
+  linarith
+
 theorem upperBarrier_kernel_superharmonic_of_rate
     {E : ℝ} (hE : 3 ≤ E)
     (hrate : ∀ ρ : ℝ, 0 < ρ →
       ∀ᶠ n : ℕ in atTop, |kernelMass n - 1| ≤ ρ * barrierSlack E n) :
-    ∃ A δ : ℝ, 0 < A ∧ 0 < δ ∧
+    ∃ A δ : ℝ, 0 < A ∧ 0 < δ ∧ (∀ k : ℕ, 0 < upperBarrier A E k) ∧
       ∀ᶠ n : ℕ in atTop,
         (∑ m ∈ Finset.Icc 1 (n - 1), erdosWeight n m * upperBarrier A E (n - m))
           ≤ upperBarrier A E n - δ * barrierSlack E n := by
@@ -113,7 +124,8 @@ theorem upperBarrier_kernel_superharmonic_of_rate
   have hc : 0 < c := by rw [hcdef, hAdef]; positivity
   set ρ : ℝ := c * μ / 2 with hρdef
   have hρ : 0 < ρ := by rw [hρdef]; positivity
-  refine ⟨A, c * μ - ρ, hA, by rw [hρdef]; nlinarith [mul_pos hc hμ], ?_⟩
+  refine ⟨A, c * μ - ρ, hA, by rw [hρdef]; nlinarith [mul_pos hc hμ],
+    (fun k => by rw [hAdef]; exact upperBarrier_one_pos hE k), ?_⟩
   filter_upwards [barrier_core_gap_on_window hA hE ha₀ hab₀, hwinmass, hrate ρ hρ,
     barrierSlack_eventually_pos hE, upperBarrier_eventually_pos_bdd hA hE,
     eventually_ge_atTop 1] with n hgap hwin hr hsl hbdd hn1
