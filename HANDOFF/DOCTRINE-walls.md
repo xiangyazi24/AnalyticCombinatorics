@@ -125,3 +125,34 @@ Decomposes into:
        the two chains synchronizing at the shared lower rank levels they both descend through. THE hard
        analytic core (needs a coupling/overlap-iteration; Mathlib has no Markov coupling). Escape (no big
        jumps, far_erdos_tail_le) feeds both. Dispatched R3 to ChatGPT for the explicit ITER argument.
+
+## CORRECTION 2 (Opus + ChatGPT R3) — bricks 73/74 alignment also unsatisfiable; correct = windowed ITER
+ChatGPT R3 §0: the clean alignment ov(P̃^m(i,·),P̃^m(j,·)) ≥ 1−(1−δ)^m−ε for arbitrary far ranks is
+FALSE (counterexample: deterministic descent, rank gap > m ⟹ disjoint m-step laws ⟹ overlap 0). So
+bricks 73/74's `halign` hypothesis is unsatisfiable for far pairs — a SECOND conditional-on-false capstone.
+They stay as valid-but-vacuous infra; the correct reduction needs the windowed deterministic ITER.
+
+### Correct structure (ChatGPT R3, saved verbatim in HANDOFF/chatgpt-R3-iter-design.md)
+NO probabilistic coupling — pure finite-sum algebra over the reachable Finset:
+  • (B_W) windowed minorization: |rnk x − rnk y| ≤ W ⟹ ∑_z min(P x z, P y z) ≥ δ. (provable from
+    (B′) exact-rank overlap + local-TV regularity: ov(μ,ν') ≥ ov(μ,ν) − ‖ν−ν'‖₁.)
+  • deterministic coupling pair (ρ_t, U_t): ρ_t = coalesced common-minorant mass, U_t(x,y) = unmatched
+    pair mass. C_{x,y}(z) = if Good_W x y then min(Px z, Py z) else 0; Lres = Px − C, Rres = Py − C;
+    Kres(x,y;a,b) = Lres·Rres/(1−cmass) residual product.
+  • MARGINAL INVARIANT (crux mechanical lemma, induction on t):
+      ρ_t(z) + ∑_y U_t(z,y) = P^t(i,z);  ρ_t(z) + ∑_x U_t(x,z) = P^t(j,z).
+    ⟹ ρ_t ≤ min(μ_t, ν_t) ⟹ ∑ρ_t ≤ overlap(μ_t,ν_t).
+  • CORE INEQ: u_{t+1} = ∑ U_t(x,y)(1−cmass(x,y)) ≤ (1−δ)u_t + δ·b_t,  b_t = unmatched mass OUTSIDE
+    the window. (cmass ≥ δ on good pairs.)
+  • scalar_rec_solve (BUILT, ScalarRecSolve.lean, brick 75): u_m ≤ q^m u_0 + δ∑ q^{m−t−1} e_t.
+  ⟹ iter_window_overlap: overlap(P^m(i,·),P^m(j,·)) ≥ 1 − (1−δ)^m − δ∑(1−δ)^{m−t−1} e_t.
+
+### The LONE deep analytic wall (now precisely isolated): the bad-mass bound
+  b_t = unmatched mass outside the rank window ≤ e_t  (with ∑_{t<m} b_t ≤ E small, the aggregate form is
+  easier). This is the rank-difference walk ENTERING the window — a local-CLT / recurrence statement
+  (A = no-big-jumps, banked, feeds it but does NOT prove it). ChatGPT R3 §7: keep layers separate
+  (A + rank-decrement asymptotics ⟹ bad-mass; B_W ⟹ one-step coalescence; finite-sum ITER ⟹ m-step).
+
+NEXT (mechanical, in progress): build the ITER (ρ_t,U_t marginal invariant + core ineq + iter_window_overlap)
+over the reachable Finset, then the capstone tendsto_of_renewal_alignment' taking (B_W)+bad-mass.
+Lone hard wall left after that: the bad-mass/recurrence local-CLT.
