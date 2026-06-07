@@ -156,3 +156,29 @@ NO probabilistic coupling — pure finite-sum algebra over the reachable Finset:
 NEXT (mechanical, in progress): build the ITER (ρ_t,U_t marginal invariant + core ineq + iter_window_overlap)
 over the reachable Finset, then the capstone tendsto_of_renewal_alignment' taking (B_W)+bad-mass.
 Lone hard wall left after that: the bad-mass/recurrence local-CLT.
+
+## MILESTONE (Opus) — bricks 75-76: the deterministic windowed-coupling ITER is DONE
+ScalarRecSolve.scalar_rec_solve + ITERCoupling.iter_window_overlap banked clean-3. The entire renewal
+ALIGNMENT is now mechanized as finite-sum algebra (~20 lemmas, no probabilistic coupling library):
+  ρ_t (coalesced common minorant) + U_t (unmatched pair mass), marginal invariant
+  ρ_t z + ∑_y U_t z y = P^t i z  (left_marginal/right_marginal, the crux induction) ⟹ ρ_t ≤ min(μ_t,ν_t)
+  ⟹ ∑ρ_t ≤ overlap;  unmatched mass contracts  u_{t+1} ≤ (1−δ)u_t + δ·badMass_t  (umass_core)
+  ⟹ iter_window_overlap:  overlap(P^m i, P^m j) ≥ 1 − (1−δ)^m − δ·∑(1−δ)^{m−t−1}·badMass_t.
+
+### Remaining chain (precisely isolated)
+(1) INSTANTIATION GLUE [mechanical]: apply the abstract ITER (over Fintype `Fin (N+1)`) to the concrete
+    `killedKer Pker rnk J` — Mpow ↔ KPowK correspondence, killedKer stochastic on the reachable set,
+    overlap correspondence.
+(2) E-CORRECTED CAPSTONE [mechanical]: the banked `tendsto_of_renewal_alignment` takes the (false) clean
+    alignment; replace with one consuming iter_window_overlap's E-corrected bound + the V→0 squeeze
+    (forcing → 0 requires sup over high i,j of badMass-sum → 0).
+(3) TWO ANALYTIC WALLS:
+    (B_W) windowed minorization  δ ≤ cmass(x,y) for |rnk x − rnk y| ≤ W  — kernel L¹-continuity in the
+        start index; provable from banked erdosWeight_sub_model_le + model_tail_le + kernelMass→1. [hard
+        but mechanical-ish estimate]
+    (BAD-MASS) badMass_t ≤ e_t with e_t → 0 appropriately — the rank-difference walk entering the rank
+        window; a RECURRENCE / local-CLT statement. **THE lone irreducible analytic wall** (Mathlib has
+        no local-CLT/recurrence for such walks; (A)=far_erdos_tail_le feeds it but does not prove it).
+
+So HR is now reduced — on the mechanical side, essentially completely — to the single bad-mass/recurrence
+fact (plus the L¹-continuity estimate). That recurrence is the genuine analytic frontier of path A.
