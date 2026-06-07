@@ -1084,4 +1084,10 @@ namespace AnalyticCombinatorics.Ch1
 -- surviving exp(−(λ/4)n^{1/6}) ≤ 1/n. Part of kernelMass_sub_approx2.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.model_tail_le
 
+-- HR mass-rate campaign, brick 36 (§5 far-erdosWeight tail): ∑_{m=⌊n^{2/3}⌋+1}^{n-1} erdosWeight ≤ K/n.
+-- Right half (n<2m): right_half_kernel_sum_le (n³exp(−(C/10)√n)) + √n exp-beats-poly. Left far
+-- (2m≤n): block majorants at index ⌊n^{1/6}⌋ + geometric tail (leftBlockMajorant_shifted_tsum_le)
+-- + sixth-root exp-beats-poly. Last tail brick for kernelMass_sub_approx2.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.far_erdos_tail_le
+
 end AnalyticCombinatorics.Ch1

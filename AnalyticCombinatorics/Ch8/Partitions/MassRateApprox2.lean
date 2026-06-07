@@ -26,6 +26,8 @@ open scoped Topology BigOperators
 
 namespace AnalyticCombinatorics.Ch8.Partitions.Erdos
 
+open AnalyticCombinatorics.Ch8.Partitions.Erdos.Close
+
 /-- The model (leading-order) summand of the kernel mass at `m`: the divisor-weighted Lambert term
 whose tsum over `m` is `kernelMassApprox2 n`. -/
 noncomputable def modelSummand (n m : ℕ) : ℝ :=
@@ -694,5 +696,206 @@ theorem model_tail_le :
         have hsplit2 : (B + 1) / (n:ℝ) = B / (n:ℝ) + 1 / (n:ℝ) := by ring
         have h1n : (0:ℝ) ≤ 1 / (n:ℝ) := by positivity
         rw [hsplit2]; linarith
+
+/-- Exp beats poly with a √n exponent: `(n:ℝ)^d · exp(−a·√n) ≤ 1/n` eventually. Engine for the
+right-half `erdosWeight` tail (`right_half_kernel_sum_le` gives `n³·exp(−(C/10)√n)`). -/
+private lemma poly_mul_exp_neg_sqrt_le_inv (a : ℝ) (ha : 0 < a) (d : ℕ) :
+    ∀ᶠ n : ℕ in Filter.atTop,
+      (n:ℝ) ^ d * Real.exp (-a * Real.sqrt (n:ℝ)) ≤ 1 / (n:ℝ) := by
+  have htend : Filter.Tendsto
+      (fun n : ℕ => (n:ℝ) ^ (d + 1) * Real.exp (-a * Real.sqrt (n:ℝ)))
+      Filter.atTop (nhds 0) := by
+    have hreal : Filter.Tendsto
+        (fun x : ℝ => x ^ ((2 * (d + 1) : ℕ) : ℝ) * Real.exp (-a * x))
+        Filter.atTop (nhds 0) :=
+      tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero _ a ha
+    have hroot : Filter.Tendsto (fun n : ℕ => Real.sqrt (n:ℝ)) Filter.atTop Filter.atTop :=
+      Real.tendsto_sqrt_atTop.comp tendsto_natCast_atTop_atTop
+    refine (hreal.comp hroot).congr' ?_
+    filter_upwards [Filter.eventually_ge_atTop 1] with n hn
+    have hn0 : (0:ℝ) ≤ (n:ℝ) := by positivity
+    have hpow : (Real.sqrt (n:ℝ)) ^ ((2 * (d + 1) : ℕ) : ℝ) = (n:ℝ) ^ (d + 1) := by
+      rw [Real.rpow_natCast]
+      calc (Real.sqrt (n:ℝ)) ^ (2 * (d + 1))
+          = ((Real.sqrt (n:ℝ)) ^ 2) ^ (d + 1) := by rw [← pow_mul]
+        _ = (n:ℝ) ^ (d + 1) := by rw [Real.sq_sqrt hn0]
+    simp only [Function.comp]
+    rw [hpow]
+  have h1 : ∀ᶠ n : ℕ in Filter.atTop,
+      (n:ℝ) ^ (d + 1) * Real.exp (-a * Real.sqrt (n:ℝ)) ≤ 1 :=
+    htend.eventually_le_const (by norm_num)
+  filter_upwards [h1, Filter.eventually_ge_atTop 1] with n hn1 hn
+  have hnpos : (0:ℝ) < (n:ℝ) := by exact_mod_cast hn
+  rw [le_div_iff₀ hnpos]
+  have hrw : (n:ℝ) ^ d * Real.exp (-a * Real.sqrt (n:ℝ)) * (n:ℝ)
+      = (n:ℝ) ^ (d + 1) * Real.exp (-a * Real.sqrt (n:ℝ)) := by ring
+  rw [hrw]; exact hn1
+
+/-- Geometric-quadratic tail of the left block majorants: shifting by `K` factors out `exp(−(C/2)K)`
+and a `(K+1)²`, leaving a convergent constant `G = ∑'_j (j+1)²·exp(−C/2)^j`. -/
+private lemma leftBlockMajorant_shifted_tsum_le (K : ℕ) :
+    (∑' j : ℕ, leftBlockMajorant (j + K))
+      ≤ 2 * sigmaQuadConst * ((K:ℝ) + 1) ^ 2
+          * (∑' j : ℕ, ((j:ℝ) + 1) ^ 2 * Real.exp (-(C / 2)) ^ j)
+          * Real.exp (-(C / 2) * (K:ℝ)) := by
+  have hCpos := C_pos
+  have hsQ : 0 ≤ sigmaQuadConst := sigmaQuadConst_pos.le
+  have hr : ‖Real.exp (-(C / 2))‖ < 1 := by
+    rw [Real.norm_eq_abs, abs_of_pos (Real.exp_pos _)]
+    exact Real.exp_lt_one_iff.mpr (by linarith)
+  have hGsumm : Summable (fun j : ℕ => ((j:ℝ) + 1) ^ 2 * Real.exp (-(C / 2)) ^ j) := by
+    have h2 := summable_pow_mul_geometric_of_norm_lt_one (R := ℝ) 2 hr
+    have h1 := summable_pow_mul_geometric_of_norm_lt_one (R := ℝ) 1 hr
+    have h0 := summable_pow_mul_geometric_of_norm_lt_one (R := ℝ) 0 hr
+    refine ((h2.add (h1.mul_left 2)).add h0).congr (fun j => ?_)
+    ring
+  have hLsumm : Summable (fun j : ℕ => leftBlockMajorant (j + K)) :=
+    summable_leftBlockMajorant.comp_injective (add_left_injective K)
+  have hRsumm : Summable (fun j : ℕ => (2 * sigmaQuadConst * ((K:ℝ) + 1) ^ 2 *
+      Real.exp (-(C / 2) * (K:ℝ))) * (((j:ℝ) + 1) ^ 2 * Real.exp (-(C / 2)) ^ j)) :=
+    hGsumm.mul_left _
+  have hbound : ∀ j : ℕ, leftBlockMajorant (j + K)
+      ≤ (2 * sigmaQuadConst * ((K:ℝ) + 1) ^ 2 * Real.exp (-(C / 2) * (K:ℝ))) *
+          (((j:ℝ) + 1) ^ 2 * Real.exp (-(C / 2)) ^ j) := by
+    intro j
+    rw [leftBlockMajorant]
+    have hexp : Real.exp (-(C / 2) * ((j + K : ℕ) : ℝ))
+        = Real.exp (-(C / 2) * (K:ℝ)) * Real.exp (-(C / 2)) ^ j := by
+      rw [← Real.exp_nat_mul, ← Real.exp_add]; congr 1; push_cast; ring
+    rw [hexp]
+    have hle : (((j + K : ℕ) + 1 : ℕ) : ℝ) ≤ ((K:ℝ) + 1) * ((j:ℝ) + 1) := by
+      push_cast
+      nlinarith [(Nat.cast_nonneg j : (0:ℝ) ≤ (j:ℝ)), (Nat.cast_nonneg K : (0:ℝ) ≤ (K:ℝ))]
+    have hsq : (((j + K : ℕ) + 1 : ℕ) : ℝ) ^ 2 ≤ ((K:ℝ) + 1) ^ 2 * ((j:ℝ) + 1) ^ 2 := by
+      have h0 : (0:ℝ) ≤ (((j + K : ℕ) + 1 : ℕ) : ℝ) := by positivity
+      nlinarith [hle, h0]
+    have hfac : (0:ℝ) ≤ Real.exp (-(C / 2) * (K:ℝ)) * Real.exp (-(C / 2)) ^ j := by positivity
+    nlinarith [hsq, hsQ, hfac, mul_nonneg hsQ hfac,
+      mul_nonneg (mul_nonneg hsQ hfac) (sq_nonneg ((j:ℝ) + 1))]
+  calc (∑' j : ℕ, leftBlockMajorant (j + K))
+      ≤ ∑' j : ℕ, (2 * sigmaQuadConst * ((K:ℝ) + 1) ^ 2 * Real.exp (-(C / 2) * (K:ℝ))) *
+          (((j:ℝ) + 1) ^ 2 * Real.exp (-(C / 2)) ^ j) :=
+        Summable.tsum_le_tsum hbound hLsumm hRsumm
+    _ = 2 * sigmaQuadConst * ((K:ℝ) + 1) ^ 2 *
+          (∑' j : ℕ, ((j:ℝ) + 1) ^ 2 * Real.exp (-(C / 2)) ^ j) * Real.exp (-(C / 2) * (K:ℝ)) := by
+        rw [tsum_mul_left]; ring
+
+/-- **Far-`erdosWeight` tail** (§5 brick 6): `∑_{m=⌊n^{2/3}⌋+1}^{n-1} erdosWeight n m ≤ K/n`. Split
+at `n<2m` (right half, `right_half_kernel_sum_le` + √n exp-beats-poly) vs `2m≤n` (left far, block
+majorants at index `Kn=⌊n^{1/6}⌋` + geometric tail + sixth-root exp-beats-poly). -/
+theorem far_erdos_tail_le :
+    ∃ K : ℝ, 0 < K ∧ ∀ᶠ n : ℕ in Filter.atTop,
+      (∑ m ∈ Finset.Icc (⌊(n:ℝ) ^ (2/3 : ℝ)⌋₊ + 1) (n - 1), erdosWeight n m) ≤ K / (n:ℝ) := by
+  have hCpos := C_pos
+  have hsQ : 0 ≤ sigmaQuadConst := sigmaQuadConst_pos.le
+  set G : ℝ := ∑' j : ℕ, ((j:ℝ) + 1) ^ 2 * Real.exp (-(C / 2)) ^ j with hGdef
+  have hGnn : 0 ≤ G := by rw [hGdef]; exact tsum_nonneg (fun j => by positivity)
+  have hKLnn : 0 ≤ 8 * sigmaQuadConst * G * Real.exp (C / 2) :=
+    mul_nonneg (mul_nonneg (mul_nonneg (by norm_num) hsQ) hGnn) (Real.exp_pos _).le
+  refine ⟨1 + 8 * sigmaQuadConst * G * Real.exp (C / 2) + 1, by linarith, ?_⟩
+  filter_upwards [poly_mul_exp_neg_sqrt_le_inv (C / 10) (by linarith) 3,
+    poly_mul_exp_neg_sixthRoot_le_inv (C / 2) (by linarith) 2,
+    Filter.eventually_ge_atTop 2] with n hsqrt hsixth hn2
+  have hn1 : 1 ≤ n := by omega
+  have hn0' : 0 < n := by omega
+  have hnpos : (0:ℝ) < (n:ℝ) := by exact_mod_cast hn1
+  have hnge1 : (1:ℝ) ≤ (n:ℝ) := by exact_mod_cast hn1
+  have hs0 : 0 < Real.sqrt (n:ℝ) := Real.sqrt_pos.mpr hnpos
+  have hew_nn : ∀ m, 0 ≤ erdosWeight n m := fun m => by
+    rw [erdosWeight]
+    exact mul_nonneg (div_nonneg (sigmaR_nonneg m) (by positivity)) (Real.exp_pos _).le
+  set M : ℕ := ⌊(n:ℝ) ^ (2/3 : ℝ)⌋₊ with hMdef
+  set Kn : ℕ := ⌊(n:ℝ) ^ (1/6 : ℝ)⌋₊ with hKndef
+  -- split each term: erdosWeight = right-indicator + left-indicator
+  have hsplit : ∀ m : ℕ, erdosWeight n m
+      = (if n < 2 * m then erdosWeight n m else 0) + (if 2 * m ≤ n then erdosWeight n m else 0) := by
+    intro m; rcases lt_or_ge n (2 * m) with h | h
+    · rw [if_pos h, if_neg (by omega)]; ring
+    · rw [if_neg (by omega), if_pos h]; ring
+  rw [Finset.sum_congr rfl (fun m _ => hsplit m), Finset.sum_add_distrib]
+  -- right half ≤ 1/n
+  have hright : (∑ m ∈ Finset.Icc (M + 1) (n - 1), if n < 2 * m then erdosWeight n m else 0)
+      ≤ 1 / (n:ℝ) := by
+    have h1 : (∑ m ∈ Finset.Icc (M + 1) (n - 1), if n < 2 * m then erdosWeight n m else 0)
+        ≤ (n:ℝ) ^ 3 * Real.exp (-(C / 10) * Real.sqrt (n:ℝ)) := by
+      refine le_trans (Finset.sum_le_sum_of_subset_of_nonneg
+        (Finset.Icc_subset_Icc (by omega) le_rfl) (fun m _ _ => ?_)) (right_half_kernel_sum_le n)
+      split
+      · exact hew_nn m
+      · exact le_rfl
+    linarith [h1, hsqrt]
+  -- left far ≤ 8 sQ G exp(C/2) / n
+  have hKn_le : (Kn:ℝ) ≤ (n:ℝ) ^ (1/6 : ℝ) := Nat.floor_le (by positivity)
+  have h16le : (n:ℝ) ^ (1/6 : ℝ) ≤ (n:ℝ) := by
+    calc (n:ℝ) ^ (1/6 : ℝ) ≤ (n:ℝ) ^ (1:ℝ) :=
+          Real.rpow_le_rpow_of_exponent_le hnge1 (by norm_num)
+      _ = (n:ℝ) := Real.rpow_one _
+  have hKnge : (n:ℝ) ^ (1/6 : ℝ) - 1 ≤ (Kn:ℝ) := by
+    have := Nat.lt_floor_add_one ((n:ℝ) ^ (1/6 : ℝ)); rw [← hKndef] at this; linarith
+  have hleft : (∑ m ∈ Finset.Icc (M + 1) (n - 1), if 2 * m ≤ n then erdosWeight n m else 0)
+      ≤ 8 * sigmaQuadConst * G * Real.exp (C / 2) * (1 / (n:ℝ)) := by
+    -- relate to the Kn√n ∧ 2m≤n condition
+    have hcond : (∑ m ∈ Finset.Icc (M + 1) (n - 1), if 2 * m ≤ n then erdosWeight n m else 0)
+        ≤ ∑ m ∈ Finset.Icc 1 (n - 1),
+            if (Kn:ℝ) * Real.sqrt (n:ℝ) ≤ (m:ℝ) ∧ 2 * m ≤ n then erdosWeight n m else 0 := by
+      calc (∑ m ∈ Finset.Icc (M + 1) (n - 1), if 2 * m ≤ n then erdosWeight n m else 0)
+          ≤ ∑ m ∈ Finset.Icc (M + 1) (n - 1),
+              if (Kn:ℝ) * Real.sqrt (n:ℝ) ≤ (m:ℝ) ∧ 2 * m ≤ n then erdosWeight n m else 0 := by
+            apply Finset.sum_le_sum; intro m hm
+            rw [Finset.mem_Icc] at hm
+            have hKnm : (Kn:ℝ) * Real.sqrt (n:ℝ) ≤ (m:ℝ) := by
+              have hm_gt : (n:ℝ) ^ (2/3 : ℝ) < (m:ℝ) := by
+                have hlt : (n:ℝ) ^ (2/3 : ℝ) < (M:ℝ) + 1 := by
+                  have := Nat.lt_floor_add_one ((n:ℝ) ^ (2/3 : ℝ)); rw [← hMdef] at this; linarith
+                have hge : (M:ℝ) + 1 ≤ (m:ℝ) := by exact_mod_cast hm.1
+                linarith
+              calc (Kn:ℝ) * Real.sqrt (n:ℝ) ≤ (n:ℝ) ^ (1/6 : ℝ) * Real.sqrt (n:ℝ) :=
+                    mul_le_mul_of_nonneg_right hKn_le (Real.sqrt_nonneg _)
+                _ = (n:ℝ) ^ (2/3 : ℝ) := by
+                    rw [Real.sqrt_eq_rpow, ← Real.rpow_add hnpos]; norm_num
+                _ ≤ (m:ℝ) := le_of_lt hm_gt
+            by_cases h2 : 2 * m ≤ n
+            · rw [if_pos h2, if_pos ⟨hKnm, h2⟩]
+            · rw [if_neg h2, if_neg (fun h => h2 h.2)]
+        _ ≤ _ := Finset.sum_le_sum_of_subset_of_nonneg
+            (Finset.Icc_subset_Icc (by omega) le_rfl) (fun m _ _ => by split_ifs with h; exacts [hew_nn m, le_refl 0])
+    have hchain : (∑ m ∈ Finset.Icc 1 (n - 1),
+        if (Kn:ℝ) * Real.sqrt (n:ℝ) ≤ (m:ℝ) ∧ 2 * m ≤ n then erdosWeight n m else 0)
+        ≤ 2 * sigmaQuadConst * ((Kn:ℝ) + 1) ^ 2 * G * Real.exp (-(C / 2) * (Kn:ℝ)) := by
+      calc _ ≤ ∑ k ∈ Finset.range (numBlocks n),
+              if Kn ≤ k then leftBlockMajorant k else 0 :=
+            left_half_tail_sum_le_block_majorants n Kn hn0'
+        _ ≤ ∑' j : ℕ, leftBlockMajorant (j + Kn) :=
+            finite_block_majorant_tail_le_shifted_tsum _ _
+        _ ≤ _ := leftBlockMajorant_shifted_tsum_le Kn
+    -- (Kn+1)² exp(−(C/2)Kn) ≤ 4 exp(C/2) / n
+    have hKbound : ((Kn:ℝ) + 1) ^ 2 * Real.exp (-(C / 2) * (Kn:ℝ)) ≤ 4 * Real.exp (C / 2) * (1 / (n:ℝ)) := by
+      have hexpKn : Real.exp (-(C / 2) * (Kn:ℝ))
+          ≤ Real.exp (C / 2) * Real.exp (-(C / 2) * (n:ℝ) ^ (1/6 : ℝ)) := by
+        rw [← Real.exp_add]; apply Real.exp_le_exp.mpr; nlinarith [hKnge, hCpos]
+      have hsqle : ((Kn:ℝ) + 1) ^ 2 ≤ 4 * (n:ℝ) ^ 2 := by
+        have : (Kn:ℝ) + 1 ≤ 2 * (n:ℝ) := by
+          have := hKn_le; have := h16le; have : (1:ℝ) ≤ (n:ℝ) := hnge1; nlinarith
+        nlinarith [this, (Nat.cast_nonneg Kn : (0:ℝ) ≤ (Kn:ℝ))]
+      calc ((Kn:ℝ) + 1) ^ 2 * Real.exp (-(C / 2) * (Kn:ℝ))
+          ≤ (4 * (n:ℝ) ^ 2) * (Real.exp (C / 2) * Real.exp (-(C / 2) * (n:ℝ) ^ (1/6 : ℝ))) :=
+            mul_le_mul hsqle hexpKn (Real.exp_pos _).le (by positivity)
+        _ = 4 * Real.exp (C / 2) * ((n:ℝ) ^ 2 * Real.exp (-(C / 2) * (n:ℝ) ^ (1/6 : ℝ))) := by ring
+        _ ≤ 4 * Real.exp (C / 2) * (1 / (n:ℝ)) :=
+            mul_le_mul_of_nonneg_left hsixth (by positivity)
+    calc (∑ m ∈ Finset.Icc (M + 1) (n - 1), if 2 * m ≤ n then erdosWeight n m else 0)
+        ≤ 2 * sigmaQuadConst * ((Kn:ℝ) + 1) ^ 2 * G * Real.exp (-(C / 2) * (Kn:ℝ)) :=
+          le_trans hcond hchain
+      _ = 2 * sigmaQuadConst * G * (((Kn:ℝ) + 1) ^ 2 * Real.exp (-(C / 2) * (Kn:ℝ))) := by ring
+      _ ≤ 2 * sigmaQuadConst * G * (4 * Real.exp (C / 2) * (1 / (n:ℝ))) :=
+          mul_le_mul_of_nonneg_left hKbound (by positivity)
+      _ = 8 * sigmaQuadConst * G * Real.exp (C / 2) * (1 / (n:ℝ)) := by ring
+  have hfinal : 1 / (n:ℝ) + 8 * sigmaQuadConst * G * Real.exp (C / 2) * (1 / (n:ℝ))
+      ≤ (1 + 8 * sigmaQuadConst * G * Real.exp (C / 2) + 1) / (n:ℝ) := by
+    rw [add_div, add_div]; have : (0:ℝ) ≤ 1 / (n:ℝ) := by positivity
+    have h8 : 8 * sigmaQuadConst * G * Real.exp (C / 2) * (1 / (n:ℝ))
+        = (8 * sigmaQuadConst * G * Real.exp (C / 2)) / (n:ℝ) := by ring
+    rw [h8]; linarith
+  linarith [hright, hleft, hfinal]
 
 end AnalyticCombinatorics.Ch8.Partitions.Erdos

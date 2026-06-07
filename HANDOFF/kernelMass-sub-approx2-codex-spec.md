@@ -172,3 +172,34 @@ Just-written (in MassRateApprox2.lean, verifying — the reusable analytic engin
 Remaining: Brick C (model_tail_le, uses both helpers + sharp #119), Brick B (far-erdos tail, block
 majorants + poly helper), Brick D (assembly via Summable.sum_add_tsum_nat_add / tsum_eq_sum).
 Then kernelMass_sub_one_rate = sub_approx2 + cancel (#banked), barriers, R7 records, final theorem.
+
+---
+
+## UPDATE 3 (Opus): Brick C (model_tail_le) BANKED (c34692e). Remaining: Brick B + D.
+
+Banked clean-3: bricks 1-5 (model-id, moment-bound, per-term, main-sum, model-tail) + reusable
+engines poly_mul_exp_neg_sixthRoot_le_inv, sigma_geom_tail_le, abs_modelSummand_le, gTail*.
+
+`model_tail_le : ∃K,0<K ∧ ∀ᶠ n, ∑'_m (if m≤⌊n^{2/3}⌋ then 0 else |modelSummand n m|) ≤ K/n`.
+
+### Brick B remaining: `far_erdos_tail_le : ∃K,0<K ∧ ∀ᶠ n, ∑_{m∈Icc (⌊n^{2/3}⌋+1) (n-1)} erdosWeight n m ≤ K/n`
+Split each m by `n < 2m` (right) vs `2m ≤ n` (left far, m>⌊n^{2/3}⌋):
+- right: `right_half_kernel_sum_le n` ⇒ `≤ n³·exp(−(C/10)√n)`. Need a √n exp-beats-poly:
+  generalize poly_mul_exp_neg_sixthRoot_le_inv to arbitrary rpow exponent p (here p=1/2, d=3):
+  `poly_mul_exp_neg_rpow_le_inv (a)(ha:0<a)(p)(hp:0<p)(d) : ∀ᶠ n, n^d·exp(−a·n^p) ≤ 1/n`
+  (identical proof, 1/6 → p; tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero with exponent (d+1)/p…
+  actually use s=6→ s=⌈(d+1)/p⌉ or just keep the (d+1) rpow_mul algebra general).
+- left far: `left_half_tail_sum_le_block_majorants n K_n` with `K_n := ⌊n^{1/6}⌋` (need
+  `⌊n^{2/3}⌋ < m → K_n·√n ≤ m`, i.e. `K_n·√n ≤ ⌊n^{2/3}⌋`, holds since n^{1/6}·√n = n^{2/3}, floors
+  eventually). Then `finite_block_majorant_tail_le_shifted_tsum` ⇒ `≤ ∑'_j leftBlockMajorant(j+K_n)`.
+  Bound `∑'_j 2·sigmaQuadConst·(j+K_n+1)²·exp(−(C/2)(j+K_n)) ≤ const·(K_n+1)²·exp(−(C/2)K_n)`
+  (helper: `∑'_j (j+K+1)²·r^j ≤ poly(K)/(1−r)³`, r=exp(−C/2)<1; or shift +K out:
+  `=r^K·∑'_j(j+K+1)²r^j`). With K_n≈n^{1/6}: `(n^{1/6})²·exp(−(C/2)n^{1/6}) ≤ K/n` via the rpow
+  exp-beats-poly helper (p=1/6, d=… after relating exp(−(C/2)⌊n^{1/6}⌋) to exp(−c·n^{1/6})).
+
+### Brick D remaining: assembly (see UPDATE/UPDATE2 above), now model-tail in the indicator form
+`∑'_m (if m≤M then 0 else |modelSummand n m|)` — matches the tsum-split:
+kernelMassApprox2 = ∑_{Icc 1 M} modelSummand + ∑'_m (if m≤M then modelSummand else 0)'s complement…
+use `tsum_eq_sum` for the head (finite support on range(M+1)) + the indicator tail; then triangle
+`|∑'_{m>M} modelSummand| ≤ ∑'_m (if m≤M then 0 else |modelSummand|)` (norm_tsum_le_tsum_norm-style).
+Combine: |kernelMass − kernelMassApprox2| ≤ main_range_error_le + far_erdos_tail_le + model_tail_le ≤ K/n.
