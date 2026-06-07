@@ -226,3 +226,46 @@ power P̃^L gives the law used in pair_contract (overlap δ from File D).
    converges (Fact B) ⟹ erdos_partition_limit_exists. [sSup block-osc, intricate]
 3. FILE D (RESEARCH WALL): FiniteTimeRankDoeblin = Gamma(2,C) L-fold-convolution overlap δ>0. Unchanged.
 All abstract engines + the §9 argument are DONE; remaining is kernel-specific glue (1,2) + the wall (3).
+
+## UPDATE 8 (Opus): §9 renewal route FULLY MECHANIZED — book reduced to two explicit kernel facts
+
+Banked clean-3 + gate-verified (GATE_EXIT_0, 8462 jobs), bricks 61–66:
+  killed_harmonic_pow (61), killedKer/KPowK_row_sum (62), tendsto_of_tail_osc_to_zero (63),
+  doeblin_escape_bound (64), tail_band/tailOsc_abs_le/tailOsc_le_of_pairwise (65),
+  tendsto_of_killed_doeblin (66).
+
+### The reduction is complete
+`tendsto_of_killed_doeblin` (RenewalAssembly.lean) is the §9 capstone: a bounded `KPowK L P̃`-harmonic
+`h` (the exact-harmonicity from `killed_harmonic_pow`) CONVERGES, given exactly two analytic facts about
+the killed kernel `P̃ = killedKer Pker rnk J`:
+
+  **WALL 1 (overlap, δ>0):** ∀ R ≥ R₀, ∀ i j with rnk i, rnk j ≥ R,
+     δ ≤ ∑_{k ∈ range(max i j+1), rnk k ≥ R−B} min(KPowK L P̃ i k)(KPowK L P̃ j k).
+  **WALL 2 (escape, e→0):** ∀ R ≥ R₀, ∀ i with rnk i ≥ R,
+     ∑_{k ∈ range(i+1), ¬(rnk k ≥ R−B)} KPowK L P̃ i k ≤ e R,  with e R → 0.
+
+Everything else (escape-split Doeblin contraction → tail-osc step contraction → tail-osc→0 → Cauchy →
+converge) is mechanical and banked. The mechanical connection helpers are also in place:
+  ErdosConcrete.lean: rnk_tendsto_atTop, kernelMass_pos_eventually.
+  HitValBound.lean: Pker_sum_le_one (substochastic), hitVal_abs_le (bounded boundary ⟹ bounded hitVal).
+
+### The two walls are the irreducible analytic core (research wall + METHOD FORK for Xiang)
+Both walls are statements about the distribution of the per-step rank decrement
+Δ = rnk(n) − rnk(n−m), m ~ erdosWeight (the σ(m)-weighted predecessor kernel). The continuous limit is
+Γ(2,C) (the repo's `Model.modelIntegral` / `erdos_kernel_window`). WALL 1 is a finite-time Doeblin
+minorization = a LOWER bound on the L-fold convolution density on a rank band (an arithmetic LOCAL LIMIT
+theorem for the σ-convolution walk). WALL 2 is a TAIL bound on the L-fold rank decrement. Neither has
+Mathlib support (no arithmetic local-limit / Stone-type machinery for σ(m)-weighted convolutions).
+
+This is the genuine content of Erdős's elementary proof of the Hardy–Ramanujan asymptotic. METHOD FORK
+(senior author's call — method-flexibility is Xiang's, not the agent's):
+  (A) formalize both facts from scratch (large: local-limit + tail analysis on the σ walk; keeps 0-axiom);
+  (B) state them as cited "Erdős elementary estimates" hypotheses (conditional theorem; would not meet
+      the strict 0-axiom audit unless later discharged);
+  (C) hybrid: prove the parts Mathlib supports (the Γ(2,C) window-integral is already in `Model`),
+      isolate the single missing density/tail lemma.
+
+NEXT (mechanical, in progress regardless of fork): the `∀ᶠ J` connection theorem chaining
+`tendsto_of_killed_doeblin` (per large J) → `erdos_partition_limit_exists_of_hit` → `∃ a>0, u → a`,
+conditional on the two walls stated concretely for `killedKer Pker rnk J`. Needs a weakened
+`killedKer_row_sum` (Pker row-sum only required on the `rnk ≥ J` branch; absorb handles the rest).
