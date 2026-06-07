@@ -70,3 +70,29 @@ unchanged. The two analytic walls are now correctly B-indexed:
   WALL 1':  ∀ B, overlap δ_B > 0 on band {rnk ≥ R−B} for the L_B-step killed kernel (δ_B ≥ δ₀);
   WALL 2':  ∀ B, escape mass below band B ≤ ε_B, with 3·ε_B·M/δ_B → 0  (ε_B → 0 fast).
 This is the genuine renewal structure (Θ(R)-fold geometric mixing) in a form the banked engine drives.
+
+## CORRECTION (Opus, honest) — the all-pairs overlap is FALSE; the real wall is V→0 (renewal)
+Pressure-testing the wall against the kernel: `DoeblinWalls`/`DoeblinWallsMultiB` quantify the overlap
+over ALL i,j with rnk ≥ R. For a far-apart pair (rnk i = R, rnk j = R+G, G large) the L-step laws
+concentrate at ranks ≈ R−O(L) and ≈ R+G−O(L), DISJOINT, so ∑min = 0 < δ. The overlap conjunct is
+unsatisfiable ⟹ bricks 66/69/71/72 are true implications but conditional on a FALSE premise; they do
+NOT reduce HR to true facts. (Earlier "reduced to two satisfiable walls" was wrong.)
+
+What's sound: every abstract engine (doeblin_escape_bound, doeblin_average_diff_bound, pair_contract,
+tailsup_summable, tendsto_of_center_tracking, StepContraction(+Const), killed_harmonic_pow,
+KilledStochastic, tendsto_of_tail_osc_to_zero, the multi-scale fix). The ERROR is the capstone
+*structure*: overlap must be COMPARABLE-rank only (pair_contract), with far pairs handled by the
+band/center structure.
+
+Reduction to the true core: with c R := tailInf (monotone bounded ⟹ links summable for free) and
+V R := tailOsc, `tendsto_of_center_tracking` (and equally `tendsto_of_tail_osc_to_zero`) reduce
+h-convergence to **V R → 0** (tail oscillation → 0). And V is antitone-bounded so V R → V_∞ ≥ 0; the
+whole difficulty is **V_∞ = 0**. The naive bounds give only factor 1:
+  • averaging+escape: V R ≤ (1−ε)V(R−B) + 2εM  (ε = escape; factor ≈ 1, useless);
+  • far-pair: the δ-overlap contraction only applies to comparable ranks; the sup-achiever and
+    inf-achiever of the tail can sit at far-apart ranks, where overlap = 0.
+So V_∞ = 0 is the genuine renewal/tail-triviality result for the rank-descending σ-kernel — the real
+hard analytic wall. Routes: (i) standard renewal/coupling (couple the chains, meeting time finite a.s.);
+(ii) tail-triviality of the descending chain; (iii) a quantitative mixing/spectral-gap argument.
+DISPATCHED to ChatGPT for the cleanest Lean-formalizable argument. Escape estimate (input (B)) is being
+ground in parallel (uniform exp-moment ∑ Pker(i,k)e^{s(rnk i−rnk k)} ≤ M for s < C/3, then Markov).
