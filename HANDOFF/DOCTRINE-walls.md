@@ -224,3 +224,26 @@ So the lone irreducible analytic content of path A is: (C3) Pker L¹-continuity 
 (C4) the comparable-start rank-difference-walk coalescence/bad-mass bound. Both are genuine analysis
 leaning on the σ-kernel asymptotics (banked model machinery); C4 is the harder, and how deeply to build
 the coalescence/local-limit foundations is a scope decision. Everything mechanical (bricks 61-77) is done.
+
+## HONEST FINAL FRAMING (Opus) — BOTH remaining walls are σ-averaging / arithmetic-local-limit analysis
+Scoping modelSummand (= σ(m)·exp(−(massLam/√n)m)·(1/n + m/n² − …)) shows C3 is NOT a routine calculus
+estimate. The kernel L¹ distance ∑_z|Pker x z − Pker y z| compares the two rows at SHIFTED jump indices
+(m_x = x−z vs m_y = y−z, differing by x−y), so it hinges on σ(m) vs σ(m + (x−y)) summed — the σ(m)
+ARITHMETIC IRREGULARITY is the core difficulty, the SAME σ-averaging / arithmetic-local-limit flavor as
+C4 (the diff-walk coalescence). So:
+
+  Both C3 (windowed minorization via L¹-continuity) and C4 (comparable bad-mass / coalescence) reduce to
+  AVERAGED control of the σ-weighted kernel under index shifts — i.e. an arithmetic local-limit theorem
+  for the σ(m)-weighted predecessor walk. This is the genuine irreducible analytic content of Erdős's
+  elementary Hardy–Ramanujan proof, and Mathlib has NO σ-averaging / local-limit machinery for it.
+
+### Net, fully honest, status of path A
+HR (erdos_partition_limit_exists) is reduced — with the ENTIRE renewal/coupling/center-tracking machinery
+mechanized clean-3 (bricks 61-78) — to a single class of fact: an arithmetic local-limit / σ-averaging
+estimate for the Erdős kernel under index shifts (yielding both the windowed minorization δ and the
+coalescence/bad-mass bound). Building that from scratch in Lean means constructing σ-average and
+local-limit foundations Mathlib lacks — a major, multi-week+ undertaking whose SCOPE (how deep to build
+those probability/number-theory foundations, vs. a different attack) is the senior author's decision.
+The banked Model machinery (modelIntegral, erdos_kernel_window, erdosWeight_sub_model_le, far_erdos_tail_le,
+kernelMass→1) is the starting capital, but the σ-shift averaging is the new content.
+This is the genuine research frontier of path A — not a mechanical gap.
