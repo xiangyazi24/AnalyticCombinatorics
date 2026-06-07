@@ -201,3 +201,28 @@ Together with DoeblinOverlap (pair contraction coefficient), KernelPow, StepCont
 Every clean deterministic ENGINE is built (contraction coefficient, osc→0, geometric-summable,
 center-tracking convergence, kernel-power algebra) + the §9 argument is CRACKED. Remaining: the
 sSup-heavy assembly (fiddly), the killed-kernel harmonic (intricate), and the Gamma overlap (the wall).
+
+---
+## UPDATE 7 (Opus): ALL §9 abstract engines banked clean-3; killed-kernel setup worked out
+Banked clean-3 (the complete abstract §9 + Doeblin machinery, ~27 commits):
+  pair_contract, tendsto_zero_of_step_contraction, summable_of_step_le, tailsup_summable,
+  tendsto_of_center_tracking (generalized to Summable-link), doeblin_average_diff_bound, KComp/KPow.
+Plus ErdosLimit (full reduction to Fact B).
+
+### Killed-kernel harmonic — clean setup (resolves the boundary-absorb)
+Define the killed kernel  P̃ n k := if rank n < J then (if k = n then 1 else 0) else Pker n k.
+Then P̃ has support k ≤ n (predecessor OR diagonal-at-boundary), and hitVal_J is P̃-harmonic SUMMING
+OVER range (n+1):   hitVal_J n = ∑_{k ∈ range (n+1)} P̃ n k · hitVal_J k   for ALL n.
+  (rank n ≥ J: P̃=Pker, Pker n n=0, ∑_{range(n+1)} = ∑_{range n} Pker = hitVal_J n by hitVal_eq.
+   rank n < J: P̃ = δ(k=n), ∑_{range(n+1)} = hitVal_J n [the k=n term, in range(n+1)].)
+NOTE: this needs a KPow over range (n+1) (k ≤ n), NOT the strict-support KernelPow (k < n) already
+banked. So build KComp'/KPow' for the killed kernel (diagonal-inclusive), or adapt. The L-fold killed
+power P̃^L gives the law used in pair_contract (overlap δ from File D).
+
+### Remaining (intricate kernel-specific + the wall)
+1. Killed KPow (k≤n) + P̃^L-harmonic for hitVal (above setup). [intricate but mechanical]
+2. §9 FINAL ASSEMBLY: BlockOsc/centers for hitVal; slab-contraction via pair_contract + P̃^L-harmonic +
+   Doeblin overlap; track/link; combine tailsup_summable + tendsto_of_center_tracking ⟹ hitVal
+   converges (Fact B) ⟹ erdos_partition_limit_exists. [sSup block-osc, intricate]
+3. FILE D (RESEARCH WALL): FiniteTimeRankDoeblin = Gamma(2,C) L-fold-convolution overlap δ>0. Unchanged.
+All abstract engines + the §9 argument are DONE; remaining is kernel-specific glue (1,2) + the wall (3).
