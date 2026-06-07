@@ -114,6 +114,7 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateMomentSharp
 import AnalyticCombinatorics.Ch8.Partitions.MassRateAssembly
 import AnalyticCombinatorics.Ch8.Partitions.MassRateApprox2
 import AnalyticCombinatorics.Ch8.Partitions.BarrierLimit
+import AnalyticCombinatorics.Ch8.Partitions.RecordPullback
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1103,5 +1104,11 @@ namespace AnalyticCombinatorics.Ch1
 -- ∀k upperBarrier-pos needed by u_limsup_finite_of_superharmonic). Unconditional u boundedness.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.u_limsup_finite
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.u_liminf_positive
+
+-- HR mass-rate campaign, brick 41 (§8 R7 one-step record pullback): the exact quantitative pullback
+-- exists_window_near_max — N running-max on [N₀,N] + window mass ≥μ ⟹ ∃ window predecessor within the
+-- defect Δ_N=(|b(N)|+M|S_N−1|+M·prefixTail)/μ of u N. (ChatGPT consult: (1)-(5) alone are insufficient
+-- — countermodel — so the honest route needs this quantitative defect, summable in t=√n.)
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.exists_window_near_max
 
 end AnalyticCombinatorics.Ch1
