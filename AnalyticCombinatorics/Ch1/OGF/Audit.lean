@@ -145,6 +145,7 @@ import AnalyticCombinatorics.Ch8.Partitions.ErdosAlignConnect
 import AnalyticCombinatorics.Ch8.Partitions.ScalarRecSolve
 import AnalyticCombinatorics.Ch8.Partitions.ITERCoupling
 import AnalyticCombinatorics.Ch8.Partitions.CompContraction
+import AnalyticCombinatorics.Ch8.Partitions.OverlapL1
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1320,5 +1321,10 @@ namespace AnalyticCombinatorics.Ch1
 -- this is the form that resolves the far-pair obstruction (only comparable-rank control needed, far
 -- pairs handled by the summable center links). The interface the windowed-coupling ITER feeds.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tendsto_of_comparable_contraction
+-- HR mass-rate campaign, brick 78 (§8 R7 L¹→overlap bridge): overlap = 1 − ½·‖p−q‖₁ for prob vectors,
+-- so an L¹ bound ‖p−q‖₁ ≤ 2(1−δ) gives the minorization δ ≤ ∑min(p,q). Reduces the (B_W) windowed
+-- minorization to the Pker L¹-continuity estimate (C3).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.overlap_eq_one_sub_half_L1
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.overlap_ge_of_L1_le
 
 end AnalyticCombinatorics.Ch1
