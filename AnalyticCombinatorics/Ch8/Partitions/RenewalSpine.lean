@@ -25,19 +25,18 @@ eventually `|u n − Hit J n| ≤ B·tail J` with `Hit J · → L_J` and `tail J
 theorem tendsto_of_uniform_hit_approx
     {u : ℕ → ℝ} {Hit : ℕ → ℕ → ℝ} {tail : ℕ → ℝ} {B : ℝ}
     (hu_bddA : BddAbove (Set.range u)) (hu_bddB : BddBelow (Set.range u))
-    (hbound : ∀ J, ∀ᶠ n in atTop, |u n - Hit J n| ≤ B * tail J)
-    (hhit : ∀ J, ∃ L, Tendsto (fun n => Hit J n) atTop (𝓝 L))
+    (hbound : ∀ᶠ J in atTop, ∀ᶠ n in atTop, |u n - Hit J n| ≤ B * tail J)
+    (hhit : ∀ᶠ J in atTop, ∃ L, Tendsto (fun n => Hit J n) atTop (𝓝 L))
     (htail : Tendsto tail atTop (𝓝 0)) :
     ∃ L : ℝ, Tendsto u atTop (𝓝 L) := by
   have hbddU : IsBoundedUnder (· ≤ ·) atTop u := hu_bddA.isBoundedUnder_of_range
   have hbddL : IsBoundedUnder (· ≥ ·) atTop u := hu_bddB.isBoundedUnder_of_range
   have hcobddU : IsCoboundedUnder (· ≤ ·) atTop u := hbddL.isCoboundedUnder_le
   have hcobddL : IsCoboundedUnder (· ≥ ·) atTop u := hbddU.isCoboundedUnder_ge
-  -- For every J, `limsup u - liminf u ≤ 2 B tail J`.
-  have hosc : ∀ J : ℕ, limsup u atTop - liminf u atTop ≤ 2 * (B * tail J) := by
-    intro J
-    obtain ⟨L, hL⟩ := hhit J
-    have hbJ := hbound J
+  -- For all large `J`, `limsup u - liminf u ≤ 2 B tail J`.
+  have hosc : ∀ᶠ J in atTop, limsup u atTop - liminf u atTop ≤ 2 * (B * tail J) := by
+    filter_upwards [hbound, hhit] with J hbJ hhJ
+    obtain ⟨L, hL⟩ := hhJ
     -- eventually `u n ≤ Hit J n + B tail J` and `Hit J n - B tail J ≤ u n`
     have hup : ∀ᶠ n in atTop, u n ≤ Hit J n + B * tail J := by
       filter_upwards [hbJ] with n hn
@@ -71,7 +70,7 @@ theorem tendsto_of_uniform_hit_approx
       have : Tendsto (fun J => 2 * (B * tail J)) atTop (𝓝 (2 * (B * 0))) :=
         (htail.const_mul B).const_mul 2
       simpa using this
-    exact le_of_tendsto_of_tendsto tendsto_const_nhds htends (Eventually.of_forall hosc)
+    exact le_of_tendsto_of_tendsto tendsto_const_nhds htends hosc
   have hge : liminf u atTop ≤ limsup u atTop := liminf_le_limsup hbddU hbddL
   have heq : liminf u atTop = limsup u atTop := le_antisymm hge (by linarith)
   exact ⟨limsup u atTop, tendsto_of_liminf_eq_limsup heq rfl hbddU hbddL⟩
