@@ -1,0 +1,58 @@
+# DOCTRINE — Path A: discharge the two Doeblin walls from scratch (unconditional Hardy–Ramanujan)
+
+## Goal (one sentence)
+Prove `∀ᶠ J, DoeblinWalls J` with zero axioms, turning `erdos_partition_limit_exists_of_walls`
+into the UNCONDITIONAL `erdos_partition_limit_exists : ∃ a > 0, Tendsto u atTop (𝓝 a)`.
+
+## Mathematical structure (what the walls really are)
+Both walls concern the L-step law of the killed Erdős predecessor chain. The per-step rank-decrement
+Δ = rnk(n) − rnk(n−m), m ~ erdosWeight, has (in the continuous Γ(2,C) limit, banked as
+`Model.modelIntegral` / `erdos_kernel_window`):
+  • jump m = x√n  ⟹  Δ ≈ 3x/2,  with x distributed ∝ (π²/6) x e^{−Cx/2}  (the Γ(2,C/2) shape);
+  • E[Δ] = Θ(1) (constant, R-independent); the chain takes ~ R/E[Δ] ~ Θ(R) steps to drop from rank R
+    to the boundary J  ⟹  Θ(R) regenerations  ⟹  osc(h) at rank R ~ (1−δ)^{cR} → 0. This Θ(R)-fold
+    geometric decay IS the convergence (renewal mechanism).
+
+## KEY SUBTLETY found while drafting (affects avenue choice — needs your eyes)
+The banked capstone `tendsto_of_killed_doeblin` uses the ESCAPE-SPLIT engine: overlap δ on band
+{rnk ≥ R−B} (fixed B) + escape mass `e(R) → 0`, via `tendsto_zero_of_step_contraction`. But the
+per-step big-jump probability is  P(Δ > B) ~ e^{−cB},  CONSTANT in R (it is a normalized tail, no R).
+So with FIXED B the escape mass does NOT → 0; it is a small constant ε(B). The escape-split recursion
+then gives  V(R) ≤ (1−δ)V(R−B) + ε·2M  ⟹  V(∞) ≤ ε·2M/δ  (small constant, NOT 0). I.e. WALL 2 as
+currently stated (`e(R)→0`, fixed B) is NOT satisfiable for this kernel. The honest convergence needs
+the Θ(R)-fold geometric decay (growing block count), which the constant-B additive engine cannot give.
+
+GOOD NEWS: the alternative engine is ALSO already banked — `tailsup_summable` (TailSup.lean):
+  W R ≤ q · sSup(W '' {s ≥ R−B})  ⟹  Summable (sSup over tails)  ⟹  convergence,
+PURE multiplicative (no additive e(R)). It captures the Θ(R)-fold decay directly. The remaining
+difficulty is the big-jump mass: it lands at rank < R−B where osc is LARGER (V antitone), so it is not
+automatically ≤ q·V(R−B). It must be handled by overlapping the big-jump landing laws too, or by a
+coupling that couples big jumps.
+
+## Avenues (ranked)
+(a) RE-WIRE to the tail-sup engine + full-support overlap. Prove the L-step laws from i,j (rank ≥ R)
+    overlap by δ on the WHOLE support {rnk ≥ J}, AND that the non-overlap (1−δ) part, after differencing,
+    sees osc ≤ q·sSup(W over {s ≥ R−B}). Feed `tailsup_summable` (banked). Terminal: Summable tail-osc
+    ⟹ `tendsto_of_center_tracking` (banked) ⟹ converge. Most reuse of banked infra.
+(b) COUPLING. Construct a coupling of the two killed chains from i,j that meets within Θ(1) regenerations
+    w.p. ≥ δ (maximal coupling per step using the single-step window minorization), handling big jumps by
+    coupling them maximally too. Meeting ⟹ overlap. Cleanest probabilistically, heaviest in Lean (no
+    Mathlib coupling-for-Markov-kernel machinery — would build it).
+(c) DENSITY / LOCAL LIMIT. Transfer the Γ(2,C/2) lower density bound (banked window-integral convergence)
+    to a discrete L-fold-convolution lower bound on the band ⟹ minorization δ. Needs arithmetic
+    local-limit handling of the σ(m) factor (irregular) — hardest analytically.
+(d) ESCAPE wall standalone (tractable warm-up regardless of route): per-step large-drop tail
+    P(Δ > b) ≤ C e^{−cb} uniform in R, from the erdosWeight formula + sigmaR bounds + the
+    √n−√(n−m) ≥ b/3 exponential. This is needed by (a)/(b) as the big-jump control.
+
+## Terminal conditions
+- Success: `erdos_partition_limit_exists` unconditional, audit GATE_EXIT_0, clean-3, 0 sorry.
+- Avenue death: a written counterexample/obstruction (like the escape-constant finding above), then
+  backtrack to the next avenue.
+
+## Plan of attack
+Start with (d) (escape per-step tail — concrete, needed everywhere), in parallel re-design the engine
+wiring toward (a) (tail-sup + full-support overlap). Keep (b)/(c) as fallbacks. The escape-constant
+finding means the FINAL connection (`tendsto_of_killed_doeblin` / `DoeblinWalls`) will likely be
+re-stated against `tailsup_summable` rather than the escape-split — a framework revision, flagged here
+because it touches banked code.
