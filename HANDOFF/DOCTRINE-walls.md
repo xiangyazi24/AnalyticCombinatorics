@@ -96,3 +96,14 @@ hard analytic wall. Routes: (i) standard renewal/coupling (couple the chains, me
 (ii) tail-triviality of the descending chain; (iii) a quantitative mixing/spectral-gap argument.
 DISPATCHED to ChatGPT for the cleanest Lean-formalizable argument. Escape estimate (input (B)) is being
 ground in parallel (uniform exp-moment ∑ Pker(i,k)e^{s(rnk i−rnk k)} ≤ M for s < C/3, then Markov).
+
+## FIND (Opus) — escape wall is essentially banked: far_erdos_tail_le
+`far_erdos_tail_le` (MassRateApprox2): ∑_{m ∈ Icc (⌊n^{2/3}⌋+1) (n−1)} erdosWeight n m ≤ K/n eventually.
+This is the big-jump mass (jump m > n^{2/3} ⟺ rank drop ≳ n^{1/6} ~ R^{1/3}), bounded by K/n → 0. Over
+kernelMass → 1, the per-step P(rank drop > ~R^{1/3}) ≤ K'/n ~ K'·9/R². Union bound over the ~R-step
+descent: P(any big jump) ≲ R/n → 0 ⟹ w.h.p. the chain makes NO big jump and descends by ≤ R^{1/3}/step.
+So escape (input B) is in hand (modulo wiring far_erdos_tail_le into the band structure; note its natural
+band ~R^{1/3} GROWS with R, so the contraction engine wants the growing-band/tail-sup variant, not fixed
+B). The ONLY genuine wall left is the OVERLAP / renewal convergence V→0 (comparable-rank Doeblin →
+far-pair convergence) — dispatched to ChatGPT. model_tail_le + erdosWeight_sub_model_le give the
+model-vs-kernel control likely needed for the comparable-rank overlap too.
