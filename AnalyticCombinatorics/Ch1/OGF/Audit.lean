@@ -134,6 +134,9 @@ import AnalyticCombinatorics.Ch8.Partitions.TailOscConverge
 import AnalyticCombinatorics.Ch8.Partitions.DoeblinEscape
 import AnalyticCombinatorics.Ch8.Partitions.TailBand
 import AnalyticCombinatorics.Ch8.Partitions.RenewalAssembly
+import AnalyticCombinatorics.Ch8.Partitions.ErdosConcrete
+import AnalyticCombinatorics.Ch8.Partitions.HitValBound
+import AnalyticCombinatorics.Ch8.Partitions.ErdosRenewalConnect
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1257,5 +1260,18 @@ namespace AnalyticCombinatorics.Ch1
 -- KPowK L P̃-harmonic function converges given finite-time Doeblin overlap δ>0 on the high-rank band and
 -- vanishing escape mass. Reduces Hardy–Ramanujan convergence to exactly two analytic kernel facts.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tendsto_of_killed_doeblin
+-- HR mass-rate campaign, brick 67 (§8 R7 concrete kernel facts): rnk → atTop and kernelMass eventually
+-- positive — the divergence + positivity facts to instantiate the abstract Doeblin theorem for Pker.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.rnk_tendsto_atTop
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.kernelMass_pos_eventually
+-- HR mass-rate campaign, brick 68 (§8 R7 hitVal boundedness): Pker substochastic + bounded boundary ⟹
+-- bounded hitVal — the boundedness hypothesis of tendsto_of_killed_doeblin for the concrete kernel.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Pker_sum_le_one
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.hitVal_abs_le
+-- HR mass-rate campaign, brick 69 (§8 R7 HARDY–RAMANUJAN REDUCTION): erdos_partition_limit_exists_of_walls
+-- — if the Doeblin walls (finite-time overlap δ>0 on the high-rank band + vanishing escape mass) hold
+-- for cofinitely many cutoffs J, the normalized partition sequence u converges to a positive limit.
+-- The complete mechanical reduction; only the two analytic walls remain (Γ-convolution local limit).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.erdos_partition_limit_exists_of_walls
 
 end AnalyticCombinatorics.Ch1

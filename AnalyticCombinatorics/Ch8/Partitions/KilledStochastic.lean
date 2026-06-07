@@ -18,8 +18,9 @@ namespace AnalyticCombinatorics.Ch8.Partitions.Erdos
 
 variable {P : ℕ → ℕ → ℝ} {rank : ℕ → ℕ} {J : ℕ}
 
-/-- The killed kernel is row-stochastic over `range (n+1)`. -/
-lemma killedKer_row_sum (hrow : ∀ n, ∑ k ∈ Finset.range n, P n k = 1)
+/-- The killed kernel is row-stochastic over `range (n+1)`.  The base kernel `P` need only be
+row-stochastic on the active branch `rank n ≥ J`; below the cutoff the kernel absorbs (mass `1`). -/
+lemma killedKer_row_sum (hrow : ∀ n, J ≤ rank n → ∑ k ∈ Finset.range n, P n k = 1)
     (hsupp : ∀ n k, n ≤ k → P n k = 0) (n : ℕ) :
     ∑ k ∈ Finset.range (n + 1), killedKer P rank J n k = 1 := by
   unfold killedKer
@@ -28,7 +29,7 @@ lemma killedKer_row_sum (hrow : ∀ n, ∑ k ∈ Finset.range n, P n k = 1)
     rw [Finset.sum_ite_eq' (Finset.range (n + 1)) n (fun _ => (1 : ℝ)),
       if_pos (Finset.self_mem_range_succ n)]
   · simp only [if_neg hb]
-    rw [Finset.sum_range_succ, hsupp n n (le_refl n), add_zero, hrow n]
+    rw [Finset.sum_range_succ, hsupp n n (le_refl n), add_zero, hrow n (not_lt.mp hb)]
 
 /-- Every killed power is row-stochastic over `range (n+1)`. -/
 lemma KPowK_row_sum {Q : ℕ → ℕ → ℝ}
