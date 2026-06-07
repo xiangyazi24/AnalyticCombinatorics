@@ -174,3 +174,30 @@ V is non-increasing, so the block contraction BlockOsc R ≤ (1−δ)·sup_{R−
 3. assembly: BlockOsc contraction + harmonic ⟹ V contraction ⟹ centers Cauchy ⟹ h converges.
 Inputs still needed: the BLOCK CONTRACTION (pair_contract ✓ + killed-kernel harmonic + Doeblin overlap),
 i.e. only the killed-kernel harmonic setup + File D (Gamma overlap, the wall) remain hard.
+
+---
+## UPDATE 6 (Opus): §9 real-analysis ENGINES banked clean-3; remaining = sSup-assembly + killed-harmonic + wall
+Banked clean-3 (the §9 connection engines, deterministic, no kernel/wall dependency):
+- CenterTracking: tendsto_of_center_tracking — Summable V + center links + tracking ⟹ h converges.
+- StepSummable: summable_of_step_le — f≥0, f(n+B)≤q f(n), q<1 ⟹ Summable f.
+Together with DoeblinOverlap (pair contraction coefficient), KernelPow, StepContraction, BlockContract
+(pair_contract), and ErdosLimit (full reduction to Fact B). ~25 clean-3 commits this session.
+
+### Remaining for Fact B (precise)
+1. §9 ASSEMBLY (sSup-heavy, deterministic given block-contraction): define BlockOsc R (osc of hitVal on
+   rank-block), V R := ⨆_{s≥R} BlockOsc s (csSup, bounded by 2M), centers c_R := hitVal at a rep of
+   block R. Prove: V R ≤ (1−δ)·V(R−B) [monotone domination of the slab-contraction] ⟹ Summable V
+   [summable_of_step_le]; track |hitVal n − c(rank n)| ≤ BlockOsc(rank n) ≤ V(rank n); link
+   |c(R+1)−c R| ≤ V R [pair_contract, comparable]. Then tendsto_of_center_tracking ⟹ hitVal converges.
+   csSup manipulations (le_csSup/csSup_le, V non-incr) are the fiddly part.
+2. BLOCK-CONTRACTION: BlockOsc R ≤ (1−δ)·(slab-sup of BlockOsc) from pair_contract + killed-kernel
+   P^L-harmonic + the Doeblin overlap. Needs piece 3.
+3. KILLED-KERNEL P^L-harmonic for hitVal: hitVal_J n = ∑ (killed-KPow L) n k · hitVal_J k. The boundary
+   absorb (diagonal) breaks the predecessor range-n framework — needs a clean killed-kernel def.
+4. FILE D (RESEARCH WALL): FiniteTimeRankDoeblin = Gamma(2,C) L-fold-convolution overlap δ>0. The single
+   irreducible hard analytic fact; no Mathlib local-limit/renewal. Needs Xiang/focused analytic effort.
+
+### Bottom line
+Every clean deterministic ENGINE is built (contraction coefficient, osc→0, geometric-summable,
+center-tracking convergence, kernel-power algebra) + the §9 argument is CRACKED. Remaining: the
+sSup-heavy assembly (fiddly), the killed-kernel harmonic (intricate), and the Gamma overlap (the wall).
