@@ -279,4 +279,86 @@ theorem dres_block_bound :
         _ = (32 / 81) * (rnk n : ℝ) ^ 4 * Real.exp (-(C / 3) * (rnk n : ℝ)) := by ring
     linarith [ht1, ht2]
 
+/-- The fixed window `(√n, 2√n]` carries a uniform positive kernel mass (the `a₀=1` instance of
+`erdos_kernel_fixed_window_pos`, exposed explicitly so window steps `m>√n` apply `window_rank_drop`). -/
+lemma kernelWindow_one_two_pos :
+    ∃ ν : ℝ, 0 < ν ∧ ∀ᶠ n : ℕ in atTop, ν ≤ kernelWindow 1 2 n := by
+  have hC := C_pos
+  have hIpos : 0 < Model.modelIntegral C 1 2 := by
+    rw [Model.modelIntegral]
+    apply intervalIntegral.intervalIntegral_pos_of_pos_on
+    · have hc : Continuous fun y : ℝ => (Real.pi ^ 2 / 6) * y * Real.exp (-(C / 2) * y) := by
+        have h1 : Continuous fun y : ℝ => (Real.pi ^ 2 / 6) * y :=
+          continuous_const.mul continuous_id
+        have h2 : Continuous fun y : ℝ => Real.exp (-(C / 2) * y) :=
+          Real.continuous_exp.comp (continuous_const.mul continuous_id)
+        exact h1.mul h2
+      exact hc.intervalIntegrable _ _
+    · intro y hy
+      have hy1 : (1 : ℝ) < y := hy.1
+      have hπ : (0 : ℝ) < Real.pi ^ 2 / 6 := by positivity
+      have he : (0 : ℝ) < Real.exp (-(C / 2) * y) := Real.exp_pos _
+      nlinarith [mul_pos (mul_pos hπ (by linarith : (0:ℝ) < y)) he]
+    · norm_num
+  refine ⟨Model.modelIntegral C 1 2 / 2, by positivity, ?_⟩
+  have hwin := Model.erdos_kernel_window (a := 1) (b := 2) zero_le_one one_lt_two
+  have hev := (tendsto_order.1 hwin).1 (Model.modelIntegral C 1 2 / 2) (by linarith)
+  filter_upwards [hev] with n hn
+  exact hn.le
+
+/-- **Leave probability** (`hP_leave`): a uniform positive mass of the normalized kernel goes to
+strictly lower rank.  Window steps `m ∈ (√n, 2√n]` carry mass `≥ ν` (`kernelWindow_one_two_pos`) and
+drop rank (`window_rank_drop`); dividing by `kernelMass n ≤ 2` gives `≥ ν/2`. -/
+theorem hP_leave_partition :
+    ∃ μ : ℝ, 0 < μ ∧ ∀ᶠ n : ℕ in atTop,
+      μ ≤ ∑ k ∈ (Finset.range n).filter (fun k => rnk k < rnk n), Pker n k := by
+  obtain ⟨ν, hνpos, hνmass⟩ := kernelWindow_one_two_pos
+  obtain ⟨K, hKpos, hKev⟩ := kernelMass_sub_one_rate
+  have hone : ∀ᶠ n : ℕ in atTop, K / (n : ℝ) ≤ 1 / 2 := by
+    have htend : Filter.Tendsto (fun n : ℕ => K / (n : ℝ)) atTop (nhds 0) := by
+      simpa using tendsto_const_nhds.div_atTop (tendsto_natCast_atTop_atTop)
+    exact htend.eventually_le_const (by norm_num)
+  refine ⟨ν / 2, by positivity, ?_⟩
+  filter_upwards [hνmass, hKev, hone, Filter.eventually_ge_atTop 2] with n hνn hKn hKn1 hn2
+  have hnR : (1 : ℝ) ≤ (n : ℝ) := by exact_mod_cast (by omega : 1 ≤ n)
+  have hnpos : (0 : ℝ) < (n : ℝ) := by linarith
+  obtain ⟨hSlo, hSup⟩ := abs_le.1 hKn
+  have hS2 : kernelMass n ≤ 2 := by linarith [hSup, hKn1]
+  have hSge : (1 : ℝ) / 2 ≤ kernelMass n := by linarith [hSlo, hKn1]
+  have hSpos : (0 : ℝ) < kernelMass n := by linarith
+  -- main inequality: kernelWindow 1 2 n / kernelMass n ≤ leave-sum
+  have hkey : kernelWindow 1 2 n / kernelMass n
+      ≤ ∑ k ∈ (Finset.range n).filter (fun k => rnk k < rnk n), Pker n k := by
+    -- reindex the window mass to predecessor coordinate and embed into the rank-drop filter
+    have hreflect : kernelWindow 1 2 n / kernelMass n
+        = ∑ k ∈ Finset.Icc 1 (n - 1),
+            (if 1 * Real.sqrt (n : ℝ) < ((n - k : ℕ) : ℝ)
+                ∧ ((n - k : ℕ) : ℝ) ≤ 2 * Real.sqrt (n : ℝ)
+              then Pker n k else 0) := by
+      rw [kernelWindow, ← sum_Icc_reflect_sub n
+        (fun m => if 1 * Real.sqrt (n : ℝ) < (m : ℝ) ∧ (m : ℝ) ≤ 2 * Real.sqrt (n : ℝ)
+          then erdosWeight n m else 0), Finset.sum_div]
+      apply Finset.sum_congr rfl
+      intro k hk
+      rw [Finset.mem_Icc] at hk
+      by_cases hw : 1 * Real.sqrt (n : ℝ) < ((n - k : ℕ) : ℝ)
+          ∧ ((n - k : ℕ) : ℝ) ≤ 2 * Real.sqrt (n : ℝ)
+      · rw [if_pos hw, if_pos hw]
+        unfold Pker; rw [if_pos ⟨hk.1, by omega⟩]
+      · rw [if_neg hw, if_neg hw, zero_div]
+    rw [hreflect, ← Finset.sum_filter]
+    apply Finset.sum_le_sum_of_subset_of_nonneg
+    · intro k hk
+      rw [Finset.mem_filter, Finset.mem_Icc] at hk
+      obtain ⟨⟨hk1, hk2⟩, hw1, hw2⟩ := hk
+      rw [Finset.mem_filter, Finset.mem_range]
+      refine ⟨by omega, ?_⟩
+      have hd := window_rank_drop (n := n) (m := n - k) (by omega) (by omega) (by
+        rw [one_mul] at hw1; exact hw1)
+      rwa [Nat.sub_sub_self (by omega : k ≤ n)] at hd
+    · intro k _ _; exact Pker_nonneg n k
+  refine le_trans ?_ hkey
+  rw [le_div_iff₀ hSpos]
+  nlinarith [hνn, hS2, hνpos]
+
 end AnalyticCombinatorics.Ch8.Partitions.Erdos

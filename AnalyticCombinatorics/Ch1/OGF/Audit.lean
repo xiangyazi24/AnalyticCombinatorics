@@ -1163,5 +1163,12 @@ namespace AnalyticCombinatorics.Ch1
 -- "small summable residual" input both endgame routes need. Scale-converted from dres_eq +
 -- kernelMass_sub_one_rate + u_limsup_finite via rnk_sqrt_bounds + boundaryTerm ≤ n²e^{−C√n}.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.dres_block_bound
+-- HR mass-rate campaign, brick 51 (§8 R7 leave-probability `hP_leave`, Layer 1 COMPLETE): a uniform
+-- positive mass ν/2 of the normalized kernel goes to strictly lower rank — window steps m∈(√n,2√n]
+-- carry mass ≥ν (kernelWindow_one_two_pos = a₀=1 instance) and drop rank (window_rank_drop), divided
+-- by kernelMass n ≤ 2. With Pker_mass/dres_eq/dres_block_bound this completes all kernel hypotheses
+-- of rec_iter_bound + pot_le_block_sum_of_leave; convergence now reduces to the hard core (Fact B).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.kernelWindow_one_two_pos
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.hP_leave_partition
 
 end AnalyticCombinatorics.Ch1
