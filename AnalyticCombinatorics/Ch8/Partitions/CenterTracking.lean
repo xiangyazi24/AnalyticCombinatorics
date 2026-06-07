@@ -19,17 +19,14 @@ namespace AnalyticCombinatorics.Ch8.Partitions.Erdos
 
 /-- **§9 convergence engine.** Summable tail-sup `V` + center links + center-tracking ⟹ `h` converges. -/
 theorem tendsto_of_center_tracking {h c V : ℕ → ℝ} {rank : ℕ → ℕ}
-    (hVsum : Summable V)
+    (hVtend : Tendsto V atTop (𝓝 0))
+    (hlink_sum : Summable (fun R => |c (R + 1) - c R|))
     (htrack : ∀ n, |h n - c (rank n)| ≤ V (rank n))
-    (hlink : ∀ R, |c (R + 1) - c R| ≤ V R)
     (hrank : Tendsto rank atTop atTop) :
     ∃ L : ℝ, Tendsto h atTop (𝓝 L) := by
-  have hVtend : Tendsto V atTop (𝓝 0) := hVsum.tendsto_atTop_zero
   -- centers are Cauchy: consecutive distances are summable
   have hdist_sum : Summable (fun R => dist (c R) (c (R + 1))) := by
-    refine Summable.of_nonneg_of_le (fun R => dist_nonneg) (fun R => ?_) hVsum
-    rw [Real.dist_eq, abs_sub_comm]
-    exact hlink R
+    simpa [Real.dist_eq, abs_sub_comm] using hlink_sum
   obtain ⟨L, hL⟩ := cauchySeq_tendsto_of_complete (cauchySeq_of_summable_dist hdist_sum)
   refine ⟨L, ?_⟩
   have h1 : Tendsto (fun n => c (rank n)) atTop (𝓝 L) := hL.comp hrank
