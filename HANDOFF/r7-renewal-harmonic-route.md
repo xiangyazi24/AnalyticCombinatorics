@@ -133,3 +133,27 @@ Both deterministic engines done. Plus the entire convergence reduced to Fact B (
 Two deterministic engines (A, C) + the full reduction (ErdosLimit) are banked clean-3. Remaining:
 KPow (mechanical), the osc-contraction connection (design subtlety), and the Gamma overlap (research
 wall). The wall is the genuine bottleneck; everything else is deterministic and isolates it.
+
+---
+## UPDATE 4 (Opus, autonomous): complete deterministic Doeblin machinery banked; §9 connection is the blocker
+ALL deterministic contraction machinery BANKED clean-3 (~21 commits): DoeblinOverlap (File A
+doeblin_average_diff_bound), KernelPow (File B KComp/KPow + nonneg + strict support), StepContraction
+(File C tendsto_zero_of_step_contraction osc→0), BlockContract (pair_contract: comparable-rank overlap
++ η-harmonic ⟹ |h i−h j|≤(1−δ)W+2η). Plus the full convergence reduction (ErdosLimit).
+
+### The precise remaining blocker (NOT just a design preference — genuinely subtle)
+The Doeblin overlap δ>0 holds ONLY for COMPARABLE ranks (|rank i−rank j|≤A). So the local pairwise
+contraction does NOT globalize to TailOsc (far-apart pairs have no overlap, factor-1 only). Confirmed
+TailOsc R ≤ (1−δ)TailOsc(R−B) FAILS. Need the correct block-osc→Cauchy argument. My hypothesized
+center-sequence chain has a GAP: c_R Cauchy needs Σ_R BlockOsc(R) < ∞ (geometric decay), not just
+BlockOsc→0; the windowed contraction gives →0 but geometric decay needs care. ChatGPT consult
+347e784c (the precise question) is in flight but the bridge is stalling on the long answer.
+
+ACTION FOR XIANG: please relay ChatGPT task 347e784c's full answer (the §9 block-osc→Cauchy connection
++ killed-kernel harmonic setup) if the bridge truncates — it's the precise remaining design blocker.
+
+### Also pending (independent of §9)
+- killed-kernel harmonic for hitVal: a single large-m step can jump below cutoff, so hitVal is
+  KILLED-kernel-harmonic, not plain-KPow-harmonic; the boundary-absorb (diagonal k=n) breaks the
+  predecessor range-n framework. Needs a clean killed-kernel setup (consult should clarify).
+- File D (RESEARCH WALL): FiniteTimeRankDoeblin = Gamma(2,C) L-fold-convolution overlap δ>0. Unchanged.
