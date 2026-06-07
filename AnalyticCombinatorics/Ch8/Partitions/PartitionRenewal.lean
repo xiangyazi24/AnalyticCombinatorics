@@ -123,6 +123,20 @@ lemma rnk_lt_of_sqrt_gap {n k : ℕ} (h : (1:ℝ)/3 < Real.sqrt n - Real.sqrt k)
   have hfk : (⌊3 * Real.sqrt k⌋₊ : ℝ) ≤ 3 * Real.sqrt k := Nat.floor_le (by positivity)
   linarith
 
+/-- `rnk n ≥ 3·n₀+3` forces `n ≥ n₀` (converts eventual-in-`n` facts into `J ≤ rnk n` form). -/
+lemma rnk_ge_of {n₀ n : ℕ} (h : 3 * n₀ + 3 ≤ rnk n) : n₀ ≤ n := by
+  have h1 := (rnk_sqrt_bounds n).1
+  have hge : (n₀ : ℝ) + 1 ≤ Real.sqrt n := by
+    have hcast : (3 * n₀ + 3 : ℝ) ≤ (rnk n : ℝ) := by exact_mod_cast h
+    have : (3 * (n₀ : ℝ) + 3) ≤ 3 * Real.sqrt n := by push_cast at hcast ⊢; linarith
+    linarith
+  have hsq : ((n₀ : ℝ) + 1) ^ 2 ≤ (n : ℝ) := by
+    have hmul := mul_le_mul hge hge (by positivity) (Real.sqrt_nonneg _)
+    rw [← pow_two, ← pow_two, Real.sq_sqrt (by positivity)] at hmul
+    exact hmul
+  have : (n₀ : ℝ) ≤ (n : ℝ) := by nlinarith [hsq]
+  exact_mod_cast this
+
 /-- **Window steps drop rank.** If `√n < m` (the window lower edge `a₀=1`) then the predecessor
 `n − m` has strictly smaller rank: `√n − √(n−m) > 1/2 > 1/3`. -/
 lemma window_rank_drop {n m : ℕ} (hn : 1 ≤ n) (hmn : m < n)

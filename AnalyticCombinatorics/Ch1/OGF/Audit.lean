@@ -119,6 +119,7 @@ import AnalyticCombinatorics.Ch8.Partitions.DefectSummable
 import AnalyticCombinatorics.Ch8.Partitions.RenewalSpine
 import AnalyticCombinatorics.Ch8.Partitions.RenewalHitPot
 import AnalyticCombinatorics.Ch8.Partitions.PartitionRenewal
+import AnalyticCombinatorics.Ch8.Partitions.ErdosLimit
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1170,5 +1171,12 @@ namespace AnalyticCombinatorics.Ch1
 -- of rec_iter_bound + pot_le_block_sum_of_leave; convergence now reduces to the hard core (Fact B).
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.kernelWindow_one_two_pos
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.hP_leave_partition
+-- HR mass-rate campaign, brick 52 (§8 R7 ASSEMBLY): erdos_partition_limit_exists_of_hit — the entire
+-- Erdős convergence reduced to a single isolated hard hypothesis (Fact B: hitVal Pker rnk J u
+-- converges for cofinitely many cutoffs J). Instantiates rec_iter_bound + pot_le_block_sum_of_leave +
+-- block_sum_le_tail + the convergence engine with the concrete partition kernel; positivity from
+-- u_liminf_positive. rnk_ge_of converts eventual-in-n facts to J≤rnk n form. All else is clean-3.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.rnk_ge_of
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.erdos_partition_limit_exists_of_hit
 
 end AnalyticCombinatorics.Ch1
