@@ -306,3 +306,28 @@ which → 0 as k→∞ — NO accumulation. This gives hhigh/hlow with ε := tha
 3. `osc_tail_le_defect_tail` : oscillation of u on [N₀,∞) ≤ Σ_{t≥√N₀} (window defects) → 0.
 4. hhigh/hlow ⟹ u_tendsto_of_record_covers ⟹ erdos_partition_limit_exists.
 Full ChatGPT answer (truncated capture) saved: HANDOFF/r7-chatgpt-summable-defect.md.
+
+---
+
+## UPDATE 8 (Opus): both one-step pullbacks BANKED (510f26d). Cover design reconstructed.
+
+origin/main: + exists_window_near_max, exists_window_near_min (brick 41-42, clean-3).
+
+**Cover design (reconstructed + matches ChatGPT 19e127f1; awaiting c43aa296 for precise Lean induction):**
+The chain does NOT recurse the pullback on near-max predecessors (they aren't records). Instead, at
+each step take the RUNNING-MAX N_j' of [N₀', N_j] (it IS a record there), pullback to
+N_{j+1} ∈ window(N_j') with u(N_{j+1}) ≥ u(N_j') − Δ_{N_j'} ≥ u N − Σ_{i≤j} Δ. The chain N=N_0>N_1>…
+decreases by ~√ per step and reaches below N₀'.
+KEY (resolves the earlier accumulation worry): the forward-fill cost θ is paid ONCE PER k (the single
+hop from the nearest chain point N_{j+1} ≤ k, since [N_{j+1}, N_{j+1}+h√N_{j+1}] ⊇ [N_{j+1}, N_j] ∋ k
+when window b<h). It is NOT multiplied by #steps. Only the pullback losses Σ_i Δ_{N_i'} accumulate,
+and those are SUMMABLE in t=√n (Δ = (|b|+M|S−1|+M·R)/μ; |b|,R exp-small, |S−1|≤K/n=O(1/t²) → Σ_t O(1/t²)).
+So per-k: u k ≥ u N − θ − (Σ Δ from scale √N₀') ; choose θ=ε/2, N₀' large so the tail < ε/2 ⟹ hhigh.
+
+**Summability components ready:** sigmaR_le_square (σ(n)≤n²), summable_one_div_nat_pow (Σ1/n^p, p≥2),
+kernelMass_sub_one_rate (|S−1|≤K/n), boundaryTerm=σ(n)e^{−C√n} & R=n³e^{−(C/10)√n} (exp-small).
+
+**Remaining bricks:** (1) defect summable-over-√-blocks lemma; (2) the chain+tiling cover (hhigh/hlow)
+— the intricate induction; (3) erdos_partition_limit_exists := u_tendsto_of_record_covers hhigh hlow,
++ erdos_limit_pos_of_tendsto (u_liminf_positive). The chain recursion is the hard implementation;
+ChatGPT c43aa296 (relayed by Xiang) gives the precise induction invariants.
