@@ -38,3 +38,33 @@ leaving w<1 fixed and a chain that amplifies loss geometrically. Need either:
       with the kernel's regularity (the mass concentrates at m~√n; weights w_{n,m} asymptotically a
       probability law). This sidesteps records/forward-fill entirely.
 Banked clean-3 regardless: DefectSummable (Σ B/(t+1)² + Σ tᵏe^{−ct}) for the rank-budget.
+
+## UPDATE (Opus): the obstruction is strategy-level, hits the RECORD route too
+Re-read partition-I56-convergence-route-R7.md (the design doc). It ALREADY flags this:
+  line 448 "this one-step pointwise lemma has a loss factor 1/μ ... not by itself for unbounded chains"
+  line 493 "should NOT amplify pointwise losses by κ^K ... use record averaging ... additively"
+but the "additive" replacement (Routes 8A shell-error / 8B path-spread) is only sketched, never
+justified at the 1/μ step. Proved now that the 1/μ is INTRINSIC to the record route:
+
+Record pullback (rigorous): N high-record on [N₀,N], u N − η ≤ u q. Recurrence u q = Σ_m W u(q−m)+b_q;
+all record-range predecessors ≤ u N. Total deficit Σ_{record-range} W(u N − u(q−m)) = u N·S_q − u q + b
+≤ η + M|S_q−1| + b =: η+Err (SMALL, μ-independent — the (1−μ) near-complement is bounded by u N and
+CANCELS against u N·S_q, so it does NOT enter Err). BUT the deficit is WEIGHTED; converting to a
+POINTWISE near-record window predecessor (which forward-fill REQUIRES) costs division by the window
+mass: ∃ window m, u N − u(q−m) ≤ (η+Err)/μ_win. So η ↦ (η+Err)/μ — multiplicative 1/μ per step.
+Over the ~√N steps to cover [N₀,N], η_K = Err·Σ μ^{-i} ~ Err·μ^{−√N}. Even with Err~1/shell²
+(summable), the early (shell~√N, Err~1/N) errors get μ^{−√N} ≫ 1/N → BLOWS UP.
+
+Root cause: weighted-deficit → pointwise-bound conversion costs 1/μ_win; forward-fill needs pointwise;
+fixed window ⟹ μ_win<1 ⟹ compounding. Cannot be fixed by Err being summable (it is) — the homogeneous
+1/μ factor is the killer. Both ChatGPT's ChainPullback (c43aa296) and the doc's Routes 8A/8B assume
+additive accumulation that is not derivable.
+
+## Status: genuine strategy-level blocker
+The record-cover/forward-fill strategy for high_record_covers_tail appears structurally unable to avoid
+the 1/μ compounding. Erdős's theorem is TRUE (u_n converges), so a correct argument exists — but it is
+likely NOT this record-chaining strategy. Open questions (ChatGPT consult b0f6ab89 in flight):
+  (i) a convergence argument that stays WEIGHTED (never converts deficit→pointwise), or
+  (ii) Erdős's actual 1942 closing mechanism (literature) — possibly a direct monotonicity / Tauberian
+       on the σ-convolution p(n)=(1/n)Σσ(m)p(n−m), not records at all.
+Banked clean-3 this round: DefectSummable (gate GATE_EXIT_0, DIRTY:0) — reusable if a route needs it.
