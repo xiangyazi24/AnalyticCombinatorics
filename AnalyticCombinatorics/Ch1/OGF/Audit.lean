@@ -120,6 +120,7 @@ import AnalyticCombinatorics.Ch8.Partitions.RenewalSpine
 import AnalyticCombinatorics.Ch8.Partitions.RenewalHitPot
 import AnalyticCombinatorics.Ch8.Partitions.PartitionRenewal
 import AnalyticCombinatorics.Ch8.Partitions.ErdosLimit
+import AnalyticCombinatorics.Ch8.Partitions.DoeblinOverlap
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1178,5 +1179,11 @@ namespace AnalyticCombinatorics.Ch1
 -- u_liminf_positive. rnk_ge_of converts eventual-in-n facts to J≤rnk n form. All else is clean-3.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.rnk_ge_of
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.erdos_partition_limit_exists_of_hit
+-- HR mass-rate campaign, brick 53 (§8 R7 Fact-B route, File A — deterministic Doeblin keystone):
+-- doeblin_average_diff_bound — probability vectors with overlap ≥δ averaging an osc-≤W function differ
+-- by ≤(1−δ)W (common mass cancels; residuals carry ≤1−δ mass). Pure nonnegative-sequence analysis.
+-- The contraction coefficient for the oscillation-contraction route to Fact B (ChatGPT 12a957cc).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.subprob_avg_diff
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.doeblin_average_diff_bound
 
 end AnalyticCombinatorics.Ch1
