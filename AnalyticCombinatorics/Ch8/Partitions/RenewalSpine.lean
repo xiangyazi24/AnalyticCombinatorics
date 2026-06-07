@@ -120,4 +120,54 @@ theorem rec_iter_bound
                       mul_le_mul_of_nonneg_left (ih k (Finset.mem_range.mp hk)) (hP_nonneg n k))
             · exact herr n
 
+/-- **Layer 3: potential ≤ block tail (`pot_le_block_sum`).** *Fact A is elementary*: when each
+kernel step strictly decreases `rank` (true for `rank n = ⌊ρ√n⌋`, `ρ > 2/α`, since `m > α√n` forces
+`√n − √(n−m) > α/2`), each rank block is visited at most once along the backward chain, so the
+potential is bounded by the block tail `Σ_{j=J}^{rank n} e j`.  No renewal-density theory.  Proof by
+strong induction on `n`. -/
+theorem pot_le_block_sum
+    {P : ℕ → ℕ → ℝ} {rank : ℕ → ℕ} {e Pot : ℕ → ℝ} {J : ℕ}
+    (hJ1 : 1 ≤ J)
+    (he_nonneg : ∀ j, 0 ≤ e j)
+    (hP_nonneg : ∀ n k, 0 ≤ P n k)
+    (hP_mass : ∀ n, J ≤ rank n → ∑ k ∈ Finset.range n, P n k = 1)
+    (hP_drop : ∀ n k, J ≤ rank n → k ∈ Finset.range n → P n k ≠ 0 → rank k < rank n)
+    (hPot : ∀ n, Pot n = if rank n < J then 0
+              else e (rank n) + ∑ k ∈ Finset.range n, P n k * Pot k) :
+    ∀ n, Pot n ≤ ∑ j ∈ Finset.Icc J (rank n), e j := by
+  intro n
+  induction n using Nat.strong_induction_on with
+  | _ n ih =>
+    rw [hPot n]
+    by_cases hJ : rank n < J
+    · rw [if_pos hJ, Finset.Icc_eq_empty (by omega)]; simp
+    · rw [if_neg hJ]
+      have hJ' : J ≤ rank n := not_lt.mp hJ
+      have hsub : ∑ k ∈ Finset.range n, P n k * Pot k
+          ≤ ∑ j ∈ Finset.Icc J (rank n - 1), e j := by
+        calc ∑ k ∈ Finset.range n, P n k * Pot k
+            ≤ ∑ k ∈ Finset.range n, P n k * (∑ j ∈ Finset.Icc J (rank n - 1), e j) := by
+              apply Finset.sum_le_sum
+              intro k hk
+              by_cases hPk : P n k = 0
+              · rw [hPk]; simp
+              · have hdrop := hP_drop n k hJ' hk hPk
+                have hmono : ∑ j ∈ Finset.Icc J (rank k), e j
+                    ≤ ∑ j ∈ Finset.Icc J (rank n - 1), e j :=
+                  Finset.sum_le_sum_of_subset_of_nonneg
+                    (Finset.Icc_subset_Icc_right (by omega))
+                    (fun j _ _ => he_nonneg j)
+                exact mul_le_mul_of_nonneg_left
+                  (le_trans (ih k (Finset.mem_range.mp hk)) hmono) (hP_nonneg n k)
+          _ = (∑ k ∈ Finset.range n, P n k) * (∑ j ∈ Finset.Icc J (rank n - 1), e j) := by
+              rw [Finset.sum_mul]
+          _ = ∑ j ∈ Finset.Icc J (rank n - 1), e j := by rw [hP_mass n hJ']; ring
+      have hrn : rank n = (rank n - 1) + 1 := by omega
+      have hsplit : ∑ j ∈ Finset.Icc J (rank n), e j
+          = (∑ j ∈ Finset.Icc J (rank n - 1), e j) + e (rank n) := by
+        conv_lhs => rw [hrn]
+        rw [Finset.sum_Icc_succ_top (by omega : J ≤ (rank n - 1) + 1), ← hrn]
+      rw [hsplit]
+      linarith
+
 end AnalyticCombinatorics.Ch8.Partitions.Erdos

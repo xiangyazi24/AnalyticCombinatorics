@@ -1124,5 +1124,10 @@ namespace AnalyticCombinatorics.Ch1
 -- (occupation bound + overshoot convergence, from the Gamma(2,C) √n-decrement law) remains open.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tendsto_of_uniform_hit_approx
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.rec_iter_bound
+-- HR mass-rate campaign, brick 45 (§8 R7 Layer 3 — Fact A occupation bound, ELEMENTARY): with
+-- rank n = ⌊ρ√n⌋ (ρ>2/α) each kernel step strictly decreases rank (m>α√n ⟹ √n−√(n−m)>α/2), so the
+-- backward chain visits each rank block ≤ once ⟹ Pot J e n ≤ Σ_{j=J}^{rank n} e j (≤ block tail).
+-- No renewal-density theory needed; only Fact B (overshoot convergence) remains hard.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.pot_le_block_sum
 
 end AnalyticCombinatorics.Ch1
