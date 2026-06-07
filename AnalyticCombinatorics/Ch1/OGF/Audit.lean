@@ -142,6 +142,8 @@ import AnalyticCombinatorics.Ch8.Partitions.RenewalMultiB
 import AnalyticCombinatorics.Ch8.Partitions.ErdosRenewalConnectMultiB
 import AnalyticCombinatorics.Ch8.Partitions.RenewalAlign
 import AnalyticCombinatorics.Ch8.Partitions.ErdosAlignConnect
+import AnalyticCombinatorics.Ch8.Partitions.ScalarRecSolve
+import AnalyticCombinatorics.Ch8.Partitions.ITERCoupling
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1303,5 +1305,14 @@ namespace AnalyticCombinatorics.Ch1
 -- ≥ 1−(1−δ)^m−ε for high-rank starts) holds cofinitely, then u → a > 0. The SATISFIABLE reduction;
 -- the lone remaining analytic wall is ErdosAlignment (comparable-rank overlap + descent coupling).
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.erdos_partition_limit_exists_of_alignment
+-- HR mass-rate campaign, brick 75 (§8 R7 scalar recursion solver): scalar_rec_solve — closed form for
+-- u(t+1) ≤ q·u t + δ·e t, the engine of the windowed-coupling unmatched-mass recursion.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.scalar_rec_solve
+-- HR mass-rate campaign, brick 76 (§8 R7 DETERMINISTIC WINDOWED-COUPLING ITER): iter_window_overlap —
+-- finite-sum coupling (ρ_t common-minorant + U_t unmatched-pair-mass, marginal invariant ρ_t + U_t-marg
+-- = P^t) gives overlap(P^m i, P^m j) ≥ 1 − (1−δ)^m − δ·∑(1−δ)^{m−t−1}·badMass_t. NO probabilistic
+-- coupling library; reduces the renewal alignment to windowed minorization (B_W) + the bad-mass bound.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.left_marginal
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.iter_window_overlap
 
 end AnalyticCombinatorics.Ch1
