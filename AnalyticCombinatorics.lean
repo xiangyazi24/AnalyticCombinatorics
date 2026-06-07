@@ -125,6 +125,7 @@ import AnalyticCombinatorics.Ch8.Partitions.PartitionRenewal
 import AnalyticCombinatorics.Ch8.Partitions.ErdosLimit
 import AnalyticCombinatorics.Ch8.Partitions.DoeblinOverlap
 import AnalyticCombinatorics.Ch8.Partitions.StepContraction
+import AnalyticCombinatorics.Ch8.Partitions.KernelPow
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
