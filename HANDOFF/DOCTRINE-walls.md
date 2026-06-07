@@ -206,3 +206,21 @@ and they align: overlap ≥ 1 − (1−δ)^m − small).
      now about COMPARABLE-pair absorption, NOT the far-pair recurrence. Still analysis, but tractable.
 The deep far-pair recurrence/local-CLT is AVOIDED by center-tracking. The lone analytic content is the
 comparable-pair bad-mass decay (C4) + the L¹-continuity (C3). Both lean on the banked model machinery.
+
+## HONEST REFINEMENT of C4 (Opus) — comparable bad-mass is still a coalescence/diff-walk statement
+Earlier I framed C4 as "comparable pairs absorb into the window, so bad-mass → 0 — tractable." That is
+too optimistic. For a same-rank pair (rnk i = rnk j, indices differ), the two coupled chains have a
+rank-DIFFERENCE that starts at 0 but does a mean-0 random walk (difference of two ~Γ(2,C/2) decrements),
+spreading like √t. The bad-mass b_t = unmatched mass with |rnk-difference| > W. So b_t can GROW in t
+until coalescence. The ITER's scalar solve weights it by (1−δ)^{m−t−1} (downweighting old steps), so
+what's needed is essentially: the unmatched mass coalesces (δ chance/step while in window) FASTER than
+the diff-walk carries it out of the window. This is a genuine recurrence/coalescence estimate for the
+rank-difference walk — NOT trivially "they absorb." Center-tracking removes the UNBOUNDED-gap far pairs
+(good), but the residual comparable-pair bad-mass is still real analysis (local-CLT/recurrence flavor for
+a bounded-start diff walk). It IS more tractable than the unbounded far-pair version (bounded initial
+gap; the window W can be taken ≥ the typical √m spread by choosing m ~ W²), but it is NOT mechanical.
+
+So the lone irreducible analytic content of path A is: (C3) Pker L¹-continuity in the start index +
+(C4) the comparable-start rank-difference-walk coalescence/bad-mass bound. Both are genuine analysis
+leaning on the σ-kernel asymptotics (banked model machinery); C4 is the harder, and how deeply to build
+the coalescence/local-limit foundations is a scope decision. Everything mechanical (bricks 61-77) is done.
