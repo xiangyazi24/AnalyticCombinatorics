@@ -59,7 +59,7 @@ lemma weighted_kernel_block_left_half_le (n k : ℕ) (hn : 0 < n) :
     Finset.sum_le_sum hterm_le
   have hfactor : (∑ m ∈ s, erdosWeight n m * (((k + 1 : ℕ) : ℝ) * Real.sqrt (n : ℝ)))
       = (((k + 1 : ℕ) : ℝ) * Real.sqrt (n : ℝ)) * (∑ m ∈ s, erdosWeight n m) := by
-    rw [Finset.mul_sum]; ring
+    simp [Finset.sum_mul]
   have hblock : (∑ m ∈ s, erdosWeight n m) ≤ leftBlockMajorant k := by
     simpa [s, leftBlockMajorant] using kernel_block_left_half_le n k hn
   have hcoef_nonneg : 0 ≤ (((k + 1 : ℕ) : ℝ) * Real.sqrt (n : ℝ)) := by positivity
@@ -194,11 +194,24 @@ lemma leftBlockMajorant_weighted_shifted_tsum_le (Kn : ℕ) (s : ℝ) (hs : 0 < 
   _ ≤ 2 * sigmaQuadConst * s * q ^ Kn
       * (((Kn : ℝ) + 1) ^ 3 * (∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * q ^ j)) := by
     refine mul_le_mul_of_nonneg_left ?_ (by positivity)
-    refine calc (∑' j : ℕ, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j)
-        ≤ ∑' j : ℕ, (((Kn : ℝ) + 1) ^ 3 * (((j : ℕ).succ : ℝ) ^ 3)) * q ^ j := by
-      refine tsum_le_tsum (fun j => mul_le_mul_of_nonneg_right ?_ (by positivity)) hsum
-        (hsum.mul_left ((Kn : ℝ) + 1)^3)
+    have hpos_a : ∀ j, 0 ≤ (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j := by intro j; positivity
+    have hineq : ∀ j, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j
+        ≤ (((Kn : ℝ) + 1) ^ 3 * (((j : ℕ).succ : ℝ) ^ 3)) * q ^ j := by
+      intro j; refine mul_le_mul_of_nonneg_right ?_ (by positivity)
       nlinarith [Nat.cast_nonneg j, Nat.cast_nonneg Kn]
+    have ha : Summable (fun j : ℕ => (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j) :=
+      Summable.of_nonneg_of_le hpos_a hineq (hsum.mul_left (((Kn : ℝ) + 1)^3))
+    have hbpos : ∀ j, 0 ≤ (((Kn : ℝ) + 1) ^ 3 * (((j : ℕ).succ : ℝ) ^ 3)) * q ^ j := by
+      intro j; positivity
+    have hpart : ∀ (u : Finset ℕ), ∑ j ∈ u, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j
+        ≤ ∑' j : ℕ, (((Kn : ℝ) + 1) ^ 3 * (((j : ℕ).succ : ℝ) ^ 3)) * q ^ j := by
+      intro u
+      refine le_trans (Finset.sum_le_sum (fun j _ => hineq j)) ?_
+      refine (hsum.mul_left (((Kn : ℝ) + 1)^3)).sum_le_tsum u (fun j hj => hbpos j)
+    refine mul_le_mul_of_nonneg_left ?_ (by positivity)
+    calc (∑' j : ℕ, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j)
+        ≤ ∑' j : ℕ, (((Kn : ℝ) + 1) ^ 3 * (((j : ℕ).succ : ℝ) ^ 3)) * q ^ j :=
+      Real.tsum_le_of_sum_le hpos_a hpart
     _ = ((Kn : ℝ) + 1) ^ 3 * (∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * q ^ j) := by
       rw [tsum_mul_left]
   _ = 2 * sigmaQuadConst * s * (((Kn : ℝ) + 1) ^ 3) * tailH3 * q ^ Kn := by
