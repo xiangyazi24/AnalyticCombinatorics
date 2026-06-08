@@ -160,6 +160,7 @@ import AnalyticCombinatorics.Ch8.Partitions.MomentBounds
 import AnalyticCombinatorics.Ch8.Partitions.OccupationAssembly
 import AnalyticCombinatorics.Ch8.Partitions.OccupationFinal
 import AnalyticCombinatorics.Ch8.Partitions.TanakaEta
+import AnalyticCombinatorics.Ch8.Partitions.QVEta
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1441,5 +1442,12 @@ namespace AnalyticCombinatorics.Ch1
 -- instantiation phase (re-deriving 85-91 with drift error). Deterministic finite-sum.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.abs_drift_le_indic_eta
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.occupation_ge_tanaka_eta
+-- HR mass-rate campaign, brick 93 (§8 R7 η-ROBUST lower QV): the second-moment drift is the unconditional
+-- identity ∑K(D z)² − (D x)² = locVar x + 2·D x·e (sq_drift_id, e = drift error), and 2 D x e ≥ −2Rη via
+-- (R+Dx)(η+e)+(R−Dx)(η−e) ≥ 0 (sq_drift_ge_eta). Telescoped: E[D_T²] ≥ E[D_0²] + (v₀−2Rη)·T
+-- (sq_moment_ge_eta). With η~1/r², R~r the correction 2Rη~1/r→0, so the lower QV survives. Finite-sum.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sq_drift_id
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sq_drift_ge_eta
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sq_moment_ge_eta
 
 end AnalyticCombinatorics.Ch1
