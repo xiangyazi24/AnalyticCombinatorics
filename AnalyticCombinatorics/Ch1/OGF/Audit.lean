@@ -161,6 +161,7 @@ import AnalyticCombinatorics.Ch8.Partitions.OccupationAssembly
 import AnalyticCombinatorics.Ch8.Partitions.OccupationFinal
 import AnalyticCombinatorics.Ch8.Partitions.TanakaEta
 import AnalyticCombinatorics.Ch8.Partitions.QVEta
+import AnalyticCombinatorics.Ch8.Partitions.OccupationEta
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1449,5 +1450,13 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sq_drift_id
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sq_drift_ge_eta
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sq_moment_ge_eta
+-- HR mass-rate campaign, brick 94 (§8 R7 η-ROBUST OCCUPATION CAPSTONE): for the η-approximate-martingale
+-- walk, the window occupation is unbounded (occupation_unbounded_eta). KEY simplification: the 4th moment
+-- is bounded TRIVIALLY by R⁴ (|D|≤R, fourth_moment_le_R4) — no re-derived 4th moment needed. PZ with the
+-- linear lower QV E[D_T²] ≥ (v₀−2Rη)T gives (E|D_T|)² ≥ ((v₀−2Rη)T)³/R⁴ → ∞ (cubic), and via η-robust
+-- Tanaka occ ≥ (E|D_T|−E|D_0|−ηT)/b with E|D_T| ~ T^{3/2} ≫ ηT, the occupation exceeds any target.
+-- Completes the abstract+η-robust occupation lower bound. Only concrete Pker instantiation remains.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.fourth_moment_le_R4
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.occupation_unbounded_eta
 
 end AnalyticCombinatorics.Ch1
