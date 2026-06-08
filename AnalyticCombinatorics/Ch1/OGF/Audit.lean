@@ -170,6 +170,7 @@ import AnalyticCombinatorics.Ch8.Partitions.LocalizedQV
 import AnalyticCombinatorics.Ch8.Partitions.LocalizedTanaka
 import AnalyticCombinatorics.Ch8.Partitions.LocalizedOccupation
 import AnalyticCombinatorics.Ch8.Partitions.GoodHiRecursion
+import AnalyticCombinatorics.Ch8.Partitions.TwoTermLocalLip
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1519,5 +1520,10 @@ namespace AnalyticCombinatorics.Ch1
 -- umass(t+1) ≤ umass t − δ·(Good-mass of Umat t), from umass_succ_eq (∑Umat·cmass ≥ δ·∑_{Good}Umat).
 -- Feeds CoalesceBridge with g = conditioned Good-fraction. Deterministic finite-sum.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.umass_succ_le_of_good
+-- HR mass-rate campaign, brick 103 (§8 R7 two-term ⟹ local Lipschitz bridge): two_term_local_lip —
+-- if f n = c₀ + c₁/√n + O(1/n) eventually, then for comparable large x,y (|√x−√y| ≤ W0),
+-- |f x − f y| ≤ K'/x = O(1/r²). The bridge from the smooth-rank mean-decrement two-term expansion to the
+-- approximate-martingale bound η~1/r². (Drafted during the no-build window, verified on server recovery.)
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.two_term_local_lip
 
 end AnalyticCombinatorics.Ch1
