@@ -291,3 +291,32 @@ judged longer). Plan: bound goodMass t below by (window-fraction)·umass t and t
 structure; the genuine analytic content is the recurrence/return-count of D_t under the Erdős kernel
 (uses banked far_erdos_tail_le for bounded increments + erdos_kernel_window for the local variance).
 This is the lone open frontier; everything else (C3 + both convergence halves) is banked clean-3.
+
+## FINAL REDUCTION (Opus, 06-08) — bricks 82/83, the wall is ONE probability lemma + instantiation
+
+The occupation form is realized via a GREEN POTENTIAL (ChatGPT R6/R7, verified+formalized):
+- **Brick 82 `occupation_ge_green_tight`:** for any Kres-Poisson-subsolution g, `g i j − greenMass M ≤ ∑ goodMass`.
+- **Brick 83 `greenT_subsolution`:** the finite-horizon `greenT T = ∑_{t<T} KresAct^[t] goodIndic` IS a
+  subsolution FOR FREE (Poisson identity `KresAct(greenT)=greenT−goodIndic+KresAct^[T]goodIndic`,
+  nonneg tail). No recurrence needed for the subsolution — finite-sum algebra.
+
+### The lone analytic input (now exactly pinned)
+  **greenT T (i,j) ≥ (1−ε)/δ for high-rank comparable starts** — equivalently the EXPECTED LOCAL TIME
+  `∑_{t<T} P(|D_t| ≤ W) ≥ (1−ε)/δ`. A mean-0, bounded-increment, local-variance-v walk has
+  `P(|D_t|≤W) ≳ W/√t` (local-CLT lower bound), so `∑_{t<T} ≳ W√T`; with T up to the absorption time
+  ~ rnk(i) → ∞, `W√T ≥ 1/δ = e^{cW}` once `rnk(i) ≥ e^{2cW}/W²` (constant, W fixed). Chebyshev ALONE gives
+  only ~W² ≪ 1/δ — the √T (multi-excursion recurrence) is irreducible. The genuine content is the
+  local-CLT/recurrence LOWER bound `P(|D_t|≤W) ≳ 1/√t` (equivalently `∑_t P(D_t=0)=∞`), which Mathlib
+  lacks a ready form of. Per-step moments feeding it (banked): erdos_kernel_window (local variance v>0),
+  far_erdos_tail_le (bounded increments), kernelMass→1. THIS is the method-flexibility point.
+
+### Remaining instantiation (mechanical-ish)
+Instantiate the abstract ITER (α=Fin(N+1), P=killed Pker, rnk) for `hhit` in ErdosLimit's
+`erdos_partition_limit_exists_of_hit`. Subtlety: Pker_window_minor gives δ only for rank ≥ 12, so the
+occupation predicate generalizes from GoodW to `Good ⊆ GoodW` (minorizable high-rank window); bricks
+81/82/83 generalize cleanly (proofs never used GoodW's specific form). Then harmonic_diff_le_overlap (80)
++ overlap→1 ⟹ hitVal converges.
+
+Banked clean-3 this campaign night: 79 (δ minorization), 80 (harmonic bridge), 81 (occupation),
+82 (Green telescoping), 83 (greenT subsolution-for-free). HR fully architected; only non-mechanical
+gap is the local-time/recurrence lower bound.
