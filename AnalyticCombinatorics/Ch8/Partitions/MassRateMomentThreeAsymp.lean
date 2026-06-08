@@ -57,6 +57,7 @@ lemma reg4_global_bound {z : ℝ} (hz : 0 < z) :
       have : z ^ 5 ≤ 1 := pow_le_one₀ hz.le hz1
       nlinarith
     have he' : Real.exp (-1) < 1 := by rw [Real.exp_lt_one_iff]; norm_num
+    have hden_pos : 0 < 1 - Real.exp (-1) := by linarith
     have h3 : (0:ℝ) ≤ (24 / (1 - Real.exp (-1)) ^ 5) * Real.exp (-z / 2) := by positivity
     linarith
   · have h1 := reg4_tail hz1
@@ -198,6 +199,7 @@ theorem sigmaMoment_three_one_term {t : ℝ} (ht0 : 0 < t) (ht1 : t ≤ 1) :
       2645 (24 / (1 - Real.exp (-1)) ^ 5) 24
       (by norm_num) (by
           have he' : Real.exp (-1) < 1 := by rw [Real.exp_lt_one_iff]; norm_num
+          have hden_pos : 0 < 1 - Real.exp (-1) := by linarith
           positivity) (by norm_num)
       (fun z hz0 hz1 => reg4_bdd_near_zero hz0 hz1)
       (fun z hz1 => reg4_tail hz1)

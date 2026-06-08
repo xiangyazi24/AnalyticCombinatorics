@@ -141,20 +141,28 @@ noncomputable def tailH3 : ℝ :=
 
 lemma tailH3_pos : 0 < tailH3 := by
   dsimp [tailH3]
-  have h0 : (0 : ℝ) < ((0 : ℕ).succ : ℝ)^3 * Real.exp (-(C / 2)) ^ 0 := by norm_num
   have hnonneg : ∀ j, 0 ≤ (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j := by
     intro j; positivity
-  have hsum : 0 ≤ ∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j := tsum_nonneg hnonneg
-  -- The first term (j=0) is positive, and all terms are nonnegative, so the sum is > 0
-  refine lt_of_lt_of_le h0 ?_
-  calc ((0 : ℕ).succ : ℝ)^3 * Real.exp (-(C / 2)) ^ 0
-      = (fun j => (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j) 0 := rfl
-    _ ≤ ∑' j, (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j := by
-      refine le_tsum (Summable.of_nonneg hnonneg (by
-        have h := summable_pow_mul_geometric_of_norm_lt_one (R := ℝ) 3 ?_
-        · exact h
-        · rw [Real.norm_eq_abs, abs_of_pos (Real.exp_pos _)]
-          exact Real.exp_lt_one_iff.mpr (by nlinarith [C_pos]))) 0
+  have hfirst : ((0 : ℕ).succ : ℝ)^3 * Real.exp (-(C / 2)) ^ 0 = 1 := by norm_num
+  have hsumm : Summable (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j) := by
+    have h := summable_pow_mul_geometric_of_norm_lt_one (R := ℝ) 3
+      (by rw [Real.norm_eq_abs, abs_of_pos (Real.exp_pos _)]
+          exact Real.exp_lt_one_iff.mpr (by nlinarith [C_pos]))
+    -- h : Summable (fun n => n^3 * q^n), we need Summable (fun j => (j+1)^3 * q^j)
+    -- (j+1)^3 * q^j = q⁻¹ * (j+1)^3 * q^{j+1}
+    set q := Real.exp (-(C / 2)) with hqdef
+    have : (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * q ^ j)
+        = (fun j => q⁻¹ * ((j:ℝ)^3 * q ^ j)) ∘ Nat.succ := by
+      ext j; simp [hqdef, mul_comm, add_comm, mul_left_comm]
+    rw [this]
+    exact (h.comp_injective (fun a b h => Nat.succ_inj.mp h)).mul_right q⁻¹
+  have hfirst_le : 1 ≤ ∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j := by
+    -- The first term is 1, all terms ≥ 0, so the tsum ≥ first term = 1
+    rw [← hfirst]
+    -- Use: for nonnegative summable f, f 0 ≤ ∑' f
+    have := hsumm.hasSum
+    refine this.le_tsum 0
+  linarith
 
 lemma tailH3_nonneg : 0 ≤ tailH3 := tailH3_pos.le
 
