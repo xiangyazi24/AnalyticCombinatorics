@@ -18,10 +18,11 @@ noncomputable section
 open Filter
 open scoped Topology
 
+set_option maxHeartbeats 1000000
+
 namespace AnalyticCombinatorics.Ch8.Partitions.Erdos
 
 /-- `reg4` tail bound: `|boseKernel4 z − 24/z⁵| ≤ (24/(1−e^{−1})⁵)·e^{−z/2} + 24/z⁵` for `z > 1`. -/
-set_option maxHeartbeats 1000000 in
 lemma reg4_tail {z : ℝ} (hz1 : 1 < z) :
     |boseKernel4 z - 24 / z ^ 5|
       ≤ (24 / (1 - Real.exp (-1)) ^ 5) * Real.exp (-z / 2) + 24 / z ^ 5 := by
@@ -46,7 +47,6 @@ lemma reg4_tail {z : ℝ} (hz1 : 1 < z) :
   linarith [htri, hstep]
 
 /-- Global `reg4` bound: `|reg4 z| ≤ B₄·e^{−z/2} + 2645/z⁵` for all `z > 0`. -/
-set_option maxHeartbeats 1000000 in
 lemma reg4_global_bound {z : ℝ} (hz : 0 < z) :
     |boseKernel4 z - 24 / z ^ 5|
       ≤ (24 / (1 - Real.exp (-1)) ^ 5) * Real.exp (-z / 2) + 2645 / z ^ 5 := by
@@ -65,7 +65,6 @@ lemma reg4_global_bound {z : ℝ} (hz : 0 < z) :
     linarith
 
 /-- Summability of `k³·|reg4(tk)|`. -/
-set_option maxHeartbeats 1000000 in
 lemma summable_weighted_absReg4 {t : ℝ} (ht : 0 < t) :
     Summable (fun k : ℕ => if k = 0 then (0:ℝ)
       else (k : ℝ) ^ 3 * |boseKernel4 (t * (k : ℝ)) - 24 / (t * (k : ℝ)) ^ 5|) := by
@@ -108,7 +107,6 @@ lemma summable_weighted_absReg4 {t : ℝ} (ht : 0 < t) :
             rw [mul_add, hexp_eq, hpoly]
 
 /-- **`M₃` one-term asymptotic** `|M₃(t) − 24(π²/6)/t⁵| ≤ K/t⁴` on `0 < t ≤ 1`. -/
-set_option maxHeartbeats 1000000 in
 theorem sigmaMoment_three_one_term {t : ℝ} (ht0 : 0 < t) (ht1 : t ≤ 1) :
     |sigmaMoment 3 t - 24 * (Real.pi ^ 2 / 6) / t ^ 5|
       ≤ (2645 * 2 ^ 4 + (24 / (1 - Real.exp (-1)) ^ 5) * (Nat.factorial 3) * 4 ^ 4 + 2 * 24)
@@ -198,7 +196,9 @@ theorem sigmaMoment_three_one_term {t : ℝ} (ht0 : 0 < t) (ht1 : t ≤ 1) :
     rw [habs_eq]
     exact weighted_decay_sum_bound 3 (fun z => boseKernel4 z - 24 / z ^ 5)
       2645 (24 / (1 - Real.exp (-1)) ^ 5) 24
-      (by norm_num) (have he' : Real.exp (-1) < 1 := by rw [Real.exp_lt_one_iff]; norm_num; positivity) (by norm_num)
+      (by norm_num) (by
+          have he' : Real.exp (-1) < 1 := by rw [Real.exp_lt_one_iff]; norm_num
+          positivity) (by norm_num)
       (fun z hz0 hz1 => reg4_bdd_near_zero hz0 hz1)
       (fun z hz1 => reg4_tail hz1)
       ht0 ht1
