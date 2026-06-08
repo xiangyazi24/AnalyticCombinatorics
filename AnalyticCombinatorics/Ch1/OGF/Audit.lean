@@ -164,6 +164,7 @@ import AnalyticCombinatorics.Ch8.Partitions.QVEta
 import AnalyticCombinatorics.Ch8.Partitions.OccupationEta
 import AnalyticCombinatorics.Ch8.Partitions.CoalesceBridge
 import AnalyticCombinatorics.Ch8.Partitions.SmoothScale
+import AnalyticCombinatorics.Ch8.Partitions.EnergyBridge
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1471,5 +1472,13 @@ namespace AnalyticCombinatorics.Ch1
 -- SMOOTH difference 3√x − 3√y; abs_smooth_sub_le_rnk_add_one: |3√x − 3√y| ≤ |rnk x − rnk y| + 1, so a
 -- rnk-window of width W transfers to a smooth window of width W+1 (constant slack). Floor arithmetic.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.abs_smooth_sub_le_rnk_add_one
+-- HR mass-rate campaign, brick 97 (§8 R7 D²-ENERGY BRIDGE): the cleanest coalescence route (ChatGPT R11,
+-- verified). Direct energy E t = ∑ Umat t · D² on the substochastic unmatched mass; per-row drift ≥ c
+-- off-window (c = v₀−2Rη), ≥ −R² on-window (trivial). Telescoped (E ≤ R²·umass ≤ R², umass_le_one):
+-- c·∑ umass ≤ R² + (c+R²)·∑ goodMass. With δ·∑goodMass ≤ 1 (brick 81), ∑ umass is BOUNDED, so umass→0
+-- (rate K₀/M). No conditioned walk / occupation_unbounded_eta needed — the on-window repulsion is
+-- harmless (each on-window mass unit is charged to goodMass). Reuses the QV identity sq_drift_id.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.umass_le_one
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.energy_controls_goodMass
 
 end AnalyticCombinatorics.Ch1
