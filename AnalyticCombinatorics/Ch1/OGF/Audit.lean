@@ -149,6 +149,7 @@ import AnalyticCombinatorics.Ch8.Partitions.OverlapL1
 import AnalyticCombinatorics.Ch8.Partitions.ErdosMinorization
 import AnalyticCombinatorics.Ch8.Partitions.HarmonicOverlap
 import AnalyticCombinatorics.Ch8.Partitions.ITEROccupation
+import AnalyticCombinatorics.Ch8.Partitions.ITERGreen
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1350,5 +1351,14 @@ namespace AnalyticCombinatorics.Ch1
 -- lone occupation/local-time input ∑ goodMass t → 1/δ (rank-difference walk recurrence).
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.umass_le_one_sub_occupation
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.overlap_ge_occupation
+-- HR mass-rate campaign, brick 82 (§8 R7 GREEN-POTENTIAL occupation lower bound): the window
+-- occupation is bounded BELOW by a Poisson subsolution g of the residual kernel Kres. Telescoping
+-- the Green-weighted residual mass: g i j − greenMass M ≤ ∑_{t<M} goodMass t (tight form). With g the
+-- occupation-before-absorption potential (g = 0 on absorbed pairs, 0 ≤ g ≤ 1/δ, g i j → 1/δ ⟺
+-- recurrence), greenMass M → 0 even as umass M ↛ 0, so ∑ goodMass → 1/δ and umass M → 0 — exactly the
+-- recurrence gain the single-window ITER missed. Reduces the entire wall to constructing g.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.greenMass_succ_ge
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.occupation_ge_green_tight
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.occupation_ge_green
 
 end AnalyticCombinatorics.Ch1
