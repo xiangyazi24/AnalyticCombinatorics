@@ -247,3 +247,19 @@ those probability/number-theory foundations, vs. a different attack) is the seni
 The banked Model machinery (modelIntegral, erdos_kernel_window, erdosWeight_sub_model_le, far_erdos_tail_le,
 kernelMass→1) is the starting capital, but the σ-shift averaging is the new content.
 This is the genuine research frontier of path A — not a mechanical gap.
+
+## BREAKTHROUGH (Opus, 06-08) — C3 minorization is ELEMENTARY via σ(m) ≥ m (no σ-averaging!)
+ChatGPT (ask-gpt ac) correctly said: use BLOCK overlap not L¹, and the content is ∑_m min(σ(m),σ(m+d))
+≥ cN. It worried a σ-free bound fails ("σ≥1 gives Θ(N^{-1/2})"). BUT it (and I earlier) missed:
+σ(m) ≥ m (since m ∣ m ⟹ sigmaR m = ∑_{d|m} d ≥ m). In the window jump m ∈ [a√x, b√x] this gives
+σ(m) ≥ a√x, and ∑ over ~(b−a)√x terms gives Θ(x) — the RIGHT order. So:
+
+  ∑_k min(Pker x k, Pker y k)  ≥  (Θ(1)/x)·∑_{j∈[a√x,b√x]} min(σ(j), σ(j+(y−x)))
+     ≥ (Θ(1)/x)·∑_j min(j, j+(y−x))  [σ≥self]  ≥ (Θ(1)/x)·(b−a)√x·(a−D)√x  = (b−a)(a−D)·Θ(1) = δ>0,
+
+where |y−x| ≤ D√x (comparable, D=2W/3), window left endpoint a > D, smooth factor 1/k·exp(−C(√x−√k))/km
+= Θ(1)/x on the window (k~x, exp∈[e^{−Cb/2},e^{−Ca/2}], km→1). FULLY ELEMENTARY: needs only σ(m)≥m,
+σ(m)≤... not even needed, k~x, exp monotonicity, kernelMass→1 (banked). NO σ-summatory, NO local-limit,
+NO concentration. This bypasses the σ-averaging wall I'd flagged. The minorization δ(W)>0 (decreasing in
+W via e^{−CW}). C4 (bad-mass/diff-walk) still to assess, but C3 is cracked elementarily.
+Formalizing in ErdosMinorization.lean: sigmaR_ge_self → block-min → smooth-factor → δ.
