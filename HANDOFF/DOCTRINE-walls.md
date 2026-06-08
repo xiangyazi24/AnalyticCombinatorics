@@ -343,3 +343,11 @@ The genuine per-step analytic inputs (concrete Pker-kernel facts, bankable): mea
 E[ΔD]=0 (rank-step mean rank-independent), lower local variance v₀>0, bounded increment b, 4th-moment.
 This is substantial but Mathlib-supported (martingale Doob decomposition exists). NEXT: build the per-step
 moment lemmas + the Tanaka local-time bound, then the ITER instantiation (Good⊆GoodW generalization).
+
+ARCHITECTURE DECISION (Opus, 06-08): do the Tanaka route in the DETERMINISTIC finite-sum substrate
+(mirroring ITER/greenT), NOT Mathlib's measure-theoretic martingales. Define the product-walk
+distribution M_prod(t) (both coords independent Pker steps, a prob dist on pairs, like Mpow);
+then E[f(D_t)] := ∑_{x,y} M_prod(t)(x,y)·f(rnk x − rnk y), and all moments / the Doob compensator /
+Paley–Zygmund become finite-sum identities (∑M_prod(t+1)|D| − ∑M_prod(t)|D| = ∑M_prod(t)·(one-step |D|
+drift); the increasing compensator = window local time). Mathlib's predictablePart exists but bridging
+deterministic-Umat ↔ measure-theoretic E[·] is avoidable and not worth the setup. Keep it finite-sum.
