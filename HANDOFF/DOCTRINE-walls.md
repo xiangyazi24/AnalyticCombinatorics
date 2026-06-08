@@ -450,6 +450,35 @@ Paley–Zygmund become finite-sum identities (∑M_prod(t+1)|D| − ∑M_prod(t)
 drift); the increasing compensator = window local time). Mathlib's predictablePart exists but bridging
 deterministic-Umat ↔ measure-theoretic E[·] is avoidable and not worth the setup. Keep it finite-sum.
 
+## KILLED-CHAIN INSTANTIATION: the ONE remaining analytic lemma (Opus + ChatGPT R11/R12, 06-08)
+Abstract coupling machinery COMPLETE, 20 bricks (79-98): C3 minorization, harmonic→overlap bridge,
+Green/occupation reduction, full Tanaka+Paley-Zygmund occupation (84-94), CoalesceBridge (95), smooth-scale
+window transfer (96), D²-energy bridge (97), umass_tendsto_zero (98).
+
+CRUX resolved (R12): applying coalescence to the KILLED chain (absorption ~r steps) needs L(i,j) =
+P(no coalescence before both absorb) → 0 as start rank r → ∞. The D²-ENERGY route (97-98) has the WRONG
+RATE (E ≤ R² loses the √r local-time scale; gives umass(r) ~ O(1), not → 0). The OCCUPATION route is
+correct but occupation_unbounded_eta must be LOCALIZED: hypotheses needed only OFF the (high-rank) window
+GoodHi (martingale |∑Khat·ΔD| ≤ η and variance ∑Khat·ΔD² ≥ v₀ off GoodHi; on-window arbitrary bounded —
+the repelling drift is HARMLESS, charged to the occupation being lower-bounded), over the ACTIVE-PHASE
+horizon M ~ r. The conditioned residual walk K̂res = Lres⊗Rres/(1−cmass)² is mart-eta OFF window
+(=product there) which is all the localized lemma needs.
+
+### THE single genuine analytic input (everything else is banked finite-sum):
+  khat_residual_active_good_occupation_tends_infty:
+    ∀ A>0, ∃ R0 M, ∀ comparable high-rank i,j (rnk ≥ R0, |ρi−ρj| ≤ W0),
+      A ≤ ∑_{t<M} ∑_z K̂resᵗ(i,j)(z) · 1_{GoodHi z}
+  (GoodHi z = Jhi ≤ rnk z.1 ∧ Jhi ≤ rnk z.2 ∧ |ρ z.1 − ρ z.2| ≤ Wρ, Jhi ≥ 16).
+  = a 1-D recurrent bounded-increment walk, martingale+positive-variance OFF a fixed window, has expected
+  window-visits before the rank clock descends r→Jhi tending to ∞ (the √r local time over the r-step
+  descent). This is THE last probability lemma; it needs the concrete Erdős moments (off-window product
+  drift η~1/r² [smooth ρ, μ̃ expansion], off-window variance v₀>0, bounded increment b, active-time→∞).
+Then CoalesceBridge (95, with g = ĝ = goodMass/umass) gives umass M ≤ ε, hence overlap→1, hence
+|hitVal i − hitVal j| → 0 (harmonic_diff_le_overlap 80), hence hitVal converges (center-tracking 77) ⟹ hhit.
+Remaining FINITE-SUM (re-derivations/assembly): localized occupation lemma (generalize 92-94 to
+off-window-only hyps + active horizon), GoodHi generalization of umass_core/brick 81, the final
+killed_umass bridge, and the finite-state Fin(N+1) glue connecting KPowK/hitVal to the abstract Mpow/overlap.
+
 ## CONCRETE MOMENTS: smooth-scale resolution CONFIRMED + constants (Opus + ChatGPT R9, 06-08)
 ChatGPT R9 independently confirmed the floor concern and the fix:
 - Floored rnk=⌊3√n⌋ is NOT an approx-martingale coordinate: μ_floor(n) has an O(1) phase term F({3√n});
