@@ -364,6 +364,15 @@ Steps:
    approx-martingale bound |E[ΔD]| ≤ η(r) ~ 1/r² for comparable pairs (from the jump law / erdos_kernel_
    window); local variance v₀ > 0 (erdos_kernel_window gives the Θ(1) rank-step variance); bounded
    increment b (far_erdos_tail_le).
+   ⚠ USE THE UNROUNDED SCALE (Opus 06-08): rnk = ⌊3√n⌋, and the ROUNDED difference D = ⌊3√X⌋−⌊3√Y⌋ has a
+   Θ(1) floor perturbation (frac(3√X)−frac(3√Y) is Θ(1) for comparable X,Y) — it is NOT an approximate
+   martingale. FIX: take the martingale coordinate to be the UNROUNDED D̃ = 3√X − 3√Y. Then
+   μ̃(n) = 3√n − 3·E[√(n−m)] = μ̄ + c/√n + O(1/n) (smooth; expand √(1−m/n), μ̄ = (3/2)E[y], c = (3/8)E[y²],
+   y = m/√n under the model density f(y) = (π²/6)y e^{−Cy/2}), so η̃ = |μ̃(X)−μ̃(Y)| ~ |c|·W·r/n^{3/2} ~ 1/r²
+   (since n ~ r²). The window |D̃| ≤ b relates to the rnk-window |rnk X − rnk Y| ≤ W within O(1) slack
+   (|D̃ − D| < 1), so the occupation/minorization transfer with an O(1) window adjustment. This avoids the
+   floor being fatal. The concrete computation: expand μ̃ via the decrement moments E[y], E[y²] from
+   erdos_kernel_window (Gamma integrals of f), and bound η̃ via the c/√n correction's rank-derivative.
 3. ⚠ PRODUCT→COALESCING BRIDGE (the key remaining analytical piece, mechanism worked out):
    occupation_unbounded_eta is for a STOCHASTIC (mass-conserving) walk, but Umat is SUBSTOCHASTIC. Use the
    CONDITIONED walk Ûmat(t) := Umat(t)/umass(t) (= Umat conditioned on not-yet-coalesced). Ûmat is
