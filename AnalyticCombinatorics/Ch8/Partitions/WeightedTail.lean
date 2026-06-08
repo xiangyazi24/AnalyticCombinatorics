@@ -10,16 +10,16 @@ with the extra `(m:ℝ)` weight, plus the capstone `weighted_far_erdos_tail_le`.
 Opus-authored (weighted adaptations by ChatGPT ac1).
 -/
 
-set_option maxHeartbeats 4000000
-
 noncomputable section
 
 open Filter Finset
 open scoped Topology BigOperators
+open AnalyticCombinatorics.Ch8.Partitions.Erdos.Close
 
 namespace AnalyticCombinatorics.Ch8.Partitions.Erdos
 
 /-- `m ∈ block k` ⟹ `m ≤ (k+1)·√n`. -/
+set_option maxHeartbeats 400000 in
 lemma m_le_block_bound {n m k : ℕ} (hn : 0 < n) (hmk : blockIndex n m = k) :
     (m : ℝ) ≤ (((k + 1 : ℕ) : ℝ) * Real.sqrt (n : ℝ)) := by
   have hsqrt_pos : 0 < Real.sqrt (n : ℝ) :=
@@ -33,6 +33,7 @@ lemma m_le_block_bound {n m k : ℕ} (hn : 0 < n) (hmk : blockIndex n m = k) :
   field_simp [hsqrt_pos.ne'] at hmul ⊢
 
 /-- Per-block weighted bound: `Σ_{m∈block k, m≤n/2} erdosWeight·m ≤ leftBlockMajorant(k)·(k+1)·√n`. -/
+set_option maxHeartbeats 400000 in
 lemma weighted_kernel_block_left_half_le (n k : ℕ) (hn : 0 < n) :
     (∑ m ∈ (Finset.Icc 1 (n - 1)).filter
       (fun m => blockIndex n m = k ∧ 2 * m ≤ n),
@@ -68,6 +69,7 @@ lemma weighted_kernel_block_left_half_le (n k : ℕ) (hn : 0 < n) :
 
 /-- Weighted adaptation of `left_half_tail_sum_le_block_majorants`.
   `Σ_{m} erdosWeight·m·indicator ≤ Σ_{k} leftBlockMajorant(k)·(k+1)·√n·indicator`. -/
+set_option maxHeartbeats 1000000 in
 lemma weighted_left_half_tail_sum_le_block_majorants (n K : ℕ) (hn : 0 < n) :
     (∑ m ∈ Finset.Icc 1 (n - 1),
       if (K : ℝ) * Real.sqrt (n : ℝ) ≤ (m : ℝ) ∧ 2 * m ≤ n
@@ -144,6 +146,7 @@ lemma tailH3_pos : 0 < tailH3 := by
 lemma tailH3_nonneg : 0 ≤ tailH3 := tailH3_pos.le
 
 /-- Weighted block-majorant shift identity. -/
+set_option maxHeartbeats 2000000 in
 lemma leftBlockMajorant_weighted_shifted_tsum_le (Kn : ℕ) (s : ℝ) (hs : 0 < s) :
     (∑' j : ℕ, leftBlockMajorant (j + Kn) * (((j + Kn : ℕ) + 1 : ℝ) * s))
     ≤ 2 * sigmaQuadConst * s * (((Kn : ℝ) + 1) ^ 3) * tailH3
@@ -193,6 +196,7 @@ lemma leftBlockMajorant_weighted_shifted_tsum_le (Kn : ℕ) (s : ℝ) (hs : 0 < 
     exact le_of_eq (by ring)
 
 /-- **Weighted far-erdos tail**: `Σ_{m>⌊n^{2/3}⌋} erdosWeight·m ≤ const/n`. -/
+set_option maxHeartbeats 4000000 in
 theorem weighted_far_erdos_tail_le :
     ∃ K : ℝ, 0 < K ∧ ∀ᶠ n : ℕ in atTop,
       (∑ m ∈ Icc (⌊(n:ℝ) ^ (2/3 : ℝ)⌋₊ + 1) (n - 1), erdosWeight n m * (m : ℝ)) ≤ K / (n : ℝ) := by
