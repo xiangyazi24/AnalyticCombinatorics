@@ -344,6 +344,35 @@ needs φ regularity for the increment/variance bounds. A drift HURTS occupation 
 return), so η must be threaded as → 0 with rank; this is precisely why HR convergence is a rank→∞ statement.
 The exact-martingale machinery is the rank→∞ backbone; the η→0 control is the bridge to discharge next.
 
+## ABSTRACT OCCUPATION BACKBONE COMPLETE + η-robustness QUANTITATIVELY SOUND (Opus, 06-08), brick 91
+occupation_unbounded (brick 91) closes the abstract chain: for a mean-preserving, bounded-increment (b),
+uniformly-positive-local-variance (v₀) walk, the cumulative window occupation exceeds ANY target (hence
+1/δ). The entire abstract recurrence content is now mechanized clean-3 in elementary deterministic form
+(bricks 79–91), no measure theory, no local-CLT.
+
+### η is small: the η-robust instantiation is feasible (KEY quantitative finding)
+The drift η = |E[D'] − D| = |μ(rnk X) − μ(rnk Y)| where μ(r) = mean rank-decrement at rank r. For the
+Erdős kernel μ(r) → 3/2 with a ~1/r correction, so μ'(r) ~ 1/r², and for comparable X,Y (|rnk-diff| ≤ W
+= O(1)) η ~ |μ'(r)|·W ~ 1/r² (≈ 1/n, NOT 1/√n). Effect on the occupation chain:
+- η-robust Tanaka (brick 86'): occ ≥ (E|D_T| − E|D_0| − η·T)/b  [off-window |D|-drift is ≤ η, not 0].
+- η-robust QV (brick 87'): E[D_T²] ≥ E0² + v₀T − 2η·∑E|D_t| ≥ v₀T − 2ηTR; with η ~ 1/r², R ~ r,
+  the correction 2ηTR ~ 2T/r ≪ v₀T at the optimal T ~ r². So lower QV survives.
+- Optimal horizon: occ ≥ (c√T − ηT − W0)/b maximized at T ~ c²r²/4 gives occ ~ c²r/4 → ∞ ≫ 1/δ.
+So the η-drift is negligible relative to the variance signal; the approach is sound. This is precisely
+why HR convergence is a rank→∞ statement (η → 0 only as rank → ∞).
+
+### Remaining concrete phase (η-robust re-derivation + Pker instantiation)
+1. η-robust versions of bricks 85–91 (per-step |D|-drift and QV pick up ≤ η error terms; 4th-moment
+   binomial's mean-zero term becomes ≤ η; PZ brick 84 needs NO change). Each mirrors the exact version
+   with a tracked η. Moderate, mechanical re-derivation.
+2. Concrete per-step Pker moments: mean rank-decrement μ(r) and |μ(X)−μ(Y)| ≤ η(r) ~ 1/r² (from
+   erdos_kernel_window / the jump law), local variance v₀ > 0 (from erdos_kernel_window), bounded
+   increment b (from far_erdos_tail_le).
+3. ITER instantiation: α = Fin(N+1), P = killed Pker, rnk; Good ⊆ GoodW = minorizable high-rank window;
+   δ from Pker_window_minor; combine occupation_unbounded(η-robust) + overlap_ge_occupation (81) +
+   harmonic_diff_le_overlap (80) ⟹ hitVal converges ⟹ erdos_partition_limit_exists_of_hit. No conceptual
+   wall remains — concrete-kernel analysis + assembly.
+
 ## OCCUPATION LOWER BOUND: tent FAILS, Tanaka route VIABLE (Opus, 06-08, verified)
 
 ChatGPT R8 proposed an explicit "tent" subsolution g = max(R−|D|,0)/b to make the lower bound elementary
