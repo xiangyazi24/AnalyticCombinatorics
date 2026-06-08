@@ -159,6 +159,7 @@ import AnalyticCombinatorics.Ch8.Partitions.FourthMoment
 import AnalyticCombinatorics.Ch8.Partitions.MomentBounds
 import AnalyticCombinatorics.Ch8.Partitions.OccupationAssembly
 import AnalyticCombinatorics.Ch8.Partitions.OccupationFinal
+import AnalyticCombinatorics.Ch8.Partitions.TanakaEta
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1433,5 +1434,12 @@ namespace AnalyticCombinatorics.Ch1
 -- Completes the deterministic Tanaka occupation lower bound. No measure theory, no local-CLT.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.abs_mean_unbounded
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.occupation_unbounded
+-- HR mass-rate campaign, brick 92 (§8 R7 η-ROBUST Tanaka occupation): the Erdős rank-difference walk is
+-- only an approximate martingale (|∑K D z − D x| ≤ η, η~1/r²→0). η-robust per-step |D|-drift (off-window
+-- ≤ η not 0) telescopes to E|D_T| − E|D_0| ≤ b·(window occ) + η·T, so occ ≥ (E|D_T|−E|D_0|−η·T)/b. Since
+-- η·T ≪ √T ≤ E|D_T| at the optimal horizon T~r², occupation still diverges. Launches the η-robust
+-- instantiation phase (re-deriving 85-91 with drift error). Deterministic finite-sum.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.abs_drift_le_indic_eta
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.occupation_ge_tanaka_eta
 
 end AnalyticCombinatorics.Ch1
