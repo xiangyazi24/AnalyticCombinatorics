@@ -156,7 +156,7 @@ lemma tailH3_pos : 0 < tailH3 := by
     exact (h.comp_injective (fun a b _ => Nat.succ_inj.mp h)).mul_right q⁻¹
   have h_first_le : 1 ≤ ∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j := by
     calc 1 = ((0 : ℕ).succ : ℝ)^3 * Real.exp (-(C / 2)) ^ 0 := by norm_num
-      _ = (∑ j in ({0} : Finset ℕ), (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j) := by simp
+      _ = (∑ j ∈ ({0} : Finset ℕ), (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j) := by simp
       _ ≤ ∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j :=
         hsumm.sum_le_tsum ({0} : Finset ℕ) (by
           intro j hj; simp at hj; exact hnonneg j)
