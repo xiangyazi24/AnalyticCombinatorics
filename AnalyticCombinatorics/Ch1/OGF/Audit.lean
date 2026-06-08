@@ -157,6 +157,7 @@ import AnalyticCombinatorics.Ch8.Partitions.TanakaTelescope
 import AnalyticCombinatorics.Ch8.Partitions.QVTelescope
 import AnalyticCombinatorics.Ch8.Partitions.FourthMoment
 import AnalyticCombinatorics.Ch8.Partitions.MomentBounds
+import AnalyticCombinatorics.Ch8.Partitions.OccupationAssembly
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1417,5 +1418,11 @@ namespace AnalyticCombinatorics.Ch1
 -- (mean_sq_cubed_le) these give E|D_T| ≥ c√T for the Tanaka occupation lower bound. Deterministic finite-sum.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sq_moment_le
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.fourth_moment_telescope_le
+-- HR mass-rate campaign, brick 90 (§8 R7 closed-form 4th moment): locVar_le (locVar ≤ b²) and
+-- fourth_moment_le_quadratic E[D_T⁴] ≤ E[D_0⁴] + 8b²E[D_0²]·T + 8b⁴·T² + 3b⁴·T (substitute upper QV into
+-- the 4th-moment telescoping). Quadratic-in-T, so (lower QV)^{3/2}/√(4th) ≥ c√T (Paley–Zygmund), giving
+-- E|D_T| → ∞ and the Tanaka window occupation → ∞. Deterministic finite-sum.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.locVar_le
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.fourth_moment_le_quadratic
 
 end AnalyticCombinatorics.Ch1
