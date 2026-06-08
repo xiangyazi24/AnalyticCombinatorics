@@ -321,6 +321,29 @@ Banked clean-3 this campaign night: 79 (δ minorization), 80 (harmonic bridge), 
 82 (Green telescoping), 83 (greenT subsolution-for-free). HR fully architected; only non-mechanical
 gap is the local-time/recurrence lower bound.
 
+## DETERMINISTIC TANAKA OCCUPATION MACHINERY BANKED (Opus, 06-08), bricks 84–90
+The local-time lower bound (occupation → ∞) is now built in the deterministic finite-sum substrate
+(NO measure theory, NO local-CLT), via Tanaka + Paley–Zygmund:
+- 84 mean_sq_cubed_le: (∑pf²)³ ≤ (∑p|f|)²(∑pf⁴)  [Paley–Zygmund anti-concentration].
+- 85 abs_drift_nonneg/le/eq_of_far: per-step |D|-submartingale drift, compensator = window local time.
+- 86 occupation_ge_tanaka: window-occ ≥ (E|D_T| − E|D_0|)/b  [telescoped over distPow].
+- 87 sq_moment_telescope/sq_moment_ge: Doob for D², lower QV E[D_T²] ≥ E0²+v₀T.
+- 88 fourth_drift_le: per-step 4th-moment drift ≤ 8b²Dx²+3b⁴.
+- 89 sq_moment_le + fourth_moment_telescope_le: upper QV + 4th-moment telescoping.
+- 90 locVar_le + fourth_moment_le_quadratic: E[D_T⁴] ≤ E0⁴+8b²E0²T+8b⁴T²+3b⁴T (quadratic).
+Combine: (E|D_T|)²·CT² ≥ (E[D_T²])³ ≥ (v₀T)³ ⟹ E|D_T| ≥ c√T (capstone, next) ⟹ occupation → ∞ > 1/δ.
+
+### ⚠ Instantiation subtlety: D is only an APPROXIMATE martingale for Pker
+D = rnk X − rnk Y under the product walk has E[D'] − D = −(μ(rnk X) − μ(rnk Y)) where μ(r) = mean
+rank-decrement at rank r. For the Erdős kernel μ(r) ≈ 3/2 (rank-independent to leading order) but the
+rank-DEPENDENCE gives |E[D'] − D| ≤ η with η ~ 1/√n → 0 (NOT exactly 0). So the exact-martingale bricks
+84–90 do not instantiate verbatim. Options: (a) η-robust versions (QV/Tanaka identities pick up error
+terms ≤ 2η·∑E|D_t|; manageable since η·T_coalesce ~ 1/√n → 0 ≪ W for high rank — matches convergence
+as rank→∞); (b) scale-function transform φ (harmonic for Pker, so φ(X)−φ(Y) is an EXACT martingale) —
+needs φ regularity for the increment/variance bounds. A drift HURTS occupation (chains drift apart, no
+return), so η must be threaded as → 0 with rank; this is precisely why HR convergence is a rank→∞ statement.
+The exact-martingale machinery is the rank→∞ backbone; the η→0 control is the bridge to discharge next.
+
 ## OCCUPATION LOWER BOUND: tent FAILS, Tanaka route VIABLE (Opus, 06-08, verified)
 
 ChatGPT R8 proposed an explicit "tent" subsolution g = max(R−|D|,0)/b to make the lower bound elementary
