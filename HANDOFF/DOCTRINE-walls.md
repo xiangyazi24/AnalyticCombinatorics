@@ -320,3 +320,26 @@ occupation predicate generalizes from GoodW to `Good ⊆ GoodW` (minorizable hig
 Banked clean-3 this campaign night: 79 (δ minorization), 80 (harmonic bridge), 81 (occupation),
 82 (Green telescoping), 83 (greenT subsolution-for-free). HR fully architected; only non-mechanical
 gap is the local-time/recurrence lower bound.
+
+## OCCUPATION LOWER BOUND: tent FAILS, Tanaka route VIABLE (Opus, 06-08, verified)
+
+ChatGPT R8 proposed an explicit "tent" subsolution g = max(R−|D|,0)/b to make the lower bound elementary
+(no local-CLT). VERIFIED FLAWED ("不盲信"): on-window Kres is SUB-stochastic (∑Kres = 1−cmass ≤ 1−δ;
+coalescence removes exactly the high-potential mass near the tent peak), so ∑Kres·g ≥ (1−cmass)(g−1),
+which is < g−1 whenever g > 1. The start (i,j) is on-window (comparable) and needs g(i,j) ≈ 1/δ ≫ 1, so
+the tent cannot be a subsolution there. By LP duality the occupation potential greenT IS the maximal
+subsolution, so NO elementary subsolution exceeds it — the recurrence content is irreducible. (ChatGPT
+silently assumed ∑Kres = 1.)
+
+VIABLE route (Tanaka + Paley–Zygmund, uses Mathlib's EXISTING martingale/Doob theory, NOT local-CLT):
+  (1) lower quadratic variation: E[D_T²] ≥ v₀·(active steps) ≥ v₀·cT  (erdos local variance, banked-ish);
+  (2) 4th-moment / BDG: E[D_T⁴] ≤ C·(v·T)²  (bounded increments far_erdos_tail_le);
+  (3) Paley–Zygmund on D_T²: P(D_T² ≥ ½v₀T) ≥ c, hence E|D_T| ≥ c√T;
+  (4) Doob/Tanaka: |D_t| − A_t is a martingale, compensator A_t = window local time (supported on
+      |D_t| ≤ b, increment ≤ b), so E|D_T| = E[A_T] ≤ b·E[∑ 1_{|D_t|≤b}];
+  (5) ⟹ window occupation E[∑_{t<T} 1_{|D_t|≤W}] ≥ E[A_T]/b ≥ c√T/b ≥ 1/δ once T ≥ b²/(c²δ²) (a
+      constant; available since T ~ rnk(i) → ∞).
+The genuine per-step analytic inputs (concrete Pker-kernel facts, bankable): mean-zero-off-window
+E[ΔD]=0 (rank-step mean rank-independent), lower local variance v₀>0, bounded increment b, 4th-moment.
+This is substantial but Mathlib-supported (martingale Doob decomposition exists). NEXT: build the per-step
+moment lemmas + the Tanaka local-time bound, then the ITER instantiation (Good⊆GoodW generalization).
