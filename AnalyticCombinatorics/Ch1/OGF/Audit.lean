@@ -148,6 +148,7 @@ import AnalyticCombinatorics.Ch8.Partitions.CompContraction
 import AnalyticCombinatorics.Ch8.Partitions.OverlapL1
 import AnalyticCombinatorics.Ch8.Partitions.ErdosMinorization
 import AnalyticCombinatorics.Ch8.Partitions.HarmonicOverlap
+import AnalyticCombinatorics.Ch8.Partitions.ITEROccupation
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1342,5 +1343,12 @@ namespace AnalyticCombinatorics.Ch1
 -- which overlap→1 is obtained (single-window coupling, recurrence, or a direct renewal argument).
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.weighted_diff_le_L1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.harmonic_diff_le_overlap
+-- HR mass-rate campaign, brick 81 (§8 R7 WINDOW-OCCUPATION ITER bound): the single fixed-window pass
+-- is provably insufficient for C = π/√6 (self-consistency 2 ln v = c v, c ≈ ⅔C > 2/e, no solution).
+-- Telescoping umass_core credits EVERY window-return of the rank-difference walk: umass m ≤
+-- 1 − δ·∑_{t<m} goodMass t, hence overlap(Pᵐ i,Pᵐ j) ≥ δ·∑ goodMass t. Reduces the whole wall to the
+-- lone occupation/local-time input ∑ goodMass t → 1/δ (rank-difference walk recurrence).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.umass_le_one_sub_occupation
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.overlap_ge_occupation
 
 end AnalyticCombinatorics.Ch1

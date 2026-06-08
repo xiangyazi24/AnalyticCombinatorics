@@ -263,3 +263,31 @@ where |y−x| ≤ D√x (comparable, D=2W/3), window left endpoint a > D, smooth
 NO concentration. This bypasses the σ-averaging wall I'd flagged. The minorization δ(W)>0 (decreasing in
 W via e^{−CW}). C4 (bad-mass/diff-walk) still to assess, but C3 is cracked elementarily.
 Formalizing in ErdosMinorization.lean: sigmaR_ge_self → block-min → smooth-factor → δ.
+
+## C3 BANKED + C4 SHARPENED (Opus, 06-08) — bricks 79/80/81
+
+- **Brick 79 `Pker_window_minor` (ErdosMinorization.lean), clean-3, gated.** δ = exp(−C(2+D))/8 > 0,
+  UNIFORM for x ≥ 16 (rank ≥ 12). The σ-averaging wall is bypassed for C3. Done, on main.
+- **Brick 80 `harmonic_diff_le_overlap` (HarmonicOverlap.lean), clean-3.** Route-independent half:
+  bounded m-step-harmonic h ⟹ |h i − h j| ≤ 2B(1 − overlap(pᵢ,pⱼ)). Pure linear algebra.
+- **Brick 81 `umass_le_one_sub_occupation` / `overlap_ge_occupation` (ITEROccupation.lean), clean-3.**
+  Telescoping umass_core gives umass m ≤ 1 − δ·∑_{t<m} goodMass t (cumulative WINDOW OCCUPATION),
+  hence overlap(Pᵐ i,Pᵐ j) ≥ δ·∑ goodMass t.
+
+### The single remaining input (C4, sharpened to occupation form)
+Single-window single-pass ITER is PROVABLY insufficient for C = π/√6 (self-consistency 2 ln v = c v,
+c ≈ ⅔C ≈ 0.855 > 2/e ≈ 0.736 has no solution — derived by Opus, independently confirmed by ChatGPT R5).
+The occupation form fixes this: it credits EVERY return of the rank-difference walk D_t = rnk Xₜ − rnk Yₜ
+to the window, not just the first pass. So the ENTIRE wall is now ONE lemma:
+
+  **(C4-occ)  ∑_{t<M} goodMass t  →  1/δ   (i.e. ≥ (1−ε)/δ for M = M(rank) large), as rank → ∞.**
+
+goodMass t = unmatched-coupling mass currently inside the rank window at step t. This is the window
+LOCAL TIME of the residual coupling. D_t is a bounded-increment, centered (same marginal law for
+comparable ranks), positive-local-variance walk on a finite rank ladder; it is recurrent, so its window
+local time over the ~rank(n) steps before absorption → ∞. ChatGPT R5 recommends a finite Lyapunov /
+hitting argument for D_t (NOT Mathlib martingales/Azuma, which lack a usable API; NOT a Tauberian bypass,
+judged longer). Plan: bound goodMass t below by (window-fraction)·umass t and the residual-walk return
+structure; the genuine analytic content is the recurrence/return-count of D_t under the Erdős kernel
+(uses banked far_erdos_tail_le for bounded increments + erdos_kernel_window for the local variance).
+This is the lone open frontier; everything else (C3 + both convergence halves) is banked clean-3.
