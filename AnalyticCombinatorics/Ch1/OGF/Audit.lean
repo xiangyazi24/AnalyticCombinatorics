@@ -158,6 +158,7 @@ import AnalyticCombinatorics.Ch8.Partitions.QVTelescope
 import AnalyticCombinatorics.Ch8.Partitions.FourthMoment
 import AnalyticCombinatorics.Ch8.Partitions.MomentBounds
 import AnalyticCombinatorics.Ch8.Partitions.OccupationAssembly
+import AnalyticCombinatorics.Ch8.Partitions.OccupationFinal
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1424,5 +1425,13 @@ namespace AnalyticCombinatorics.Ch1
 -- E|D_T| → ∞ and the Tanaka window occupation → ∞. Deterministic finite-sum.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.locVar_le
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.fourth_moment_le_quadratic
+-- HR mass-rate campaign, brick 91 (§8 R7 OCCUPATION CAPSTONE): for a mean-preserving, bounded-increment,
+-- uniformly-positive-local-variance walk, E|D_T| is UNBOUNDED in T (abs_mean_unbounded: Paley–Zygmund
+-- A³ ≤ B²·Dq with A ≥ v₀T and Dq ≤ C·T² ⟹ B² ≥ M² for T ≥ M²C/v₀³), hence the cumulative window
+-- occupation is unbounded (occupation_unbounded, via Tanaka brick 86). This is the abstract recurrence
+-- content: the residual coupling spends arbitrarily long in the window, so coalescence exceeds any 1/δ.
+-- Completes the deterministic Tanaka occupation lower bound. No measure theory, no local-CLT.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.abs_mean_unbounded
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.occupation_unbounded
 
 end AnalyticCombinatorics.Ch1
