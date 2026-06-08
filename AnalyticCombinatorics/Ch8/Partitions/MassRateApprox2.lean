@@ -370,7 +370,7 @@ theorem main_range_error_le :
 /-- Exp beats poly with a sixth-root exponent: `(n:ℝ)^d · exp(−a·n^{1/6}) ≤ 1/n` eventually. The
 analytic engine for both the far-`erdosWeight` tail and the `modelSummand` tail (cutoff `⌊n^{2/3}⌋`,
 `t·⌊n^{2/3}⌋ ≍ n^{1/6}`). -/
-private lemma poly_mul_exp_neg_sixthRoot_le_inv (a : ℝ) (ha : 0 < a) (d : ℕ) :
+lemma poly_mul_exp_neg_sixthRoot_le_inv (a : ℝ) (ha : 0 < a) (d : ℕ) :
     ∀ᶠ n : ℕ in Filter.atTop,
       (n:ℝ) ^ d * Real.exp (-a * (n:ℝ) ^ (1/6 : ℝ)) ≤ 1 / (n:ℝ) := by
   have htend : Filter.Tendsto
@@ -700,7 +700,7 @@ theorem model_tail_le :
 
 /-- Exp beats poly with a √n exponent: `(n:ℝ)^d · exp(−a·√n) ≤ 1/n` eventually. Engine for the
 right-half `erdosWeight` tail (`right_half_kernel_sum_le` gives `n³·exp(−(C/10)√n)`). -/
-private lemma poly_mul_exp_neg_sqrt_le_inv (a : ℝ) (ha : 0 < a) (d : ℕ) :
+lemma poly_mul_exp_neg_sqrt_le_inv (a : ℝ) (ha : 0 < a) (d : ℕ) :
     ∀ᶠ n : ℕ in Filter.atTop,
       (n:ℝ) ^ d * Real.exp (-a * Real.sqrt (n:ℝ)) ≤ 1 / (n:ℝ) := by
   have htend : Filter.Tendsto
@@ -734,7 +734,7 @@ private lemma poly_mul_exp_neg_sqrt_le_inv (a : ℝ) (ha : 0 < a) (d : ℕ) :
 
 /-- Geometric-quadratic tail of the left block majorants: shifting by `K` factors out `exp(−(C/2)K)`
 and a `(K+1)²`, leaving a convergent constant `G = ∑'_j (j+1)²·exp(−C/2)^j`. -/
-private lemma leftBlockMajorant_shifted_tsum_le (K : ℕ) :
+lemma leftBlockMajorant_shifted_tsum_le (K : ℕ) :
     (∑' j : ℕ, leftBlockMajorant (j + K))
       ≤ 2 * sigmaQuadConst * ((K:ℝ) + 1) ^ 2
           * (∑' j : ℕ, ((j:ℝ) + 1) ^ 2 * Real.exp (-(C / 2)) ^ j)
