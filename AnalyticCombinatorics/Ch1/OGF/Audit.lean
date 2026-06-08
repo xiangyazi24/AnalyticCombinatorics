@@ -155,6 +155,7 @@ import AnalyticCombinatorics.Ch8.Partitions.ProbMoments
 import AnalyticCombinatorics.Ch8.Partitions.TanakaStep
 import AnalyticCombinatorics.Ch8.Partitions.TanakaTelescope
 import AnalyticCombinatorics.Ch8.Partitions.QVTelescope
+import AnalyticCombinatorics.Ch8.Partitions.FourthMoment
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1404,5 +1405,10 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.distPow_sum
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sq_moment_telescope
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sq_moment_ge
+-- HR mass-rate campaign, brick 88 (§8 R7 FOURTH-MOMENT per-step drift): for a mean-preserving kernel
+-- with bounded increments b, ∑ K x z (D z)⁴ − (D x)⁴ ≤ 8 b² (D x)² + 3 b⁴ (binomial expansion +
+-- locVar/M3/M4 ≤ b²·,b³·,b⁴ increment bounds + AM-GM). Telescoped with the upper QV E[D_t²] ≤ D₀²+b²t
+-- this gives the BDG-type E[D_T⁴] ≤ C b⁴ T², the 4th moment feeding Paley–Zygmund E|D_T| ≥ c√T.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.fourth_drift_le
 
 end AnalyticCombinatorics.Ch1
