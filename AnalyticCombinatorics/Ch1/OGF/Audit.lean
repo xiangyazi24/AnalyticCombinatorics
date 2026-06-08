@@ -169,6 +169,7 @@ import AnalyticCombinatorics.Ch8.Partitions.UmassZero
 import AnalyticCombinatorics.Ch8.Partitions.LocalizedQV
 import AnalyticCombinatorics.Ch8.Partitions.LocalizedTanaka
 import AnalyticCombinatorics.Ch8.Partitions.LocalizedOccupation
+import AnalyticCombinatorics.Ch8.Partitions.GoodHiRecursion
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1512,5 +1513,11 @@ namespace AnalyticCombinatorics.Ch1
 -- This is the conditioned-walk recurrence in abstract form; over the active phase (M ~ r → ∞) it gives
 -- the killed-chain coalescence. Reduces to the concrete Erdős moments (η~1/r², v₀, b) + active-time→∞.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.occupation_unbounded_loc
+-- HR mass-rate campaign, brick 102 (§8 R7 GoodHi umass recursion): the killed-chain minorization δ ≤ cmass
+-- holds only on the active high-rank window GoodHi (brick 79), not on absorbed pairs. umass_succ_le_of_good
+-- generalizes brick 81's per-step contraction to any sub-predicate Good with δ ≤ cmass on Good:
+-- umass(t+1) ≤ umass t − δ·(Good-mass of Umat t), from umass_succ_eq (∑Umat·cmass ≥ δ·∑_{Good}Umat).
+-- Feeds CoalesceBridge with g = conditioned Good-fraction. Deterministic finite-sum.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.umass_succ_le_of_good
 
 end AnalyticCombinatorics.Ch1
