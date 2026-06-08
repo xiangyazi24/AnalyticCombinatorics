@@ -59,7 +59,7 @@ lemma weighted_kernel_block_left_half_le (n k : ℕ) (hn : 0 < n) :
     Finset.sum_le_sum hterm_le
   have hfactor : (∑ m ∈ s, erdosWeight n m * (((k + 1 : ℕ) : ℝ) * Real.sqrt (n : ℝ)))
       = (((k + 1 : ℕ) : ℝ) * Real.sqrt (n : ℝ)) * (∑ m ∈ s, erdosWeight n m) := by
-    simp [Finset.mul_sum]
+    rw [Finset.mul_sum]; ring
   have hblock : (∑ m ∈ s, erdosWeight n m) ≤ leftBlockMajorant k := by
     simpa [s, leftBlockMajorant] using kernel_block_left_half_le n k hn
   have hcoef_nonneg : 0 ≤ (((k + 1 : ℕ) : ℝ) * Real.sqrt (n : ℝ)) := by positivity
