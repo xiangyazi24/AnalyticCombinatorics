@@ -364,12 +364,18 @@ Steps:
    approx-martingale bound |E[ΔD]| ≤ η(r) ~ 1/r² for comparable pairs (from the jump law / erdos_kernel_
    window); local variance v₀ > 0 (erdos_kernel_window gives the Θ(1) rank-step variance); bounded
    increment b (far_erdos_tail_le).
-3. ⚠ PRODUCT→COALESCING BRIDGE (the key remaining analytical piece): occupation_unbounded_eta is for the
-   STOCHASTIC product walk (mass-conserving distPow), but the ITER's Umat is SUBSTOCHASTIC (coalescence
-   kills δ·window-mass per step, brick 81 umass ≤ 1−δ∑goodMass). Need: product-walk window occupation→∞
-   ⟹ coalescing umass→0. Argument: if umass(t)≥ε ∀t (not coalesced), the residual ε-mass moves product-
-   walk-like, spends →∞ window time, each visit δ-kills ⟹ ∑goodMass ≥ ε·(product occ)→∞, contradicting
-   δ∑goodMass≤1. So umass→0. This is a coupling/domination lemma between distPow and Umat — build it.
+3. ⚠ PRODUCT→COALESCING BRIDGE (the key remaining analytical piece, mechanism worked out):
+   occupation_unbounded_eta is for a STOCHASTIC (mass-conserving) walk, but Umat is SUBSTOCHASTIC. Use the
+   CONDITIONED walk Ûmat(t) := Umat(t)/umass(t) (= Umat conditioned on not-yet-coalesced). Ûmat is
+   stochastic and evolves by the renormalized kernel K̂res(x,y,·) := Kres/(1−cmass) = Lres⊗Rres/(1−cmass)²
+   (∑ K̂res = 1). Apply occupation_unbounded_eta to (K̂res, D=rnk-diff, Ûmat₀=δ_{(i,j)}) ⟹ the conditioned
+   window occupation ∑ĝoodMass(t) → ∞. Bridge to umass: goodMass(t) = umass(t)·ĝoodMass(t) (un-normalized
+   = mass × conditioned fraction). Brick 81 gives δ·∑_{t<M} goodMass ≤ 1 (umass ≥ 0). Contradiction: if
+   umass(t) ≥ ε for all t ≤ M then ∑goodMass ≥ ε·∑ĝoodMass → ∞, impossible. Hence umass(M) < ε for M
+   large; umass nonincreasing ⟹ umass → 0. The K̂res moments: OFF-window K̂res = Kprod = P⊗P exactly
+   (cmass=0 there), so mart-eta/v₀/b come from the product Erdős kernel; ON-window K̂res reweights the
+   residual but the rank-diff increments stay ≤ b. THIS is the lemma to build (the conditioned-walk
+   occupation + the ε-contradiction), then it consumes occupation_unbounded_eta directly.
 4. Assembly: umass→0 ⟹ overlap(KPowK L i,KPowK L j)→1 (overlap_ge_occupation 81 / umass_eq) ⟹
    |hitVal i − hitVal j|→0 (harmonic_diff_le_overlap 80, hitVal bounded by u's bounds) for comparable i,j
    ⟹ (center-tracking CompContraction 77, far pairs via summable links) hitVal converges ⟹ hhit ⟹
