@@ -59,7 +59,7 @@ lemma weighted_kernel_block_left_half_le (n k : ℕ) (hn : 0 < n) :
     Finset.sum_le_sum hterm_le
   have hfactor : (∑ m ∈ s, erdosWeight n m * (((k + 1 : ℕ) : ℝ) * Real.sqrt (n : ℝ)))
       = (((k + 1 : ℕ) : ℝ) * Real.sqrt (n : ℝ)) * (∑ m ∈ s, erdosWeight n m) := by
-    rw [← Finset.mul_sum]; ring
+    simp; ring
   have hblock : (∑ m ∈ s, erdosWeight n m) ≤ leftBlockMajorant k := by
     simpa [s, leftBlockMajorant] using kernel_block_left_half_le n k hn
   have hcoef_nonneg : 0 ≤ (((k + 1 : ℕ) : ℝ) * Real.sqrt (n : ℝ)) := by positivity
@@ -146,8 +146,10 @@ lemma tailH3_pos : 0 < tailH3 := by
     intro j; positivity
   have hsumm : Summable (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j) := by
     have h := summable_pow_mul_geometric_of_norm_lt_one (R := ℝ) 3
-      (by rw [Real.norm_eq_abs, abs_of_pos (Real.exp_pos _)]
-          exact Real.exp_lt_one_iff.mpr (by nlinarith [C_pos]))
+      (by
+        rw [Real.norm_eq_abs, abs_of_pos (Real.exp_pos _)]
+        have h := C_pos
+        apply Real.exp_lt_one_iff.mpr; nlinarith)
     set q := Real.exp (-(C / 2)) with hqdef
     have : (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * q ^ j)
         = (fun n => q⁻¹ * ((n : ℝ)^3 * q ^ n)) ∘ Nat.succ := by
@@ -179,7 +181,7 @@ lemma leftBlockMajorant_weighted_shifted_tsum_le (Kn : ℕ) (s : ℝ) (hs : 0 < 
     have : (fun j : ℕ => (((j : ℕ).succ : ℝ)^3) * q ^ j) = (fun n => q⁻¹ * ((n : ℝ)^3 * q ^ n)) ∘ Nat.succ := by
       ext j; simp [hqdef, mul_comm, add_comm, mul_left_comm, mul_assoc]
     rw [this]
-    exact (h.comp_injective (fun a b h => Nat.succ_inj.mp h)).mul_right q⁻¹
+    exact (h.comp_injective Nat.succ_injective).mul_right q⁻¹
   calc (∑' j : ℕ, leftBlockMajorant (j + Kn) * (((j + Kn : ℕ) + 1 : ℝ) * s))
       = (∑' j : ℕ,
           2 * sigmaQuadConst * (((j + Kn : ℕ) + 1 : ℝ) ^ 2) * q ^ (j + Kn)
