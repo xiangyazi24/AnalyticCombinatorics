@@ -520,3 +520,25 @@ occupation_unbounded_loc (101) with c=v₀−2Rη>0.
 - AnalyticCombinatorics/Ch8/Partitions/TwoTermLocalLip.lean — two_term_local_lip (the bridge above);
   full proof written blind, expect minor lemma-name/nlinarith fixes (abs_sub, Real.sqrt_lt_sqrt,
   div_le_div_iff₀). Verify FIRST when server recovers.
+
+### STATUS 06-08 (Opus): LAST HARD ANALYTIC LEMMA CLOSED + course-correction
+- ✅ `sigmaMoment_one_two_term` BANKED (commit ac6cf80, clean-3, 0 sorry):
+  |M₁ t − (2(π²/6)/t³ − 1/(2t²))| ≤ K/t for 0<t<1. Route = Riemann-sum of
+  G(x)=x·boseReg0′(x) via general `riemann_sum_Ioi_sub_integral_bound`
+  (MassRateRiemannGeneral.lean — was an untracked never-built draft, now fixed+banked),
+  with ∫₀^∞ G = 1/2 from G=(x·boseReg0)′−boseReg0 + improper FTC
+  (`integral_Gw_Ioi`). New file: MassRateMomentOneTwoTerm.lean.
+- ✅ `sigmaMoment_two_one_term` = banked `sigmaMoment_two_asymp_weak`
+  (|M₂ − 6(π²/6)/t⁴| ≤ C/t³). NO new work needed.
+- ✅ M₃: the μ̃ O(1/n) REMAINDER only needs an UPPER BOUND E[y³]=O(1), i.e.
+  M₃ ≤ K/t⁵, which is the BANKED `sigmaMoment_le_power_sharp 3`. The sharp
+  `sigmaMoment_three_one_term` (24λ²/t⁵) is NOT needed → NO order-4 boseKernel4/
+  reg4 certificate required. This removes the last anticipated hard sub-wall.
+- ✅ `two_term_local_lip` (brick 103, TwoTermLocalLip.lean) verified+banked earlier.
+- ⇒ ALL moment inputs for the μ̃ expansion now exist. Remaining = pure ASSEMBLY
+  (no hard analysis): define muNum=∑ erdosWeight·rhoDrop (rhoDrop=3(√n−√(n−m))),
+  muTilde=muNum/kernelMass; split main-range (erdosWeight_sub_model_le, modelSummand
+  carries the kernel expansion) + tail (leftBlockMajorant); model side via
+  sqrt_drop_second_order + M₁(2-term)/M₂(1-term)/M₃(≤bound); normalize kernelMass;
+  ⟹ muTilde = μ̄ + μA/√n + O(1/n); then two_term_local_lip ⟹ |μ̃ x−μ̃ y| ≤ K'/x
+  = O(1/r²) ⟹ occupation_unbounded_loc (101) ⟹ ... ⟹ hhit.
