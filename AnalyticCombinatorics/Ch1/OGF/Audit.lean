@@ -156,6 +156,7 @@ import AnalyticCombinatorics.Ch8.Partitions.TanakaStep
 import AnalyticCombinatorics.Ch8.Partitions.TanakaTelescope
 import AnalyticCombinatorics.Ch8.Partitions.QVTelescope
 import AnalyticCombinatorics.Ch8.Partitions.FourthMoment
+import AnalyticCombinatorics.Ch8.Partitions.MomentBounds
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1410,5 +1411,11 @@ namespace AnalyticCombinatorics.Ch1
 -- locVar/M3/M4 ≤ b²·,b³·,b⁴ increment bounds + AM-GM). Telescoped with the upper QV E[D_t²] ≤ D₀²+b²t
 -- this gives the BDG-type E[D_T⁴] ≤ C b⁴ T², the 4th moment feeding Paley–Zygmund E|D_T| ≥ c√T.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.fourth_drift_le
+-- HR mass-rate campaign, brick 89 (§8 R7 telescoped moment bounds): upper QV E[D_T²] ≤ E[D_0²] + b²·T
+-- (sq_moment_le, from locVar ≤ b²) and fourth-moment growth E[D_T⁴] − E[D_0⁴] ≤ ∑_{t<T}(8b²E[D_t²]+3b⁴)
+-- (fourth_moment_telescope_le, from fourth_drift_le). With the lower QV (sq_moment_ge) + Paley–Zygmund
+-- (mean_sq_cubed_le) these give E|D_T| ≥ c√T for the Tanaka occupation lower bound. Deterministic finite-sum.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sq_moment_le
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.fourth_moment_telescope_le
 
 end AnalyticCombinatorics.Ch1

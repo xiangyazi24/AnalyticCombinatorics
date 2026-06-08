@@ -159,6 +159,7 @@ import AnalyticCombinatorics.Ch8.Partitions.TanakaStep
 import AnalyticCombinatorics.Ch8.Partitions.TanakaTelescope
 import AnalyticCombinatorics.Ch8.Partitions.QVTelescope
 import AnalyticCombinatorics.Ch8.Partitions.FourthMoment
+import AnalyticCombinatorics.Ch8.Partitions.MomentBounds
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
