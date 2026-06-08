@@ -449,3 +449,19 @@ then E[f(D_t)] := ∑_{x,y} M_prod(t)(x,y)·f(rnk x − rnk y), and all moments 
 Paley–Zygmund become finite-sum identities (∑M_prod(t+1)|D| − ∑M_prod(t)|D| = ∑M_prod(t)·(one-step |D|
 drift); the increasing compensator = window local time). Mathlib's predictablePart exists but bridging
 deterministic-Umat ↔ measure-theoretic E[·] is avoidable and not worth the setup. Keep it finite-sum.
+
+## CONCRETE MOMENTS: smooth-scale resolution CONFIRMED + constants (Opus + ChatGPT R9, 06-08)
+ChatGPT R9 independently confirmed the floor concern and the fix:
+- Floored rnk=⌊3√n⌋ is NOT an approx-martingale coordinate: μ_floor(n) has an O(1) phase term F({3√n});
+  comparable x,y differ in fractional phase by O(1), so |μ_floor(x)−μ_floor(y)| = Θ(1), NOT o(1/r). Fatal.
+- FIX: martingale/tent coordinate = SMOOTH ρ(n) = 3√n (use Real.sqrt directly, no floor). Keep ⌊3√n⌋
+  only for killing/window bookkeeping; transfer with constant slack |⌊ρx⌋−⌊ρy⌋|≤W ⟹ |ρx−ρy|≤W+2.
+- For smooth ρ: μ_ρ(n) = E[ρ(n)−ρ(n−m)] = μ̄ + O(n^{−1/2}), and for comparable starts |x−y|=O(√n),
+  |μ_ρ(x)−μ_ρ(y)| = O(n^{−1}) = O(r^{−2}). So η ~ 1/r² holds — but ONLY for smooth rank.
+Constants (decrement y=m/√n ~ Gamma(2, λ=C/2), C=π/√6): μ̄ = 6√6/π; single-step smooth-rank variance
+v = (9/4)Var(y) = 108/π²; product-difference walk v_D ≈ 2v = 216/π² > 0; increment b ~ (3/2)n^{1/6} on
+m ≤ n^{2/3}. NORMALIZATION note: f(y)=(π²/6)y e^{−(C/2)y} integrates to 4 over (0,∞), not 1 — but moments
+are normalization-independent ratios (∫yf/∫f), and actual Pker decrement = erdosWeight/kernelMass with
+kernelMass→1 (banked), so use ratio moments. NEXT: formalize μ_ρ expansion (η~1/r²) + v_D>0 + b, set up
+the smooth-ρ difference walk + K̂res, finite-state Fin(N+1), assemble to hhit. The floor showstopper is
+RESOLVED; the route is sound.
