@@ -162,7 +162,10 @@ lemma tailH3_pos : 0 < tailH3 := by
       _ ≤ ∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j :=
         hsumm.sum_le_tsum ({0} : Finset ℕ) (by
           intro j hj; simp at hj; exact hnonneg j)
-  nlinarith
+  have hpos_one : (0 : ℝ) < 1 := by norm_num
+  have : 1 ≤ tailH3 := by
+    dsimp [tailH3]; exact h_first_le
+  linarith
 
 lemma tailH3_nonneg : 0 ≤ tailH3 := tailH3_pos.le
 
@@ -181,7 +184,7 @@ lemma leftBlockMajorant_weighted_shifted_tsum_le (Kn : ℕ) (s : ℝ) (hs : 0 < 
     have : (fun j : ℕ => (((j : ℕ).succ : ℝ)^3) * q ^ j) = (fun n => q⁻¹ * ((n : ℝ)^3 * q ^ n)) ∘ Nat.succ := by
       ext j; simp [hqdef, mul_comm, add_comm, mul_left_comm, mul_assoc]
     rw [this]
-    exact (h.comp_injective Nat.succ_injective).mul_right q⁻¹
+    exact (h.comp_injective (fun a b h => by simpa using Nat.succ_inj.mp h)).mul_right q⁻¹
   calc (∑' j : ℕ, leftBlockMajorant (j + Kn) * (((j + Kn : ℕ) + 1 : ℝ) * s))
       = (∑' j : ℕ,
           2 * sigmaQuadConst * (((j + Kn : ℕ) + 1 : ℝ) ^ 2) * q ^ (j + Kn)
