@@ -494,3 +494,29 @@ are normalization-independent ratios (∫yf/∫f), and actual Pker decrement = e
 kernelMass→1 (banked), so use ratio moments. NEXT: formalize μ_ρ expansion (η~1/r²) + v_D>0 + b, set up
 the smooth-ρ difference walk + K̂res, finite-state Fin(N+1), assemble to hhit. The floor showstopper is
 RESOLVED; the route is sound.
+
+## NO-BUILD WINDOW (server down 06-08): concrete η-rate scoped + bridge drafted (Opus + ChatGPT R13)
+Server (uisai1) down; switched to draft-only (no build/commit of Lean) per Xiang. Verified-by-reading:
+- R13's cited infra ALL EXISTS (grep-confirmed): modelSummand, sigmaMoment (= ∑' m^r σ(m) e^{−tm}),
+  massLam=C/2 (massLam_sq: λ²=π²/6), sigmaMoment_le_power_sharp, erdosWeight_sub_model_le, main_range_error_le,
+  sqrt_drop_second_order, exp_sqrt_drop_second_order, leftBlockMajorant (+summable). Plus sigmaMoment_zero/
+  one/two_lambert and sigmaMoment_one/two_asymp_weak.
+- KEY: the banked _asymp_weak give only the LEADING term with rate, e.g.
+  |sigmaMoment 1 t − 2λ²/t³| ≤ 388/t²  (one term). R13 confirms μ̃ = μ̄ + O(1/√n) is INSUFFICIENT (gives
+  2Rη ~ O(1), not < v₀). So the GENUINE remaining analytic input is the TWO-TERM Lambert expansions:
+    sigmaMoment_one_two_term : |M₁ t − (2λ²/t³ − 1/(2t²))| ≤ K/t
+    sigmaMoment_two_one_term : |M₂ t − 6λ²/t⁴| ≤ K/t³
+    sigmaMoment_three_one_term : |M₃ t − 24λ²/t⁵| ≤ K/t⁴
+  — extend the existing _asymp_weak proofs (boseReg/Lambert technique) by ONE order. THIS is the last hard
+  analytic lemma (a Lambert/Bose-kernel moment expansion, NOT σ-local-averaging).
+Route to μ̃ = μ̄ + μA/√n + O(1/n) (μ̄=3/λ, μA=3/(2λ²)): muNum = ∑ erdosWeight·rhoDrop, rhoDrop=3(√n−√(n−m));
+expand erdosWeight via erdosWeight_sub_model_le (main-range weighted error O(1/n) using moments shifted
+2,3,4→3,4,5 + sigmaMoment_le_power_sharp), model side via sqrt_drop_second_order + the two-term sigmaMoment
+expansions; weighted tails via leftBlockMajorant (×(k+1) factor, exp still wins); normalize by kernelMass
+(|kernelMass−1|≤K/n). Then two_term_local_lip ⟹ |μ̃ x − μ̃ y| ≤ K'/x = O(1/r²) ⟹ feeds
+occupation_unbounded_loc (101) with c=v₀−2Rη>0.
+
+### QUEUED DRAFTS (unverified, await server; do NOT assume correct):
+- AnalyticCombinatorics/Ch8/Partitions/TwoTermLocalLip.lean — two_term_local_lip (the bridge above);
+  full proof written blind, expect minor lemma-name/nlinarith fixes (abs_sub, Real.sqrt_lt_sqrt,
+  div_le_div_iff₀). Verify FIRST when server recovers.
