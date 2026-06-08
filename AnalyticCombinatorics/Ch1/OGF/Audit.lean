@@ -147,6 +147,7 @@ import AnalyticCombinatorics.Ch8.Partitions.ITERCoupling
 import AnalyticCombinatorics.Ch8.Partitions.CompContraction
 import AnalyticCombinatorics.Ch8.Partitions.OverlapL1
 import AnalyticCombinatorics.Ch8.Partitions.ErdosMinorization
+import AnalyticCombinatorics.Ch8.Partitions.HarmonicOverlap
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1334,5 +1335,12 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sigmaR_ge_self
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Pker_lower
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Pker_window_minor
+-- HR mass-rate campaign, brick 80 (§8 R7 HARMONIC→OVERLAP BRIDGE): route-independent half of the
+-- convergence engine. A bounded m-step-harmonic function has |h i − h j| ≤ 2B(1 − overlap(pᵢ,pⱼ));
+-- so once the windowed coupling drives the m-step-law overlap → 1, the harmonic hit values coalesce.
+-- Pure finite linear algebra (∑(p−q)h ≤ B·‖p−q‖₁ + the L¹/overlap identity), valid for ANY route by
+-- which overlap→1 is obtained (single-window coupling, recurrence, or a direct renewal argument).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.weighted_diff_le_L1
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.harmonic_diff_le_overlap
 
 end AnalyticCombinatorics.Ch1

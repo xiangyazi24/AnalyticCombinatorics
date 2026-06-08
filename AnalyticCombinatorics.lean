@@ -150,6 +150,7 @@ import AnalyticCombinatorics.Ch8.Partitions.ITERCoupling
 import AnalyticCombinatorics.Ch8.Partitions.CompContraction
 import AnalyticCombinatorics.Ch8.Partitions.OverlapL1
 import AnalyticCombinatorics.Ch8.Partitions.ErdosMinorization
+import AnalyticCombinatorics.Ch8.Partitions.HarmonicOverlap
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
