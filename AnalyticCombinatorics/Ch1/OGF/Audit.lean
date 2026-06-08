@@ -153,6 +153,7 @@ import AnalyticCombinatorics.Ch8.Partitions.ITERGreen
 import AnalyticCombinatorics.Ch8.Partitions.ITERGreenT
 import AnalyticCombinatorics.Ch8.Partitions.ProbMoments
 import AnalyticCombinatorics.Ch8.Partitions.TanakaStep
+import AnalyticCombinatorics.Ch8.Partitions.TanakaTelescope
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1386,5 +1387,12 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.abs_drift_nonneg
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.abs_drift_le
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.abs_drift_eq_of_far
+-- HR mass-rate campaign, brick 86 (§8 R7 TANAKA TELESCOPING): telescoping the per-step |D|-drift over the
+-- evolving law distPow K μ₀ t gives E|D_T| − E|D_0| ≤ b·∑_{t<T}(window-b occupation at t), i.e.
+-- window-occupation ≥ (E|D_T| − E|D_0|)/b. With E|D_T| ≥ c√T (brick 84) this is the occupation lower
+-- bound. All deterministic finite-sum (distPow = law after t steps; no measure theory).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.distPow_nonneg
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.abs_drift_le_indic
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.occupation_ge_tanaka
 
 end AnalyticCombinatorics.Ch1
