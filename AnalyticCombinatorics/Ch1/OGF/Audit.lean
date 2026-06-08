@@ -150,6 +150,7 @@ import AnalyticCombinatorics.Ch8.Partitions.ErdosMinorization
 import AnalyticCombinatorics.Ch8.Partitions.HarmonicOverlap
 import AnalyticCombinatorics.Ch8.Partitions.ITEROccupation
 import AnalyticCombinatorics.Ch8.Partitions.ITERGreen
+import AnalyticCombinatorics.Ch8.Partitions.ITERGreenT
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1360,5 +1361,14 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.greenMass_succ_ge
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.occupation_ge_green_tight
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.occupation_ge_green
+-- HR mass-rate campaign, brick 83 (§8 R7 GREEN POTENTIAL is a SUBSOLUTION FOR FREE): the finite-horizon
+-- truncated Green potential greenT T = ∑_{t<T} KresAct^[t] goodIndic satisfies the Poisson identity
+-- KresAct(greenT T) = greenT T − goodIndic + KresAct^[T] goodIndic (nonneg tail), hence the subsolution
+-- greenT T − 1_GoodW ≤ ∑ Kres · greenT — exactly occupation_ge_green_tight's hypothesis, with NO
+-- recurrence needed. Reduces the wall to the lone expected-local-time lower bound greenT T (i,j) ≥
+-- (1−ε)/δ (the √T recurrence content) + ITER instantiation to the killed Erdős kernel.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.greenT_poisson
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.greenT_subsolution
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.greenT_nonneg
 
 end AnalyticCombinatorics.Ch1
