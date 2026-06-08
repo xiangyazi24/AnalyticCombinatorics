@@ -167,6 +167,7 @@ import AnalyticCombinatorics.Ch8.Partitions.SmoothScale
 import AnalyticCombinatorics.Ch8.Partitions.EnergyBridge
 import AnalyticCombinatorics.Ch8.Partitions.UmassZero
 import AnalyticCombinatorics.Ch8.Partitions.LocalizedQV
+import AnalyticCombinatorics.Ch8.Partitions.LocalizedTanaka
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1496,5 +1497,12 @@ namespace AnalyticCombinatorics.Ch1
 -- localization needed to run the occupation argument on the conditioned walk (R12 route). Finite-sum.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sq_drift_ge_onesided
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sq_moment_ge_onesided
+-- HR mass-rate campaign, brick 100 (§8 R7 LOCALIZED Tanaka, off-window drift): the |D|-drift Tanaka bound
+-- E|D_T| − E|D_0| ≤ b·(window occ) + η·T holds needing the drift ≤ η only OFF the window (b < |D x|);
+-- on-window the per-step |D|-drift is ≤ b regardless (triangle), so the on-window repelling drift of the
+-- conditioned walk is harmless. occupation_ge_tanaka_loc + abs_drift_le_indic_off. With the one-sided QV
+-- (99), this localizes the occupation argument to the conditioned residual walk (R12 route). Finite-sum.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.abs_drift_le_indic_off
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.occupation_ge_tanaka_loc
 
 end AnalyticCombinatorics.Ch1

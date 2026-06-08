@@ -170,6 +170,7 @@ import AnalyticCombinatorics.Ch8.Partitions.SmoothScale
 import AnalyticCombinatorics.Ch8.Partitions.EnergyBridge
 import AnalyticCombinatorics.Ch8.Partitions.UmassZero
 import AnalyticCombinatorics.Ch8.Partitions.LocalizedQV
+import AnalyticCombinatorics.Ch8.Partitions.LocalizedTanaka
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational
