@@ -344,6 +344,37 @@ needs φ regularity for the increment/variance bounds. A drift HURTS occupation 
 return), so η must be threaded as → 0 with rank; this is precisely why HR convergence is a rank→∞ statement.
 The exact-martingale machinery is the rank→∞ backbone; the η→0 control is the bridge to discharge next.
 
+## ABSTRACT + η-ROBUST OCCUPATION BACKBONE COMPLETE (Opus, 06-08), bricks 79–94
+The entire recurrence/occupation content (the conceptual wall that needed local-CLT/martingale machinery)
+is mechanized clean-3 in elementary deterministic form, INCLUDING η-robustness for the approximate-
+martingale Erdős kernel. occupation_unbounded_eta (brick 94): for an η-approx-martingale, bounded-
+increment-b, locVar≥v₀, |D|≤R walk with 0<v₀−2Rη, the window occupation exceeds any target. Trivial
+E[D_T⁴]≤R⁴ + linear lower QV ⟹ PZ gives (E|D_T|)²≥((v₀−2Rη)T)³/R⁴→∞.
+
+### CONCRETE Pker INSTANTIATION ROADMAP (the remaining phase)
+Infrastructure (all over ℕ; for fixed i,j the killed chain lives on {0..max(i,j)}, effectively finite):
+- killedKer P rnk J (KilledHarmonic.lean): identity-absorb below J, Pker above.
+- hitVal P rnk J u (RenewalHitPot.lean): harmonic extension; hitVal_eq the 1-step relation;
+  killed_harmonic_pow: hitVal is harmonic for every KPowK L (killedKer) — the m-step killed law.
+- Goal hhit: ∀ᶠ J, ∃ L, Tendsto (hitVal Pker rnk J u) atTop (𝓝 L).
+Steps:
+1. Finite-state setup: restrict to Fin(N+1) (N ≥ max start); killedKer stochastic (check Pker_mass:
+   ∑_{range n} Pker = 1 above J; identity row below). hKsum/hKnn for the abstract machinery.
+2. Concrete per-step Erdős moments (the genuine analytic inputs): mean rank-decrement μ(r) and the
+   approx-martingale bound |E[ΔD]| ≤ η(r) ~ 1/r² for comparable pairs (from the jump law / erdos_kernel_
+   window); local variance v₀ > 0 (erdos_kernel_window gives the Θ(1) rank-step variance); bounded
+   increment b (far_erdos_tail_le).
+3. ⚠ PRODUCT→COALESCING BRIDGE (the key remaining analytical piece): occupation_unbounded_eta is for the
+   STOCHASTIC product walk (mass-conserving distPow), but the ITER's Umat is SUBSTOCHASTIC (coalescence
+   kills δ·window-mass per step, brick 81 umass ≤ 1−δ∑goodMass). Need: product-walk window occupation→∞
+   ⟹ coalescing umass→0. Argument: if umass(t)≥ε ∀t (not coalesced), the residual ε-mass moves product-
+   walk-like, spends →∞ window time, each visit δ-kills ⟹ ∑goodMass ≥ ε·(product occ)→∞, contradicting
+   δ∑goodMass≤1. So umass→0. This is a coupling/domination lemma between distPow and Umat — build it.
+4. Assembly: umass→0 ⟹ overlap(KPowK L i,KPowK L j)→1 (overlap_ge_occupation 81 / umass_eq) ⟹
+   |hitVal i − hitVal j|→0 (harmonic_diff_le_overlap 80, hitVal bounded by u's bounds) for comparable i,j
+   ⟹ (center-tracking CompContraction 77, far pairs via summable links) hitVal converges ⟹ hhit ⟹
+   erdos_partition_limit_exists_of_hit. No conceptual wall; concrete-kernel analysis + the bridge.
+
 ## ABSTRACT OCCUPATION BACKBONE COMPLETE + η-robustness QUANTITATIVELY SOUND (Opus, 06-08), brick 91
 occupation_unbounded (brick 91) closes the abstract chain: for a mean-preserving, bounded-increment (b),
 uniformly-positive-local-variance (v₀) walk, the cumulative window occupation exceeds ANY target (hence
