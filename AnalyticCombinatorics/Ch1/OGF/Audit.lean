@@ -146,6 +146,7 @@ import AnalyticCombinatorics.Ch8.Partitions.ScalarRecSolve
 import AnalyticCombinatorics.Ch8.Partitions.ITERCoupling
 import AnalyticCombinatorics.Ch8.Partitions.CompContraction
 import AnalyticCombinatorics.Ch8.Partitions.OverlapL1
+import AnalyticCombinatorics.Ch8.Partitions.ErdosMinorization
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1326,5 +1327,12 @@ namespace AnalyticCombinatorics.Ch1
 -- minorization to the Pker L¹-continuity estimate (C3).
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.overlap_eq_one_sub_half_L1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.overlap_ge_of_L1_le
+-- HR mass-rate campaign, brick 79 (§8 R7 ELEMENTARY DOEBLIN MINORIZATION): the comparable-rank overlap
+-- is bounded below WITHOUT σ-averaging. Key: σ(m) ≥ m (m ∣ m), so on the jump window [√x,2√x] the
+-- σ-block mass is Θ(x); with the smooth factor Θ(1)/x and ~√x landings, the overlap ≥ e^{−C(2+D)}/8.
+-- This is the harder Doeblin wall (C3) cracked elementarily — no arithmetic local-limit theorem needed.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sigmaR_ge_self
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Pker_lower
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.Pker_window_minor
 
 end AnalyticCombinatorics.Ch1
