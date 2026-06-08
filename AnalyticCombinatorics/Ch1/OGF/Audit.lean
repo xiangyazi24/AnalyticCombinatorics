@@ -166,6 +166,7 @@ import AnalyticCombinatorics.Ch8.Partitions.CoalesceBridge
 import AnalyticCombinatorics.Ch8.Partitions.SmoothScale
 import AnalyticCombinatorics.Ch8.Partitions.EnergyBridge
 import AnalyticCombinatorics.Ch8.Partitions.UmassZero
+import AnalyticCombinatorics.Ch8.Partitions.LocalizedQV
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1488,5 +1489,12 @@ namespace AnalyticCombinatorics.Ch1
 -- vanishes, i.e. overlap → 1. Reduces to concrete inputs c=v₀−2Rη>0, off-window QV, minorization (brick 79).
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.umass_antitone
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.umass_tendsto_zero
+-- HR mass-rate campaign, brick 99 (§8 R7 ONE-SIDED/LOCALIZED lower QV): for the conditioned residual
+-- walk the drift is not uniformly small (on-window repelling), but the QV lower bound needs only the
+-- one-sided D·e ≥ −Rη (off-window ≥ −Rη from product mart-eta; on-window ≥ 0 from repulsion). So
+-- sq_moment_ge_onesided: E[D_T²] ≥ E[D_0²] + (v₀−2Rη)·T survives without uniform mart-eta — the
+-- localization needed to run the occupation argument on the conditioned walk (R12 route). Finite-sum.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sq_drift_ge_onesided
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sq_moment_ge_onesided
 
 end AnalyticCombinatorics.Ch1
