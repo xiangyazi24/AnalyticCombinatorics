@@ -154,6 +154,7 @@ import AnalyticCombinatorics.Ch8.Partitions.ITERGreenT
 import AnalyticCombinatorics.Ch8.Partitions.ProbMoments
 import AnalyticCombinatorics.Ch8.Partitions.TanakaStep
 import AnalyticCombinatorics.Ch8.Partitions.TanakaTelescope
+import AnalyticCombinatorics.Ch8.Partitions.QVTelescope
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1394,5 +1395,14 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.distPow_nonneg
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.abs_drift_le_indic
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.occupation_ge_tanaka
+-- HR mass-rate campaign, brick 87 (§8 R7 QUADRATIC-VARIATION telescoping, Doob for D²): for a mean-
+-- preserving kernel the second-moment drift equals the local variance locVar x = ∑ K x z (D z−D x)²
+-- (locVar_eq), so E[D_T²] − E[D_0²] = ∑_{t<T} ∑_x distPow t x · locVar x (sq_moment_telescope). With a
+-- uniform lower bound v₀ ≤ locVar this gives E[D_T²] ≥ E[D_0²] + v₀·T (sq_moment_ge) — the lower
+-- quadratic variation feeding Paley–Zygmund (brick 84) for E|D_T| ≥ c√T. Deterministic finite-sum.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.locVar_eq
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.distPow_sum
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sq_moment_telescope
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.sq_moment_ge
 
 end AnalyticCombinatorics.Ch1
