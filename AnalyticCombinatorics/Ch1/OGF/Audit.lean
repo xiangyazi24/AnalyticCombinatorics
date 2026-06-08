@@ -168,6 +168,7 @@ import AnalyticCombinatorics.Ch8.Partitions.EnergyBridge
 import AnalyticCombinatorics.Ch8.Partitions.UmassZero
 import AnalyticCombinatorics.Ch8.Partitions.LocalizedQV
 import AnalyticCombinatorics.Ch8.Partitions.LocalizedTanaka
+import AnalyticCombinatorics.Ch8.Partitions.LocalizedOccupation
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1504,5 +1505,12 @@ namespace AnalyticCombinatorics.Ch1
 -- (99), this localizes the occupation argument to the conditioned residual walk (R12 route). Finite-sum.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.abs_drift_le_indic_off
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.occupation_ge_tanaka_loc
+-- HR mass-rate campaign, brick 101 (§8 R7 LOCALIZED OCCUPATION CAPSTONE): occupation_unbounded_loc —
+-- for a kernel with one-sided QV (D·e ≥ −Rη), off-window drift ≤ η, uniform locVar ≥ v₀, |D| ≤ R,
+-- 0 < v₀−2Rη, the window occupation exceeds any target. Paley–Zygmund with E[D_M²] ≥ (v₀−2Rη)M (brick 99)
+-- and E[D_M⁴] ≤ R⁴ gives E|D_M| ~ M^{3/2}, then localized Tanaka (brick 100) forces occ past any target.
+-- This is the conditioned-walk recurrence in abstract form; over the active phase (M ~ r → ∞) it gives
+-- the killed-chain coalescence. Reduces to the concrete Erdős moments (η~1/r², v₀, b) + active-time→∞.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.occupation_unbounded_loc
 
 end AnalyticCombinatorics.Ch1
