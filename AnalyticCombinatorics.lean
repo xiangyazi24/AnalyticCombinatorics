@@ -154,6 +154,7 @@ import AnalyticCombinatorics.Ch8.Partitions.HarmonicOverlap
 import AnalyticCombinatorics.Ch8.Partitions.ITEROccupation
 import AnalyticCombinatorics.Ch8.Partitions.ITERGreen
 import AnalyticCombinatorics.Ch8.Partitions.ITERGreenT
+import AnalyticCombinatorics.Ch8.Partitions.ProbMoments
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational

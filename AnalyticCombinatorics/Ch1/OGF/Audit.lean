@@ -151,6 +151,7 @@ import AnalyticCombinatorics.Ch8.Partitions.HarmonicOverlap
 import AnalyticCombinatorics.Ch8.Partitions.ITEROccupation
 import AnalyticCombinatorics.Ch8.Partitions.ITERGreen
 import AnalyticCombinatorics.Ch8.Partitions.ITERGreenT
+import AnalyticCombinatorics.Ch8.Partitions.ProbMoments
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1370,5 +1371,11 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.greenT_poisson
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.greenT_subsolution
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.greenT_nonneg
+-- HR mass-rate campaign, brick 84 (§8 R7 PALEY–ZYGMUND moment interpolation): (∑ p f²)³ ≤
+-- (∑ p|f|)²·(∑ p f⁴) for nonneg weights, via two Cauchy–Schwarz. With ∑p=1 this is
+-- E|f| ≥ (E f²)^{3/2}/√(E f⁴) — the anti-concentration lower bound on E|f| from 2nd/4th moments that
+-- yields E|D_T| ≥ c√T in the deterministic-substrate Tanaka local-time route for the occupation bound.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.mean_sq_cubed_le_nonneg
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.mean_sq_cubed_le
 
 end AnalyticCombinatorics.Ch1
