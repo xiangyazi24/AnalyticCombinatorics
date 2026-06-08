@@ -30,8 +30,11 @@ lemma m_le_block_bound {n m k : ℕ} (hn : 0 < n) (hmk : blockIndex n m = k) :
     have hfloor_eq : ⌊(m : ℝ) / Real.sqrt (n : ℝ)⌋₊ = k := by
       simpa [blockIndex] using hmk
     simpa [hfloor_eq, Nat.cast_add, Nat.cast_one] using h
-  have hmul := mul_le_mul_of_nonneg_right hfloor_lt.le hsqrt_pos.le
-  field_simp [hsqrt_pos.ne'] at hmul ⊢
+  have hmul : (m : ℝ) / Real.sqrt (n : ℝ) * Real.sqrt (n : ℝ) ≤ ((k : ℝ) + 1) * Real.sqrt (n : ℝ) :=
+    mul_le_mul_of_nonneg_right hfloor_lt.le hsqrt_pos.le
+  have hsimpl : (m : ℝ) / Real.sqrt (n : ℝ) * Real.sqrt (n : ℝ) = (m : ℝ) := by field_simp [hsqrt_pos.ne']
+  rw [hsimpl] at hmul
+  simpa [Nat.cast_add] using hmul
 
 /-- Per-block weighted bound: `Σ_{m∈block k, m≤n/2} erdosWeight·m ≤ leftBlockMajorant(k)·(k+1)·√n`. -/
 lemma weighted_kernel_block_left_half_le (n k : ℕ) (hn : 0 < n) :
@@ -138,9 +141,20 @@ noncomputable def tailH3 : ℝ :=
 
 lemma tailH3_pos : 0 < tailH3 := by
   dsimp [tailH3]
-  refine lt_of_lt_of_le (by
-    have h0 : (0 : ℝ) < ((0 : ℕ).succ : ℝ)^3 * Real.exp (-(C / 2)) ^ 0 := by norm_num
-    exact h0) (tsum_nonneg (fun j => by positivity))
+  have h0 : (0 : ℝ) < ((0 : ℕ).succ : ℝ)^3 * Real.exp (-(C / 2)) ^ 0 := by norm_num
+  have hnonneg : ∀ j, 0 ≤ (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j := by
+    intro j; positivity
+  have hsum : 0 ≤ ∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j := tsum_nonneg hnonneg
+  -- The first term (j=0) is positive, and all terms are nonnegative, so the sum is > 0
+  refine lt_of_lt_of_le h0 ?_
+  calc ((0 : ℕ).succ : ℝ)^3 * Real.exp (-(C / 2)) ^ 0
+      = (fun j => (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j) 0 := rfl
+    _ ≤ ∑' j, (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j := by
+      refine le_tsum (Summable.of_nonneg hnonneg (by
+        have h := summable_pow_mul_geometric_of_norm_lt_one (R := ℝ) 3 ?_
+        · exact h
+        · rw [Real.norm_eq_abs, abs_of_pos (Real.exp_pos _)]
+          exact Real.exp_lt_one_iff.mpr (by nlinarith [C_pos]))) 0
 
 lemma tailH3_nonneg : 0 ≤ tailH3 := tailH3_pos.le
 
@@ -153,10 +167,16 @@ lemma leftBlockMajorant_weighted_shifted_tsum_le (Kn : ℕ) (s : ℝ) (hs : 0 < 
   have hqlt1 : Real.exp (-(C / 2)) < 1 := by
     rw [Real.exp_lt_one_iff]; nlinarith [C_pos]
   set q := Real.exp (-(C / 2)) with hqdef
-  have hsum : Summable (fun j : ℕ => (((j : ℕ).succ : ℝ)^3) * q ^ j) := by
-    have h := summable_pow_mul_geometric_of_norm_lt_one (R := ℝ) 3
+  set f : ℕ → ℝ := fun n => (n : ℝ)^3 * q ^ n with hfdef
+  have hsum0 : Summable f :=
+    summable_pow_mul_geometric_of_norm_lt_one (R := ℝ) 3
       (by rw [Real.norm_eq_abs, abs_of_pos hqpos]; exact hqlt1)
-    exact h
+  have hsum : Summable (fun j : ℕ => (((j : ℕ).succ : ℝ)^3) * q ^ j) := by
+    have : (fun j : ℕ => (((j : ℕ).succ : ℝ)^3) * q ^ j) = fun j => (q⁻¹) * f (j+1) := by
+      ext j; dsimp [f]; push_cast; ring
+    rw [this]
+    refine (hsum0.comp_injective (fun a b h => by omega)).mul_right q⁻¹ |>.congr ?_
+    intro n; simp [show (n : ℝ) + 1 = (n.succ : ℝ) by simp]
   calc (∑' j : ℕ, leftBlockMajorant (j + Kn) * (((j + Kn : ℕ) + 1 : ℝ) * s))
       = (∑' j : ℕ,
           2 * sigmaQuadConst * (((j + Kn : ℕ) + 1 : ℝ) ^ 2) * q ^ (j + Kn)
@@ -201,7 +221,10 @@ theorem weighted_far_erdos_tail_le :
   have hCpos10 : (0:ℝ) < C / 10 := by nlinarith [C_pos]
   have hsQ : 0 ≤ sigmaQuadConst := sigmaQuadConst_pos.le
   have hH3pos : 0 < tailH3 := tailH3_pos
-  have hKconst : 0 ≤ 16 * sigmaQuadConst * tailH3 * Real.exp (C) := by positivity
+  have hKconst : 0 ≤ 16 * sigmaQuadConst * tailH3 * Real.exp (C) := by
+    have hsq : 0 ≤ sigmaQuadConst := sigmaQuadConst_pos.le
+    have hh3 : 0 ≤ tailH3 := tailH3_nonneg
+    positivity
   refine ⟨1 + 16 * sigmaQuadConst * tailH3 * Real.exp (C) + 1, by linarith, ?_⟩
   filter_upwards [poly_mul_exp_neg_sqrt_le_inv (C / 10) hCpos10 4,
     poly_mul_exp_neg_sixthRoot_le_inv (C / 2) hCpos2 2,
