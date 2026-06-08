@@ -542,3 +542,19 @@ occupation_unbounded_loc (101) with c=v₀−2Rη>0.
   sqrt_drop_second_order + M₁(2-term)/M₂(1-term)/M₃(≤bound); normalize kernelMass;
   ⟹ muTilde = μ̄ + μA/√n + O(1/n); then two_term_local_lip ⟹ |μ̃ x−μ̃ y| ≤ K'/x
   = O(1/r²) ⟹ occupation_unbounded_loc (101) ⟹ ... ⟹ hhit.
+
+### CORRECTION 06-08 (Opus): M₃ LEADING term IS needed after all (prior note wrong)
+Re-derived the μ̃ order-counting two ways (modelSummand×rhoDrop product; and
+decrement-moment E[m]). BOTH show: E[m]'s O(1) sub-leading term carries
+`−(C/(8n²√n))·M₃`, and since M₃ ~ 24λ²/t⁵ ~ 24n^{5/2}/λ³ this is O(1), feeding
+μ̃'s 1/√n coefficient μA. So an upper bound on M₃ does NOT suffice — the SHARP
+leading coefficient (24λ²/t⁵) is required. Hence `sigmaMoment_three_one_term`
+:= |M₃ t − 24λ²/t⁵| ≤ K/t⁴ IS on the critical path.
+Construction (mirror boseKernel3/sigmaMoment_two_lambert/reg3):
+  boseKernel4 z := ∑_d d⁴ e^{−dz} = e^{−z}(1+11e^{−z}+11e^{−2z}+e^{−3z})/(1−e^{−z})⁵
+    (Eulerian numbers ⟨4,k⟩=1,11,11,1), ~ 24/z⁵.
+  sigmaMoment_three_lambert: M₃ = ∑'_k k³·boseKernel4(tk) (differentiate M₂ identity;
+    boseKernel4 = −d/dz boseKernel3).
+  reg4 z := boseKernel4 z − 24/z⁵; |reg4| ≤ const near 0 (sympy poly certificate,
+    like MassRateReg3) + exp tail. Then M₃ one-term mirrors sigmaMoment_two_asymp_weak.
+The reg4 near-zero polynomial certificate is the hard mechanical part → dispatch.
