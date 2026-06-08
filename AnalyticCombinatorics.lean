@@ -166,6 +166,7 @@ import AnalyticCombinatorics.Ch8.Partitions.TanakaEta
 import AnalyticCombinatorics.Ch8.Partitions.QVEta
 import AnalyticCombinatorics.Ch8.Partitions.OccupationEta
 import AnalyticCombinatorics.Ch8.Partitions.CoalesceBridge
+import AnalyticCombinatorics.Ch8.Partitions.SmoothScale
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
 import AnalyticCombinatorics.Ch4.Analytic.Rational

@@ -163,6 +163,7 @@ import AnalyticCombinatorics.Ch8.Partitions.TanakaEta
 import AnalyticCombinatorics.Ch8.Partitions.QVEta
 import AnalyticCombinatorics.Ch8.Partitions.OccupationEta
 import AnalyticCombinatorics.Ch8.Partitions.CoalesceBridge
+import AnalyticCombinatorics.Ch8.Partitions.SmoothScale
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1465,5 +1466,10 @@ namespace AnalyticCombinatorics.Ch1
 -- unbounded, then u falls below any ε > 0 (telescoping with u≥ε gives u M ≤ 1 − δε∑g → −1, contradiction).
 -- Pure real-sequence argument; consumes occupation_unbounded_eta's output. The instantiation's key bridge.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.umass_lt_of_occupation_unbounded
+-- HR mass-rate campaign, brick 96 (§8 R7 SMOOTH-SCALE window transfer): the floored rnk=⌊3√n⌋ is not an
+-- approx-martingale (Θ(1) fractional-phase obstruction), so the occupation/Tanaka argument runs on the
+-- SMOOTH difference 3√x − 3√y; abs_smooth_sub_le_rnk_add_one: |3√x − 3√y| ≤ |rnk x − rnk y| + 1, so a
+-- rnk-window of width W transfers to a smooth window of width W+1 (constant slack). Floor arithmetic.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.abs_smooth_sub_le_rnk_add_one
 
 end AnalyticCombinatorics.Ch1
