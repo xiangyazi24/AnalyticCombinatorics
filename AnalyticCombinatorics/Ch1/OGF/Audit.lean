@@ -165,6 +165,7 @@ import AnalyticCombinatorics.Ch8.Partitions.OccupationEta
 import AnalyticCombinatorics.Ch8.Partitions.CoalesceBridge
 import AnalyticCombinatorics.Ch8.Partitions.SmoothScale
 import AnalyticCombinatorics.Ch8.Partitions.EnergyBridge
+import AnalyticCombinatorics.Ch8.Partitions.UmassZero
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1480,5 +1481,12 @@ namespace AnalyticCombinatorics.Ch1
 -- harmless (each on-window mass unit is charged to goodMass). Reuses the QV identity sq_drift_id.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.umass_le_one
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.energy_controls_goodMass
+-- HR mass-rate campaign, brick 98 (§8 R7 COALESCENCE CAPSTONE — umass → 0): combining the D²-energy
+-- control (97, c·∑umass ≤ R²+(c+R²)∑goodMass) with brick 81 (δ·∑goodMass ≤ 1) bounds ∑umass ≤ K₀;
+-- since umass is antitone (umass_antitone), M·umass M ≤ ∑_{t<M}umass ≤ K₀, so umass M ≤ K₀/M → 0
+-- (umass_tendsto_zero, with rate). This is the COALESCENCE: the two coupled killed chains' unmatched mass
+-- vanishes, i.e. overlap → 1. Reduces to concrete inputs c=v₀−2Rη>0, off-window QV, minorization (brick 79).
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.umass_antitone
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.umass_tendsto_zero
 
 end AnalyticCombinatorics.Ch1
