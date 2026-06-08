@@ -152,6 +152,7 @@ import AnalyticCombinatorics.Ch8.Partitions.ITEROccupation
 import AnalyticCombinatorics.Ch8.Partitions.ITERGreen
 import AnalyticCombinatorics.Ch8.Partitions.ITERGreenT
 import AnalyticCombinatorics.Ch8.Partitions.ProbMoments
+import AnalyticCombinatorics.Ch8.Partitions.TanakaStep
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1377,5 +1378,13 @@ namespace AnalyticCombinatorics.Ch1
 -- yields E|D_T| ≥ c√T in the deterministic-substrate Tanaka local-time route for the occupation bound.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.mean_sq_cubed_le_nonneg
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.mean_sq_cubed_le
+-- HR mass-rate campaign, brick 85 (§8 R7 TANAKA single-step drift of |D|): for a mean-preserving kernel
+-- with bounded increments b, |D| is a submartingale whose one-step drift ∑K|D|−|D x| is ≥ 0 (Jensen),
+-- ≤ b (triangle), and = 0 when |D x| > b (same-sign). Telescoped this is the Tanaka decomposition
+-- E|D_T| = E|D_0| + compensator, compensator = window local time supported on {|D|≤b}, giving
+-- window-occupation ≥ (E|D_T|−E|D_0|)/b; with E|D_T| ≥ c√T (brick 84) ⟹ occupation ≥ c√T/b ≥ 1/δ.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.abs_drift_nonneg
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.abs_drift_le
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.abs_drift_eq_of_far
 
 end AnalyticCombinatorics.Ch1
