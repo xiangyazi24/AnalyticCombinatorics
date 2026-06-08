@@ -114,6 +114,16 @@ lemma model_sum_eq_moments :
       + ((-3 * C / (64 * (n:ℝ) ^ 4)) * sigmaMoment 4 (massLam / Real.sqrt (n:ℝ)))) := by
       rfl
 
+/-! ### Small lemmas -/
+
+/-- `sigmaMoment r t ≥ 0` for `t > 0` (all summands are nonnegative). -/
+lemma sigmaMoment_nonneg (r : ℕ) (t : ℝ) (ht : 0 < t) : 0 ≤ sigmaMoment r t := by
+  rw [sigmaMoment]
+  refine tsum_nonneg (fun m => ?_)
+  rcases eq_or_ne m 0 with h | h
+  · simp [h]
+  · rw [if_neg h]; positivity
+
 /-! ### Two-term asymptotic from the moment asymptotics -/
 
 /-- For `n` large enough, `t = massLam/√n ∈ (0,1]`. -/
@@ -284,8 +294,8 @@ theorem model_sum_two_term_asymp :
       + |c3| * |sigmaMoment 3 (t n) - M3a|
       + |c4| * sigmaMoment 4 (t n)
       + (9 / (massLam ^ 3)) / (n : ℝ) := by
-    simp [abs_mul, abs_of_pos (by positivity : 0 < 9 / massLam ^ 3), abs_of_nonneg (by
-      positivity : 0 ≤ sigmaMoment 4 (t n))]
+    simp [abs_mul, abs_of_pos (by positivity : 0 < 9 / massLam ^ 3),
+      abs_of_nonneg (sigmaMoment_nonneg 4 (t n) htpos)]
   _ ≤ |c1| * (K1 / (t n))
       + |c2| * (K2 / (t n) ^ 3)
       + |c3| * (K3 / (t n) ^ 4)
