@@ -162,6 +162,7 @@ import AnalyticCombinatorics.Ch8.Partitions.OccupationFinal
 import AnalyticCombinatorics.Ch8.Partitions.TanakaEta
 import AnalyticCombinatorics.Ch8.Partitions.QVEta
 import AnalyticCombinatorics.Ch8.Partitions.OccupationEta
+import AnalyticCombinatorics.Ch8.Partitions.CoalesceBridge
 import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemann
 import AnalyticCombinatorics.Ch4.Analytic.Bridge
 import AnalyticCombinatorics.Ch4.Analytic.Poles
@@ -1458,5 +1459,11 @@ namespace AnalyticCombinatorics.Ch1
 -- Completes the abstract+η-robust occupation lower bound. Only concrete Pker instantiation remains.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.fourth_moment_le_R4
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.occupation_unbounded_eta
+-- HR mass-rate campaign, brick 95 (§8 R7 COALESCENCE BRIDGE): bridges the stochastic occupation lower
+-- bound (occupation_unbounded_eta on the conditioned walk Ûmat=Umat/umass) to the substochastic umass.
+-- umass_lt_of_occupation_unbounded: if u(t+1) ≤ u(t) − δ·u(t)·g(t) (conditioned coalescence) and ∑g is
+-- unbounded, then u falls below any ε > 0 (telescoping with u≥ε gives u M ≤ 1 − δε∑g → −1, contradiction).
+-- Pure real-sequence argument; consumes occupation_unbounded_eta's output. The instantiation's key bridge.
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.umass_lt_of_occupation_unbounded
 
 end AnalyticCombinatorics.Ch1
