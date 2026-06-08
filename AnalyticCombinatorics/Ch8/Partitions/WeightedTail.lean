@@ -14,9 +14,9 @@ noncomputable section
 
 open Filter Finset
 open scoped Topology BigOperators
-open AnalyticCombinatorics.Ch8.Partitions.Erdos.Close
 
 namespace AnalyticCombinatorics.Ch8.Partitions.Erdos
+open Close
 
 /-- `m ∈ block k` ⟹ `m ≤ (k+1)·√n`. -/
 set_option maxHeartbeats 400000 in
