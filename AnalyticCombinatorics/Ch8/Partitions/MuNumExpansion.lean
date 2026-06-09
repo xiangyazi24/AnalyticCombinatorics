@@ -37,7 +37,7 @@ lemma modelSummand_mul_rhoDropModel_expand {n m : ℕ} (hm : m ≠ 0) :
          - 3 * C / (16 * (n:ℝ) ^ 3)) * (m:ℝ) ^ 3)
       + ((-3 * C / (64 * (n:ℝ) ^ 4)) * (m:ℝ) ^ 4)) := by
   rw [modelSummand, rhoDropModel, if_neg hm]
-  ring
+  ring_nf
 
 /-! ### Model sum expressed via sigma moments (infinite-sum identity) -/
 
@@ -97,12 +97,17 @@ lemma model_sum_eq_moments (n : ℕ) (hn1 : 1 ≤ n) :
           (m : ℝ) ^ 3 * Sigma.sigmaR m * Real.exp (-t * (m : ℝ)))
       + c4 * (∑' m : ℕ, if m = 0 then (0:ℝ) else
           (m : ℝ) ^ 4 * Sigma.sigmaR m * Real.exp (-t * (m : ℝ))) := by
-      simp [tsum_add (hsum 1).const_smul c1
-        (((hsum 2).const_smul c2).add (((hsum 3).const_smul c3).add ((hsum 4).const_smul c4))),
-        tsum_add ((hsum 2).const_smul c2) (((hsum 3).const_smul c3).add ((hsum 4).const_smul c4)),
-        tsum_add ((hsum 3).const_smul c3) ((hsum 4).const_smul c4),
-        tsum_const_smul _ (hsum 1), tsum_const_smul _ (hsum 2),
-        tsum_const_smul _ (hsum 3), tsum_const_smul _ (hsum 4)]
+      have hsc1 : Summable (fun m => c1 • (if m = 0 then (0:ℝ) else (m:ℝ)^1 * Sigma.sigmaR m * Real.exp (-t * (m:ℝ)))) :=
+        (hsum 1).const_smul c1
+      have hsc2 : Summable (fun m => c2 • (if m = 0 then (0:ℝ) else (m:ℝ)^2 * Sigma.sigmaR m * Real.exp (-t * (m:ℝ)))) :=
+        (hsum 2).const_smul c2
+      have hsc3 : Summable (fun m => c3 • (if m = 0 then (0:ℝ) else (m:ℝ)^3 * Sigma.sigmaR m * Real.exp (-t * (m:ℝ)))) :=
+        (hsum 3).const_smul c3
+      have hsc4 : Summable (fun m => c4 • (if m = 0 then (0:ℝ) else (m:ℝ)^4 * Sigma.sigmaR m * Real.exp (-t * (m:ℝ)))) :=
+        (hsum 4).const_smul c4
+      have hsum12 := hsc1.add (hsc2.add (hsc3.add hsc4))
+      simp [hsc1.tsum_const_smul c1, hsc2.tsum_const_smul c2, hsc3.tsum_const_smul c3, hsc4.tsum_const_smul c4,
+        hsc1.tsum_add (hsc2.add (hsc3.add hsc4)), hsc2.tsum_add (hsc3.add hsc4), hsc3.tsum_add hsc4]
     _ = c1 * sigmaMoment 1 t + c2 * sigmaMoment 2 t + c3 * sigmaMoment 3 t + c4 * sigmaMoment 4 t := by
       simp [sigmaMoment, htdef]
     _ = (3 / (2 * (n:ℝ) * Real.sqrt (n:ℝ))) * sigmaMoment 1 (massLam / Real.sqrt (n:ℝ))
