@@ -181,10 +181,15 @@ lemma leftBlockMajorant_weighted_shifted_tsum_le (Kn : ℕ) (s : ℝ) (hs : 0 < 
   have hsum : Summable (fun j : ℕ => (((j : ℕ).succ : ℝ)^3) * q ^ j) := by
     have h := summable_pow_mul_geometric_of_norm_lt_one (R := ℝ) 3
       (by rw [Real.norm_eq_abs, abs_of_pos hqpos]; exact hqlt1)
-    have : (fun j : ℕ => (((j : ℕ).succ : ℝ)^3) * q ^ j) = (fun n => q⁻¹ * ((n : ℝ)^3 * q ^ n)) ∘ Nat.succ := by
-      ext j; simp [hqdef, mul_comm, add_comm, mul_left_comm, mul_assoc]
+    have hqpos : 0 < q := by rw [hqdef]; exact Real.exp_pos _
+    have hsum_succ : Summable (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ)) :=
+      h.comp_injective Nat.succ_injective
+    -- (j.succ)^3 * q^j = (j.succ)^3 * q^(j.succ) * q⁻¹
+    have : (fun j : ℕ => (((j : ℕ).succ : ℝ)^3) * q ^ j)
+        = (fun j => (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ)) * (fun _ => q⁻¹) := by
+      ext j; field_simp [hqpos.ne']; rw [pow_succ]
     rw [this]
-    exact (h.comp_injective Nat.succ_injective).mul_right q⁻¹
+    exact hsum_succ.mul_right q⁻¹
   calc (∑' j : ℕ, leftBlockMajorant (j + Kn) * (((j + Kn : ℕ) + 1 : ℝ) * s))
       = (∑' j : ℕ,
           2 * sigmaQuadConst * (((j + Kn : ℕ) + 1 : ℝ) ^ 2) * q ^ (j + Kn)
