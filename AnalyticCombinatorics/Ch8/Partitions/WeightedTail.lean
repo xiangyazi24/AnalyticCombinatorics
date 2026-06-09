@@ -160,11 +160,12 @@ lemma tailH3_pos : 0 < tailH3 := by
         calc (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ) * q⁻¹
             = (((j : ℕ).succ : ℝ) ^ 3) * (q ^ (j.succ) * q⁻¹) := by ring
           _ = (((j : ℕ).succ : ℝ) ^ 3) * (q ^ j) := by
-            rw [show q ^ (j.succ) * q⁻¹ = q ^ j by
+            have h_exp : q ^ (j.succ) * q⁻¹ = q ^ j := by
               calc q ^ (j.succ) * q⁻¹ = (q ^ j * q) * q⁻¹ := by rw [pow_succ]
                 _ = q ^ j * (q * q⁻¹) := by ring
                 _ = q ^ j * 1 := by rw [mul_inv_cancel (hqpos.ne')]
-                _ = q ^ j := by rw [mul_one]]
+                _ = q ^ j := by rw [mul_one]
+            rw [h_exp]
           _ = (((j : ℕ).succ : ℝ) ^ 3) * q ^ j := rfl)
     simpa [hqdef] using hsum'
   have h_first_le : 1 ≤ ∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j := by
@@ -200,11 +201,12 @@ lemma leftBlockMajorant_weighted_shifted_tsum_le (Kn : ℕ) (s : ℝ) (hs : 0 < 
         calc (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ) * q⁻¹
             = (((j : ℕ).succ : ℝ) ^ 3) * (q ^ (j.succ) * q⁻¹) := by ring
           _ = (((j : ℕ).succ : ℝ) ^ 3) * (q ^ j) := by
-            rw [show q ^ (j.succ) * q⁻¹ = q ^ j by
+            have h_exp : q ^ (j.succ) * q⁻¹ = q ^ j := by
               calc q ^ (j.succ) * q⁻¹ = (q ^ j * q) * q⁻¹ := by rw [pow_succ]
                 _ = q ^ j * (q * q⁻¹) := by ring
                 _ = q ^ j * 1 := by rw [mul_inv_cancel (hqpos.ne')]
-                _ = q ^ j := by rw [mul_one]]
+                _ = q ^ j := by rw [mul_one]
+            rw [h_exp]
           _ = (((j : ℕ).succ : ℝ) ^ 3) * q ^ j := rfl)
   have hcalc0 : (∑' j : ℕ, leftBlockMajorant (j + Kn) * (((j + Kn : ℕ) + 1 : ℝ) * s))
       = (∑' j : ℕ,
@@ -260,7 +262,7 @@ lemma leftBlockMajorant_weighted_shifted_tsum_le (Kn : ℕ) (s : ℝ) (hs : 0 < 
         ≤ ∑' j : ℕ, (((Kn : ℝ) + 1) ^ 3 * (((j : ℕ).succ : ℝ) ^ 3)) * q ^ j :=
       Real.tsum_le_of_sum_le hpos_a hpart
     _ = ((Kn : ℝ) + 1) ^ 3 * (∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * q ^ j) := by
-      rw [tsum_mul_left]
+      rw [hsum.tsum_mul_left (((Kn : ℝ) + 1)^3)]
   _ = 2 * sigmaQuadConst * s * (((Kn : ℝ) + 1) ^ 3) * tailH3 * q ^ Kn := by
     rw [tailH3]; ring
   _ = 2 * sigmaQuadConst * s * (((Kn : ℝ) + 1) ^ 3) * tailH3
