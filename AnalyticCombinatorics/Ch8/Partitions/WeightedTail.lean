@@ -10,7 +10,7 @@ The capstone `weighted_far_erdos_tail_le` is pending.
 Opus-authored.
 -/
 
-set_option maxHeartbeats 4000000
+set_option maxHeartbeats 8000000
 
 noncomputable section
 
@@ -217,7 +217,10 @@ lemma leftBlockMajorant_weighted_shifted_tsum_le (Kn : ℕ) (s : ℝ) (hs : 0 < 
     refine tsum_congr (fun j => ?_); ring
   _ ≤ 2 * sigmaQuadConst * s * q ^ Kn
       * (((Kn : ℝ) + 1) ^ 3 * (∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * q ^ j)) := by
-    refine mul_le_mul_of_nonneg_left ?_ (by positivity)
+    have hpos_coef : 0 ≤ 2 * sigmaQuadConst * s * q ^ Kn := by
+      have hsq : 0 ≤ sigmaQuadConst := sigmaQuadConst_pos.le
+      positivity
+    refine mul_le_mul_of_nonneg_left ?_ hpos_coef
     have hpos_a : ∀ j, 0 ≤ (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j := by intro j; positivity
     have hineq : ∀ j, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j
         ≤ (((Kn : ℝ) + 1) ^ 3 * (((j : ℕ).succ : ℝ) ^ 3)) * q ^ j := by
