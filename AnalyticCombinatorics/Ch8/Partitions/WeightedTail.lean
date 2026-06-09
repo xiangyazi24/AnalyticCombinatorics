@@ -157,7 +157,7 @@ lemma tailH3_pos : 0 < tailH3 := by
     -- (j.succ)^3 * q^j = ((j.succ)^3 * q^(j.succ)) * q⁻¹
     have h_eq : (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * q ^ j)
         = (fun j => (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ)) * (fun _ => q⁻¹) := by
-      ext j; field_simp [hqpos.ne']; rw [pow_succ]
+      ext j; simp [hqpos.ne', pow_succ, mul_assoc, mul_comm, mul_left_comm]
     rw [h_eq]
     exact hsum_succ.mul_right q⁻¹
   have h_first_le : 1 ≤ ∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j := by
@@ -188,7 +188,7 @@ lemma leftBlockMajorant_weighted_shifted_tsum_le (Kn : ℕ) (s : ℝ) (hs : 0 < 
       h.comp_injective Nat.succ_injective
     have h_eq : (fun j : ℕ => (((j : ℕ).succ : ℝ)^3) * q ^ j)
         = (fun j => (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ)) * (fun _ => q⁻¹) := by
-      ext j; field_simp [hqpos.ne']; rw [pow_succ]
+      ext j; simp [hqpos.ne', pow_succ, mul_assoc, mul_comm, mul_left_comm]
     rw [h_eq]
     exact hsum_succ.mul_right q⁻¹
   have hcalc0 : (∑' j : ℕ, leftBlockMajorant (j + Kn) * (((j + Kn : ℕ) + 1 : ℝ) * s))
