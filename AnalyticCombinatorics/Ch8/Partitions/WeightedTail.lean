@@ -155,8 +155,15 @@ lemma tailH3_pos : 0 < tailH3 := by
     have hsum_succ : Summable (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ)) :=
       h.comp_injective Nat.succ_injective
     have hsum' : Summable (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * q ^ j) :=
+      have h_exp : ∀ j, q ^ (j.succ) * q⁻¹ = q ^ j := by
+        intro j; calc q ^ (j.succ) * q⁻¹ = (q ^ j * q) * q⁻¹ := by rw [pow_succ]
+          _ = q ^ j * (q * q⁻¹) := by ring
+          _ = q ^ j * 1 := by rw [mul_inv_cancel (hqpos.ne')]
+          _ = q ^ j := by rw [mul_one]
       hsum_succ.mul_right q⁻¹ |>.congr (fun j => by
-        field_simp [hqpos.ne'])
+        dsimp
+        rw [← mul_assoc, mul_comm q⁻¹, mul_assoc]
+        simp [hqpos.ne', pow_succ, mul_assoc])
     simpa [hqdef] using hsum'
   have h_first_le : 1 ≤ ∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j := by
     calc 1 = ((0 : ℕ).succ : ℝ)^3 * Real.exp (-(C / 2)) ^ 0 := by norm_num
@@ -186,8 +193,15 @@ lemma leftBlockMajorant_weighted_shifted_tsum_le (Kn : ℕ) (s : ℝ) (hs : 0 < 
     have hsum_succ : Summable (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ)) :=
       h.comp_injective Nat.succ_injective
     have hsum' : Summable (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * q ^ j) :=
+      have h_exp : ∀ j, q ^ (j.succ) * q⁻¹ = q ^ j := by
+        intro j; calc q ^ (j.succ) * q⁻¹ = (q ^ j * q) * q⁻¹ := by rw [pow_succ]
+          _ = q ^ j * (q * q⁻¹) := by ring
+          _ = q ^ j * 1 := by rw [mul_inv_cancel (hqpos.ne')]
+          _ = q ^ j := by rw [mul_one]
       hsum_succ.mul_right q⁻¹ |>.congr (fun j => by
-        field_simp [hqpos.ne'])
+        dsimp
+        rw [← mul_assoc, mul_comm q⁻¹, mul_assoc]
+        simp [hqpos.ne', pow_succ, mul_assoc])
   have hcalc0 : (∑' j : ℕ, leftBlockMajorant (j + Kn) * (((j + Kn : ℕ) + 1 : ℝ) * s))
       = (∑' j : ℕ,
           2 * sigmaQuadConst * (((j + Kn : ℕ) + 1 : ℝ) ^ 2) * q ^ (j + Kn)
