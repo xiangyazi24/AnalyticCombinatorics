@@ -163,6 +163,7 @@ lemma tailH3_pos : 0 < tailH3 := by
           _ = (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ) * q⁻¹ := by ring
       rw [this]
       exact hsum_succ.mul_right q⁻¹
+    simpa [hqdef] using hsum'
   have h_first_le : 1 ≤ ∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j := by
     calc 1 = ((0 : ℕ).succ : ℝ)^3 * Real.exp (-(C / 2)) ^ 0 := by norm_num
       _ = (∑ j ∈ ({0} : Finset ℕ), (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j) := by simp
