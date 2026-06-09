@@ -157,7 +157,10 @@ lemma tailH3_pos : 0 < tailH3 := by
     have hsum' : Summable (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * q ^ j) := by
       have : (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * q ^ j)
           = (fun j => (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ)) * (fun _ => q⁻¹) := by
-        ext j; field_simp [hqdef, hqpos.ne']; ring
+        ext j
+        calc (((j : ℕ).succ : ℝ) ^ 3) * q ^ j
+            = (((j : ℕ).succ : ℝ) ^ 3) * (q ^ (j.succ) * q⁻¹) := by ring
+          _ = (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ) * q⁻¹ := by ring
       rw [this]
       exact hsum_succ.mul_right q⁻¹
   have h_first_le : 1 ≤ ∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j := by
@@ -190,7 +193,10 @@ lemma leftBlockMajorant_weighted_shifted_tsum_le (Kn : ℕ) (s : ℝ) (hs : 0 < 
     have hsum' : Summable (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * q ^ j) := by
       have : (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * q ^ j)
           = (fun j => (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ)) * (fun _ => q⁻¹) := by
-        ext j; field_simp [hqdef, hqpos.ne']; ring
+        ext j
+        calc (((j : ℕ).succ : ℝ) ^ 3) * q ^ j
+            = (((j : ℕ).succ : ℝ) ^ 3) * (q ^ (j.succ) * q⁻¹) := by ring
+          _ = (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ) * q⁻¹ := by ring
       rw [this]
       exact hsum_succ.mul_right q⁻¹
   calc (∑' j : ℕ, leftBlockMajorant (j + Kn) * (((j + Kn : ℕ) + 1 : ℝ) * s))
