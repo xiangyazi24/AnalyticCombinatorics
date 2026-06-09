@@ -161,7 +161,10 @@ lemma tailH3_pos : 0 < tailH3 := by
             = (((j : ℕ).succ : ℝ) ^ 3) * (q ^ (j.succ) * q⁻¹) := by ring
           _ = (((j : ℕ).succ : ℝ) ^ 3) * (q ^ j) := by
             rw [show q ^ (j.succ) * q⁻¹ = q ^ j by
-              rw [← pow_succ, mul_comm, ← mul_assoc, mul_inv_cancel (hqpos.ne'), one_mul]]
+              calc q ^ (j.succ) * q⁻¹ = (q ^ j * q) * q⁻¹ := by rw [pow_succ]
+                _ = q ^ j * (q * q⁻¹) := by ring
+                _ = q ^ j * 1 := by rw [mul_inv_cancel (hqpos.ne')]
+                _ = q ^ j := by rw [mul_one]]
           _ = (((j : ℕ).succ : ℝ) ^ 3) * q ^ j := rfl)
     simpa [hqdef] using hsum'
   have h_first_le : 1 ≤ ∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j := by
@@ -198,7 +201,10 @@ lemma leftBlockMajorant_weighted_shifted_tsum_le (Kn : ℕ) (s : ℝ) (hs : 0 < 
             = (((j : ℕ).succ : ℝ) ^ 3) * (q ^ (j.succ) * q⁻¹) := by ring
           _ = (((j : ℕ).succ : ℝ) ^ 3) * (q ^ j) := by
             rw [show q ^ (j.succ) * q⁻¹ = q ^ j by
-              rw [← pow_succ, mul_comm, ← mul_assoc, mul_inv_cancel (hqpos.ne'), one_mul]]
+              calc q ^ (j.succ) * q⁻¹ = (q ^ j * q) * q⁻¹ := by rw [pow_succ]
+                _ = q ^ j * (q * q⁻¹) := by ring
+                _ = q ^ j * 1 := by rw [mul_inv_cancel (hqpos.ne')]
+                _ = q ^ j := by rw [mul_one]]
           _ = (((j : ℕ).succ : ℝ) ^ 3) * q ^ j := rfl)
   have hcalc0 : (∑' j : ℕ, leftBlockMajorant (j + Kn) * (((j + Kn : ℕ) + 1 : ℝ) * s))
       = (∑' j : ℕ,
@@ -214,7 +220,7 @@ lemma leftBlockMajorant_weighted_shifted_tsum_le (Kn : ℕ) (s : ℝ) (hs : 0 < 
           * (((j + Kn : ℕ) + 1 : ℝ) * s)) := hcalc0
   _ = 2 * sigmaQuadConst * s * q ^ Kn * (∑' j : ℕ, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j) := by
     have hsum_shift : Summable (fun j : ℕ => (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j) := by
-      refine hsum.of_nonneg_of_le (fun j => by positivity) (fun j => ?_) ?_
+      refine Summable.of_nonneg_of_le (fun j => by positivity) (fun j => ?_) ?_
       · -- (j+Kn+1)^3 * q^j ≤ (j+1)^3 * (Kn+1)^3 * q^j
         refine mul_le_mul_of_nonneg_right ?_ (by positivity)
         nlinarith [Nat.cast_nonneg j, Nat.cast_nonneg Kn]
