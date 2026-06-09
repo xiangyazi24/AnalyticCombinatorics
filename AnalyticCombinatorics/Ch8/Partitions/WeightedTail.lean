@@ -233,7 +233,7 @@ lemma leftBlockMajorant_weighted_shifted_tsum_le (Kn : ℕ) (s : ℝ) (hs : 0 < 
         = (∑' j : ℕ, (2 * sigmaQuadConst * s * q ^ Kn) * ((((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j)) := by
       refine tsum_congr (fun j => ?_); ring
     _ = (2 * sigmaQuadConst * s * q ^ Kn) * (∑' j : ℕ, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j) := by
-      rw [hsum_shift.tsum_mul_left]
+      rw [hsum_shift.tsum_mul_left (2 * sigmaQuadConst * s * q ^ Kn)]
     _ = 2 * sigmaQuadConst * s * q ^ Kn * (∑' j : ℕ, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j) := by ring
   _ ≤ 2 * sigmaQuadConst * s * q ^ Kn
       * (((Kn : ℝ) + 1) ^ 3 * (∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * q ^ j)) := by
