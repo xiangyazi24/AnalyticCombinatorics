@@ -151,15 +151,11 @@ lemma tailH3_pos : 0 < tailH3 := by
         have hneg : -(C / 2) < 0 := by nlinarith [C_pos]
         exact Real.exp_lt_one_iff.mpr hneg)
     set q := Real.exp (-(C / 2)) with hqdef
-    have hsum_succ : Summable (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ)) :=
-      h.comp_injective Nat.succ_injective
-    -- (j.succ)^3 * q^j = q⁻¹ * (j.succ)^3 * q^(j.succ)
-    have hsum' : Summable (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * q ^ j) := by
-      have : (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * q ^ j)
-          = fun j => q⁻¹ * (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ) := by
-        ext j; simp [hqdef, mul_comm, mul_left_comm, mul_assoc]; ring
-      rw [this]
-      exact hsum_succ.mul_right q⁻¹
+    have : (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * q ^ j)
+        = (fun n => q⁻¹ * ((n : ℝ)^3 * q ^ n)) ∘ Nat.succ := by
+      ext j; simp [hqdef, mul_comm, add_comm, mul_left_comm, mul_assoc]
+    rw [this]
+    exact (h.comp_injective (fun a b _ => Nat.succ_inj.mp h)).mul_right q⁻¹
   have h_first_le : 1 ≤ ∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j := by
     calc 1 = ((0 : ℕ).succ : ℝ)^3 * Real.exp (-(C / 2)) ^ 0 := by norm_num
       _ = (∑ j ∈ ({0} : Finset ℕ), (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j) := by simp
