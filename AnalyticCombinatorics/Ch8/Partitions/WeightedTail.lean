@@ -162,7 +162,7 @@ lemma tailH3_pos : 0 < tailH3 := by
             = (((j : ℕ).succ : ℝ) ^ 3) * (q ^ (j.succ) * q⁻¹) := by ring
           _ = (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ) * q⁻¹ := by ring
       rw [this]
-      exact hsum_succ.mul_right q⁻¹
+      simpa using hsum_succ.mul_right q⁻¹
     simpa [hqdef] using hsum'
   have h_first_le : 1 ≤ ∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j := by
     calc 1 = ((0 : ℕ).succ : ℝ)^3 * Real.exp (-(C / 2)) ^ 0 := by norm_num
@@ -199,7 +199,7 @@ lemma leftBlockMajorant_weighted_shifted_tsum_le (Kn : ℕ) (s : ℝ) (hs : 0 < 
             = (((j : ℕ).succ : ℝ) ^ 3) * (q ^ (j.succ) * q⁻¹) := by ring
           _ = (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ) * q⁻¹ := by ring
       rw [this]
-      exact hsum_succ.mul_right q⁻¹
+      simpa using hsum_succ.mul_right q⁻¹
   calc (∑' j : ℕ, leftBlockMajorant (j + Kn) * (((j + Kn : ℕ) + 1 : ℝ) * s))
       = (∑' j : ℕ,
           2 * sigmaQuadConst * (((j + Kn : ℕ) + 1 : ℝ) ^ 2) * q ^ (j + Kn)
