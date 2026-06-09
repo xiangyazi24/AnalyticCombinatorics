@@ -226,8 +226,10 @@ lemma leftBlockMajorant_weighted_shifted_tsum_le (Kn : ℕ) (s : ℝ) (hs : 0 < 
         ≤ (((Kn : ℝ) + 1) ^ 3 * (((j : ℕ).succ : ℝ) ^ 3)) * q ^ j := by
       intro j; refine mul_le_mul_of_nonneg_right ?_ (by positivity)
       nlinarith [Nat.cast_nonneg j, Nat.cast_nonneg Kn]
+    have hsum_mul : Summable (fun j : ℕ => (((Kn : ℝ) + 1) ^ 3 * (((j : ℕ).succ : ℝ) ^ 3)) * q ^ j) :=
+      hsum.mul_left (((Kn : ℝ) + 1)^3)
     have ha : Summable (fun j : ℕ => (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j) :=
-      Summable.of_nonneg_of_le hpos_a hineq (hsum.mul_left (((Kn : ℝ) + 1)^3))
+      Summable.of_nonneg_of_le (fun j => hpos_a j) (fun j => hineq j) hsum_mul
     have hbpos : ∀ j, 0 ≤ (((Kn : ℝ) + 1) ^ 3 * (((j : ℕ).succ : ℝ) ^ 3)) * q ^ j := by
       intro j; positivity
     have hpart : ∀ (u : Finset ℕ), ∑ j ∈ u, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j
