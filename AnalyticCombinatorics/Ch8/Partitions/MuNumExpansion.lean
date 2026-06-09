@@ -37,12 +37,14 @@ lemma modelSummand_mul_rhoDropModel_expand {n m : ℕ} (hm : m ≠ 0) :
          - 3 * C / (16 * (n:ℝ) ^ 3)) * (m:ℝ) ^ 3)
       + ((-3 * C / (64 * (n:ℝ) ^ 4)) * (m:ℝ) ^ 4)) := by
   rw [modelSummand, rhoDropModel, if_neg hm]
-  ring_nf
+  ring
 
 /-! ### Model sum expressed via sigma moments (infinite-sum identity) -/
 
+variable (n : ℕ) (hn1 : 1 ≤ n)
+
 /-- `tsum` of `modelSummand·rhoDropModel = c₁·M₁ + c₂·M₂ + c₃·M₃ + c₄·M₄`. -/
-lemma model_sum_eq_moments (n : ℕ) (hn1 : 1 ≤ n) :
+lemma model_sum_eq_moments :
     (∑' m : ℕ, if m = 0 then (0:ℝ) else modelSummand n m * rhoDropModel n m)
     = (3 / (2 * (n:ℝ) * Real.sqrt (n:ℝ))) * sigmaMoment 1 (massLam / Real.sqrt (n:ℝ))
     + (15 / (8 * (n:ℝ) ^ 2 * Real.sqrt (n:ℝ))) * sigmaMoment 2 (massLam / Real.sqrt (n:ℝ))
@@ -97,17 +99,12 @@ lemma model_sum_eq_moments (n : ℕ) (hn1 : 1 ≤ n) :
           (m : ℝ) ^ 3 * Sigma.sigmaR m * Real.exp (-t * (m : ℝ)))
       + c4 * (∑' m : ℕ, if m = 0 then (0:ℝ) else
           (m : ℝ) ^ 4 * Sigma.sigmaR m * Real.exp (-t * (m : ℝ))) := by
-      have hsc1 : Summable (fun m => c1 • (if m = 0 then (0:ℝ) else (m:ℝ)^1 * Sigma.sigmaR m * Real.exp (-t * (m:ℝ)))) :=
-        (hsum 1).const_smul c1
-      have hsc2 : Summable (fun m => c2 • (if m = 0 then (0:ℝ) else (m:ℝ)^2 * Sigma.sigmaR m * Real.exp (-t * (m:ℝ)))) :=
-        (hsum 2).const_smul c2
-      have hsc3 : Summable (fun m => c3 • (if m = 0 then (0:ℝ) else (m:ℝ)^3 * Sigma.sigmaR m * Real.exp (-t * (m:ℝ)))) :=
-        (hsum 3).const_smul c3
-      have hsc4 : Summable (fun m => c4 • (if m = 0 then (0:ℝ) else (m:ℝ)^4 * Sigma.sigmaR m * Real.exp (-t * (m:ℝ)))) :=
-        (hsum 4).const_smul c4
-      have hsum12 := hsc1.add (hsc2.add (hsc3.add hsc4))
-      simp [hsc1.tsum_const_smul c1, hsc2.tsum_const_smul c2, hsc3.tsum_const_smul c3, hsc4.tsum_const_smul c4,
-        hsc1.tsum_add (hsc2.add (hsc3.add hsc4)), hsc2.tsum_add (hsc3.add hsc4), hsc3.tsum_add hsc4]
+      simp [tsum_add (hsum 1).const_smul c1
+        (((hsum 2).const_smul c2).add (((hsum 3).const_smul c3).add ((hsum 4).const_smul c4))),
+        tsum_add ((hsum 2).const_smul c2) (((hsum 3).const_smul c3).add ((hsum 4).const_smul c4)),
+        tsum_add ((hsum 3).const_smul c3) ((hsum 4).const_smul c4),
+        tsum_const_smul _ (hsum 1), tsum_const_smul _ (hsum 2),
+        tsum_const_smul _ (hsum 3), tsum_const_smul _ (hsum 4)]
     _ = c1 * sigmaMoment 1 t + c2 * sigmaMoment 2 t + c3 * sigmaMoment 3 t + c4 * sigmaMoment 4 t := by
       simp [sigmaMoment, htdef]
     _ = (3 / (2 * (n:ℝ) * Real.sqrt (n:ℝ))) * sigmaMoment 1 (massLam / Real.sqrt (n:ℝ))
@@ -205,13 +202,12 @@ theorem model_sum_two_term_asymp :
   have hK_total_pos : 0 < K_total := by positivity
   refine ⟨K_total, hK_total_pos, ?_⟩
   filter_upwards [hM1ev, hM2ev, hM3ev, hM4ev,
-    Filter.eventually_ge_atTop (max R0 1)] with n hM1n hM2n hM3n hM4n hnR0
+    model_sum_eq_moments, Filter.eventually_ge_atTop (max R0 1)] with n hM1n hM2n hM3n hM4n hsum_eq hnR0
   have hn1 : 1 ≤ n := le_trans (by exact le_max_right _ _) hnR0
   have hnpos : (0:ℝ) < (n:ℝ) := by exact_mod_cast hn1
   have hs0 : 0 < Real.sqrt (n:ℝ) := Real.sqrt_pos.mpr hnpos
   rcases t_in_range n (le_trans (le_max_left _ _) hnR0) with ⟨htpos, htle1⟩
-  have hsum_eq := model_sum_eq_moments n hn1
-  rw [hsum_eq]
+  rw [hsum_eq n hn1]
   set c1 : ℝ := 3 / (2 * (n:ℝ) * Real.sqrt (n:ℝ))
   set c2 : ℝ := 15 / (8 * (n:ℝ) ^ 2 * Real.sqrt (n:ℝ))
   set c3 : ℝ := 3 / (8 * (n:ℝ) ^ 2 * Real.sqrt (n:ℝ) ^ 3) - 3 * C / (16 * (n:ℝ) ^ 3)
