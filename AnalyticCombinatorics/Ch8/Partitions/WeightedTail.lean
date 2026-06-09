@@ -158,7 +158,11 @@ lemma tailH3_pos : 0 < tailH3 := by
       -- (j.succ)^3 * q^j = (j.succ)^3 * q^(j.succ) * q⁻¹
       have h_eq : (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * q ^ j)
           = (fun j => (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ)) * (fun _ => q⁻¹) := by
-        ext j; field_simp [hqpos.ne']; rw [pow_succ]
+        ext j; calc (((j : ℕ).succ : ℝ) ^ 3) * q ^ j = (((j : ℕ).succ : ℝ) ^ 3) * (q ^ j * 1) := by ring
+        _ = (((j : ℕ).succ : ℝ) ^ 3) * (q ^ j * (q * q⁻¹)) := by rw [mul_inv_cancel hqpos.ne']
+        _ = (((j : ℕ).succ : ℝ) ^ 3) * ((q ^ j * q) * q⁻¹) := by ring
+        _ = (((j : ℕ).succ : ℝ) ^ 3) * (q ^ (j.succ) * q⁻¹) := by rw [pow_succ]
+        _ = (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ) * q⁻¹ := by ring
       rw [h_eq]
       exact hsum_succ.mul_right q⁻¹
     simpa [hqdef] using hsum'
@@ -193,7 +197,11 @@ lemma leftBlockMajorant_weighted_shifted_tsum_le (Kn : ℕ) (s : ℝ) (hs : 0 < 
     -- (j.succ)^3 * q^j = (j.succ)^3 * q^(j.succ) * q⁻¹
     have : (fun j : ℕ => (((j : ℕ).succ : ℝ)^3) * q ^ j)
         = (fun j => (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ)) * (fun _ => q⁻¹) := by
-      ext j; field_simp [hqpos.ne']; rw [pow_succ]
+      ext j; calc (((j : ℕ).succ : ℝ) ^ 3) * q ^ j = (((j : ℕ).succ : ℝ) ^ 3) * (q ^ j * 1) := by ring
+        _ = (((j : ℕ).succ : ℝ) ^ 3) * (q ^ j * (q * q⁻¹)) := by rw [mul_inv_cancel hqpos.ne']
+        _ = (((j : ℕ).succ : ℝ) ^ 3) * ((q ^ j * q) * q⁻¹) := by ring
+        _ = (((j : ℕ).succ : ℝ) ^ 3) * (q ^ (j.succ) * q⁻¹) := by rw [pow_succ]
+        _ = (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ) * q⁻¹ := by ring
     rw [this]
     exact hsum_succ.mul_right q⁻¹
   calc (∑' j : ℕ, leftBlockMajorant (j + Kn) * (((j + Kn : ℕ) + 1 : ℝ) * s))
