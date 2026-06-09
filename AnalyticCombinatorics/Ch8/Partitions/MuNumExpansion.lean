@@ -99,12 +99,26 @@ lemma model_sum_eq_moments :
           (m : ℝ) ^ 3 * Sigma.sigmaR m * Real.exp (-t * (m : ℝ)))
       + c4 * (∑' m : ℕ, if m = 0 then (0:ℝ) else
           (m : ℝ) ^ 4 * Sigma.sigmaR m * Real.exp (-t * (m : ℝ))) := by
-      simp [tsum_add (hsum 1).const_smul c1
-        (((hsum 2).const_smul c2).add (((hsum 3).const_smul c3).add ((hsum 4).const_smul c4))),
-        tsum_add ((hsum 2).const_smul c2) (((hsum 3).const_smul c3).add ((hsum 4).const_smul c4)),
-        tsum_add ((hsum 3).const_smul c3) ((hsum 4).const_smul c4),
-        tsum_const_smul _ (hsum 1), tsum_const_smul _ (hsum 2),
-        tsum_const_smul _ (hsum 3), tsum_const_smul _ (hsum 4)]
+      have hsm1 := (hsum 1).const_smul c1
+      have hsm2 := (hsum 2).const_smul c2
+      have hsm3 := (hsum 3).const_smul c3
+      have hsm4 := (hsum 4).const_smul c4
+      calc c1 * sigmaMoment 1 t + (c2 * sigmaMoment 2 t + (c3 * sigmaMoment 3 t + c4 * sigmaMoment 4 t))
+          = c1 * (∑' m : ℕ, if m = 0 then (0:ℝ) else (m:ℝ)^1 * Sigma.sigmaR m * Real.exp (-t * (m:ℝ)))
+          + c2 * (∑' m : ℕ, if m = 0 then (0:ℝ) else (m:ℝ)^2 * Sigma.sigmaR m * Real.exp (-t * (m:ℝ)))
+          + c3 * (∑' m : ℕ, if m = 0 then (0:ℝ) else (m:ℝ)^3 * Sigma.sigmaR m * Real.exp (-t * (m:ℝ)))
+          + c4 * (∑' m : ℕ, if m = 0 then (0:ℝ) else (m:ℝ)^4 * Sigma.sigmaR m * Real.exp (-t * (m:ℝ))) := by
+        simp [sigmaMoment, htdef]
+      _ = (∑' m : ℕ, c1 • (if m = 0 then (0:ℝ) else (m:ℝ)^1 * Sigma.sigmaR m * Real.exp (-t * (m:ℝ))))
+        + (∑' m : ℕ, c2 • (if m = 0 then (0:ℝ) else (m:ℝ)^2 * Sigma.sigmaR m * Real.exp (-t * (m:ℝ))))
+        + (∑' m : ℕ, c3 • (if m = 0 then (0:ℝ) else (m:ℝ)^3 * Sigma.sigmaR m * Real.exp (-t * (m:ℝ))))
+        + (∑' m : ℕ, c4 • (if m = 0 then (0:ℝ) else (m:ℝ)^4 * Sigma.sigmaR m * Real.exp (-t * (m:ℝ)))) := by
+      { simp [hsm1.tsum_const_smul c1, hsm2.tsum_const_smul c2, hsm3.tsum_const_smul c3, hsm4.tsum_const_smul c4] }
+      _ = ∑' m : ℕ, (c1 • (if m = 0 then (0:ℝ) else (m:ℝ)^1 * Sigma.sigmaR m * Real.exp (-t * (m:ℝ)))
+        + c2 • (if m = 0 then (0:ℝ) else (m:ℝ)^2 * Sigma.sigmaR m * Real.exp (-t * (m:ℝ)))
+        + c3 • (if m = 0 then (0:ℝ) else (m:ℝ)^3 * Sigma.sigmaR m * Real.exp (-t * (m:ℝ)))
+        + c4 • (if m = 0 then (0:ℝ) else (m:ℝ)^4 * Sigma.sigmaR m * Real.exp (-t * (m:ℝ)))) := by
+      { simp [(hsm1.add (hsm2.add (hsm3.add hsm4))).tsum_add, (hsm2.add (hsm3.add hsm4)).tsum_add, hsm3.tsum_add hsm4] }
     _ = c1 * sigmaMoment 1 t + c2 * sigmaMoment 2 t + c3 * sigmaMoment 3 t + c4 * sigmaMoment 4 t := by
       simp [sigmaMoment, htdef]
     _ = (3 / (2 * (n:ℝ) * Real.sqrt (n:ℝ))) * sigmaMoment 1 (massLam / Real.sqrt (n:ℝ))
