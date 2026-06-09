@@ -200,14 +200,18 @@ lemma leftBlockMajorant_weighted_shifted_tsum_le (Kn : ℕ) (s : ℝ) (hs : 0 < 
           _ = (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ) * q⁻¹ := by ring
       rw [this]
       simpa using hsum_succ.mul_right q⁻¹
-  calc (∑' j : ℕ, leftBlockMajorant (j + Kn) * (((j + Kn : ℕ) + 1 : ℝ) * s))
+  have hcalc0 : (∑' j : ℕ, leftBlockMajorant (j + Kn) * (((j + Kn : ℕ) + 1 : ℝ) * s))
       = (∑' j : ℕ,
           2 * sigmaQuadConst * (((j + Kn : ℕ) + 1 : ℝ) ^ 2) * q ^ (j + Kn)
           * (((j + Kn : ℕ) + 1 : ℝ) * s)) := by
-    apply tsum_congr; intro j
+    refine tsum_congr (fun j => ?_)
     rw [leftBlockMajorant, show Real.exp (-(C / 2) * ((j + Kn : ℕ) : ℝ))
         = q ^ (j + Kn) by rw [hqdef, ← Real.exp_nat_mul]; ring]
     ring
+  calc (∑' j : ℕ, leftBlockMajorant (j + Kn) * (((j + Kn : ℕ) + 1 : ℝ) * s))
+      = (∑' j : ℕ,
+          2 * sigmaQuadConst * (((j + Kn : ℕ) + 1 : ℝ) ^ 2) * q ^ (j + Kn)
+          * (((j + Kn : ℕ) + 1 : ℝ) * s)) := hcalc0
   _ = 2 * sigmaQuadConst * s * q ^ Kn * (∑' j : ℕ, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j) := by
     rw [tsum_mul_left, tsum_mul_left, tsum_mul_right]
     refine tsum_congr (fun j => ?_); ring
