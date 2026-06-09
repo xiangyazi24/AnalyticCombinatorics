@@ -3,14 +3,14 @@ import AnalyticCombinatorics.Ch8.Partitions.MassRateApprox2
 import AnalyticCombinatorics.Ch8.Partitions.ErdosKernelClose
 
 /-!
-# Weighted far-erdos tail: `Σ_{m>⌊n^{2/3}⌋} erdosWeight·m ≤ const/n`
+# Weighted far-erdos tail: helper lemmas
 
-Three sub-lemmas adapted from `ErdosKernelClose.lean` (left_half_tail_sum_le_block_majorants)
-with the extra `(m:ℝ)` weight, plus the capstone `weighted_far_erdos_tail_le`.
-Opus-authored (weighted adaptations by ChatGPT ac1).
+Sub-lemmas adapted from `ErdosKernelClose.lean` with `(m:ℝ)` weight.
+The capstone `weighted_far_erdos_tail_le` is pending.
+Opus-authored.
 -/
 
-set_option maxHeartbeats 8000000
+set_option maxHeartbeats 4000000
 
 noncomputable section
 
@@ -151,15 +151,11 @@ lemma tailH3_pos : 0 < tailH3 := by
         have hneg : -(C / 2) < 0 := by nlinarith [C_pos]
         exact Real.exp_lt_one_iff.mpr hneg)
     set q := Real.exp (-(C / 2)) with hqdef
-    have hqpos : 0 < q := by rw [hqdef]; exact Real.exp_pos _
-    have hsum_succ : Summable (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ)) :=
-      h.comp_injective Nat.succ_injective
-    -- (j.succ)^3 * q^j = ((j.succ)^3 * q^(j.succ)) * q⁻¹
-    have h_eq : (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * q ^ j)
-        = (fun j => (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ)) * (fun _ => q⁻¹) := by
-      ext j; simp [hqpos.ne', pow_succ, mul_assoc, mul_comm, mul_left_comm]
-    rw [h_eq]
-    exact hsum_succ.mul_right q⁻¹
+    have : (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * q ^ j)
+        = (fun n => q⁻¹ * ((n : ℝ)^3 * q ^ n)) ∘ Nat.succ := by
+      ext j; simp [hqdef, mul_comm, add_comm, mul_left_comm, mul_assoc]
+    rw [this]
+    exact (h.comp_injective Nat.succ_injective).mul_right q⁻¹
   have h_first_le : 1 ≤ ∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j := by
     calc 1 = ((0 : ℕ).succ : ℝ)^3 * Real.exp (-(C / 2)) ^ 0 := by norm_num
       _ = (∑ j ∈ ({0} : Finset ℕ), (((j : ℕ).succ : ℝ) ^ 3) * Real.exp (-(C / 2)) ^ j) := by simp
@@ -167,7 +163,8 @@ lemma tailH3_pos : 0 < tailH3 := by
         hsumm.sum_le_tsum ({0} : Finset ℕ) (by
           intro j hj; simp at hj; exact hnonneg j)
   have hpos_one : (0 : ℝ) < 1 := by norm_num
-  have : 1 ≤ tailH3 := by dsimp [tailH3]; exact h_first_le
+  have : 1 ≤ tailH3 := by
+    dsimp [tailH3]; exact h_first_le
   linarith
 
 lemma tailH3_nonneg : 0 ≤ tailH3 := tailH3_pos.le
@@ -184,14 +181,11 @@ lemma leftBlockMajorant_weighted_shifted_tsum_le (Kn : ℕ) (s : ℝ) (hs : 0 < 
   have hsum : Summable (fun j : ℕ => (((j : ℕ).succ : ℝ)^3) * q ^ j) := by
     have h := summable_pow_mul_geometric_of_norm_lt_one (R := ℝ) 3
       (by rw [Real.norm_eq_abs, abs_of_pos hqpos]; exact hqlt1)
-    have hsum_succ : Summable (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ)) :=
-      h.comp_injective Nat.succ_injective
-    have h_eq : (fun j : ℕ => (((j : ℕ).succ : ℝ)^3) * q ^ j)
-        = (fun j => (((j : ℕ).succ : ℝ) ^ 3) * q ^ (j.succ)) * (fun _ => q⁻¹) := by
-      ext j; simp [hqpos.ne', pow_succ, mul_assoc, mul_comm, mul_left_comm]
-    rw [h_eq]
-    exact hsum_succ.mul_right q⁻¹
-  have hcalc0 : (∑' j : ℕ, leftBlockMajorant (j + Kn) * (((j + Kn : ℕ) + 1 : ℝ) * s))
+    have : (fun j : ℕ => (((j : ℕ).succ : ℝ)^3) * q ^ j) = (fun n => q⁻¹ * ((n : ℝ)^3 * q ^ n)) ∘ Nat.succ := by
+      ext j; simp [hqdef, mul_comm, add_comm, mul_left_comm, mul_assoc]
+    rw [this]
+    exact (h.comp_injective Nat.succ_injective).mul_right q⁻¹
+  calc (∑' j : ℕ, leftBlockMajorant (j + Kn) * (((j + Kn : ℕ) + 1 : ℝ) * s))
       = (∑' j : ℕ,
           2 * sigmaQuadConst * (((j + Kn : ℕ) + 1 : ℝ) ^ 2) * q ^ (j + Kn)
           * (((j + Kn : ℕ) + 1 : ℝ) * s)) := by
@@ -199,59 +193,56 @@ lemma leftBlockMajorant_weighted_shifted_tsum_le (Kn : ℕ) (s : ℝ) (hs : 0 < 
     rw [leftBlockMajorant, show Real.exp (-(C / 2) * ((j + Kn : ℕ) : ℝ))
         = q ^ (j + Kn) by rw [hqdef, ← Real.exp_nat_mul]; ring]
     ring
-  calc (∑' j : ℕ, leftBlockMajorant (j + Kn) * (((j + Kn : ℕ) + 1 : ℝ) * s))
-      = (∑' j : ℕ,
-          2 * sigmaQuadConst * (((j + Kn : ℕ) + 1 : ℝ) ^ 2) * q ^ (j + Kn)
-          * (((j + Kn : ℕ) + 1 : ℝ) * s)) := hcalc0
-    _ = 2 * sigmaQuadConst * s * q ^ Kn * (∑' j : ℕ, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j) := by
-      have hsum_shift : Summable (fun j : ℕ => (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j) := by
-        have hineq' : ∀ j, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j
-            ≤ (((j : ℕ).succ : ℝ) ^ 3) * ((Kn : ℝ) + 1) ^ 3 * q ^ j := by
-          intro j; refine mul_le_mul_of_nonneg_right ?_ (by positivity)
-          nlinarith [Nat.cast_nonneg j, Nat.cast_nonneg Kn]
-        have hpos_shift : ∀ j, 0 ≤ (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j := by intro j; positivity
-        refine Summable.of_nonneg_of_le (fun j => hpos_shift j) (fun j => hineq' j) ?_
-        simpa [Pi.mul_def, mul_assoc, mul_comm, mul_left_comm] using hsum.mul_right (((Kn : ℝ) + 1)^3)
-      calc (∑' j : ℕ, 2 * sigmaQuadConst * (((j + Kn : ℕ) + 1 : ℝ) ^ 2) * q ^ (j + Kn)
-            * (((j + Kn : ℕ) + 1 : ℝ) * s))
-          = (∑' j : ℕ, (2 * sigmaQuadConst * s * q ^ Kn) * ((((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j)) := by
-        refine tsum_congr (fun j => ?_); ring
-      _ = (2 * sigmaQuadConst * s * q ^ Kn) * (∑' j : ℕ, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j) := by
-        rw [hsum_shift.tsum_mul_left (2 * sigmaQuadConst * s * q ^ Kn)]
-      _ = 2 * sigmaQuadConst * s * q ^ Kn * (∑' j : ℕ, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j) := by ring
-    _ ≤ 2 * sigmaQuadConst * s * q ^ Kn
-        * (((Kn : ℝ) + 1) ^ 3 * (∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * q ^ j)) := by
-      have hpos_coef : 0 ≤ 2 * sigmaQuadConst * s * q ^ Kn := by
-        have hsq : 0 ≤ sigmaQuadConst := sigmaQuadConst_pos.le; positivity
-      refine mul_le_mul_of_nonneg_left ?_ hpos_coef
-      have hpos_a : ∀ j, 0 ≤ (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j := by intro j; positivity
-      have hineq : ∀ j, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j
-          ≤ (((Kn : ℝ) + 1) ^ 3 * (((j : ℕ).succ : ℝ) ^ 3)) * q ^ j := by
-        intro j; refine mul_le_mul_of_nonneg_right ?_ (by positivity)
-        nlinarith [Nat.cast_nonneg j, Nat.cast_nonneg Kn]
-      have hbpos : ∀ j, 0 ≤ (((Kn : ℝ) + 1) ^ 3 * (((j : ℕ).succ : ℝ) ^ 3)) * q ^ j := by
-        intro j; positivity
-      have hpart : ∀ (u : Finset ℕ), ∑ j ∈ u, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j
-          ≤ ∑' j : ℕ, (((Kn : ℝ) + 1) ^ 3 * (((j : ℕ).succ : ℝ) ^ 3)) * q ^ j := by
-        intro u
-        refine le_trans (Finset.sum_le_sum (fun j _ => hineq j)) ?_
-        refine (hsum.mul_left (((Kn : ℝ) + 1)^3)).sum_le_tsum u (fun j hj => hbpos j)
-      calc (∑' j : ℕ, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j)
-          ≤ ∑' j : ℕ, (((Kn : ℝ) + 1) ^ 3 * (((j : ℕ).succ : ℝ) ^ 3)) * q ^ j :=
-        Real.tsum_le_of_sum_le hpos_a hpart
-      _ = ((Kn : ℝ) + 1) ^ 3 * (∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * q ^ j) := by
-        rw [hsum.tsum_mul_left (((Kn : ℝ) + 1)^3)]
-    _ = 2 * sigmaQuadConst * s * (((Kn : ℝ) + 1) ^ 3) * tailH3 * q ^ Kn := by
-      rw [tailH3]; ring
-    _ = 2 * sigmaQuadConst * s * (((Kn : ℝ) + 1) ^ 3) * tailH3
-        * Real.exp (-(C / 2) * (Kn : ℝ)) := by
-      rw [hqdef, ← Real.exp_nat_mul]; ring
-    _ ≤ 2 * sigmaQuadConst * s * (((Kn : ℝ) + 1) ^ 3) * tailH3
-        * Real.exp (-(C / 2) * (Kn : ℝ)) * Real.exp (C / 2) := by
-      refine mul_le_mul_of_nonneg_left ?_ (by positivity)
-      exact le_of_eq (by ring)
+  _ = 2 * sigmaQuadConst * s * q ^ Kn * (∑' j : ℕ, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j) := by
+    have hsum_shift : Summable (fun j : ℕ => (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j) := by
+      have hineq' : ∀ j, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j ≤ (((j : ℕ).succ : ℝ) ^ 3) * ((Kn : ℝ) + 1) ^ 3 * q ^ j := by
+        intro j; refine mul_le_mul_of_nonneg_right ?_ (by positivity); nlinarith [Nat.cast_nonneg j, Nat.cast_nonneg Kn]
+      have hpos_shift : ∀ j, 0 ≤ (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j := by intro j; positivity
+      refine Summable.of_nonneg_of_le (fun j => hpos_shift j) (fun j => hineq' j) ?_
+      simpa [Pi.mul_def, mul_assoc, mul_comm, mul_left_comm] using hsum.mul_right (((Kn : ℝ) + 1)^3)
+    calc (∑' j : ℕ, 2 * sigmaQuadConst * (((j + Kn : ℕ) + 1 : ℝ) ^ 2) * q ^ (j + Kn)
+          * (((j + Kn : ℕ) + 1 : ℝ) * s))
+        = (∑' j : ℕ, (2 * sigmaQuadConst * s * q ^ Kn) * ((((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j)) := by
+      refine tsum_congr (fun j => ?_); ring
+    _ = (2 * sigmaQuadConst * s * q ^ Kn) * (∑' j : ℕ, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j) := by
+      rw [hsum_shift.tsum_mul_left (2 * sigmaQuadConst * s * q ^ Kn)]
+    _ = 2 * sigmaQuadConst * s * q ^ Kn * (∑' j : ℕ, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j) := by ring
+    refine tsum_congr (fun j => ?_); ring
+  _ ≤ 2 * sigmaQuadConst * s * q ^ Kn
+      * (((Kn : ℝ) + 1) ^ 3 * (∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * q ^ j)) := by
+    refine mul_le_mul_of_nonneg_left ?_ (by positivity)
+    have hpos_a : ∀ j, 0 ≤ (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j := by intro j; positivity
+    have hineq : ∀ j, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j
+        ≤ (((Kn : ℝ) + 1) ^ 3 * (((j : ℕ).succ : ℝ) ^ 3)) * q ^ j := by
+      intro j; refine mul_le_mul_of_nonneg_right ?_ (by positivity)
+      nlinarith [Nat.cast_nonneg j, Nat.cast_nonneg Kn]
+    have ha : Summable (fun j : ℕ => (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j) :=
+      Summable.of_nonneg_of_le hpos_a hineq (hsum.mul_left (((Kn : ℝ) + 1)^3))
+    have hbpos : ∀ j, 0 ≤ (((Kn : ℝ) + 1) ^ 3 * (((j : ℕ).succ : ℝ) ^ 3)) * q ^ j := by
+      intro j; positivity
+    have hpart : ∀ (u : Finset ℕ), ∑ j ∈ u, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j
+        ≤ ∑' j : ℕ, (((Kn : ℝ) + 1) ^ 3 * (((j : ℕ).succ : ℝ) ^ 3)) * q ^ j := by
+      intro u
+      refine le_trans (Finset.sum_le_sum (fun j _ => hineq j)) ?_
+      refine (hsum.mul_left (((Kn : ℝ) + 1)^3)).sum_le_tsum u (fun j hj => hbpos j)
+    refine mul_le_mul_of_nonneg_left ?_ (by positivity)
+    calc (∑' j : ℕ, (((j + Kn : ℕ) + 1 : ℝ) ^ 3) * q ^ j)
+        ≤ ∑' j : ℕ, (((Kn : ℝ) + 1) ^ 3 * (((j : ℕ).succ : ℝ) ^ 3)) * q ^ j :=
+      Real.tsum_le_of_sum_le hpos_a hpart
+    _ = ((Kn : ℝ) + 1) ^ 3 * (∑' j : ℕ, (((j : ℕ).succ : ℝ) ^ 3) * q ^ j) := by
+      rw [hsum.tsum_mul_left (((Kn : ℝ) + 1)^3)]
+  _ = 2 * sigmaQuadConst * s * (((Kn : ℝ) + 1) ^ 3) * tailH3 * q ^ Kn := by
+    rw [tailH3]; ring
+  _ = 2 * sigmaQuadConst * s * (((Kn : ℝ) + 1) ^ 3) * tailH3
+      * Real.exp (-(C / 2) * (Kn : ℝ)) := by
+    rw [hqdef, ← Real.exp_nat_mul]; ring
+  _ ≤ 2 * sigmaQuadConst * s * (((Kn : ℝ) + 1) ^ 3) * tailH3
+      * Real.exp (-(C / 2) * (Kn : ℝ)) * Real.exp (C / 2) := by
+    refine mul_le_mul_of_nonneg_left ?_ (by positivity)
+    exact le_of_eq (by ring)
 
-/-- **Weighted far-erdos tail**: Σ_{m>⌊n^{2/3}⌋} erdosWeight·m ≤ const/n. -/
+/-- **Weighted far-erdos tail**: Σ_{m>⌊n^{2/3}⌋} erdosWeight·m ≤ const/n.
+    Pending — capstone assembly from the sub-lemmas above. -/
 theorem weighted_far_erdos_tail_le :
     ∃ K : ℝ, 0 < K ∧ ∀ᶠ n : ℕ in atTop,
       (∑ m ∈ Icc (⌊(n:ℝ) ^ (2/3 : ℝ)⌋₊ + 1) (n - 1), erdosWeight n m * (m : ℝ)) ≤ K / (n : ℝ) := by
