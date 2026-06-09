@@ -148,7 +148,7 @@ lemma tailH3_pos : 0 < tailH3 := by
     have h := summable_pow_mul_geometric_of_norm_lt_one (R := ℝ) 3
       (by
         rw [Real.norm_eq_abs, abs_of_pos (Real.exp_pos _)]
-        have hneg : -(C / 2) < 0 := by nlinarith
+        have hneg : -(C / 2) < 0 := by nlinarith [C_pos]
         exact Real.exp_lt_one_iff.mpr hneg)
     set q := Real.exp (-(C / 2)) with hqdef
     have : (fun j : ℕ => (((j : ℕ).succ : ℝ) ^ 3) * q ^ j)
