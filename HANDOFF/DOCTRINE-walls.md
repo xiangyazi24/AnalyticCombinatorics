@@ -558,3 +558,29 @@ Construction (mirror boseKernel3/sigmaMoment_two_lambert/reg3):
   reg4 z := boseKernel4 z − 24/z⁵; |reg4| ≤ const near 0 (sympy poly certificate,
     like MassRateReg3) + exp tail. Then M₃ one-term mirrors sigmaMoment_two_asymp_weak.
 The reg4 near-zero polynomial certificate is the hard mechanical part → dispatch.
+
+### STATUS 06-11 (Opus master + codex worker): μ̃ 5-block assembly
+DONE (clean-3, pushed): #1 main_kernel_error_rhoModel_le (3c1c139), #2 model_sum_two_term_asymp
+(1f1d184, μ̄=3/λ μA=3/(2λ²)), #3 main_model_rho_error_le (d9f5c4c). #4 weighted_far_erdos_tail_le
+(WeightedTail.lean capstone) → dispatched to uisai2 codex (xhigh, tmux hr-codex), spec /tmp/hr_spec.md,
+template = unweighted far_erdos_tail_le.
+
+### #5 FINAL ASSEMBLY decomposition (muNum two-term ⟹ hhit) — route locked
+Goal: `muNum_two_term : ∃K>0, ∀ᶠ n, |muNum n − (3/massLam + (3/(2·massLam²))/√n)| ≤ K/n`,
+then `muTilde_expansion_of_muNum` (already committed division lemma) ⟹ μ̃ two-term ⟹
+`two_term_local_lip` (brick 103) ⟹ `occupation_unbounded_loc` (101) ⟹ hhit.
+
+muNum n = ∑_{m∈Icc 1 (n-1)} erdosWeight n m · rhoDrop n m. Set M = ⌊n^{2/3}⌋. Decompose
+muNum − (μ̄+μA/√n) = [#2: ∑'_{all m} modelSummand·rhoDropModel − (μ̄+μA/√n)]  (≤K/n, DONE)
+  + (muNum − ∑'_{all m} modelSummand·rhoDropModel), and the latter error splits as:
+  (A) main-range model error (Icc 1 M): ∑(erdosWeight·rhoDrop − modelSummand·rhoDropModel)
+      = #1 [(eW−mS)·rhoDropModel] + #3 [mS·(rhoDrop−rhoDropModel)] + (b) 2nd-order cross
+        [(eW−mS)·(rhoDrop−rhoDropModel) ≤ |#1-bound|·|#3-bound|, even smaller, O(1/n^{3/2})].
+  (B) muNum tail (Icc M+1 (n-1)): ∑ erdosWeight·rhoDrop ≤ (3/√n)·∑ erdosWeight·m
+      [since rhoDrop = 3(√n−√(n−m)) = 3m/(√n+√(n−m)) ≤ 3m/√n] = (3/√n)·#4 ≤ O(1/n^{3/2}). Needs #4.
+  (C) model tail (m>M): ∑_{m>M} modelSummand·rhoDropModel ≤ K/n  [(d) NEW: like #4 but model side,
+      modelSummand·rhoDropModel ≤ σ·exp·(poly), tail via poly_mul_exp_neg_sixthRoot_le_inv].
+REMAINING NEW sub-blocks for #5: (b) 2nd-order cross [small, ~80 lines], (c) muNum-tail-via-#4
+[needs rhoDrop≤3m/√n lemma + #4, ~60 lines], (d) model-tail [~150 lines, mirror #4/#3 pattern],
+(e) main assembly [tie #1+#2+#3+#4+b+c+d, ~120 lines]. (d) is independent of #4 → parallelizable
+(2nd codex worktree or self). (b),(c),(e) wait on #4.
