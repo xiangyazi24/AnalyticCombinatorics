@@ -1,4 +1,5 @@
 import Mathlib
+import AnalyticCombinatorics.Ch9.LimitLaws.PermutationCycles
 import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesPoisson
 import AnalyticCombinatorics.Ch9.LimitLaws.RCyclesFactorialMoment
 
@@ -64,6 +65,16 @@ theorem expected_totalCycles_eq_harmonic (n : ℕ) :
   have hle : r ≤ n := hr.2
   rw [rCycle_mean_eq_inv hpos hle]
   simp
+
+/-- The same exact mean identity in the `cycleH` notation used by the cycle-count
+quasi-powers CLT. -/
+theorem expected_totalCycles_eq_cycleH (n : ℕ) :
+    FixedPointsPoissonNS.uniformPermExpectation n
+      (fun σ => (totalCycleCount n σ : ℝ)) = cycleH n := by
+  rw [expected_totalCycles_eq_harmonic, cycleH]
+  norm_num [harmonic_eq_sum_Icc]
+
+#print axioms expected_totalCycles_eq_cycleH
 
 end RCyclesPoissonNS
 end LimitLaws
