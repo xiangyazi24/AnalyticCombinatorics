@@ -55,13 +55,12 @@ lemma uniformPermExpectation_sq_eq (n r : ℕ) :
   push_cast at this ⊢
   linarith [this]
 
-/-- **Variance of the number of `r`-cycles equals `1/r`** (for `2r ≤ n`), matching the
-Poisson(1/r) limit variance. -/
-theorem rCycle_variance_eq_inv {n r : ℕ} (hr : 0 < r) (h2 : 2 * r ≤ n) :
+/-- The finite second moment of the number of `r`-cycles is `1/r + 1/r²` when
+there is room for two disjoint `r`-cycles. -/
+theorem rCycle_second_moment_eq_inv_add_inv_sq {n r : ℕ} (hr : 0 < r) (h2 : 2 * r ≤ n) :
     FixedPointsPoissonNS.uniformPermExpectation n
-        (fun σ => (rCycleCount n r σ : ℝ) ^ 2) -
-      (FixedPointsPoissonNS.uniformPermExpectation n
-        (fun σ => (rCycleCount n r σ : ℝ))) ^ 2 = (r : ℝ)⁻¹ := by
+        (fun σ => (rCycleCount n r σ : ℝ) ^ 2) =
+      (r : ℝ)⁻¹ + ((r : ℝ)⁻¹) ^ 2 := by
   have hrn : r ≤ n := by omega
   have hk2 : r * 2 ≤ n := by omega
   have hmean :
@@ -71,6 +70,21 @@ theorem rCycle_variance_eq_inv {n r : ℕ} (hr : 0 < r) (h2 : 2 * r ≤ n) :
   have key : (r : ℝ) ^ (-((2 : ℕ) : ℤ)) = ((r : ℝ)⁻¹) ^ 2 := by
     rw [zpow_neg, zpow_natCast, ← inv_pow]
   rw [uniformPermExpectation_sq_eq, hmean, factorialMoment_rCycle hr hk2, key]
+  ring
+
+/-- **Variance of the number of `r`-cycles equals `1/r`** (for `2r ≤ n`), matching the
+Poisson(1/r) limit variance. -/
+theorem rCycle_variance_eq_inv {n r : ℕ} (hr : 0 < r) (h2 : 2 * r ≤ n) :
+    FixedPointsPoissonNS.uniformPermExpectation n
+        (fun σ => (rCycleCount n r σ : ℝ) ^ 2) -
+      (FixedPointsPoissonNS.uniformPermExpectation n
+        (fun σ => (rCycleCount n r σ : ℝ))) ^ 2 = (r : ℝ)⁻¹ := by
+  have hrn : r ≤ n := by omega
+  have hmean :
+      FixedPointsPoissonNS.uniformPermExpectation n
+        (fun σ => (rCycleCount n r σ : ℝ)) = (r : ℝ)⁻¹ := by
+    rw [rCycle_mean_eq_inv hr hrn]; simp
+  rw [rCycle_second_moment_eq_inv_add_inv_sq hr h2, hmean]
   ring
 
 /-- **Cycle counts of two distinct lengths are uncorrelated**:
@@ -94,6 +108,8 @@ theorem rCycle_covariance_eq_zero {n r s : ℕ} (hr : 0 < r) (hs : 0 < s) (hrs :
     simpa [Nat.descFactorial_one, zpow_neg_one] using hmom
   rw [hxy, rCycle_mean_eq_inv hr hrn, rCycle_mean_eq_inv hs hsn]
   simp
+
+#print axioms rCycle_second_moment_eq_inv_add_inv_sq
 
 end RCyclesPoissonNS
 end LimitLaws
