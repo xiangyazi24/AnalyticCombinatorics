@@ -102,9 +102,20 @@ theorem expected_totalCycles_sq_eq_harmonic_add_fitPairSum (n : ℕ) :
   simp_rw [Finset.sum_add_distrib]
   rw [sum_diag_indicator_Icc]
 
+/-- Variance of the total cycle count reduced to a finite harmonic/pair-sum identity. -/
+theorem totalCycleCount_variance_eq_harmonic_add_fitPairSum_sub_sq (n : ℕ) :
+    FixedPointsPoissonNS.uniformPermExpectation n
+        (fun σ => (totalCycleCount n σ : ℝ) ^ 2) -
+      (FixedPointsPoissonNS.uniformPermExpectation n
+        (fun σ => (totalCycleCount n σ : ℝ))) ^ 2 =
+      (∑ r ∈ Finset.Icc 1 n, (r : ℝ)⁻¹) + cycleFitPairSum n -
+        (∑ r ∈ Finset.Icc 1 n, (r : ℝ)⁻¹) ^ 2 := by
+  rw [expected_totalCycles_sq_eq_harmonic_add_fitPairSum, expected_totalCycles_eq_harmonic]
+
 #print axioms cycle_product_moment_eq_diag_add_fit
 #print axioms expected_totalCycles_sq_eq_diag_add_fit_sum
 #print axioms expected_totalCycles_sq_eq_harmonic_add_fitPairSum
+#print axioms totalCycleCount_variance_eq_harmonic_add_fitPairSum_sub_sq
 
 end RCyclesPoissonNS
 end LimitLaws
