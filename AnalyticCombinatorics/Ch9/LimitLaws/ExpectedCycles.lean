@@ -44,6 +44,18 @@ lemma uniformPermExpectation_finset_sum (n : ℕ) (S : Finset ℕ)
   congr 1
   rw [Finset.sum_comm]
 
+/-- Linearity of the uniform permutation expectation over a finite double sum. -/
+lemma uniformPermExpectation_finset_sum₂ (n : ℕ) (S T : Finset ℕ)
+    (g : ℕ → ℕ → Equiv.Perm (Fin n) → ℝ) :
+    FixedPointsPoissonNS.uniformPermExpectation n
+        (fun σ => ∑ r ∈ S, ∑ s ∈ T, g r s σ) =
+      ∑ r ∈ S, ∑ s ∈ T,
+        FixedPointsPoissonNS.uniformPermExpectation n (fun σ => g r s σ) := by
+  rw [uniformPermExpectation_finset_sum]
+  refine Finset.sum_congr rfl ?_
+  intro r _hr
+  rw [uniformPermExpectation_finset_sum]
+
 /-- **Expected number of cycles of a uniform random permutation is the harmonic number.**
 `E[ ∑_{r=1}^{n} C_{n,r} ] = ∑_{r=1}^{n} 1/r`. -/
 theorem expected_totalCycles_eq_harmonic (n : ℕ) :
@@ -74,7 +86,27 @@ theorem expected_totalCycles_eq_cycleH (n : ℕ) :
   rw [expected_totalCycles_eq_harmonic, cycleH]
   norm_num [harmonic_eq_sum_Icc]
 
+/-- Expanding the square of the total cycle count reduces its second moment to
+the matrix of two-length product moments. -/
+theorem expected_totalCycles_sq_eq_sum_products (n : ℕ) :
+    FixedPointsPoissonNS.uniformPermExpectation n
+        (fun σ => (totalCycleCount n σ : ℝ) ^ 2) =
+      ∑ r ∈ Finset.Icc 1 n, ∑ s ∈ Finset.Icc 1 n,
+        FixedPointsPoissonNS.uniformPermExpectation n
+          (fun σ => (rCycleCount n r σ : ℝ) * (rCycleCount n s σ : ℝ)) := by
+  have hpoint :
+      (fun σ : Equiv.Perm (Fin n) => (totalCycleCount n σ : ℝ) ^ 2) =
+        fun σ =>
+          ∑ r ∈ Finset.Icc 1 n, ∑ s ∈ Finset.Icc 1 n,
+            (rCycleCount n r σ : ℝ) * (rCycleCount n s σ : ℝ) := by
+    funext σ
+    unfold totalCycleCount
+    push_cast
+    rw [pow_two, Finset.sum_mul_sum]
+  rw [hpoint, uniformPermExpectation_finset_sum₂]
+
 #print axioms expected_totalCycles_eq_cycleH
+#print axioms expected_totalCycles_sq_eq_sum_products
 
 end RCyclesPoissonNS
 end LimitLaws
