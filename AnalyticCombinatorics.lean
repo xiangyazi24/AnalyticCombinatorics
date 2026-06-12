@@ -248,6 +248,7 @@ import AnalyticCombinatorics.Ch9.LimitLaws.BivariateCyclePoisson
 import AnalyticCombinatorics.Ch9.LimitLaws.MultivariateCyclePoisson
 import AnalyticCombinatorics.Ch9.LimitLaws.ExpectedCycles
 import AnalyticCombinatorics.Ch9.LimitLaws.CycleVariance
+import AnalyticCombinatorics.Ch9.LimitLaws.TotalCycleSecondMoment
 import AnalyticCombinatorics.Ch9.LimitLaws.CompositionParts
 
 /-!
