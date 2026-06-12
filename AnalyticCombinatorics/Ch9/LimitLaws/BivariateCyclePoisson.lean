@@ -363,6 +363,28 @@ lemma joint_factorial_moment_eval {n r s a b : ℕ} (hr : 0 < r) (hs : 0 < s)
     simp [hle, joint_factorial_moment_zero_of_lt (n := n) (r := r) (s := s)
       (a := a) (b := b) hr hs hrs hlt]
 
+/-- If the two requested cycle lengths do not both fit, then the product moment is zero. -/
+theorem joint_product_expectation_eq_zero_of_lt {n r s : ℕ}
+    (hr : 0 < r) (hs : 0 < s) (hrs : r ≠ s) (h : n < r + s) :
+    FixedPointsPoissonNS.uniformPermExpectation n
+      (fun σ => (rCycleCount n r σ : ℝ) * (rCycleCount n s σ : ℝ)) = 0 := by
+  have hzero := joint_factorial_moment_zero_of_lt
+    (n := n) (r := r) (s := s) (a := 1) (b := 1) hr hs hrs (by simpa using h)
+  simpa [FixedPointsPoissonNS.uniformPermExpectation, Nat.descFactorial_one] using hzero
+
+/-- Tail covariance for two distinct cycle lengths that separately fit but cannot coexist. -/
+theorem joint_covariance_eq_neg_inv_mul_inv_of_lt {n r s : ℕ}
+    (hr : 0 < r) (hs : 0 < s) (hrs : r ≠ s) (hrn : r ≤ n) (hsn : s ≤ n)
+    (h : n < r + s) :
+    FixedPointsPoissonNS.uniformPermExpectation n
+        (fun σ => (rCycleCount n r σ : ℝ) * (rCycleCount n s σ : ℝ)) -
+      FixedPointsPoissonNS.uniformPermExpectation n (fun σ => (rCycleCount n r σ : ℝ)) *
+        FixedPointsPoissonNS.uniformPermExpectation n (fun σ => (rCycleCount n s σ : ℝ)) =
+        -((r : ℝ)⁻¹ * (s : ℝ)⁻¹) := by
+  rw [joint_product_expectation_eq_zero_of_lt hr hs hrs h,
+    rCycle_mean_eq_inv hr hrn, rCycle_mean_eq_inv hs hsn]
+  simp
+
 theorem jointRCyclePMF_eq_formula {r s : ℕ} (hr : 0 < r) (hs : 0 < s)
     (hrs : r ≠ s) :
     ∀ i j n : ℕ, jointRCyclePMF n r s i j = jointRCyclePMFFormula n r s i j := by
@@ -667,6 +689,9 @@ theorem jointLaw_tendsto_poissonProduct {r s : ℕ}
     | mk i j =>
         exact jointRCyclePMF_tendsto_poisson_product
           (r := r) (s := s) hr hs hrs i j
+
+#print axioms joint_product_expectation_eq_zero_of_lt
+#print axioms joint_covariance_eq_neg_inv_mul_inv_of_lt
 
 end Bivariate
 end RCyclesPoissonNS
