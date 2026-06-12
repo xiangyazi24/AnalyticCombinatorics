@@ -75,8 +75,36 @@ theorem expected_totalCycles_sq_eq_diag_add_fit_sum (n : ℕ) :
   rw [Finset.mem_Icc] at hrmem hsmem
   exact cycle_product_moment_eq_diag_add_fit hrmem.1 hsmem.1 hrmem.2 hsmem.2
 
+/-- The ordered pair contribution from cycle lengths that can coexist. -/
+def cycleFitPairSum (n : ℕ) : ℝ :=
+  ∑ r ∈ Finset.Icc 1 n, ∑ s ∈ Finset.Icc 1 n,
+    if r + s ≤ n then (r : ℝ)⁻¹ * (s : ℝ)⁻¹ else 0
+
+lemma sum_diag_indicator_Icc (n : ℕ) :
+    (∑ r ∈ Finset.Icc 1 n, ∑ s ∈ Finset.Icc 1 n,
+      if r = s then (r : ℝ)⁻¹ else 0) =
+        ∑ r ∈ Finset.Icc 1 n, (r : ℝ)⁻¹ := by
+  refine Finset.sum_congr rfl ?_
+  intro r hr
+  rw [Finset.sum_eq_single r]
+  · simp
+  · intro s _hs hsr
+    simp [hsr.symm]
+  · intro hnot
+    exact False.elim (hnot hr)
+
+/-- The total second moment split into the harmonic diagonal and the coexistence pair sum. -/
+theorem expected_totalCycles_sq_eq_harmonic_add_fitPairSum (n : ℕ) :
+    FixedPointsPoissonNS.uniformPermExpectation n
+        (fun σ => (totalCycleCount n σ : ℝ) ^ 2) =
+      (∑ r ∈ Finset.Icc 1 n, (r : ℝ)⁻¹) + cycleFitPairSum n := by
+  rw [expected_totalCycles_sq_eq_diag_add_fit_sum, cycleFitPairSum]
+  simp_rw [Finset.sum_add_distrib]
+  rw [sum_diag_indicator_Icc]
+
 #print axioms cycle_product_moment_eq_diag_add_fit
 #print axioms expected_totalCycles_sq_eq_diag_add_fit_sum
+#print axioms expected_totalCycles_sq_eq_harmonic_add_fitPairSum
 
 end RCyclesPoissonNS
 end LimitLaws
