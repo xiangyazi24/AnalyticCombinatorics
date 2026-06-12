@@ -584,3 +584,22 @@ REMAINING NEW sub-blocks for #5: (b) 2nd-order cross [small, ~80 lines], (c) muN
 [needs rhoDrop≤3m/√n lemma + #4, ~60 lines], (d) model-tail [~150 lines, mirror #4/#3 pattern],
 (e) main assembly [tie #1+#2+#3+#4+b+c+d, ~120 lines]. (d) is independent of #4 → parallelizable
 (2nd codex worktree or self). (b),(c),(e) wait on #4.
+
+### STATUS 06-11 evening: ★μ̃ TWO-TERM COMPLETE★ + final gap precisely diagnosed
+μ̃ 两项展开彻底完成 (5/5 blocks clean-3): #1 main_kernel_error(3c1c139) #2 model_sum_two_term(1f1d184)
+#3 main_model_rho(d9f5c4c) #4 weighted_far_erdos_tail(ace602d,codex) #5 muNum_two_term+muTilde_two_term
+(65328be,codex). muTilde n = 3/λ + (3/(2λ²))/√n + O(1/n). Full Ch8/Partitions = 0 sorry.
+
+FINAL GAP (codex #6 honestly documented, 0 sorry, see HANDOFF/TASK6-gap.md): wiring muTilde_two_term → hhit
+needs ONE new theorem `khat_residual_active_good_occupation_tends_infty`:
+- Define stochastic conditioned residual kernel KhatRes = Kres/(1−cmass) (ITERCoupling only exports the
+  SUBstochastic Kres, row sum 1−cmass; no KhatRes / normalized-Umat evolution lemma yet).
+- Prove conditioned walk's GoodHi active-occupation unbounded from comparable high starts, = the g(t) the
+  coalescence bridge needs (g t = ∑GoodHi·Umat / umass; u(t+1) ≤ u(t) − δ·u(t)·g(t) → umass_lt_of_occupation).
+CORE OBSTRUCTION (doctrine's recurring hard-bone): occupation_unbounded_loc (101) needs GLOBAL hard
+bounded-increment `K x z ≠ 0 → |D z − D x| ≤ b`, but the Erdős predecessor kernel has SOFT far tails (any
+large rank-jump has small prob, not zero). Need: truncate to active GoodW window (hard b there) + show the
+soft-tail mass is negligible over the active horizon M~r (weighted_far_erdos_tail_le gives the tail O(1/n)),
+i.e. a LOCALIZED occupation that only uses the off-window martingale + window-truncated increments. The
+v0/b moments come from the product Erdős kernel off-window; η~1/r² from muTilde via two_term_local_lip.
+This is design-heavy (master to design the truncation + KhatRes instantiation, then codex to grind).
