@@ -363,6 +363,18 @@ lemma joint_factorial_moment_eval {n r s a b : ℕ} (hr : 0 < r) (hs : 0 < s)
     simp [hle, joint_factorial_moment_zero_of_lt (n := n) (r := r) (s := s)
       (a := a) (b := b) hr hs hrs hlt]
 
+/-- If two distinct cycle lengths fit together, their product moment is the product
+of the two means. -/
+theorem joint_product_expectation_eq_inv_mul_inv_of_le {n r s : ℕ}
+    (hr : 0 < r) (hs : 0 < s) (hrs : r ≠ s) (h : r + s ≤ n) :
+    FixedPointsPoissonNS.uniformPermExpectation n
+      (fun σ => (rCycleCount n r σ : ℝ) * (rCycleCount n s σ : ℝ)) =
+        (r : ℝ)⁻¹ * (s : ℝ)⁻¹ := by
+  have hmom := JointCycleMomentsNS.factorialMoment_two_rCycle_of_pos
+    (n := n) (r := r) (s := s) (a := 1) (b := 1) hr hs hrs (by simpa using h)
+  simpa [FixedPointsPoissonNS.uniformPermExpectation, Nat.descFactorial_one, zpow_neg_one]
+    using hmom
+
 /-- If the two requested cycle lengths do not both fit, then the product moment is zero. -/
 theorem joint_product_expectation_eq_zero_of_lt {n r s : ℕ}
     (hr : 0 < r) (hs : 0 < s) (hrs : r ≠ s) (h : n < r + s) :
@@ -690,6 +702,7 @@ theorem jointLaw_tendsto_poissonProduct {r s : ℕ}
         exact jointRCyclePMF_tendsto_poisson_product
           (r := r) (s := s) hr hs hrs i j
 
+#print axioms joint_product_expectation_eq_inv_mul_inv_of_le
 #print axioms joint_product_expectation_eq_zero_of_lt
 #print axioms joint_covariance_eq_neg_inv_mul_inv_of_lt
 
