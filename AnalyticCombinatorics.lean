@@ -153,6 +153,7 @@ import AnalyticCombinatorics.Ch8.Partitions.FKHittingBridge
 import AnalyticCombinatorics.Ch8.Partitions.FKPartitionBridge
 import AnalyticCombinatorics.Ch8.Partitions.FKPartitionHitting
 import AnalyticCombinatorics.Ch8.Partitions.ActiveDomain
+import AnalyticCombinatorics.Ch8.Partitions.ActiveCoupling
 import AnalyticCombinatorics.Ch8.Partitions.CompContraction
 import AnalyticCombinatorics.Ch8.Partitions.OverlapL1
 import AnalyticCombinatorics.Ch8.Partitions.ErdosMinorization
