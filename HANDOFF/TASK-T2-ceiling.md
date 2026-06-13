@@ -41,39 +41,66 @@ Reusable cores in this file: `pushforward_rankDrop`, `ceilHit_recursion`, `ceilH
 `pushforward_ge_beta`, `ceilHit_ge_beta` (abstract subsolution comparison), `betaSub` + properties,
 `rankDropKer_eq_zero_of_gt`, `rankDropKer_total`, `rnk_lt_self`.
 
-## Remaining: L4 (hardest), L5 (close).  NOT a renewal obstruction — genuine value-level work.
+## Banked this run (Opus, R8): L4 CORE reduction (clean-3, NEW file)
 
-### L4 — `Pker_same_ceiling_value_overlap` (β>0): same-ceiling value Doeblin
-```
-∃β>0, ∀ᶠ R, ∀ x y, rnk x = R+A R → rnk y = R+A R →
-  β ≤ ∑_{z∈(ceilBand R (A R)).filter(R≤rnk·)}
-        min(enterBandKer Pker (ceilBand R (A R)) x z, enterBandKer Pker (ceilBand R (A R)) y z)
-```
-Two values `x,y` of the SAME ceiling rank `C=R+A R` (so `|x−y| ≲ √v`).  Their first-entrance laws
-into the band `{rnk<C}` share value-level mass `β` on the in-band slice `{R ≤ rnk z < C}`.
-ROUTE (R7, confirmed sound): single-step / embedded-exit VALUE Doeblin.  The predecessor laws
-`Pker(x,·)`, `Pker(y,·)` each spread over `~√v` values with positive Erdős density
-(`Model.erdos_kernel_window`, `modelIntegral C a b > 0`, `KernelWindow.lean`/`ModelAssembly.lean`);
-find a COMMON target window inside the in-band slice and lower-bound BOTH kernels on it.  This is the
-value-resolution analogue of `RankDropMinor.rankDropKer_ge_window` (reuse the sliding-window
-technique, now floor-phase-uniform at value resolution, for TWO concrete starts simultaneously).
-Genuinely the hardest brick (parallels the full `RankDropMinor` machinery but for a common two-start
-window); NOT begun this run.
+### L4-core — `Pker_le_enterBandKer` + `min_Pker_le_min_enterBandKer_sum` (commit `8c0568a`)
+File `CeilingValueStep.lean`.  **One-step entrance lower bound** `Pker x z ≤ enterBandKer Pker B x z`
+(for `x ∉ B`, `z ∈ B`, `z < x`: the `k=z` term of the entrance recursion is `Pker x z · 1`, rest
+nonneg) and its slice consequence
+`∑_{z∈slice} min (Pker x z) (Pker y z) ≤ ∑_{z∈slice} min (enterBandKer B x z) (enterBandKer B y z)`.
+**This reduces the L4 first-entrance value Doeblin to a positive ONE-STEP value overlap**
+`∑_{z∈slice} min (Pker x z) (Pker y z) ≥ β`, eliminating the entrance-kernel from the hard estimate.
+Both `[propext, Classical.choice, Quot.sound]`; built green via `acbuild.sh`.
 
-### L5 — `Pker_ceilBand_overlap_escape_variable` ⟹ engine ⟹ close
-Compose L2 (factor through level) ⟹ both `x,n` and `y,n'` write their entrance laws as mixtures over
-ceiling-level states with weights `a x = enterBandKer Pker (ceilBand C 1) n x` (level mass `≥ α` by
-L3) and continuation `K x = enterBandKer Pker (ceilBand R (A R)) x ·`; feed L4 (pairwise `β`) + L1
-(mixture bridge) ⟹ value overlap `δ = αβ` on the in-band slice.  ESCAPE part: the overshoot below `R`
-is bounded by `e R → 0` via the SAME subsolution machinery as L3 but as an UPPER bound (super-solution
-`esc ≤ ε(A R)` using the embedded-crossing lower bound `q(v) ≥ 2η` from the banked minorization +
-`Pker_rankDrop_tail_majorant`; this is the renewal-free resolution of the holding worry).  Then feed
-`hitVal_cauchy_of_ceilBand_overlap_escape_variable` (banked, `RankBandEntrance.lean`) with
-`A R = A₀ + ⌊√(R+1)⌋` ⟹ `hhit` ⟹ `erdos_partition_limit_exists_of_hit` (banked, `ErdosLimit.lean`)
-⟹ `erdos_partition_limit_exists`.
+## Remaining hard cores: L4-residual + L5-escape.  Both are GENUINE analytic estimates (not mechanical).
+
+After R8's careful re-derivation, the two remaining pieces are confirmed to be genuine substantial
+estimates — each parallels the full `KernelWindow`/`RankDropMinor` development at a NEW resolution.
+They are NOT closeable by re-wrapping banked bricks; both need new sliding-window analysis.
+
+### L4-residual — positive one-step two-start value overlap (β>0)
+Reduced (by `min_Pker_le_min_enterBandKer_sum`) to:
+```
+∃β>0, ∀ᶠ R, ∀ x y, rnk x = rnk y = R+A R →
+  β ≤ ∑_{z : R ≤ rnk z < R+A R} min (Pker x z) (Pker y z)
+```
+`Pker x z = erdosWeight x (x−z)/kernelMass x`, `Pker y z = erdosWeight y (y−z)/kernelMass y`.
+**The genuine difficulty (verified R8):** the two summed terms hit *different* divisor values
+`σ(x−z)` vs `σ(y−z)` at the same `z` (since `x≠y`).  σ is irregular (prime ⟹ small), so a
+*pointwise* per-term min lower bound is FALSE; and the TV between `Pker(x,·)` and `Pker(y,·)` does NOT
+→0 (the starts differ by `O(√v)` = the predecessor spread), so a "window-mass − ∑|diff|" bound can be
+negative.  The correct estimate is an OVERLAP of two divisor-weighted measures at shifted supports on
+a common z-window — a two-start analogue of the entire `KernelWindow.erdos_kernel_window` +
+`RankDropMinor.rankDropKer_ge_window` development at value resolution.  This is the real heart; it
+needs a genuinely new common-two-start window mass estimate (averaging σ on both shifted windows
+simultaneously), not present in the banked library.
+
+### L5-escape — the conditional overshoot ratio needs a TAIL LOWER bound (new obstruction vs banked)
+Composition (L2+L3+L4+L1 ⟹ in-band overlap δ=αβ) is mechanical.  The ESCAPE
+`∑_{z : rnk z < R} enterBandKer Pker (ceilBand R (A R)) n z ≤ e R → 0` is NOT.
+
+**Verified R8 (corrects the R7 escape sketch):** the banked escape super-solution
+`enterBand_deep_mass_le_of_conditional` (EnterBandEscape.lean) needs, at EVERY off-band vertex `v`
+(`rnk v ≥ C = R+A R`), the conditional `hcond`:
+`∑_{k∈B, rnk k<R} Pker v k ≤ M · ∑_{k∈B} Pker v k`, i.e. `tail(rnk v−R) ≤ M·tail(rnk v−C)`
+where `tail(t) = ∑_{d>t} rankDropKer v d`.  With `g := rnk v−C ≥ 0` this is
+`tail(g + A R) ≤ M·tail(g)` for ALL `g`.  The super-solution's denominator is forced to be the
+crossing-into-`B` mass `c(v)=tail(g)` (holding/small-drops fold into the off-band continuation
+`1−c(v)`, so the total-drop `q(v)≥2η` does NOT serve as denominator — the R7 "q(v)≥2η suffices"
+sketch is INCORRECT).  Bounding `tail(g+AR)/tail(g) ≤ M` uniformly in `g` (with `M=e R→0`) requires a
+**geometric LOWER bound on the rank-drop tail** `tail(g) ≥ c·e^{−γ' g}` (then
+`tail(g+AR)/tail(g) ≤ (C₀/c)(g+AR+1)e^{−(γ−γ')g−γ AR} ≤ (C₀/c)(AR+1)e^{−γ AR} → 0` for `γ'<γ`).
+The banked `Pker_rankDrop_minorization` only gives `rankDropKer v 1, v 2 ≥ η` (i.e. `tail(0)≥2η`,
+`tail(1)≥η`) — **no lower bound at thresholds `g≥2`.**  So L5-escape needs a NEW
+**per-drop geometric minorant** `rankDropKer v d ≥ η_d`, `η_d ≳ d·e^{−Cd/3}`, for all `d` (eventually
+in `v`).  This IS provable by the banked `rankDropKer_ge_const_of_tband` sliding-window technique
+generalized from `d∈{1,2}` to a phase-cover-in-d (4 windows per `d`, endpoints scaling with `d`, the
+window half-mass `modelIntegral C a b ≥ width·(π²/6)·a·e^{−(C/2)b} ≳ d·e^{−Cd/3}` by the
+`y e^{−(C/2)y}` floor on `[a,b]`).  Substantial but mechanical along that template; not begun.
 
 ## Status of `erdos_partition_limit_exists`
-NOT yet closed.  L1, L2, L3 banked clean-3.  L4 (value Doeblin, hardest) and L5 (compose + escape +
-engine) remain.  The whole route is confirmed mathematically sound and renewal-free; the remaining
-work is the value-level density estimate (L4) and mechanical composition + the escape super-solution
-(L5), not a new obstruction.
+NOT closed.  L1, L2, L3 banked clean-3; L4-CORE reduction banked clean-3 (R8, `CeilingValueStep.lean`).
+The route is mathematically sound and renewal-free.  Two genuine analytic estimates remain:
+(i) L4-residual = two-start common divisor-weighted value-window overlap; (ii) L5-escape = per-drop
+geometric tail minorant (resolving the conditional overshoot ratio).  Each is a `KernelWindow`-scale
+sliding-window development; neither is closeable by re-wrapping banked bricks.
