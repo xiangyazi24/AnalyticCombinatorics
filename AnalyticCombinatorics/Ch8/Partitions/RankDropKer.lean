@@ -333,4 +333,156 @@ lemma left_block_const_bound (A : ℕ) :
     _ = (2 * sigmaQuadConst * rankDropG * Real.exp (C / 2) * (20 / (3 * C) + 1))
           * ((A : ℝ) + 1) * Real.exp (-(C / 60) * (A : ℝ)) := by ring
 
+/-- **T2.1 tail majorant (engine input).**  The rank-drop tail beyond `A` is uniformly (eventually in
+`v`) dominated by `C₀·(A+1)·e^{−γA}` with `γ = C/60 > 0`.  An upper bound on the floor-rank drop is
+unaffected by the documented `frac(3√v)` oscillation: a drop `> A` forces a jump `> (A/3)√v`, whose
+`erdosWeight`-mass is exponentially small in `A` (bulk via the banked block majorants; the `2m > v`
+half via `right_half_kernel_sum_le` + the poly-beats-exp slack `v³ ≤ e^{(C/20)√v}`; for `A ≥ 3√v` the
+far window is empty). -/
+theorem Pker_rankDrop_tail_majorant :
+    ∃ (γ : ℝ) (C₀ : ℝ), 0 < γ ∧ ∀ᶠ v : ℕ in atTop, ∀ A : ℕ,
+        (∑ d ∈ (Finset.range v).filter (A < ·), rankDropKer v d)
+          ≤ C₀ * ((A : ℝ) + 1) * Real.exp (-γ * (A : ℝ)) := by
+  have hC := C_pos
+  have hsQ := sigmaQuadConst_pos
+  have hG := rankDropG_nonneg
+  set CL : ℝ := 2 * sigmaQuadConst * rankDropG * Real.exp (C / 2) * (20 / (3 * C) + 1) with hCLdef
+  have hCLnn : 0 ≤ CL := by rw [hCLdef]; positivity
+  obtain ⟨K, hKpos, hKev⟩ := kernelMass_sub_one_rate
+  -- eventual: kernelMass ≥ 1/2
+  have hhalf : ∀ᶠ v : ℕ in atTop, K / (v : ℝ) ≤ 1 / 2 := by
+    have htend : Tendsto (fun v : ℕ => K / (v : ℝ)) atTop (𝓝 0) := by
+      simpa using tendsto_const_nhds.div_atTop (tendsto_natCast_atTop_atTop)
+    exact htend.eventually_le_const (by norm_num)
+  -- slack: v³ e^{−(C/20)√v} ≤ 1/v ≤ 1
+  have hslack := poly_mul_exp_neg_sqrt_le_inv (C / 20) (by linarith) 3
+  refine ⟨C / 60, 2 * (CL + 1), by positivity, ?_⟩
+  filter_upwards [hKev, hhalf, hslack, eventually_ge_atTop 2] with v hKv hhalfv hslackv hv2
+  intro A
+  have hv0 : 0 < v := by omega
+  have hvR : (1 : ℝ) ≤ (v : ℝ) := by exact_mod_cast (by omega : 1 ≤ v)
+  have hvpos : (0 : ℝ) < (v : ℝ) := by linarith
+  have hsv : 0 < Real.sqrt (v : ℝ) := Real.sqrt_pos.mpr hvpos
+  -- kernelMass ≥ 1/2
+  obtain ⟨hSlo, _⟩ := abs_le.1 hKv
+  have hSge : (1 : ℝ) / 2 ≤ kernelMass v := by linarith [hhalfv]
+  have hSpos : (0 : ℝ) < kernelMass v := by linarith
+  -- the tail = Pker-mass over drop>A ≤ 2·(erdosWeight far mass)
+  rw [rankDropKer_tail_eq_mass]
+  have hew_nn : ∀ m, 0 ≤ erdosWeight v m := by
+    intro m
+    unfold erdosWeight
+    exact mul_nonneg (div_nonneg (sigmaR_nonneg m) (by positivity)) (Real.exp_nonneg _)
+  have hPker_le : ∀ k, Pker v k ≤ 2 * erdosWeight v (v - k) := by
+    intro k
+    rcases Nat.lt_or_ge k v with hkv | hkv
+    · rcases Nat.lt_or_ge k 1 with hk0 | hk1
+      · have hP0 : Pker v k = 0 := by unfold Pker; rw [if_neg (by omega)]
+        rw [hP0]; linarith [hew_nn (v - k)]
+      · have hPeq : Pker v k = erdosWeight v (v - k) / kernelMass v := by
+          unfold Pker; rw [if_pos ⟨hk1, hkv⟩]
+        rw [hPeq, div_le_iff₀ hSpos]
+        nlinarith [hew_nn (v - k), hSge]
+    · have hP0 : Pker v k = 0 := by unfold Pker; rw [if_neg (by omega)]
+      rw [hP0]; linarith [hew_nn (v - k)]
+  have hmass_le :
+      (∑ k ∈ (Finset.range v).filter (fun k => A < rnk v - rnk k ∧ rnk v - rnk k < v), Pker v k)
+        ≤ 2 * ∑ k ∈ (Finset.range v).filter (fun k => A < rnk v - rnk k ∧ rnk v - rnk k < v),
+              erdosWeight v (v - k) := by
+    rw [Finset.mul_sum]
+    exact Finset.sum_le_sum (fun k _ => hPker_le k)
+  refine le_trans hmass_le ?_
+  -- now bound 2·(erdosWeight far mass)
+  set FW := ∑ k ∈ (Finset.range v).filter (fun k => A < rnk v - rnk k ∧ rnk v - rnk k < v),
+              erdosWeight v (v - k) with hFWdef
+  -- FW ≤ ∑_{m: (A/3)√v < m} erdosWeight
+  have hFWwin : FW ≤ ∑ m ∈ Finset.Icc 1 (v - 1),
+        (if ((A : ℝ) / 3) * Real.sqrt (v : ℝ) < (m : ℝ) then erdosWeight v m else 0) :=
+    rankDrop_mass_le_far_window (by omega)
+  rcases lt_or_ge (A : ℝ) (3 * Real.sqrt (v : ℝ)) with hAlt | hAge
+  · -- A < 3√v : split into left + right
+    have hsplit := far_window_split_le (v := v) (A := A) hv0
+    -- left bound
+    have hleft := left_block_tail_le (v := v) hv0 (⌊(A : ℝ) / 3⌋₊)
+    have hleftconst := left_block_const_bound A
+    -- right bound: v³ e^{−(C/10)√v} ≤ e^{−(C/20)√v} ≤ e^{−(C/60)A} ≤ (A+1)e^{−(C/60)A}
+    have hright0 := right_half_kernel_sum_le v
+    have hrwin : (v : ℝ) ^ 3 * Real.exp (-(C / 20) * Real.sqrt (v : ℝ)) ≤ 1 := by
+      calc (v : ℝ) ^ 3 * Real.exp (-(C / 20) * Real.sqrt (v : ℝ)) ≤ 1 / (v : ℝ) := hslackv
+        _ ≤ 1 := by rw [div_le_one hvpos]; exact hvR
+    have hright1 : (v : ℝ) ^ 3 * Real.exp (-(C / 10) * Real.sqrt (v : ℝ))
+        ≤ Real.exp (-(C / 20) * Real.sqrt (v : ℝ)) := by
+      have hfac : Real.exp (-(C / 10) * Real.sqrt (v : ℝ))
+          = Real.exp (-(C / 20) * Real.sqrt (v : ℝ)) * Real.exp (-(C / 20) * Real.sqrt (v : ℝ)) := by
+        rw [← Real.exp_add]; congr 1; ring
+      rw [hfac]
+      calc (v : ℝ) ^ 3 * (Real.exp (-(C / 20) * Real.sqrt (v : ℝ))
+              * Real.exp (-(C / 20) * Real.sqrt (v : ℝ)))
+          = ((v : ℝ) ^ 3 * Real.exp (-(C / 20) * Real.sqrt (v : ℝ)))
+              * Real.exp (-(C / 20) * Real.sqrt (v : ℝ)) := by ring
+        _ ≤ 1 * Real.exp (-(C / 20) * Real.sqrt (v : ℝ)) :=
+            mul_le_mul_of_nonneg_right hrwin (Real.exp_nonneg _)
+        _ = Real.exp (-(C / 20) * Real.sqrt (v : ℝ)) := by ring
+    have hright2 : Real.exp (-(C / 20) * Real.sqrt (v : ℝ)) ≤ Real.exp (-(C / 60) * (A : ℝ)) := by
+      apply Real.exp_le_exp.mpr
+      -- −(C/20)√v ≤ −(C/60)A  ⟺  (C/60)A ≤ (C/20)√v  ⟸  A ≤ 3√v
+      nlinarith [hAlt, hC, hsv]
+    have hrightfin : (∑ m ∈ Finset.Icc 1 (v - 1), (if v < 2 * m then erdosWeight v m else 0))
+        ≤ ((A : ℝ) + 1) * Real.exp (-(C / 60) * (A : ℝ)) := by
+      have hA1 : (1 : ℝ) ≤ (A : ℝ) + 1 := by
+        have : (0 : ℝ) ≤ (A : ℝ) := by positivity
+        linarith
+      calc (∑ m ∈ Finset.Icc 1 (v - 1), (if v < 2 * m then erdosWeight v m else 0))
+          ≤ (v : ℝ) ^ 3 * Real.exp (-(C / 10) * Real.sqrt (v : ℝ)) := hright0
+        _ ≤ Real.exp (-(C / 60) * (A : ℝ)) := le_trans hright1 hright2
+        _ ≤ ((A : ℝ) + 1) * Real.exp (-(C / 60) * (A : ℝ)) := by
+            nlinarith [hA1, Real.exp_nonneg (-(C / 60) * (A : ℝ))]
+    -- combine: FW ≤ left + right ≤ CL(A+1)e^{−γA} + (A+1)e^{−γA} = (CL+1)(A+1)e^{−γA}
+    have hFWtotal : FW ≤ (CL + 1) * ((A : ℝ) + 1) * Real.exp (-(C / 60) * (A : ℝ)) := by
+      calc FW ≤ ∑ m ∈ Finset.Icc 1 (v - 1),
+                (if ((A : ℝ) / 3) * Real.sqrt (v : ℝ) < (m : ℝ) then erdosWeight v m else 0) := hFWwin
+        _ ≤ _ := hsplit
+        _ ≤ (2 * sigmaQuadConst * ((⌊(A : ℝ) / 3⌋₊ : ℝ) + 1) ^ 2 * rankDropG
+                * Real.exp (-(C / 2) * (⌊(A : ℝ) / 3⌋₊ : ℝ)))
+              + ((A : ℝ) + 1) * Real.exp (-(C / 60) * (A : ℝ)) := by
+            apply add_le_add hleft hrightfin
+        _ ≤ CL * ((A : ℝ) + 1) * Real.exp (-(C / 60) * (A : ℝ))
+              + ((A : ℝ) + 1) * Real.exp (-(C / 60) * (A : ℝ)) := by
+            have hL : 2 * sigmaQuadConst * ((⌊(A : ℝ) / 3⌋₊ : ℝ) + 1) ^ 2 * rankDropG
+                  * Real.exp (-(C / 2) * (⌊(A : ℝ) / 3⌋₊ : ℝ))
+                ≤ CL * ((A : ℝ) + 1) * Real.exp (-(C / 60) * (A : ℝ)) := by
+              rw [hCLdef]; exact hleftconst
+            linarith [hL]
+        _ = (CL + 1) * ((A : ℝ) + 1) * Real.exp (-(C / 60) * (A : ℝ)) := by ring
+    calc 2 * FW ≤ 2 * ((CL + 1) * ((A : ℝ) + 1) * Real.exp (-(C / 60) * (A : ℝ))) := by
+          linarith [hFWtotal]
+      _ = 2 * (CL + 1) * ((A : ℝ) + 1) * Real.exp (-(C / 60) * (A : ℝ)) := by ring
+  · -- A ≥ 3√v : far window empty, FW = 0
+    have hFW0 : FW ≤ 0 := by
+      refine le_trans hFWwin ?_
+      apply le_of_eq
+      refine Finset.sum_eq_zero (fun m hm => ?_)
+      rw [Finset.mem_Icc] at hm
+      have hmle : (m : ℝ) ≤ (v : ℝ) - 1 := by
+        have : (m : ℝ) ≤ ((v - 1 : ℕ) : ℝ) := by exact_mod_cast hm.2
+        rwa [Nat.cast_sub (by omega), Nat.cast_one] at this
+      have hnot : ¬ ((A : ℝ) / 3) * Real.sqrt (v : ℝ) < (m : ℝ) := by
+        push_neg
+        -- (A/3)√v ≥ √v·√v = v > m
+        have hAge3 : Real.sqrt (v : ℝ) ≤ (A : ℝ) / 3 := by linarith [hAge]
+        have hvv : Real.sqrt (v : ℝ) * Real.sqrt (v : ℝ) = (v : ℝ) :=
+          Real.mul_self_sqrt hvpos.le
+        nlinarith [hAge3, hsv, hmle, hvv]
+      rw [if_neg hnot]
+    have hFWnn : 0 ≤ FW := by
+      rw [hFWdef]
+      exact Finset.sum_nonneg (fun k _ => hew_nn (v - k))
+    have hFWzero : FW = 0 := le_antisymm hFW0 hFWnn
+    rw [hFWzero, mul_zero]
+    have hexpnn : (0 : ℝ) ≤ Real.exp (-(C / 60) * (A : ℝ)) := Real.exp_nonneg _
+    have hA1 : (0 : ℝ) ≤ (A : ℝ) + 1 := by positivity
+    have : (0 : ℝ) ≤ 2 * (CL + 1) * ((A : ℝ) + 1) :=
+      mul_nonneg (by linarith [hCLnn]) hA1
+    exact mul_nonneg this hexpnn
+
 end AnalyticCombinatorics.Ch8.Partitions.Erdos
