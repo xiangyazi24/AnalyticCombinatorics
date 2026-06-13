@@ -181,4 +181,45 @@ lemma rankDrop_mass_le_far_window {v A : ℕ} (hv : 2 ≤ v) :
     · rw [if_pos hc2]; exact erdosWeight_nonneg_of_mem (Finset.mem_Icc.mpr hm)
     · rw [if_neg hc2]
 
+/-- The convergent geometric-quadratic constant `G = ∑'_j (j+1)²·exp(−C/2)^j`. -/
+noncomputable def rankDropG : ℝ := ∑' j : ℕ, ((j : ℝ) + 1) ^ 2 * Real.exp (-(C / 2)) ^ j
+
+lemma rankDropG_nonneg : 0 ≤ rankDropG :=
+  tsum_nonneg (fun j => by positivity)
+
+/-- **Far-window split bound.**  For `v` with `2 ≤ v` and the eventual poly-beats-exp slack
+`(v:ℝ)³ ≤ exp((C/20)√v)`, the `erdosWeight`-mass on the far window `{m : (A/3)√v < m}` splits into a
+left (`2m ≤ v`) block-majorant tail and a right (`2m > v`) half-kernel tail. -/
+lemma far_window_split_le {v A : ℕ} (hv : 0 < v) :
+    (∑ m ∈ Finset.Icc 1 (v - 1),
+        (if ((A : ℝ) / 3) * Real.sqrt (v : ℝ) < (m : ℝ) then erdosWeight v m else 0))
+      ≤ (∑ m ∈ Finset.Icc 1 (v - 1),
+            (if (⌊(A : ℝ) / 3⌋₊ : ℝ) * Real.sqrt (v : ℝ) ≤ (m : ℝ) ∧ 2 * m ≤ v
+              then erdosWeight v m else 0))
+        + (∑ m ∈ Finset.Icc 1 (v - 1), (if v < 2 * m then erdosWeight v m else 0)) := by
+  classical
+  rw [← Finset.sum_add_distrib]
+  refine Finset.sum_le_sum (fun m hm => ?_)
+  rw [Finset.mem_Icc] at hm
+  have hew : 0 ≤ erdosWeight v m := erdosWeight_nonneg_of_mem (Finset.mem_Icc.mpr hm)
+  by_cases hfar : ((A : ℝ) / 3) * Real.sqrt (v : ℝ) < (m : ℝ)
+  · rw [if_pos hfar]
+    rcases le_or_gt (2 * m) v with h2 | h2
+    · -- left half: ⌊A/3⌋√v ≤ (A/3)√v < m
+      have hKle : (⌊(A : ℝ) / 3⌋₊ : ℝ) * Real.sqrt (v : ℝ) ≤ (m : ℝ) := by
+        have hfloor : (⌊(A : ℝ) / 3⌋₊ : ℝ) ≤ (A : ℝ) / 3 := Nat.floor_le (by positivity)
+        have hsv : 0 ≤ Real.sqrt (v : ℝ) := Real.sqrt_nonneg _
+        nlinarith [hfar, mul_le_mul_of_nonneg_right hfloor hsv]
+      rw [if_pos ⟨hKle, h2⟩, if_neg (by omega : ¬ v < 2 * m)]
+      linarith
+    · -- right half
+      rw [if_pos h2]
+      by_cases hKL : (⌊(A : ℝ) / 3⌋₊ : ℝ) * Real.sqrt (v : ℝ) ≤ (m : ℝ) ∧ 2 * m ≤ v
+      · exact absurd hKL.2 (by omega)
+      · rw [if_neg hKL]; linarith
+  · rw [if_neg hfar]
+    refine add_nonneg ?_ ?_
+    · split <;> [exact hew; exact le_refl 0]
+    · split <;> [exact hew; exact le_refl 0]
+
 end AnalyticCombinatorics.Ch8.Partitions.Erdos
