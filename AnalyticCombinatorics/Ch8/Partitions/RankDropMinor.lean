@@ -73,12 +73,12 @@ that `√v ≥ b` (so `2√v − b ≥ √v > 0`) and the **phase conditions** h
 
 Then every integer `m` with `a√v < m ≤ b√v` has rank-drop exactly `d`: `rnk v − rnk (v−m) = d`. -/
 lemma drop_eq_of_window_mem {a b : ℝ} (ha : 0 < a) (hab : a < b) {d v m : ℕ}
-    (hd : 1 ≤ d) (hsvb : b ≤ Real.sqrt (v : ℝ))
+    (hd : 1 ≤ d) (hrnkd : d ≤ rnk v) (hsvb : b < Real.sqrt (v : ℝ))
     (hA : (rnk v : ℝ) - (d : ℝ) + 3 * b / 2 + 3 * b ^ 2 / (2 * Real.sqrt (v : ℝ)) ≤ 3 * Real.sqrt (v : ℝ))
     (hB : 3 * Real.sqrt (v : ℝ) ≤ (rnk v : ℝ) - (d : ℝ) + 1 + 3 * a / 2)
     (hmlo : a * Real.sqrt (v : ℝ) < (m : ℝ)) (hmhi : (m : ℝ) ≤ b * Real.sqrt (v : ℝ)) :
     rnk v - rnk (v - m) = d := by
-  have hsv : 0 < Real.sqrt (v : ℝ) := lt_of_lt_of_le (by linarith) hsvb
+  have hsv : 0 < Real.sqrt (v : ℝ) := lt_trans (by linarith) hsvb
   have hvpos : (0 : ℝ) < (v : ℝ) := by
     by_contra h
     push_neg at h
@@ -96,8 +96,7 @@ lemma drop_eq_of_window_mem {a b : ℝ} (ha : 0 < a) (hab : a < b) {d v m : ℕ}
     -- m ≤ b√v ≤ √v·√v = v, and strict since b<√v... use m ≤ b√v and b ≤ √v
     have hmv : (m : ℝ) ≤ b * Real.sqrt (v : ℝ) := hmhi
     have hbsv : b * Real.sqrt (v : ℝ) < Real.sqrt (v : ℝ) * Real.sqrt (v : ℝ) := by
-      have : b < Real.sqrt (v : ℝ) := lt_of_lt_of_le hab (by linarith [hsvb, hab])
-      nlinarith [hsv]
+      nlinarith [hsv, hsvb]
     have : (m : ℝ) < (v : ℝ) := by
       rw [Real.mul_self_sqrt hvpos.le] at hbsv; linarith
     exact_mod_cast this
@@ -109,7 +108,7 @@ lemma drop_eq_of_window_mem {a b : ℝ} (ha : 0 < a) (hab : a < b) {d v m : ℕ}
   set g : ℝ := Real.sqrt (v : ℝ) - Real.sqrt ((v - m : ℕ) : ℝ) with hgdef
   -- bound √(v−m) ≥ √v − b  (since g ≤ m/√v ≤ b)
   have hg_ub_simple : g ≤ b := by
-    rw [hgdef]; rw [hgap]
+    rw [hgap]
     -- m/(√v+√(v−m)) ≤ m/√v ≤ b
     have hden : Real.sqrt (v : ℝ) ≤ Real.sqrt (v : ℝ) + Real.sqrt ((v - m : ℕ) : ℝ) := by linarith
     have h1 : (m : ℝ) / (Real.sqrt (v : ℝ) + Real.sqrt ((v - m : ℕ) : ℝ))
@@ -117,12 +116,13 @@ lemma drop_eq_of_window_mem {a b : ℝ} (ha : 0 < a) (hab : a < b) {d v m : ℕ}
       apply div_le_div_of_nonneg_left (by exact_mod_cast Nat.zero_le m) hsv hden
     have h2 : (m : ℝ) / Real.sqrt (v : ℝ) ≤ b := by
       rw [div_le_iff₀ hsv]; linarith [hmhi]
-    rw [hgap] at *; linarith [h1, h2]
+    linarith [h1, h2]
   have hsvm_lb : Real.sqrt (v : ℝ) - b ≤ Real.sqrt ((v - m : ℕ) : ℝ) := by
-    rw [hgdef] at hg_ub_simple; linarith
+    have : g ≤ b := hg_ub_simple
+    rw [hgdef] at this; linarith
   -- UPPER side: 3√(v−m) < 3√v − 3a/2,  via g > a/2
   have hg_lb : (a : ℝ) / 2 < g := by
-    rw [hgdef, hgap]
+    rw [hgap]
     rw [lt_div_iff₀ (by linarith : (0:ℝ) < Real.sqrt (v : ℝ) + Real.sqrt ((v - m : ℕ) : ℝ))]
     -- a/2·(√v+√(v−m)) ≤ a/2·(2√v) = a√v < m
     have : a / 2 * (Real.sqrt (v : ℝ) + Real.sqrt ((v - m : ℕ) : ℝ))
@@ -137,7 +137,7 @@ lemma drop_eq_of_window_mem {a b : ℝ} (ha : 0 < a) (hab : a < b) {d v m : ℕ}
   -- LOWER side: 3√(v−m) ≥ 3√v − 3b/2 − 3b²/(2√v),  via g ≤ b√v/(2√v−b)
   have hg_ub : g ≤ 3 * b ^ 2 / (2 * Real.sqrt (v : ℝ)) / 3 + b / 2 := by
     -- g = m/(√v+√(v−m)) ≤ b√v/(2√v−b);  b√v/(2√v−b) − b/2 = b²/(2(2√v−b)) ≤ b²/(2√v)
-    rw [hgdef, hgap]
+    rw [hgap]
     have hden_lb : 2 * Real.sqrt (v : ℝ) - b ≤ Real.sqrt (v : ℝ) + Real.sqrt ((v - m : ℕ) : ℝ) := by
       linarith [hsvm_lb]
     have hden_pos : 0 < 2 * Real.sqrt (v : ℝ) - b := by linarith [hsvb, hab, ha]
@@ -145,7 +145,7 @@ lemma drop_eq_of_window_mem {a b : ℝ} (ha : 0 < a) (hab : a < b) {d v m : ℕ}
         ≤ (m : ℝ) / (2 * Real.sqrt (v : ℝ) - b) := by
       apply div_le_div_of_nonneg_left (by exact_mod_cast Nat.zero_le m) hden_pos hden_lb
     have h2 : (m : ℝ) / (2 * Real.sqrt (v : ℝ) - b) ≤ b * Real.sqrt (v : ℝ) / (2 * Real.sqrt (v : ℝ) - b) := by
-      apply div_le_div_of_nonneg_right hmhi hden_pos
+      gcongr
     have h3 : b * Real.sqrt (v : ℝ) / (2 * Real.sqrt (v : ℝ) - b)
         ≤ 3 * b ^ 2 / (2 * Real.sqrt (v : ℝ)) / 3 + b / 2 := by
       -- RHS = b²/(2√v) + b/2;  LHS − b/2 = b²/(2(2√v−b)) ≤ b²/(2√v)
@@ -154,7 +154,8 @@ lemma drop_eq_of_window_mem {a b : ℝ} (ha : 0 < a) (hab : a < b) {d v m : ℕ}
       rw [hrhs_eq]
       have hstep1 : b * Real.sqrt (v : ℝ) / (2 * Real.sqrt (v : ℝ) - b)
           = b ^ 2 / (2 * (2 * Real.sqrt (v : ℝ) - b)) + b / 2 := by
-        field_simp
+        rw [div_add_div _ _ (by positivity : 2 * (2 * Real.sqrt (v:ℝ) - b) ≠ 0)
+              (by norm_num : (2:ℝ) ≠ 0), div_eq_div_iff (by positivity) (by positivity)]
         ring
       rw [hstep1]
       have hmono : b ^ 2 / (2 * (2 * Real.sqrt (v : ℝ) - b)) ≤ b ^ 2 / (2 * Real.sqrt (v : ℝ)) := by
@@ -178,10 +179,8 @@ lemma drop_eq_of_window_mem {a b : ℝ} (ha : 0 < a) (hab : a < b) {d v m : ℕ}
   have hlower2 : (rnk v : ℝ) - (d : ℝ) ≤ 3 * Real.sqrt ((v - m : ℕ) : ℝ) := by
     linarith [hlower, hA]
   -- need rnk v ≥ d
-  have hdle : (d : ℝ) ≤ (rnk v : ℝ) := by
-    have : (0:ℝ) ≤ 3 * Real.sqrt ((v - m : ℕ) : ℝ) := by positivity
-    linarith [hlower2]
-  have hdleN : d ≤ rnk v := by exact_mod_cast hdle
+  have hdleN : d ≤ rnk v := hrnkd
+  have hdle : (d : ℝ) ≤ (rnk v : ℝ) := by exact_mod_cast hdleN
   -- rnk(v−m) ≤ rnk v − d
   have hub_nat : rnk (v - m) ≤ rnk v - d := by
     rw [hrnk_eq]
