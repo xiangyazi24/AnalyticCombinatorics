@@ -152,8 +152,144 @@ lemma statOffset_tail_tendsto_zero {p : ℕ → ℝ} (hl : IsIncrementLaw p)
   rw [show (0 : ℝ) = 1 - 1 by ring]
   exact tendsto_const_nhds.sub hhead
 
+/-! ## The first-crossing offset law from a delay, and its delay-independence.
+
+The renewal process started at residual (= delay) `s` to the ceiling descends deterministically to a
+renewal epoch (residual `0`) in exactly `s` unit-level steps, then draws one increment.  The offset
+of the first crossing *after that renewal* is therefore distributed as `p(·+1)` — the increment law
+shifted by one — **independently of the delay `s`** (`resKer_descent_then_step`).  This delay-
+independence is the engine's coupling: two crossings from two different delays, each measured at its
+own first post-descent renewal, share the *identical* offset law, so their common mass on a fixed top
+slice is a fixed positive number and is not diluted by widening the band. -/
+
+/-- **First-crossing offset law from delay `s`.**  After the deterministic descent of length `s` to a
+renewal, plus one increment step, the residual (offset) is `r'` with probability `resKer p (s+1) s
+r'`.  We package this as the offset law. -/
+noncomputable def offsetLaw (p : ℕ → ℝ) (s : ℕ) (r' : ℕ) : ℝ := resKer p (s + 1) s r'
+
+/-- **Delay-independence of the offset law**: `offsetLaw p s r' = p (r' + 1)` for every delay `s`.
+This is the renewal-coupling fact — the post-renewal crossing offset does not remember the delay. -/
+lemma offsetLaw_eq (p : ℕ → ℝ) (s r' : ℕ) : offsetLaw p s r' = p (r' + 1) := by
+  rw [offsetLaw, resKer_descent_then_step]
+
+/-- The offset law is nonnegative. -/
+lemma offsetLaw_nonneg {p : ℕ → ℝ} (hp : ∀ d, 0 ≤ p d) (s r' : ℕ) : 0 ≤ offsetLaw p s r' := by
+  rw [offsetLaw_eq]; exact hp _
+
+/-- The offset law is summable (a reindex of `p`). -/
+lemma offsetLaw_summable {p : ℕ → ℝ} (hps : Summable p) (s : ℕ) :
+    Summable (fun r' => offsetLaw p s r') := by
+  have : (fun r' => offsetLaw p s r') = fun r' => p (r' + 1) := by
+    funext r'; rw [offsetLaw_eq]
+  rw [this]; exact (summable_nat_add_iff 1).2 hps
+
+/-- The offset law is a probability mass: `∑'_{r'} offsetLaw p s r' = 1`.  Total increment mass minus
+the (zero) atom at `0`. -/
+lemma offsetLaw_tsum {p : ℕ → ℝ} (hl : IsIncrementLaw p) (s : ℕ) :
+    ∑' r', offsetLaw p s r' = 1 := by
+  have hcongr : (fun r' => offsetLaw p s r') = fun r' => p (r' + 1) := by
+    funext r'; rw [offsetLaw_eq]
+  rw [hcongr]
+  have hsplit : ∑' d : ℕ, p d = p 0 + ∑' r' : ℕ, p (r' + 1) := hl.summable.tsum_eq_zero_add
+  rw [hl.total, hl.zero, zero_add] at hsplit
+  exact hsplit.symm
+
+/-! ## Escape tail of the offset law. -/
+
+/-- **Escape tail (exact).**  The offset from delay `s` exceeds `A` with probability
+`incrTail p (A+1)`: `∑'_{r' > A} offsetLaw p s r' = incrTail p (A+1)` (the offset `r' > A` means the
+crossing increment `d = r'+1 > A+1`, i.e. `d` lies beyond `A+1`).  Independent of the delay. -/
+lemma offsetLaw_escape_eq {p : ℕ → ℝ} (hl : IsIncrementLaw p) (s A : ℕ) :
+    (∑' r' : ((Finset.range (A + 1) : Set ℕ)ᶜ : Set ℕ), offsetLaw p s r'.1) = incrTail p (A + 1) := by
+  have hsum : Summable (fun r' => offsetLaw p s r') := offsetLaw_summable hl.summable s
+  have hsplit := hsum.sum_add_tsum_compl (s := Finset.range (A + 1))
+  rw [offsetLaw_tsum hl] at hsplit
+  have hhead : (∑ r' ∈ Finset.range (A + 1), offsetLaw p s r')
+      = ∑ d ∈ Finset.range (A + 1), p (d + 1) := by
+    apply Finset.sum_congr rfl; intro r' _; rw [offsetLaw_eq]
+  rw [incrTail]
+  have htail : (∑' r' : ((Finset.range (A + 1) : Set ℕ)ᶜ : Set ℕ), offsetLaw p s r'.1)
+      = 1 - ∑ r' ∈ Finset.range (A + 1), offsetLaw p s r' := by linarith [hsplit]
+  rw [htail, hhead]
+  -- ∑_{d < A+2} p d = (∑_{d < A+1} p(d+1)) + p 0   (sum_range_succ' with n = A+1), p 0 = 0
+  rw [Finset.sum_range_succ' p (A + 1), hl.zero, add_zero]
+
+/-- The escape tail is nonnegative. -/
+lemma offsetLaw_escape_nonneg {p : ℕ → ℝ} (hl : IsIncrementLaw p) (s A : ℕ) :
+    0 ≤ ∑' r' : ((Finset.range (A + 1) : Set ℕ)ᶜ : Set ℕ), offsetLaw p s r'.1 := by
+  rw [offsetLaw_escape_eq hl]; exact incrTail_nonneg hl (A + 1)
+
+/-- The increment tail is antitone: widening the cutoff only removes nonnegative terms. -/
+lemma incrTail_antitone {p : ℕ → ℝ} (hl : IsIncrementLaw p) : Antitone (incrTail p) := by
+  intro A A' hAA'
+  rw [incrTail, incrTail]
+  have hsub : Finset.range (A + 1) ⊆ Finset.range (A' + 1) :=
+    Finset.range_subset_range.mpr (by omega)
+  have hmono : ∑ d ∈ Finset.range (A + 1), p d ≤ ∑ d ∈ Finset.range (A' + 1), p d := by
+    apply Finset.sum_le_sum_of_subset_of_nonneg hsub
+    intro d _ _; exact hl.nonneg d
+  linarith
+
+/-! ## Common overlap mass of two offset laws on a fixed top slice. -/
+
+/-- The min of the two offset laws on a `range B` slice equals `∑_{d < B} p(d+1)` (since both laws are
+`p(·+1)`), and is `≥ p 1` whenever `1 ≤ B`.  This is the **uniformly positive overlap on a fixed top
+slice** the engine needs: it depends on neither delay nor `A`. -/
+lemma offsetLaw_overlap_slice {p : ℕ → ℝ} (s s' B : ℕ) :
+    (∑ r' ∈ Finset.range B, min (offsetLaw p s r') (offsetLaw p s' r'))
+      = ∑ d ∈ Finset.range B, p (d + 1) := by
+  apply Finset.sum_congr rfl; intro r' _
+  rw [offsetLaw_eq, offsetLaw_eq, min_self]
+
+/-- The overlap slice mass is `≥ p 1` once `1 ≤ B` (aperiodic minorization `p 1 > 0` gives the floor
+`δ := p 1`). -/
+lemma offsetLaw_overlap_ge {p : ℕ → ℝ} (hp : ∀ d, 0 ≤ p d) {s s' B : ℕ} (hB : 1 ≤ B) :
+    p 1 ≤ ∑ r' ∈ Finset.range B, min (offsetLaw p s r') (offsetLaw p s' r') := by
+  rw [offsetLaw_overlap_slice]
+  have h1 : p 1 = p (0 + 1) := by norm_num
+  rw [h1]
+  apply Finset.single_le_sum (f := fun d => p (d + 1)) (fun d _ => hp _)
+  exact Finset.mem_range.mpr hB
+
+/-! ## T2.2 — the homogeneous renewal uniform overshoot/overlap theorem.
+
+Packages the three facts the engine consumes, for an aperiodic exponential-tail integer renewal law:
+
+* a fixed top-slice width `B := 1` and overlap floor `δ := p 1 > 0`, uniform over both delays and over
+  the band width `A`;
+* a vanishing escape majorant `T A := incrTail p A → 0`;
+* for every band width `A ≥ B` and any two delays `s, s'`: the common mass of the two first-crossing
+  offset laws on the slice `{0,…,B−1}` is `≥ δ`, and each offset law's escape beyond `A` is `≤ T A`.
+
+The hypotheses `hp_tail`, `hp_aper.2` (i.e. `p 2 > 0`) are recorded for the downstream T2.1/T2.3
+interface (the exponential tail certifies the explicit rate; `p 2 > 0` certifies true aperiodicity of
+the support, gcd = 1) but the engine-facing overlap/escape pair already follows from `p 1 > 0` and
+summability via the delay-independence of the post-renewal offset law. -/
+theorem homogeneousRenewal_uniform_overshoot_overlap
+    (p : ℕ → ℝ) (hp_prob : IsIncrementLaw p)
+    (hp_tail : ∃ γ : ℝ, 0 < γ ∧ ∃ C₀ : ℝ, ∀ d, p d ≤ C₀ * (d + 1) * Real.exp (-γ * d))
+    (hp_aper : 0 < p 1 ∧ 0 < p 2) :
+    ∃ B : ℕ, 1 ≤ B ∧ ∃ δ : ℝ, 0 < δ ∧ ∃ T : ℕ → ℝ,
+      (∀ A, 0 ≤ T A) ∧ Tendsto T atTop (𝓝 0) ∧
+      ∀ A, B ≤ A → ∀ s s' : ℕ,
+        (δ ≤ ∑ r' ∈ Finset.range B, min (offsetLaw p s r') (offsetLaw p s' r'))
+        ∧ (∑' r' : ((Finset.range (A + 1) : Set ℕ)ᶜ : Set ℕ), offsetLaw p s r'.1) ≤ T A
+        ∧ (∑' r' : ((Finset.range (A + 1) : Set ℕ)ᶜ : Set ℕ), offsetLaw p s' r'.1) ≤ T A := by
+  refine ⟨1, le_refl 1, p 1, hp_aper.1, incrTail p, incrTail_nonneg hp_prob,
+    incrTail_tendsto_zero hp_prob, ?_⟩
+  intro A _hA s s'
+  refine ⟨?_, ?_, ?_⟩
+  · exact offsetLaw_overlap_ge hp_prob.nonneg (le_refl 1)
+  · rw [offsetLaw_escape_eq hp_prob]
+    exact incrTail_antitone hp_prob (Nat.le_succ A)
+  · rw [offsetLaw_escape_eq hp_prob]
+    exact incrTail_antitone hp_prob (Nat.le_succ A)
+
 #print axioms incrTail_tendsto_zero
 #print axioms statOffset_zero_pos
 #print axioms statOffset_tail_tendsto_zero
+#print axioms offsetLaw_eq
+#print axioms offsetLaw_escape_eq
+#print axioms homogeneousRenewal_uniform_overshoot_overlap
 
 end AnalyticCombinatorics.Ch8.Partitions.Renewal
