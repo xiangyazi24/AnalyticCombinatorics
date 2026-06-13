@@ -202,4 +202,53 @@ lemma drop_eq_of_window_mem {a b : ℝ} (ha : 0 < a) (hab : a < b) {d v m : ℕ}
   have : rnk (v - m) = rnk v - d := le_antisymm hub_nat hlb_nat
   omega
 
+/-- **Window-mass minorization of one drop.**  Under the phase conditions of
+`drop_eq_of_window_mem` (for a fixed `(a,b)` and drop `d`), the rank-drop mass at `d` is at least
+the (reflected) window mass `kernelWindow a b v / kernelMass v`: every step into the y-window
+`(a√v, b√v]` is a drop-`d` step. -/
+lemma rankDropKer_ge_window {a b : ℝ} (ha : 0 < a) (hab : a < b) {d v : ℕ}
+    (hd : 1 ≤ d) (hrnkd : d ≤ rnk v) (hsvb : b < Real.sqrt (v : ℝ))
+    (hkpos : 0 < kernelMass v)
+    (hA : (rnk v : ℝ) - (d : ℝ) + 3 * b / 2 + 3 * b ^ 2 / (2 * Real.sqrt (v : ℝ))
+        ≤ 3 * Real.sqrt (v : ℝ))
+    (hB : 3 * Real.sqrt (v : ℝ) ≤ (rnk v : ℝ) - (d : ℝ) + 1 + 3 * a / 2) :
+    kernelWindow a b v / kernelMass v ≤ rankDropKer v d := by
+  classical
+  have hsvpos : (0 : ℝ) < Real.sqrt (v : ℝ) := by linarith [hsvb, ha, hab]
+  have hvpos : (0 : ℝ) < (v : ℝ) := by
+    have hsq : Real.sqrt (v : ℝ) ^ 2 = (v : ℝ) := Real.sq_sqrt (Nat.cast_nonneg v)
+    nlinarith [hsvpos, hsq]
+  have hvN : 0 < v := by exact_mod_cast hvpos
+  -- reflect the window mass / kernelMass into the predecessor coordinate as a masked Pker-sum
+  have hreflect : kernelWindow a b v / kernelMass v
+      = ∑ k ∈ Finset.Icc 1 (v - 1),
+          (if a * Real.sqrt (v : ℝ) < ((v - k : ℕ) : ℝ)
+              ∧ ((v - k : ℕ) : ℝ) ≤ b * Real.sqrt (v : ℝ)
+            then Pker v k else 0) := by
+    rw [kernelWindow, ← sum_Icc_reflect_sub v
+      (fun m => if a * Real.sqrt (v : ℝ) < (m : ℝ) ∧ (m : ℝ) ≤ b * Real.sqrt (v : ℝ)
+        then erdosWeight v m else 0), Finset.sum_div]
+    apply Finset.sum_congr rfl
+    intro k hk
+    rw [Finset.mem_Icc] at hk
+    by_cases hw : a * Real.sqrt (v : ℝ) < ((v - k : ℕ) : ℝ)
+        ∧ ((v - k : ℕ) : ℝ) ≤ b * Real.sqrt (v : ℝ)
+    · rw [if_pos hw, if_pos hw]
+      unfold Pker; rw [if_pos ⟨hk.1, by omega⟩]
+    · rw [if_neg hw, if_neg hw, zero_div]
+  rw [hreflect, ← Finset.sum_filter]
+  unfold rankDropKer
+  apply Finset.sum_le_sum_of_subset_of_nonneg
+  · -- the window-filter ⊆ the drop-d filter
+    intro k hk
+    rw [Finset.mem_filter, Finset.mem_Icc] at hk
+    obtain ⟨⟨hk1, hk2⟩, hw1, hw2⟩ := hk
+    rw [Finset.mem_filter, Finset.mem_range]
+    refine ⟨by omega, ?_⟩
+    -- m := v − k ∈ (a√v, b√v] ⟹ drop = d
+    have hdrop := drop_eq_of_window_mem ha hab (d := d) (v := v) (m := v - k)
+      hd hrnkd hsvb hA hB hw1 hw2
+    rwa [Nat.sub_sub_self (by omega : k ≤ v)] at hdrop
+  · intro k _ _; exact Pker_nonneg v k
+
 end AnalyticCombinatorics.Ch8.Partitions.Erdos
