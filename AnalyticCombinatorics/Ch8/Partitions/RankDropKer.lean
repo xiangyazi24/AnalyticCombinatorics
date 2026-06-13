@@ -30,6 +30,8 @@ open Filter Topology BigOperators
 
 namespace AnalyticCombinatorics.Ch8.Partitions.Erdos
 
+open AnalyticCombinatorics.Ch8.Partitions.Erdos.Close
+
 /-- **Rank-drop kernel.**  `rankDropKer v d` is the `Pker`-probability that one predecessor step
 from `v` drops the rank by exactly `d`: the mass of `Pker v ·` on `{k < v : rnk v − rnk k = d}`. -/
 noncomputable def rankDropKer (v d : ℕ) : ℝ :=
@@ -221,5 +223,46 @@ lemma far_window_split_le {v A : ℕ} (hv : 0 < v) :
     refine add_nonneg ?_ ?_
     · split <;> [exact hew; exact le_refl 0]
     · split <;> [exact hew; exact le_refl 0]
+
+/-- **Left-half block-majorant bound.**  The bulk (`2m ≤ v`) far-window mass at threshold index
+`K = ⌊A/3⌋` is bounded by the banked geometric-quadratic block tail. -/
+lemma left_block_tail_le {v : ℕ} (hv : 0 < v) (K : ℕ) :
+    (∑ m ∈ Finset.Icc 1 (v - 1),
+        (if (K : ℝ) * Real.sqrt (v : ℝ) ≤ (m : ℝ) ∧ 2 * m ≤ v then erdosWeight v m else 0))
+      ≤ 2 * sigmaQuadConst * ((K : ℝ) + 1) ^ 2 * rankDropG * Real.exp (-(C / 2) * (K : ℝ)) := by
+  calc (∑ m ∈ Finset.Icc 1 (v - 1),
+          (if (K : ℝ) * Real.sqrt (v : ℝ) ≤ (m : ℝ) ∧ 2 * m ≤ v then erdosWeight v m else 0))
+      ≤ ∑ k ∈ Finset.range (numBlocks v), if K ≤ k then leftBlockMajorant k else 0 :=
+        left_half_tail_sum_le_block_majorants v K hv
+    _ ≤ ∑' j : ℕ, leftBlockMajorant (j + K) :=
+        finite_block_majorant_tail_le_shifted_tsum (numBlocks v) K
+    _ ≤ 2 * sigmaQuadConst * ((K : ℝ) + 1) ^ 2 * rankDropG * Real.exp (-(C / 2) * (K : ℝ)) :=
+        leftBlockMajorant_shifted_tsum_le K
+
+/-- Elementary sup-bound: for `c > 0` and `x ≥ 0`, `(x+1)·e^{−cx} ≤ 1/c + 1`. -/
+lemma succ_mul_exp_neg_le {c x : ℝ} (hc : 0 < c) (hx : 0 ≤ x) :
+    (x + 1) * Real.exp (-c * x) ≤ 1 / c + 1 := by
+  have hexp : c * x + 1 ≤ Real.exp (c * x) := by
+    have := Real.add_one_le_exp (c * x); linarith
+  have hepos : 0 < Real.exp (c * x) := Real.exp_pos _
+  have he1 : (1 : ℝ) ≤ Real.exp (c * x) :=
+    Real.one_le_exp_iff.mpr (by positivity)
+  -- x + 1 ≤ (1/c + 1)·e^{cx}
+  have hkey : x + 1 ≤ (1 / c + 1) * Real.exp (c * x) := by
+    have hcx : c * x ≤ Real.exp (c * x) - 1 := by linarith
+    have hx_le : x ≤ (Real.exp (c * x) - 1) / c := by
+      rw [le_div_iff₀ hc]; nlinarith [hcx]
+    have hdiv : (Real.exp (c * x) - 1) / c ≤ Real.exp (c * x) / c := by
+      gcongr
+      linarith
+    have hexpand : (1 / c + 1) * Real.exp (c * x)
+        = Real.exp (c * x) / c + Real.exp (c * x) := by ring
+    rw [hexpand]
+    linarith [hx_le, hdiv, he1]
+  -- multiply by e^{−cx}
+  have hrw : Real.exp (-c * x) = (Real.exp (c * x))⁻¹ := by
+    rw [← Real.exp_neg]; ring_nf
+  rw [hrw, mul_inv_le_iff₀ hepos]
+  exact hkey
 
 end AnalyticCombinatorics.Ch8.Partitions.Erdos
