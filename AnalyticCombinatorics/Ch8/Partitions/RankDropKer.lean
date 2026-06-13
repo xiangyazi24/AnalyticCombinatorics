@@ -1,4 +1,5 @@
 import AnalyticCombinatorics.Ch8.Partitions.PartitionRenewal
+import AnalyticCombinatorics.Ch8.Partitions.ErdosKernelClose
 
 /-!
 # T2.1 (honest restatement): the rank-drop kernel and its exponential tail majorant
@@ -112,5 +113,72 @@ lemma rankDropKer_tail_eq_mass (v A : ℕ) :
       · exact absurd ⟨hdd ▸ hAd, hdd ▸ Finset.mem_range.mp hd⟩ hkv
       · rw [if_neg hdd]
     · rw [if_neg hAd]
+
+/-- **Numerator mass in `m`-coordinates, dominated by a far-jump window.**  The `erdosWeight`-mass of
+the predecessors with rank-drop `> A` is, after the reflection `k ↦ v − k`, dominated by the
+`erdosWeight`-mass on the far window `{m : (A/3)√v < m}` (every drop-`>A` jump exceeds `(A/3)√v` by
+`large_drop_forces_large_jump`). -/
+lemma rankDrop_mass_le_far_window {v A : ℕ} (hv : 2 ≤ v) :
+    (∑ k ∈ (Finset.range v).filter (fun k => A < rnk v - rnk k ∧ rnk v - rnk k < v),
+        erdosWeight v (v - k))
+      ≤ ∑ m ∈ Finset.Icc 1 (v - 1),
+          (if ((A : ℝ) / 3) * Real.sqrt (v : ℝ) < (m : ℝ) then erdosWeight v m else 0) := by
+  classical
+  -- reflect k ↦ v − k onto the m-window sum, then enlarge the index set
+  have hreflect :
+      (∑ k ∈ (Finset.range v).filter (fun k => A < rnk v - rnk k ∧ rnk v - rnk k < v),
+          erdosWeight v (v - k))
+        = ∑ m ∈ Finset.Icc 1 (v - 1),
+            (if A < rnk v - rnk (v - m) ∧ rnk v - rnk (v - m) < v
+              then erdosWeight v m else 0) := by
+    -- rewrite the filtered LHS as a masked sum over Icc 1 (v−1) in k, reflect to m
+    have hLHS :
+        (∑ k ∈ (Finset.range v).filter (fun k => A < rnk v - rnk k ∧ rnk v - rnk k < v),
+            erdosWeight v (v - k))
+          = ∑ k ∈ Finset.Icc 1 (v - 1),
+              (if A < rnk v - rnk k ∧ rnk v - rnk k < v then erdosWeight v (v - k) else 0) := by
+      rw [Finset.sum_filter]
+      symm
+      apply Finset.sum_subset_zero_on_sdiff
+      · intro k hk; rw [Finset.mem_Icc] at hk; rw [Finset.mem_range]; omega
+      · intro k hk
+        rw [Finset.mem_sdiff, Finset.mem_range] at hk
+        -- k ∈ range v but k ∉ Icc 1 (v−1) ⟹ k = 0
+        have hk0 : k = 0 := by
+          rcases Nat.eq_zero_or_pos k with h | h
+          · exact h
+          · exact absurd (Finset.mem_Icc.mpr ⟨h, by omega⟩) hk.2
+        subst hk0
+        by_cases hc : A < rnk v - rnk 0 ∧ rnk v - rnk 0 < v
+        · rw [if_pos hc]
+          have : rnk v - rnk 0 < v := hc.2
+          -- rnk 0 = 0, so A < rnk v < v ⟹ but erdosWeight v (v−0) = erdosWeight v v = 0? not directly.
+          -- instead: k = 0 means v − k = v, erdosWeight v v has (v−v)=0 divisor; use erdosWeight def
+          simp only [erdosWeight, Nat.sub_zero, Nat.sub_self, Nat.cast_zero, div_zero,
+            zero_mul]
+        · rw [if_neg hc]
+      · intro k _; rfl
+    rw [hLHS, ← sum_Icc_reflect_sub v
+      (fun k => if A < rnk v - rnk k ∧ rnk v - rnk k < v then erdosWeight v (v - k) else 0)]
+    refine Finset.sum_congr rfl (fun m hm => ?_)
+    rw [Finset.mem_Icc] at hm
+    by_cases hc : A < rnk v - rnk (v - m) ∧ rnk v - rnk (v - m) < v
+    · rw [if_pos hc, if_pos hc, show v - (v - m) = m by omega]
+    · rw [if_neg hc, if_neg hc]
+  rw [hreflect]
+  refine Finset.sum_le_sum (fun m hm => ?_)
+  rw [Finset.mem_Icc] at hm
+  by_cases hc : A < rnk v - rnk (v - m) ∧ rnk v - rnk (v - m) < v
+  · rw [if_pos hc]
+    -- drop > A at predecessor (v−m) forces (A/3)√v < m via large_drop_forces_large_jump
+    have hm1 : 1 ≤ v - m := by omega
+    have hmv : v - m < v := by omega
+    have hjump := large_drop_forces_large_jump (v := v) (k := v - m) (A := A) hm1 hmv hc.1
+    rw [show v - (v - m) = m by omega] at hjump
+    rw [if_pos hjump]
+  · rw [if_neg hc]
+    by_cases hc2 : ((A : ℝ) / 3) * Real.sqrt (v : ℝ) < (m : ℝ)
+    · rw [if_pos hc2]; exact erdosWeight_nonneg_of_mem (Finset.mem_Icc.mpr hm)
+    · rw [if_neg hc2]
 
 end AnalyticCombinatorics.Ch8.Partitions.Erdos
