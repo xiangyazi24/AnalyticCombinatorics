@@ -407,4 +407,102 @@ lemma commonValueWindow_card_linear :
 
 #print axioms commonValueWindow_card_linear
 
+/-! ## Brick 7 — one-step same-ceiling value overlap. -/
+
+/-- The ceiling rank `R ↦ R + A R` tends to `atTop` (since `R + A R ≥ R`). -/
+lemma ceilRank_tendsto (A : ℕ → ℕ) : Tendsto (fun R => R + A R) atTop atTop :=
+  tendsto_atTop_mono (fun R => Nat.le_add_right R (A R)) tendsto_id
+
+set_option maxHeartbeats 800000 in
+/-- **One-step same-ceiling value overlap (L4 one-step form).**  There is `β > 0` so that eventually
+in `R`, any two values `x, y` of the ceiling rank `T = R + A R` have one-step predecessor overlap
+`≥ β` on the in-band slice.  Via `overlap_ge_of_minorization` with the uniform window minorant
+`η = c/T` (brick 5) on `S = commonValueWindow T` of card `≥ T/2` (brick 6), inside the slice
+(brick 4):  `η·|S| ≥ (c/T)(T/2) = c/2 =: β`. -/
+lemma Pker_same_ceiling_oneStep_overlap (A : ℕ → ℕ) (hA : Tendsto A atTop atTop) :
+    ∃ β : ℝ, 0 < β ∧
+      ∀ᶠ R in atTop, ∀ x y, rnk x = R + A R → rnk y = R + A R →
+        β ≤ ∑ z ∈ (ceilBand R (A R)).filter (fun z => R ≤ rnk z),
+              min (Pker x z) (Pker y z) := by
+  obtain ⟨c, hcpos, hclow⟩ := Pker_commonValueWindow_lower
+  refine ⟨c / 2, by positivity, ?_⟩
+  have htend := ceilRank_tendsto A
+  -- pull the T-eventual facts (brick 5, brick 6) to R-eventual along T = R + A R
+  have hlowR : ∀ᶠ R in atTop, ∀ x z, rnk x = R + A R → z ∈ commonValueWindow (R + A R) →
+      c / ((R + A R : ℕ) : ℝ) ≤ Pker x z := htend.eventually hclow
+  have hcardR : ∀ᶠ R in atTop, (1 / 2 : ℝ) * ((R + A R : ℕ) : ℝ)
+      ≤ ((commonValueWindow (R + A R)).card : ℝ) := htend.eventually commonValueWindow_card_linear
+  have hsliceR := commonValueWindow_subset_slice A hA
+  have hTposR : ∀ᶠ R : ℕ in atTop, (0 : ℝ) < ((R + A R : ℕ) : ℝ) := by
+    filter_upwards [eventually_ge_atTop 1] with R hR
+    have : (1 : ℝ) ≤ ((R + A R : ℕ) : ℝ) := by exact_mod_cast (by omega : 1 ≤ R + A R)
+    linarith
+  filter_upwards [hlowR, hcardR, hsliceR, hTposR] with R hlow hcard hslice hTpos
+  intro x y hx hy
+  set T : ℕ := R + A R with hTdef
+  -- minorant η = c/T on S = commonValueWindow T
+  have hmin : ∀ z ∈ commonValueWindow T, c / (T : ℝ) ≤ Pker x z ∧ c / (T : ℝ) ≤ Pker y z := by
+    intro z hz
+    exact ⟨hlow x z hx hz, hlow y z hy hz⟩
+  have hov := Renewal.overlap_ge_of_minorization
+    (κ := Pker) (T := ceilBand R (A R)) (q := fun z => R ≤ rnk z)
+    (S := commonValueWindow T) (n := x) (n' := y) (η := c / (T : ℝ))
+    hslice (fun z => Pker_nonneg x z) (fun z => Pker_nonneg y z) hmin
+  -- (c/T)·|S| ≥ (c/T)·(T/2) = c/2
+  refine le_trans ?_ hov
+  have hcard2 : (c / (T : ℝ)) * ((1 / 2 : ℝ) * (T : ℝ))
+      ≤ (c / (T : ℝ)) * ((commonValueWindow T).card : ℝ) := by
+    apply mul_le_mul_of_nonneg_left hcard
+    positivity
+  have hsimp : (c / (T : ℝ)) * ((1 / 2 : ℝ) * (T : ℝ)) = c / 2 := by
+    field_simp
+  rw [hsimp] at hcard2
+  exact hcard2
+
+#print axioms Pker_same_ceiling_oneStep_overlap
+
+/-! ## Brick 8 — lift to the first-entrance overlap (this is L4). -/
+
+set_option maxHeartbeats 800000 in
+/-- **L4 — same-ceiling first-entrance value overlap.**  There is `β > 0` so that eventually in `R`,
+any two values `x, y` of the ceiling rank `T = R + A R` have *first-entrance* overlap `≥ β` on the
+in-band slice into the band `ceilBand R (A R)`.  Lifts the one-step overlap (brick 7) via the banked
+`min_Pker_le_min_enterBandKer_sum` (`Pker x z ≤ enterBandKer Pker B x z` on in-band targets). -/
+lemma same_ceiling_enterBand_overlap (A : ℕ → ℕ) (hA : Tendsto A atTop atTop) :
+    ∃ β : ℝ, 0 < β ∧
+      ∀ᶠ R in atTop, ∀ x y, rnk x = R + A R → rnk y = R + A R →
+        β ≤ ∑ z ∈ (ceilBand R (A R)).filter (fun z => R ≤ rnk z),
+              min (enterBandKer Pker (ceilBand R (A R)) x z)
+                  (enterBandKer Pker (ceilBand R (A R)) y z) := by
+  obtain ⟨β, hβpos, hβev⟩ := Pker_same_ceiling_oneStep_overlap A hA
+  refine ⟨β, hβpos, ?_⟩
+  filter_upwards [hβev] with R hβR
+  intro x y hx hy
+  set B := ceilBand R (A R) with hBdef
+  set slice := B.filter (fun z => R ≤ rnk z) with hslicedef
+  -- x, y are off the band (rank = R + A R, band is {rnk < R + A R})
+  have hxB : x ∉ B := by rw [hBdef, mem_ceilBand_iff]; omega
+  have hyB : y ∉ B := by rw [hBdef, mem_ceilBand_iff]; omega
+  -- in-band slice targets z satisfy z ∈ B, z < x, z < y (rnk z < rnk x = rnk y ⟹ z < x via rnk_mono)
+  have hsliceH : ∀ z ∈ slice, z ∈ B ∧ z < x ∧ z < y := by
+    intro z hz
+    rw [hslicedef, Finset.mem_filter] at hz
+    obtain ⟨hzB, _hzR⟩ := hz
+    have hzrnk : rnk z < R + A R := mem_ceilBand_iff.mp hzB
+    refine ⟨hzB, ?_, ?_⟩
+    · -- z < x : else rnk x ≤ rnk z < R+A R = rnk x, contradiction
+      by_contra hxz
+      push_neg at hxz
+      have : rnk x ≤ rnk z := rnk_mono hxz
+      omega
+    · by_contra hyz
+      push_neg at hyz
+      have : rnk y ≤ rnk z := rnk_mono hyz
+      omega
+  have hlift := min_Pker_le_min_enterBandKer_sum (B := B) (slice := slice)
+    (x := x) (y := y) hxB hyB hsliceH
+  exact le_trans (hβR x y hx hy) hlift
+
+#print axioms same_ceiling_enterBand_overlap
+
 end AnalyticCombinatorics.Ch8.Partitions.Erdos
