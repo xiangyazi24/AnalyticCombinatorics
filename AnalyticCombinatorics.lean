@@ -140,6 +140,9 @@ import AnalyticCombinatorics.Ch8.Partitions.RenewalAssembly
 import AnalyticCombinatorics.Ch8.Partitions.ErdosConcrete
 import AnalyticCombinatorics.Ch8.Partitions.HitValBound
 import AnalyticCombinatorics.Ch8.Partitions.ErdosRenewalConnect
+import AnalyticCombinatorics.Ch8.Partitions.CeilingValueWindow
+import AnalyticCombinatorics.Ch8.Partitions.CeilingCompose
+import AnalyticCombinatorics.Ch8.Partitions.ErdosCeilingLimit
 import AnalyticCombinatorics.Ch8.Partitions.StepContractionConst
 import AnalyticCombinatorics.Ch8.Partitions.RenewalMultiB
 import AnalyticCombinatorics.Ch8.Partitions.ErdosRenewalConnectMultiB
