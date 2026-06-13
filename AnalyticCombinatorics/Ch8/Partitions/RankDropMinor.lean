@@ -251,4 +251,115 @@ lemma rankDropKer_ge_window {a b : ℝ} (ha : 0 < a) (hab : a < b) {d v : ℕ}
     rwa [Nat.sub_sub_self (by omega : k ≤ v)] at hdrop
   · intro k _ _; exact Pker_nonneg v k
 
+/-- The integral of the positive Erdős density over a nondegenerate interval is positive. -/
+lemma modelIntegral_pos {a b : ℝ} (ha : 0 ≤ a) (hab : a < b) : 0 < Model.modelIntegral C a b := by
+  have hC := C_pos
+  rw [Model.modelIntegral]
+  apply intervalIntegral.intervalIntegral_pos_of_pos_on
+  · have hc : Continuous fun y : ℝ => (Real.pi ^ 2 / 6) * y * Real.exp (-(C / 2) * y) := by
+      have h1 : Continuous fun y : ℝ => (Real.pi ^ 2 / 6) * y :=
+        continuous_const.mul continuous_id
+      have h2 : Continuous fun y : ℝ => Real.exp (-(C / 2) * y) :=
+        Real.continuous_exp.comp (continuous_const.mul continuous_id)
+      exact h1.mul h2
+    exact hc.intervalIntegrable _ _
+  · intro y hy
+    have hy0 : (0 : ℝ) < y := lt_of_le_of_lt ha hy.1
+    have hπ : (0 : ℝ) < Real.pi ^ 2 / 6 := by positivity
+    have he : (0 : ℝ) < Real.exp (-(C / 2) * y) := Real.exp_pos _
+    nlinarith [mul_pos (mul_pos hπ hy0) he]
+  · exact hab
+
+/-- **Eventual window-mass-over-total lower bound** for a fixed nondegenerate `(a,b)`:
+`kernelWindow a b v / kernelMass v ≥ modelIntegral C a b / 2 > 0` eventually in `v`. -/
+lemma window_div_mass_ge_eventually {a b : ℝ} (ha : 0 ≤ a) (hab : a < b) :
+    ∀ᶠ v : ℕ in atTop,
+      Model.modelIntegral C a b / 2 ≤ kernelWindow a b v / kernelMass v := by
+  have hIpos := modelIntegral_pos ha hab
+  -- window mass → modelIntegral, so eventually ≥ (3/4)·I
+  have hwin := Model.erdos_kernel_window (a := a) (b := b) ha hab
+  have hwin_ge : ∀ᶠ v : ℕ in atTop,
+      (3 / 4) * Model.modelIntegral C a b ≤ kernelWindow a b v := by
+    have hev := (tendsto_order.1 hwin).1 ((3 / 4) * Model.modelIntegral C a b) (by nlinarith [hIpos])
+    filter_upwards [hev] with v hv
+    -- kernelWindow a b v is definitionally the masked sum
+    exact hv.le
+  -- kernelMass → 1, so eventually kernelMass ≤ 3/2 and ≥ 1/2 > 0
+  obtain ⟨K, hKpos, hKev⟩ := kernelMass_sub_one_rate
+  have hKsmall : ∀ᶠ v : ℕ in atTop, K / (v : ℝ) ≤ 1 / 2 := by
+    have htend : Tendsto (fun v : ℕ => K / (v : ℝ)) atTop (𝓝 0) := by
+      simpa using tendsto_const_nhds.div_atTop (tendsto_natCast_atTop_atTop)
+    exact htend.eventually_le_const (by norm_num)
+  filter_upwards [hwin_ge, hKev, hKsmall, eventually_ge_atTop 1] with v hwinv hKv hKsv hv1
+  have hvR : (1 : ℝ) ≤ (v : ℝ) := by exact_mod_cast hv1
+  obtain ⟨hSlo, hSup⟩ := abs_le.1 hKv
+  have hSge : (1 : ℝ) / 2 ≤ kernelMass v := by linarith [hKsv]
+  have hSle : kernelMass v ≤ 3 / 2 := by linarith [hKsv]
+  have hSpos : (0 : ℝ) < kernelMass v := by linarith
+  -- I/2 ≤ (3/4)I / (3/2) ≤ kernelWindow / kernelMass
+  rw [le_div_iff₀ hSpos]
+  -- I/2 · kernelMass ≤ I/2 · (3/2) = (3/4)I ≤ kernelWindow
+  calc Model.modelIntegral C a b / 2 * kernelMass v
+      ≤ Model.modelIntegral C a b / 2 * (3 / 2) := by
+        apply mul_le_mul_of_nonneg_left hSle (by linarith [hIpos])
+    _ = (3 / 4) * Model.modelIntegral C a b := by ring
+    _ ≤ kernelWindow a b v := hwinv
+
+/-- **Subwindow drop bound, in `t`-band form.**  Fix `0 < a < b`, drop `d ≥ 1`, and rational
+`t`-band endpoints `tlo ≤ thi` with strict margins
+`3b/2 − d < tlo` and `thi < 3a/2 − d + 1`.  Then eventually in `v`: whenever the phase
+`t := 3√v − rnk v` lies in `[tlo, thi]`, the rank-drop mass at `d` is `≥ modelIntegral C a b / 2`. -/
+lemma rankDropKer_ge_const_of_tband {a b tlo thi : ℝ} (ha : 0 < a) (hab : a < b)
+    {d : ℕ} (hd : 1 ≤ d) (htle : tlo ≤ thi)
+    (hmA : 3 * b / 2 - (d : ℝ) < tlo) (hmB : thi < 3 * a / 2 - (d : ℝ) + 1) :
+    ∀ᶠ v : ℕ in atTop,
+      (tlo ≤ 3 * Real.sqrt (v : ℝ) - (rnk v : ℝ)
+        ∧ 3 * Real.sqrt (v : ℝ) - (rnk v : ℝ) ≤ thi) →
+      Model.modelIntegral C a b / 2 ≤ rankDropKer v d := by
+  have hIge := window_div_mass_ge_eventually (a := a) (b := b) ha.le hab
+  -- error term ε_v = 3b²/(2√v) → 0; need ε_v < tlo − (3b/2 − d)
+  set εmar : ℝ := tlo - (3 * b / 2 - (d : ℝ)) with hεdef
+  have hεpos : 0 < εmar := by rw [hεdef]; linarith [hmA]
+  have herr : ∀ᶠ v : ℕ in atTop, 3 * b ^ 2 / (2 * Real.sqrt (v : ℝ)) ≤ εmar := by
+    have htend : Tendsto (fun v : ℕ => 3 * b ^ 2 / (2 * Real.sqrt (v : ℝ))) atTop (𝓝 0) := by
+      apply Tendsto.div_atTop tendsto_const_nhds
+      apply Filter.Tendsto.const_mul_atTop (by norm_num : (0:ℝ) < 2)
+      exact Real.tendsto_sqrt_atTop.comp tendsto_natCast_atTop_atTop
+    exact htend.eventually_le_const hεpos
+  -- need √v > b and rnk v ≥ d eventually
+  have hsvb : ∀ᶠ v : ℕ in atTop, b < Real.sqrt (v : ℝ) := by
+    have htend : Tendsto (fun v : ℕ => Real.sqrt (v : ℝ)) atTop atTop :=
+      Real.tendsto_sqrt_atTop.comp tendsto_natCast_atTop_atTop
+    exact htend.eventually_gt_atTop b
+  have hrnkd : ∀ᶠ v : ℕ in atTop, d ≤ rnk v := by
+    -- rnk v = ⌊3√v⌋ ≥ d as soon as 3√v ≥ d
+    have hsq : Tendsto (fun v : ℕ => 3 * Real.sqrt (v : ℝ)) atTop atTop := by
+      apply Filter.Tendsto.const_mul_atTop (by norm_num : (0:ℝ) < 3)
+      exact Real.tendsto_sqrt_atTop.comp tendsto_natCast_atTop_atTop
+    filter_upwards [hsq.eventually_ge_atTop ((d : ℝ))] with v hv
+    show d ≤ ⌊3 * Real.sqrt (v : ℝ)⌋₊
+    exact Nat.le_floor (by push_cast; linarith [hv])
+  have hkpos : ∀ᶠ v : ℕ in atTop, 0 < kernelMass v := by
+    obtain ⟨K, hKpos, hKev⟩ := kernelMass_sub_one_rate
+    have hKsmall : ∀ᶠ v : ℕ in atTop, K / (v : ℝ) ≤ 1 / 2 := by
+      have htend : Tendsto (fun v : ℕ => K / (v : ℝ)) atTop (𝓝 0) := by
+        simpa using tendsto_const_nhds.div_atTop (tendsto_natCast_atTop_atTop)
+      exact htend.eventually_le_const (by norm_num)
+    filter_upwards [hKev, hKsmall] with v hKv hKsv
+    obtain ⟨hSlo, _⟩ := abs_le.1 hKv
+    linarith [hKsv]
+  filter_upwards [hIge, herr, hsvb, hrnkd, hkpos] with v hIgev herrv hsvbv hrnkdv hkposv
+  intro ⟨htlo, hthi⟩
+  -- derive phase conditions A, B from t-band + margins
+  have hA : (rnk v : ℝ) - (d : ℝ) + 3 * b / 2 + 3 * b ^ 2 / (2 * Real.sqrt (v : ℝ))
+      ≤ 3 * Real.sqrt (v : ℝ) := by
+    -- 3√v − rnk v ≥ tlo ≥ 3b/2 − d + ε_v
+    have : tlo ≥ 3 * b / 2 - (d : ℝ) + 3 * b ^ 2 / (2 * Real.sqrt (v : ℝ)) := by
+      rw [hεdef] at *; linarith [herrv]
+    linarith [htlo, this]
+  have hB : 3 * Real.sqrt (v : ℝ) ≤ (rnk v : ℝ) - (d : ℝ) + 1 + 3 * a / 2 := by
+    -- 3√v − rnk v ≤ thi < 3a/2 − d + 1
+    linarith [hthi, hmB]
+  exact le_trans hIgev (rankDropKer_ge_window ha hab hd hrnkdv hsvbv hkposv hA hB)
+
 end AnalyticCombinatorics.Ch8.Partitions.Erdos
