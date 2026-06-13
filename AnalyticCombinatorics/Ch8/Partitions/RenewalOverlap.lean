@@ -285,11 +285,51 @@ theorem homogeneousRenewal_uniform_overshoot_overlap
   · rw [offsetLaw_escape_eq hp_prob]
     exact incrTail_antitone hp_prob (Nat.le_succ A)
 
+/-! ## Engine-facing bridge: overlap from a uniform single-state minorization.
+
+The variable rank-band engine consumes the overlap as
+`δ ≤ ∑_{z ∈ slice} min (κ n z) (κ n' z)` where `κ = enterBandKer Pker (ceilBand …)` and `slice` is
+the in-band top slice.  The genuine analytic input (see `HANDOFF/TASK-T2-gap.md`) is a uniform
+*single-state minorization* `κ n z ≥ η` for the two starts on a fixed nonempty subset `S` of the
+slice (a Doeblin minorization at the common ceiling).  Once that minorization exists, the overlap is
+purely combinatorial: `min (κ n z) (κ n' z) ≥ η` on `S`, so the overlap is `≥ η · |S|`.
+
+This lemma isolates that combinatorial step so the (remaining) analytic minorization plugs straight
+into the engine.  It depends on NEITHER the false rank-drop local limit NOR any renewal limit. -/
+
+/-- **Overlap from minorization (engine-facing, abstract).**  If a kernel `κ` is `≥ η` at both starts
+`n, n'` on every state of a finite set `S` that is contained in the engine's filtered slice
+`slice = T.filter q`, then the engine overlap over that slice is `≥ η · |S|`.  (We bound the slice sum
+below by its `S`-part; off-`S` summands are nonnegative because `κ ≥ 0`.) -/
+lemma overlap_ge_of_minorization
+    {κ : ℕ → ℕ → ℝ} {T : Finset ℕ} {q : ℕ → Prop} [DecidablePred q]
+    {S : Finset ℕ} {n n' : ℕ} {η : ℝ}
+    (hSslice : S ⊆ T.filter q)
+    (hκnn : ∀ z, 0 ≤ κ n z) (hκnn' : ∀ z, 0 ≤ κ n' z)
+    (hmin : ∀ z ∈ S, η ≤ κ n z ∧ η ≤ κ n' z) :
+    (η * S.card : ℝ) ≤ ∑ z ∈ T.filter q, min (κ n z) (κ n' z) := by
+  classical
+  -- the slice sum dominates its S-part (off-S terms are min of nonnegatives ≥ 0)
+  have hSpart : ∑ z ∈ S, min (κ n z) (κ n' z) ≤ ∑ z ∈ T.filter q, min (κ n z) (κ n' z) := by
+    apply Finset.sum_le_sum_of_subset_of_nonneg hSslice
+    intro z _ _; exact le_min (hκnn z) (hκnn' z)
+  -- on S, each min ≥ η
+  have hSlb : (η * S.card : ℝ) ≤ ∑ z ∈ S, min (κ n z) (κ n' z) := by
+    have hconst : ∑ _z ∈ S, η = η * S.card := by
+      rw [Finset.sum_const, nsmul_eq_mul, mul_comm]
+    rw [← hconst]
+    apply Finset.sum_le_sum
+    intro z hz
+    obtain ⟨h1, h2⟩ := hmin z hz
+    exact le_min h1 h2
+  linarith
+
 #print axioms incrTail_tendsto_zero
 #print axioms statOffset_zero_pos
 #print axioms statOffset_tail_tendsto_zero
 #print axioms offsetLaw_eq
 #print axioms offsetLaw_escape_eq
 #print axioms homogeneousRenewal_uniform_overshoot_overlap
+#print axioms overlap_ge_of_minorization
 
 end AnalyticCombinatorics.Ch8.Partitions.Renewal
