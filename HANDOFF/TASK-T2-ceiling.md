@@ -104,3 +104,64 @@ The route is mathematically sound and renewal-free.  Two genuine analytic estima
 (i) L4-residual = two-start common divisor-weighted value-window overlap; (ii) L5-escape = per-drop
 geometric tail minorant (resolving the conditional overshoot ratio).  Each is a `KernelWindow`-scale
 sliding-window development; neither is closeable by re-wrapping banked bricks.
+
+## UPDATE (R8 elementary-route run, Opus): L4 CLOSED, δ-overlap CLOSED, full chain wired modulo escape
+
+The R8 elementary idea (single common value window via σ(m) ≥ m) RESOLVES L4-residual: it needs NO
+two-start divisor estimate.  All bricks below are clean-3 `[propext, Classical.choice, Quot.sound]`,
+0 sorry/admit/native_decide/axiom, NEW files importing banked bricks.
+
+### `CeilingValueWindow.lean` — L4 (8 bricks, CLOSED)
+- `sigmaR_ge_self` : `(m:ℝ) ≤ σ(m)` for `1 ≤ m` (divisor `m ∣ m`).  [commit 6cce4a6]
+- `commonValueWindow T := Icc ((T+1)²/9 − 2T) (T²/9 − T)`; `cast_div9_bounds`.  [05d8988]
+- `commonValueWindow_jump_bounds` : for `rnk x = T`, `z ∈ W_T`: `1 ≤ z < x`, `T ≤ x−z ≤ 3T`,
+  `√x − √z ≤ 10`.  (floor/sqrt algebra)  [05d8988]
+- `commonValueWindow_subset_slice (A) (Tendsto A atTop atTop)` : `W_{R+A R} ⊆ slice`.  [7311b92]
+- `Pker_commonValueWindow_lower` : `∃ c>0, ∀ᶠ T, ∀ x z, rnk x = T → z∈W_T → c/T ≤ Pker x z`
+  with `c = (9/2)e^{−10C}`; uses ONLY σ(x−z) ≥ x−z ≥ T, z ≤ T²/9, √x−√z ≤ 10, kernelMass x ≤ 2.  [7311b92]
+- `commonValueWindow_card_linear` : `(1/2)T ≤ |W_T|` (real length (7T−1)/9).  [2dd7902]
+- `Pker_same_ceiling_oneStep_overlap (A) (hA)` : `∃ β>0` one-step value overlap `β=c/2` via banked
+  `Renewal.overlap_ge_of_minorization` (η=c/T, |S|≥T/2).  [aea2a06]
+- **`same_ceiling_enterBand_overlap (A) (hA)` = L4** : first-entrance value overlap `≥ β`, lifted via
+  banked `min_Pker_le_min_enterBandKer_sum`.  [aea2a06]
+
+### `CeilingCompose.lean` — δ-overlap (CLOSED)
+- **`Pker_ceilBand_inband_overlap (A) (hA)`** : `∃ δ = α·β > 0, ∀ᶠ R, ∀ n n' of rank ≥ R+A R, the
+  first-entrance laws into ceilBand R (A R) overlap ≥ δ on the in-band slice.**  Composition of
+  L3 (`Pker_hit_ceiling_level_mass_lower`, α) + L2 (`enterBandKer_factor_through_ceiling_level`) +
+  L4 (`same_ceiling_enterBand_overlap`, β) + L1 (`overlap_of_mixtures_of_pairwise_overlap`).  [3561bcf]
+  This is the engine's `hoverlap`-overlap clause.  NOTE: this BYPASSES the inhomogeneous-renewal-
+  with-holding coupling that `TASK-T2-gap.md` Step 2 flagged as the open obstruction — the σ≥m single
+  common minorant gives a uniform δ directly, no renewal regeneration needed.
+
+### `ErdosCeilingLimit.lean` — full assembly modulo escape (CLOSED clean-3)
+- `ceilA R := 1 + ⌊√(R+1)⌋`; `ceilA_tendsto`, `ceilA_sublinear` (≤ R/2), `ceilA_pos_eventually`.
+- `CeilingEscape : Prop` — the escape hypothesis (overshoot below floor R vanishes, e R → 0).
+- **`erdos_partition_limit_exists_of_escape (hesc : CeilingEscape) : ∃ a, 0 < a ∧ Tendsto u atTop (𝓝 a)`**
+  — clean-3.  Feeds `hitVal_cauchy_of_ceilBand_overlap_escape_variable` (δ-overlap banked, hharm via
+  `hitVal_eq`, hkm via `kernelMass_pos_eventually`+`rnk_ge_of`) ⟹ hhit ⟹
+  `erdos_partition_limit_exists_of_hit`.  [cf59194]
+
+### THE SINGLE REMAINING INPUT: `CeilingEscape` (the genuine wall)
+Reduces (via banked `enterBand_deep_mass_le_of_conditional`, EnterBandEscape.lean, with `tot ≡ 1`) to
+the per-vertex conditional, for every off-band `v` with `g := rnk v − (R+A R) ≥ 0`:
+
+  `tail_v(g + A R) ≤ (e R) · tail_v(g)`,   `tail_v(t) := ∑_{d > t} rankDropKer v d`.
+
+PROVEN-OUT MATCHING-CONSTANT OBSTRUCTION (this run, Opus): the upper majorant
+`Pker_rankDrop_tail_majorant` has rate `γ = C/60` (LOOSE); the true tail decay is `Θ(d·e^{−C d/3})`
+(`modelIntegral_ge` gives `e^{−(C/2)b}` with `b ≈ 2d/3` ⟹ `e^{−C d/3}`), so any provable LOWER bound
+has rate `γ' ≥ C/3`.  Since the conditional needs `tail(g+AR)/tail(g) ≤ e R` UNIFORMLY in `g`, the
+ratio's `g`-exponent is `−γ(g+AR) + γ' g = −γ AR + (γ'−γ)g`; with `γ' = C/3 > γ = C/60` this GROWS in
+`g` and the conditional fails.  Closing escape therefore requires BOTH:
+  (a) a TIGHTENED tail UPPER majorant with rate `γ ≈ C/3` (re-prove `Pker_rankDrop_tail_majorant`
+      with the tight constant, matching the true decay), AND
+  (b) the per-drop GEOMETRIC LOWER minorant `rankDropKer v d ≥ η_d ≳ d·e^{−C d/3}`, uniform in `d`
+      up to `d ≲ √v` at a SINGLE `v` — i.e. make `rankDropKer_ge_const_of_tband`'s eventual-in-`v`
+      threshold EXPLICIT in `(a,b,d)` (the `3b²/(2√v)` phase-cover error scales like `d²/√v`, needing
+      `v ≳ d⁴`), then a tail sum `∑_{d>g} η_d ≥ c·g·e^{−(C/3)g}` with the matching constant.
+`modelIntegral_ge` (the geometric-rate integral ingredient) is banked (`RankDropGeoMinor.lean`).
+This is a `KernelWindow`/`RankDropMinor`-scale sliding-window development at a NEW (per-drop, uniform-
+in-d, constant-matched) resolution; it is genuinely new mathematics, NOT re-wrapping banked bricks,
+and NOT effort.  Until (a)+(b) exist and produce a `CeilingEscape` witness, `erdos_partition_limit_exists`
+is closed ONLY modulo `CeilingEscape`.
