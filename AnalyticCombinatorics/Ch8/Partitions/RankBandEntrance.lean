@@ -1,9 +1,11 @@
 import AnalyticCombinatorics.Ch8.Partitions.HitValBound
 import AnalyticCombinatorics.Ch8.Partitions.DoeblinOverlap
+import AnalyticCombinatorics.Ch8.Partitions.DoeblinEscape
 import AnalyticCombinatorics.Ch8.Partitions.TailBand
 import AnalyticCombinatorics.Ch8.Partitions.StepContraction
 import AnalyticCombinatorics.Ch8.Partitions.TailOscConverge
 import AnalyticCombinatorics.Ch8.Partitions.ErdosConcrete
+import AnalyticCombinatorics.Ch8.Partitions.ErdosRenewalConnect
 
 /-!
 # TASK 11: the first-entrance (run-until-hit) rank-band Doeblin engine
@@ -197,5 +199,130 @@ lemma mem_ceilBand_iff {R A k : ℕ} :
 lemma not_mem_ceilBand_rank_ge {R A m : ℕ} (hm : m ∉ ceilBand R A) : R + A ≤ rnk m := by
   by_contra hcon
   exact hm (mem_ceilBand_iff.mpr (Nat.not_le.mp hcon))
+
+/-- **Step D — the abstract convergence engine (honest form).**
+
+For cofinally many band floors `R`, the first-entrance laws into the ceiling down-set
+`ceilBand R A`, from any two states of rank `≥ R + A`, share an **in-band overlap** `≥ δ` on the part
+`{R ≤ rnk z}` and put **overshoot mass** `≤ e R` on the part `{rnk z < R}`, with `e R → 0`.  Then
+`hitVal Pker rnk J φ` converges.
+
+The proof iterates the escape-split Doeblin contraction (banked `doeblin_escape_bound`) over descending
+ceilings via the entrance decomposition (Step B): the tail oscillation contracts as
+`V(R) ≤ (1−δ)·V(R) + 3·(e R)·Mφ` against the entrance average over the band, lifted by
+`tailOsc_le_of_pairwise` and driven to `0` by `tendsto_zero_of_step_contraction`; then
+`tendsto_of_tail_osc_to_zero` gives convergence.  Non-circular: the limit is produced by the
+contraction.
+
+The escape term `e R` is the genuine analytic content.  A *fixed* width `A` leaves a non-vanishing
+escape floor (overshoot below `R` from a first-entrance has uniformly positive probability for fixed
+`A`); driving `e R → 0` is the open renewal-overshoot equidistribution input.  See
+`HANDOFF/TASK11-gap.md`. -/
+theorem hitVal_cauchy_of_ceilBand_overlap_escape
+    {J A : ℕ} {φ : ℕ → ℝ} {δ Mφ : ℝ} {e : ℕ → ℝ}
+    (hδ : 0 < δ) (hδ1 : δ ≤ 1)
+    (hMφ0 : 0 ≤ Mφ) (hφ : ∀ m, |φ m| ≤ Mφ)
+    (he0 : ∀ R, 0 ≤ e R) (hetend : Tendsto e atTop (𝓝 0))
+    (hharm : ∀ m, J ≤ rnk m →
+        hitVal Pker rnk J φ m = ∑ k ∈ Finset.range m, Pker m k * hitVal Pker rnk J φ k)
+    (hkm : ∀ m, J ≤ rnk m → kernelMass m ≠ 0)
+    (hoverlap : ∀ᶠ R in atTop, ∀ n n', R + A ≤ rnk n → R + A ≤ rnk n' →
+        (δ ≤ ∑ z ∈ (ceilBand R A).filter (fun z => R ≤ rnk z),
+                min (enterBandKer Pker (ceilBand R A) n z)
+                    (enterBandKer Pker (ceilBand R A) n' z))
+        ∧ (∑ z ∈ (ceilBand R A).filter (fun z => ¬ R ≤ rnk z),
+                enterBandKer Pker (ceilBand R A) n z ≤ e R)
+        ∧ (∑ z ∈ (ceilBand R A).filter (fun z => ¬ R ≤ rnk z),
+                enterBandKer Pker (ceilBand R A) n' z ≤ e R)) :
+    ∃ L : ℝ, Tendsto (fun n => hitVal Pker rnk J φ n) atTop (𝓝 L) := by
+  classical
+  set h := fun n => hitVal Pker rnk J φ n with hh
+  -- `h` is bounded by `Mφ`
+  have hM : ∀ n, |h n| ≤ Mφ :=
+    hitVal_abs_le hMφ0 hφ (fun n k => Pker_nonneg n k) (fun n _ => Pker_sum_le_one n)
+  -- `Pker` support
+  have hPsupp : ∀ n k, n ≤ k → Pker n k = 0 := Pker_supp
+  -- choose the threshold floor R₁ ≥ J above which the overlap/escape holds
+  obtain ⟨R₀, hR₀⟩ := eventually_atTop.1 hoverlap
+  set R₁ := max (max R₀ J) 9 with hR₁
+  -- pairwise contraction with floor R: h n − h n' ≤ (1−δ)·tailOsc(R) + 3·(e R)·Mφ
+  have hpair : ∀ R, R₁ ≤ R → ∀ n n', R + A ≤ rnk n → R + A ≤ rnk n' →
+      h n - h n' ≤ (1 - δ) * tailOsc h rnk R + 3 * e R * Mφ := by
+    intro R hR n n' hn hn'
+    have hRJ : J ≤ R := le_trans (le_trans (le_max_right R₀ J) (le_max_left _ 9)) hR
+    have hRR₀ : R₀ ≤ R := le_trans (le_trans (le_max_left R₀ J) (le_max_left _ 9)) hR
+    have hR9 : 9 ≤ R := le_trans (le_max_right _ 9) hR
+    set Bnd := ceilBand R A with hBnd
+    -- harmonicity off the ceiling band (off-band points have rank ≥ R+A ≥ J)
+    have hharmB : ∀ m, m ∉ Bnd → h m = ∑ k ∈ Finset.range m, Pker m k * h k := by
+      intro m hm
+      have : R + A ≤ rnk m := not_mem_ceilBand_rank_ge hm
+      exact hharm m (le_trans (le_trans hRJ (Nat.le_add_right R A)) this)
+    -- entrance decompositions
+    have hdec_n : h n = ∑ z ∈ Bnd, enterBandKer Pker Bnd n z * h z :=
+      hitVal_eq_enterBand_average hharmB n
+    have hdec_n' : h n' = ∑ z ∈ Bnd, enterBandKer Pker Bnd n' z * h z :=
+      hitVal_eq_enterBand_average hharmB n'
+    -- row sums = 1 (off-band points are row-stochastic since rank ≥ J)
+    have hrow : ∀ m, m ∉ Bnd → ∑ k ∈ Finset.range m, Pker m k = 1 := by
+      intro m hm
+      have hmR : R + A ≤ rnk m := not_mem_ceilBand_rank_ge hm
+      have hJm : J ≤ rnk m := le_trans (le_trans hRJ (Nat.le_add_right R A)) hmR
+      have h9m : (9 : ℕ) ≤ rnk m := le_trans hR9 (le_trans (Nat.le_add_right R A) hmR)
+      have hge : (2 : ℕ) ≤ m := rnk_ge_of (by omega : 3 * 2 + 3 ≤ rnk m)
+      exact Pker_mass hge (hkm m hJm)
+    have hrn : ∑ z ∈ Bnd, enterBandKer Pker Bnd n z = 1 := enterBandKer_row_sum hrow n
+    have hrn' : ∑ z ∈ Bnd, enterBandKer Pker Bnd n' z = 1 := enterBandKer_row_sum hrow n'
+    -- overlap + escape facts
+    obtain ⟨hov, hbad_n, hbad_n'⟩ := hR₀ R hRR₀ n n' hn hn'
+    -- band values of h lie in [tailInf(R), tailInf(R)+tailOsc(R)] on the in-band good part
+    have hfband : ∀ z ∈ Bnd.filter (fun z => R ≤ rnk z),
+        tailInf h rnk R ≤ h z ∧ h z ≤ tailInf h rnk R + tailOsc h rnk R := by
+      intro z hz
+      have hzR : R ≤ rnk z := (Finset.mem_filter.mp hz).2
+      obtain ⟨hb1, hb2⟩ := tail_band hM hzR
+      exact ⟨hb1, by rw [tailOsc]; linarith⟩
+    -- apply the escape-split Doeblin contraction
+    have hdoeb := doeblin_escape_bound (s := Bnd)
+      (p := enterBandKer Pker Bnd n) (q := enterBandKer Pker Bnd n') (f := h)
+      (δ := δ) (η := e R) (lo := tailInf h rnk R) (W := tailOsc h rnk R) (M := Mφ)
+      (fun z => R ≤ rnk z)
+      (fun z _ => enterBandKer_nonneg (fun a b => Pker_nonneg a b) n z)
+      (fun z _ => enterBandKer_nonneg (fun a b => Pker_nonneg a b) n' z)
+      hrn hrn' hov hbad_n hbad_n' hfband
+      (tailOsc_nonneg rnk_tendsto_atTop hM R) (fun z _ => hM z)
+      (tailInf_abs_le rnk_tendsto_atTop hM R) (he0 R)
+    rw [← hdec_n, ← hdec_n'] at hdoeb
+    calc h n - h n' ≤ |h n - h n'| := le_abs_self _
+      _ ≤ (1 - δ) * tailOsc h rnk R + 3 * e R * Mφ := hdoeb
+  -- lift to the tail-oscillation step contraction (floor R rises by A each band; e is the forcing)
+  have hVcontract : ∀ R, R₁ + A ≤ R →
+      tailOsc h rnk R ≤ (1 - δ) * tailOsc h rnk (R - A) + 3 * e (R - A) * Mφ := by
+    intro R hR
+    have hRA : R₁ ≤ R - A := by omega
+    refine tailOsc_le_of_pairwise rnk_tendsto_atTop (fun n n' hn hn' => ?_)
+    have hn2 : (R - A) + A ≤ rnk n := by omega
+    have hn'2 : (R - A) + A ≤ rnk n' := by omega
+    exact hpair (R - A) hRA n n' hn2 hn'2
+  -- drive the tail oscillation to zero (forcing 3·e·Mφ → 0; geometric factor 1−δ < 1)
+  have he_step : Tendsto (fun n => 3 * e n * Mφ) atTop (𝓝 0) := by
+    have h2 : Tendsto (fun n => 3 * e n * Mφ) atTop (𝓝 (3 * 0 * Mφ)) :=
+      (hetend.const_mul 3).mul_const Mφ
+    simpa using h2
+  have hWnn : ∀ n, 0 ≤ tailOsc h rnk n := fun n => tailOsc_nonneg rnk_tendsto_atTop hM n
+  have hWbd : BddAbove (Set.range (fun R => tailOsc h rnk R)) :=
+    ⟨2 * Mφ, by rintro _ ⟨n, rfl⟩; exact tailOsc_le_two_M rnk_tendsto_atTop hM n⟩
+  -- step contraction with step length A (positive)
+  have hrec : ∀ᶠ n in atTop,
+      tailOsc h rnk (n + A) ≤ (1 - δ) * tailOsc h rnk n + 3 * e n * Mφ := by
+    filter_upwards [eventually_ge_atTop R₁] with n hn
+    have hge : R₁ + A ≤ n + A := by omega
+    have hc := hVcontract (n + A) hge
+    rwa [Nat.add_sub_cancel] at hc
+  have hWtend : Tendsto (fun R => tailOsc h rnk R) atTop (𝓝 0) :=
+    tendsto_zero_of_step_contraction (q := 1 - δ) (L := A)
+      (by linarith) (by linarith) hWnn hWbd he_step hrec
+  exact tendsto_of_tail_osc_to_zero rnk_tendsto_atTop hWtend
+    (fun R i j hi hj => tailOsc_abs_le hM hi hj)
 
 end AnalyticCombinatorics.Ch8.Partitions.Erdos
