@@ -325,4 +325,123 @@ theorem hitVal_cauchy_of_ceilBand_overlap_escape
   exact tendsto_of_tail_osc_to_zero rnk_tendsto_atTop hWtend
     (fun R i j hi hj => tailOsc_abs_le hM hi hj)
 
+/-- **Step D′ — variable-band convergence engine.**
+
+The exact analogue of `hitVal_cauchy_of_ceilBand_overlap_escape` with a **growing** band width
+`A R` (variable in the floor `R`) instead of a fixed `A`.  The overlap/escape pair is now measured
+against the variable ceiling down-set `ceilBand R (A R)`, and the per-band Doeblin contraction
+`W(R + A R) ≤ (1−δ)·W R + 3·(e R)·Mφ` (with `W := tailOsc hitVal rnk`, which is antitone) is driven to
+`0` by `tendsto_zero_of_variable_step_contraction`.  Everything else mirrors the fixed-A engine
+verbatim.  This is the form needed for the renewal-overshoot route, where the escape mass `q(A)` only
+vanishes as `A → ∞`. -/
+theorem hitVal_cauchy_of_ceilBand_overlap_escape_variable
+    {J : ℕ} {φ : ℕ → ℝ} {δ Mφ : ℝ} {e : ℕ → ℝ} (A : ℕ → ℕ)
+    (hAunbounded : Tendsto A atTop atTop) (hAsublinear : ∀ᶠ R in atTop, A R ≤ R / 2)
+    (hApos : ∀ᶠ R in atTop, 1 ≤ A R)
+    (hδ : 0 < δ) (hδ1 : δ ≤ 1)
+    (hMφ0 : 0 ≤ Mφ) (hφ : ∀ m, |φ m| ≤ Mφ)
+    (he0 : ∀ R, 0 ≤ e R) (hetend : Tendsto e atTop (𝓝 0))
+    (hharm : ∀ m, J ≤ rnk m →
+        hitVal Pker rnk J φ m = ∑ k ∈ Finset.range m, Pker m k * hitVal Pker rnk J φ k)
+    (hkm : ∀ m, J ≤ rnk m → kernelMass m ≠ 0)
+    (hoverlap : ∀ᶠ R in atTop, ∀ n n', R + A R ≤ rnk n → R + A R ≤ rnk n' →
+        (δ ≤ ∑ z ∈ (ceilBand R (A R)).filter (fun z => R ≤ rnk z),
+                min (enterBandKer Pker (ceilBand R (A R)) n z)
+                    (enterBandKer Pker (ceilBand R (A R)) n' z))
+        ∧ (∑ z ∈ (ceilBand R (A R)).filter (fun z => ¬ R ≤ rnk z),
+                enterBandKer Pker (ceilBand R (A R)) n z ≤ e R)
+        ∧ (∑ z ∈ (ceilBand R (A R)).filter (fun z => ¬ R ≤ rnk z),
+                enterBandKer Pker (ceilBand R (A R)) n' z ≤ e R)) :
+    ∃ L : ℝ, Tendsto (fun n => hitVal Pker rnk J φ n) atTop (𝓝 L) := by
+  classical
+  set h := fun n => hitVal Pker rnk J φ n with hh
+  -- `h` is bounded by `Mφ`
+  have hM : ∀ n, |h n| ≤ Mφ :=
+    hitVal_abs_le hMφ0 hφ (fun n k => Pker_nonneg n k) (fun n _ => Pker_sum_le_one n)
+  -- `Pker` support
+  have hPsupp : ∀ n k, n ≤ k → Pker n k = 0 := Pker_supp
+  -- choose the threshold floor R₁ ≥ J above which the overlap/escape holds
+  obtain ⟨R₀, hR₀⟩ := eventually_atTop.1 hoverlap
+  set R₁ := max (max R₀ J) 9 with hR₁
+  -- pairwise contraction with floor R: h n − h n' ≤ (1−δ)·tailOsc(R) + 3·(e R)·Mφ
+  have hpair : ∀ R, R₁ ≤ R → ∀ n n', R + A R ≤ rnk n → R + A R ≤ rnk n' →
+      h n - h n' ≤ (1 - δ) * tailOsc h rnk R + 3 * e R * Mφ := by
+    intro R hR n n' hn hn'
+    have hRJ : J ≤ R := le_trans (le_trans (le_max_right R₀ J) (le_max_left _ 9)) hR
+    have hRR₀ : R₀ ≤ R := le_trans (le_trans (le_max_left R₀ J) (le_max_left _ 9)) hR
+    have hR9 : 9 ≤ R := le_trans (le_max_right _ 9) hR
+    set Bnd := ceilBand R (A R) with hBnd
+    -- harmonicity off the ceiling band (off-band points have rank ≥ R+A R ≥ J)
+    have hharmB : ∀ m, m ∉ Bnd → h m = ∑ k ∈ Finset.range m, Pker m k * h k := by
+      intro m hm
+      have : R + A R ≤ rnk m := not_mem_ceilBand_rank_ge hm
+      exact hharm m (le_trans (le_trans hRJ (Nat.le_add_right R (A R))) this)
+    -- entrance decompositions
+    have hdec_n : h n = ∑ z ∈ Bnd, enterBandKer Pker Bnd n z * h z :=
+      hitVal_eq_enterBand_average hharmB n
+    have hdec_n' : h n' = ∑ z ∈ Bnd, enterBandKer Pker Bnd n' z * h z :=
+      hitVal_eq_enterBand_average hharmB n'
+    -- row sums = 1 (off-band points are row-stochastic since rank ≥ J)
+    have hrow : ∀ m, m ∉ Bnd → ∑ k ∈ Finset.range m, Pker m k = 1 := by
+      intro m hm
+      have hmR : R + A R ≤ rnk m := not_mem_ceilBand_rank_ge hm
+      have hJm : J ≤ rnk m := le_trans (le_trans hRJ (Nat.le_add_right R (A R))) hmR
+      have h9m : (9 : ℕ) ≤ rnk m := le_trans hR9 (le_trans (Nat.le_add_right R (A R)) hmR)
+      have hge : (2 : ℕ) ≤ m := rnk_ge_of (by omega : 3 * 2 + 3 ≤ rnk m)
+      exact Pker_mass hge (hkm m hJm)
+    have hrn : ∑ z ∈ Bnd, enterBandKer Pker Bnd n z = 1 := enterBandKer_row_sum hrow n
+    have hrn' : ∑ z ∈ Bnd, enterBandKer Pker Bnd n' z = 1 := enterBandKer_row_sum hrow n'
+    -- overlap + escape facts
+    obtain ⟨hov, hbad_n, hbad_n'⟩ := hR₀ R hRR₀ n n' hn hn'
+    -- band values of h lie in [tailInf(R), tailInf(R)+tailOsc(R)] on the in-band good part
+    have hfband : ∀ z ∈ Bnd.filter (fun z => R ≤ rnk z),
+        tailInf h rnk R ≤ h z ∧ h z ≤ tailInf h rnk R + tailOsc h rnk R := by
+      intro z hz
+      have hzR : R ≤ rnk z := (Finset.mem_filter.mp hz).2
+      obtain ⟨hb1, hb2⟩ := tail_band hM hzR
+      exact ⟨hb1, by rw [tailOsc]; linarith⟩
+    -- apply the escape-split Doeblin contraction
+    have hdoeb := doeblin_escape_bound (s := Bnd)
+      (p := enterBandKer Pker Bnd n) (q := enterBandKer Pker Bnd n') (f := h)
+      (δ := δ) (η := e R) (lo := tailInf h rnk R) (W := tailOsc h rnk R) (M := Mφ)
+      (fun z => R ≤ rnk z)
+      (fun z _ => enterBandKer_nonneg (fun a b => Pker_nonneg a b) n z)
+      (fun z _ => enterBandKer_nonneg (fun a b => Pker_nonneg a b) n' z)
+      hrn hrn' hov hbad_n hbad_n' hfband
+      (tailOsc_nonneg rnk_tendsto_atTop hM R) (fun z _ => hM z)
+      (tailInf_abs_le rnk_tendsto_atTop hM R) (he0 R)
+    rw [← hdec_n, ← hdec_n'] at hdoeb
+    calc h n - h n' ≤ |h n - h n'| := le_abs_self _
+      _ ≤ (1 - δ) * tailOsc h rnk R + 3 * e R * Mφ := hdoeb
+  -- lift to the tail-oscillation step contraction: W(R + A R) ≤ (1−δ)·W R + 3·(e R)·Mφ
+  have hVcontract : ∀ R, R₁ ≤ R →
+      tailOsc h rnk (R + A R) ≤ (1 - δ) * tailOsc h rnk R + 3 * e R * Mφ := by
+    intro R hR
+    refine tailOsc_le_of_pairwise rnk_tendsto_atTop (fun n n' hn hn' => ?_)
+    exact hpair R hR n n' hn hn'
+  -- drive the tail oscillation to zero (forcing 3·e·Mφ → 0; geometric factor 1−δ < 1)
+  have he_step : Tendsto (fun n => 3 * e n * Mφ) atTop (𝓝 0) := by
+    have h2 : Tendsto (fun n => 3 * e n * Mφ) atTop (𝓝 (3 * 0 * Mφ)) :=
+      (hetend.const_mul 3).mul_const Mφ
+    simpa using h2
+  have hWnn : ∀ n, 0 ≤ tailOsc h rnk n := fun n => tailOsc_nonneg rnk_tendsto_atTop hM n
+  have hWbd : BddAbove (Set.range (fun R => tailOsc h rnk R)) :=
+    ⟨2 * Mφ, by rintro _ ⟨n, rfl⟩; exact tailOsc_le_two_M rnk_tendsto_atTop hM n⟩
+  -- W := tailOsc is antitone (deeper tail ⟹ larger oscillation)
+  have hWmono : Antitone (fun R => tailOsc h rnk R) := fun R R' hRR' =>
+    tailOsc_antitone rnk_tendsto_atTop hM hRR'
+  -- variable-step recursion eventually holds (floor ≥ R₁)
+  have hrec : ∀ᶠ R in atTop,
+      tailOsc h rnk (R + A R) ≤ (1 - δ) * tailOsc h rnk R + 3 * e R * Mφ := by
+    filter_upwards [eventually_ge_atTop R₁] with R hR
+    exact hVcontract R hR
+  -- nonnegativity of the forcing (needed for the variable driver shape, harmless here)
+  have hWtend : Tendsto (fun R => tailOsc h rnk R) atTop (𝓝 0) :=
+    tendsto_zero_of_variable_step_contraction (q := 1 - δ) (A := A)
+      (by linarith) (by linarith) hWnn hWbd hWmono hApos hAunbounded hAsublinear he_step hrec
+  exact tendsto_of_tail_osc_to_zero rnk_tendsto_atTop hWtend
+    (fun R i j hi hj => tailOsc_abs_le hM hi hj)
+
+#print axioms hitVal_cauchy_of_ceilBand_overlap_escape_variable
+
 end AnalyticCombinatorics.Ch8.Partitions.Erdos
