@@ -362,4 +362,97 @@ lemma rankDropKer_ge_const_of_tband {a b tlo thi : ℝ} (ha : 0 < a) (hab : a < 
     linarith [hthi, hmB]
   exact le_trans hIgev (rankDropKer_ge_window ha hab hd hrnkdv hsvbv hkposv hA hB)
 
+/-! ### The eight subwindows of the finite phase cover
+
+For drop `d = 1` (four windows) and drop `d = 2` (four windows), each with rational endpoints whose
+`t`-band `[3b/2−d, 3a/2−d+1]` covers a piece of `[0,1)`; the eight `t`-bands together cover `[0,1)`
+twice (once for each drop), as verified numerically.  We package each subwindow's `t`-band drop
+bound and take `η` to be the minimum of the eight `modelIntegral/2` values. -/
+
+/-- **T2.1 Step 1a — phase-uniform per-drop minorization.**  There is `η > 0` such that, eventually
+in `v`, both `rankDropKer v 1 ≥ η` and `rankDropKer v 2 ≥ η`.  The drop-`d` `m`-window slides with
+`frac(3√v)`, so no single fixed sub-window certifies the mass; instead a finite family of fixed
+sub-windows whose phase `t`-bands cover `[0,1)` (separately for `d = 1` and `d = 2`) is used, and
+`η` is the minimum of their (positive) window half-masses. -/
+theorem Pker_rankDrop_minorization :
+    ∃ η : ℝ, 0 < η ∧ ∀ᶠ v : ℕ in atTop,
+      η ≤ rankDropKer v 1 ∧ η ≤ rankDropKer v 2 := by
+  -- the eight half-integrals
+  set I1 := Model.modelIntegral C 0.10 0.40 / 2 with hI1
+  set I2 := Model.modelIntegral C 0.40 0.66 / 2 with hI2
+  set I3 := Model.modelIntegral C 0.62 0.90 / 2 with hI3
+  set I4 := Model.modelIntegral C 0.86 1.14 / 2 with hI4
+  set J1 := Model.modelIntegral C 0.72 1.00 / 2 with hJ1
+  set J2 := Model.modelIntegral C 0.96 1.24 / 2 with hJ2
+  set J3 := Model.modelIntegral C 1.20 1.48 / 2 with hJ3
+  set J4 := Model.modelIntegral C 1.44 1.74 / 2 with hJ4
+  -- positivity of each
+  have pI1 : 0 < I1 := by rw [hI1]; have := modelIntegral_pos (a := 0.10) (b := 0.40) (by norm_num) (by norm_num); linarith
+  have pI2 : 0 < I2 := by rw [hI2]; have := modelIntegral_pos (a := 0.40) (b := 0.66) (by norm_num) (by norm_num); linarith
+  have pI3 : 0 < I3 := by rw [hI3]; have := modelIntegral_pos (a := 0.62) (b := 0.90) (by norm_num) (by norm_num); linarith
+  have pI4 : 0 < I4 := by rw [hI4]; have := modelIntegral_pos (a := 0.86) (b := 1.14) (by norm_num) (by norm_num); linarith
+  have pJ1 : 0 < J1 := by rw [hJ1]; have := modelIntegral_pos (a := 0.72) (b := 1.00) (by norm_num) (by norm_num); linarith
+  have pJ2 : 0 < J2 := by rw [hJ2]; have := modelIntegral_pos (a := 0.96) (b := 1.24) (by norm_num) (by norm_num); linarith
+  have pJ3 : 0 < J3 := by rw [hJ3]; have := modelIntegral_pos (a := 1.20) (b := 1.48) (by norm_num) (by norm_num); linarith
+  have pJ4 : 0 < J4 := by rw [hJ4]; have := modelIntegral_pos (a := 1.44) (b := 1.74) (by norm_num) (by norm_num); linarith
+  -- η := min of the eight
+  set η : ℝ := min (min (min I1 I2) (min I3 I4)) (min (min J1 J2) (min J3 J4)) with hηdef
+  have hηpos : 0 < η := by
+    rw [hηdef]
+    exact lt_min (lt_min (lt_min pI1 pI2) (lt_min pI3 pI4))
+      (lt_min (lt_min pJ1 pJ2) (lt_min pJ3 pJ4))
+  -- the eight t-band drop bounds
+  have b1 := rankDropKer_ge_const_of_tband (a := 0.10) (b := 0.40) (tlo := 0) (thi := 0.1)
+    (by norm_num) (by norm_num) (d := 1) (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+  have b2 := rankDropKer_ge_const_of_tband (a := 0.40) (b := 0.66) (tlo := 0.1) (thi := 0.5)
+    (by norm_num) (by norm_num) (d := 1) (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+  have b3 := rankDropKer_ge_const_of_tband (a := 0.62) (b := 0.90) (tlo := 0.5) (thi := 0.85)
+    (by norm_num) (by norm_num) (d := 1) (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+  have b4 := rankDropKer_ge_const_of_tband (a := 0.86) (b := 1.14) (tlo := 0.85) (thi := 1)
+    (by norm_num) (by norm_num) (d := 1) (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+  have c1 := rankDropKer_ge_const_of_tband (a := 0.72) (b := 1.00) (tlo := 0) (thi := 0.05)
+    (by norm_num) (by norm_num) (d := 2) (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+  have c2 := rankDropKer_ge_const_of_tband (a := 0.96) (b := 1.24) (tlo := 0.05) (thi := 0.4)
+    (by norm_num) (by norm_num) (d := 2) (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+  have c3 := rankDropKer_ge_const_of_tband (a := 1.20) (b := 1.48) (tlo := 0.4) (thi := 0.75)
+    (by norm_num) (by norm_num) (d := 2) (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+  have c4 := rankDropKer_ge_const_of_tband (a := 1.44) (b := 1.74) (tlo := 0.75) (thi := 1)
+    (by norm_num) (by norm_num) (d := 2) (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+  -- t ∈ [0,1) always
+  have hphase : ∀ᶠ v : ℕ in atTop,
+      0 ≤ 3 * Real.sqrt (v : ℝ) - (rnk v : ℝ) ∧ 3 * Real.sqrt (v : ℝ) - (rnk v : ℝ) < 1 := by
+    filter_upwards with v
+    obtain ⟨h1, h2⟩ := rnk_sqrt_bounds v
+    exact ⟨by linarith, by linarith⟩
+  refine ⟨η, hηpos, ?_⟩
+  filter_upwards [b1, b2, b3, b4, c1, c2, c3, c4, hphase]
+    with v hb1 hb2 hb3 hb4 hc1 hc2 hc3 hc4 ⟨ht0, ht1⟩
+  set t : ℝ := 3 * Real.sqrt (v : ℝ) - (rnk v : ℝ) with htdef
+  -- η ≤ each I/J value
+  have leI1 : η ≤ I1 := le_trans (min_le_left _ _) (le_trans (min_le_left _ _) (min_le_left _ _))
+  have leI2 : η ≤ I2 := le_trans (min_le_left _ _) (le_trans (min_le_left _ _) (min_le_right _ _))
+  have leI3 : η ≤ I3 := le_trans (min_le_left _ _) (le_trans (min_le_right _ _) (min_le_left _ _))
+  have leI4 : η ≤ I4 := le_trans (min_le_left _ _) (le_trans (min_le_right _ _) (min_le_right _ _))
+  have leJ1 : η ≤ J1 := le_trans (min_le_right _ _) (le_trans (min_le_left _ _) (min_le_left _ _))
+  have leJ2 : η ≤ J2 := le_trans (min_le_right _ _) (le_trans (min_le_left _ _) (min_le_right _ _))
+  have leJ3 : η ≤ J3 := le_trans (min_le_right _ _) (le_trans (min_le_right _ _) (min_le_left _ _))
+  have leJ4 : η ≤ J4 := le_trans (min_le_right _ _) (le_trans (min_le_right _ _) (min_le_right _ _))
+  constructor
+  · -- drop 1: pick subwindow by where t lies
+    rcases le_or_gt t 0.1 with h | h
+    · exact le_trans leI1 (hb1 ⟨ht0, h⟩)
+    · rcases le_or_gt t 0.5 with h2 | h2
+      · exact le_trans leI2 (hb2 ⟨le_of_lt h, h2⟩)
+      · rcases le_or_gt t 0.85 with h3 | h3
+        · exact le_trans leI3 (hb3 ⟨le_of_lt h2, h3⟩)
+        · exact le_trans leI4 (hb4 ⟨le_of_lt h3, le_of_lt ht1⟩)
+  · -- drop 2
+    rcases le_or_gt t 0.05 with h | h
+    · exact le_trans leJ1 (hc1 ⟨ht0, h⟩)
+    · rcases le_or_gt t 0.4 with h2 | h2
+      · exact le_trans leJ2 (hc2 ⟨le_of_lt h, h2⟩)
+      · rcases le_or_gt t 0.75 with h3 | h3
+        · exact le_trans leJ3 (hc3 ⟨le_of_lt h2, h3⟩)
+        · exact le_trans leJ4 (hc4 ⟨le_of_lt h3, le_of_lt ht1⟩)
+
 end AnalyticCombinatorics.Ch8.Partitions.Erdos
