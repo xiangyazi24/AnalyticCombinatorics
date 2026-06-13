@@ -63,4 +63,43 @@ theorem tendsto_zero_of_step_contraction {W e : ℕ → ℝ} {q : ℝ} {L : ℕ}
     linarith
   exact tendsto_of_liminf_eq_limsup hliminf0 (by rw [← hΛ]; exact hΛ0) hbddU hbddL
 
+/-- **Variable-step contraction (antitone form).**  When `W` is antitone and bounded below by `0`, a
+geometric contraction `W(R + A R) ≤ q·W R + e R` with `0 ≤ q < 1`, `e → 0` and `A R → ∞` (so the
+contraction couples `W` to its own tail at `R + A R → ∞`) forces `W → 0`.  Much easier than the
+fixed-step limsup argument: an antitone `W ≥ 0` converges to `ℓ := ⨅ W ≥ 0`, both sides of the
+recursion tend to limits, and passing to the limit gives `ℓ ≤ q·ℓ`, hence `ℓ = 0`. -/
+theorem tendsto_zero_of_variable_step_contraction
+    {W e : ℕ → ℝ} {q : ℝ} {A : ℕ → ℕ}
+    (hq0 : 0 ≤ q) (hq1 : q < 1)
+    (hWnn : ∀ R, 0 ≤ W R) (hWbd : BddAbove (Set.range W))
+    (hWmono : Antitone W)
+    (hApos : ∀ᶠ R in atTop, 1 ≤ A R)
+    (hAunbounded : Tendsto A atTop atTop)
+    (hAsublinear : ∀ᶠ R in atTop, A R ≤ R / 2)
+    (he : Tendsto e atTop (𝓝 0))
+    (hrec : ∀ᶠ R in atTop, W (R + A R) ≤ q * W R + e R) :
+    Tendsto W atTop (𝓝 0) := by
+  -- `W` antitone, bounded below by `0` ⟹ converges to `ℓ := ⨅ W ≥ 0`.
+  have hBB : BddBelow (Set.range W) := ⟨0, by rintro _ ⟨n, rfl⟩; exact hWnn n⟩
+  set ℓ : ℝ := ⨅ R, W R with hℓ
+  have hWtend : Tendsto W atTop (𝓝 ℓ) := tendsto_atTop_ciInf hWmono hBB
+  -- `ℓ ≥ 0` (infimum of nonnegatives).
+  have hℓnn : 0 ≤ ℓ := le_ciInf (fun R => hWnn R)
+  -- `R + A R → ∞`, since `A ≥ 0`, so `R ≤ R + A R`.
+  have hshiftTop : Tendsto (fun R => R + A R) atTop atTop :=
+    tendsto_atTop_mono (fun R => Nat.le_add_right R (A R)) tendsto_id
+  -- Hence `W (R + A R) → ℓ` (compose the convergent `W` with `R + A R → ∞`).
+  have hWshift : Tendsto (fun R => W (R + A R)) atTop (𝓝 ℓ) := hWtend.comp hshiftTop
+  -- RHS `q·W R + e R → q·ℓ + 0 = q·ℓ`.
+  have hRHS : Tendsto (fun R => q * W R + e R) atTop (𝓝 (q * ℓ)) := by
+    have h1 : Tendsto (fun R => q * W R) atTop (𝓝 (q * ℓ)) := hWtend.const_mul q
+    simpa using h1.add he
+  -- Pass to the limit in `W (R + A R) ≤ q·W R + e R`: `ℓ ≤ q·ℓ`.
+  have hℓle : ℓ ≤ q * ℓ := le_of_tendsto_of_tendsto hWshift hRHS hrec
+  -- `(1 − q)·ℓ ≤ 0`, `1 − q > 0`, `ℓ ≥ 0` ⟹ `ℓ = 0`.
+  have hℓ0 : ℓ = 0 := by nlinarith [hℓnn, hℓle, hq1]
+  rwa [hℓ0] at hWtend
+
+#print axioms tendsto_zero_of_variable_step_contraction
+
 end AnalyticCombinatorics.Ch8.Partitions.Erdos
