@@ -127,3 +127,78 @@ File:line anchors:
 - density source: `KernelWindow.erdos_kernel_window` = `KernelWindow.lean:200`
 - engine to feed: `hitVal_cauchy_of_ceilBand_overlap_escape_variable` = `RankBandEntrance.lean:337`
 - banked hard core: `homogeneousRenewal_uniform_overshoot_overlap` = `RenewalOverlap.lean:262`
+
+---
+
+## UPDATE (T2.1-finish run): Step 1b banked; Steps 1a/2/3 obstructions located precisely
+
+**New banked file `RankDropKer.lean` (all clean-3, `[propext, Classical.choice, Quot.sound]`):**
+
+- `rankDropKer v d` — the rank-drop law of `Pker` (the pushforward of `Pker v ·` under
+  `k ↦ rnk v − rnk k`); `rankDropKer_nonneg`.
+- `large_drop_forces_large_jump` — drop `> A` on step `v→k` ⟹ jump `v−k > (A/3)√v`. The *upper*
+  rank-drop bound; unaffected by the floor oscillation.
+- `rankDropKer_tail_eq_mass` — `∑_{d>A} rankDropKer v d = ∑_{k: A<drop<v} Pker v k` (exact regrouping).
+- `rankDrop_mass_le_far_window`, `far_window_split_le`, `left_block_tail_le`, `left_block_const_bound`,
+  `succ_mul_exp_neg_le` — supporting bricks.
+- **`Pker_rankDrop_tail_majorant` (Step 1b, DONE):**
+  `∃ γ C₀, 0<γ ∧ ∀ᶠ v, ∀ A, ∑_{d>A} rankDropKer v d ≤ C₀·(A+1)·e^{−γA}`, with `γ = C/60`.
+  Proof: drop `>A` ⟹ jump `>(A/3)√v`; bulk (`2m≤v`) via banked block majorants at index `⌊A/3⌋`,
+  right half (`2m>v`) via `right_half_kernel_sum_le` + the poly-beats-exp slack `v³ ≤ e^{(C/20)√v}`;
+  for `A ≥ 3√v` the far window is empty.
+
+So the exp-tail majorant half of the restated T2.1 is now a banked theorem.
+
+### Step 1a (the per-drop minorization) — exact missing analytic input, NUMERICALLY CONFIRMED
+
+The minorization `rankDropKer v 1 ≥ η`, `rankDropKer v 2 ≥ η` is TRUE but is NOT reachable from the
+banked window machinery, for a now-pinned reason. The **drop-1 set in `m`** is the exact integer
+window
+```
+m ∈ ( v − (L/3)² , v − ((L−1)/3)² ],   L := rnk v = ⌊3√v⌋,
+```
+i.e. in `y = m/√v` coordinates a window of FIXED width `2/3` whose LOWER edge slides over
+`[0, 0.45+]` and UPPER edge over `[0.667, 1.12]` as `frac(3√v)` runs over `[0,1)` (verified
+numerically: at `frac=0` the window is `y∈(0, 0.667]`; at `frac=0.675` it is `y∈(0.45, 1.116]`;
+at `frac→1` it is `≈ y∈(2/3, 4/3]`). **The intersection of the drop-1 windows over all phases is
+empty** (the `frac=0` window `(0,2/3]` and the `frac→1` window `(2/3,4/3]` are disjoint). Hence
+*no fixed `(a,b)` sub-window lies in the drop-1 set for all `v`*, so the pointwise banked limit
+`erdos_kernel_window (a,b)` (one fixed pair) cannot supply the bound.
+
+What is genuinely required is a **uniform-in-endpoints window-mass lower bound**: a version of
+`erdos_kernel_window` that holds uniformly as the endpoints `(a_v, b_v)` slide over a compact family
+(equivalently, `∑_{(a_v√v, b_v√v]} erdosWeight v m ≥ ∫_{a_v}^{b_v} f − ε` uniformly in the phase),
+then `η := min over phase ∫_{window} f > 0` from `f`'s explicit positivity on the bulk. This is new
+analysis of the size of `KernelWindow.lean` (a uniform/compact-family refinement of the per-(a,b)
+limit), NOT a re-wrap. The `large_drop_forces_large_jump` machinery only gives the *upper* side
+(the tail), which is why Step 1b went through cleanly while Step 1a did not.
+
+### Steps 2/3 (holding coupling + `enterBandKer` overlap) — verified non-existent infrastructure
+
+The engine consumes `hoverlap` for the **first-entrance kernel** `enterBandKer Pker (ceilBand R (A R))`
+(RankBandEntrance.lean:347), not `rankDropKer`. `enterBandKer`/`ceilBand` appear ONLY in the engine
+statement and in the abstract bridge `overlap_ge_of_minorization` (`grep` confirms: 2 files). The
+bridge needs a uniform **single-state** minorization `enterBandKer Pker B n z ≥ η` on a FIXED set
+`S` for ALL high starts `n` — which is FALSE for a *growing* band `A R → ∞` (the first-entrance
+landing law spreads over the whole band, so `max_z enterBandKer B n z → 0`; a fixed `(η, |S|)` gives
+`δ = η|S|` that cannot stay uniform). The uniform `δ` must therefore come from the **renewal
+regeneration** mechanism (offset-law delay-independence, exactly the banked T2.2
+`homogeneousRenewal_uniform_overshoot_overlap`), applied to the *rank chain* — but T2.2 is for a
+single HOMOGENEOUS increment law, and the floor-rank step law `rankDropKer v ·` is inhomogeneous in
+`v` (the documented `frac(3√v)` oscillation) and has a `d=0` holding atom. Converting the per-step
+minorization of Step 1a into the first-entrance `hoverlap` requires NEW inhomogeneous-renewal-with-
+holding coupling infrastructure (an embedded rank-change / lazy-chain regeneration giving a uniform
+boundary-pinned offset overlap). No such bridge exists in the repo.
+
+### Status of `erdos_partition_limit_exists`
+
+NOT closed. The full reduction chain
+`Step 3 ⟹ hitVal_cauchy_of_ceilBand_overlap_escape_variable ⟹ hhit ⟹
+erdos_partition_limit_exists_of_hit ⟹ erdos_partition_limit_exists` is verified intact, but its
+single remaining input `hoverlap` (Step 3) is blocked behind Step 1a (uniform sliding-window mass
+lower bound) AND Step 2 (inhomogeneous holding coupling for `enterBandKer`). Both are genuine new
+mathematics (not effort): Step 1a a uniform/compact-family refinement of `erdos_kernel_window`;
+Step 2 an inhomogeneous-renewal-with-holding regeneration coupling. The exp-tail half (Step 1b) is
+the part that the floor oscillation does NOT obstruct, and it is now banked.
+
+New file: `AnalyticCombinatorics/Ch8/Partitions/RankDropKer.lean`.
