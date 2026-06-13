@@ -265,4 +265,72 @@ lemma succ_mul_exp_neg_le {c x : ℝ} (hc : 0 < c) (hx : 0 ≤ x) :
   rw [hrw, mul_inv_le_iff₀ hepos]
   exact hkey
 
+/-- **Left-half constant bound.**  `2σQ(⌊A/3⌋+1)²·G·e^{−(C/2)⌊A/3⌋} ≤ C_L·(A+1)·e^{−(C/60)A}` with
+`C_L := 4σQ·G·e^{C/3}·(20/(3C)+1)`. -/
+lemma left_block_const_bound (A : ℕ) :
+    2 * sigmaQuadConst * ((⌊(A : ℝ) / 3⌋₊ : ℝ) + 1) ^ 2 * rankDropG
+        * Real.exp (-(C / 2) * (⌊(A : ℝ) / 3⌋₊ : ℝ))
+      ≤ (2 * sigmaQuadConst * rankDropG * Real.exp (C / 2) * (20 / (3 * C) + 1))
+          * ((A : ℝ) + 1) * Real.exp (-(C / 60) * (A : ℝ)) := by
+  have hC := C_pos
+  have hsQ := sigmaQuadConst_pos
+  have hG := rankDropG_nonneg
+  set j : ℝ := (⌊(A : ℝ) / 3⌋₊ : ℝ) with hjdef
+  have hj0 : 0 ≤ j := by positivity
+  have hAle : 3 * j ≥ (A : ℝ) - 3 := by
+    have hfl : (A : ℝ) / 3 < j + 1 := by
+      have := Nat.lt_floor_add_one ((A : ℝ) / 3); rw [← hjdef] at this; exact this
+    linarith
+  have hjub : j + 1 ≤ (A : ℝ) + 1 := by
+    have hflub : j ≤ (A : ℝ) / 3 := Nat.floor_le (by positivity)
+    have hA0 : (0 : ℝ) ≤ (A : ℝ) := by positivity
+    linarith
+  -- e^{−(C/2)j} ≤ e^{C/3}·e^{−(C/6)A}
+  have hexpj : Real.exp (-(C / 2) * j) ≤ Real.exp (C / 2) * Real.exp (-(C / 6) * (A : ℝ)) := by
+    rw [← Real.exp_add]
+    apply Real.exp_le_exp.mpr
+    nlinarith [hAle, hC]
+  -- (j+1)² ≤ (A+1)²
+  have hsq : (j + 1) ^ 2 ≤ ((A : ℝ) + 1) ^ 2 := by
+    have h0 : (0 : ℝ) ≤ j + 1 := by linarith
+    nlinarith [hjub, h0]
+  -- (A+1)²·e^{−(C/6)A} ≤ (20/(3C)+1)·(A+1)·e^{−(C/60)A}
+  have hsucc : ((A : ℝ) + 1) * Real.exp (-(3 * C / 20) * (A : ℝ)) ≤ 20 / (3 * C) + 1 := by
+    have h := succ_mul_exp_neg_le (c := 3 * C / 20) (x := (A : ℝ)) (by positivity) (by positivity)
+    have hrw : (1 : ℝ) / (3 * C / 20) = 20 / (3 * C) := by
+      rw [div_div_eq_mul_div, one_mul]
+    rw [hrw] at h; exact h
+  have hsplit : ((A : ℝ) + 1) ^ 2 * Real.exp (-(C / 6) * (A : ℝ))
+      ≤ (20 / (3 * C) + 1) * ((A : ℝ) + 1) * Real.exp (-(C / 60) * (A : ℝ)) := by
+    have hfac : Real.exp (-(C / 6) * (A : ℝ))
+        = Real.exp (-(3 * C / 20) * (A : ℝ)) * Real.exp (-(C / 60) * (A : ℝ)) := by
+      rw [← Real.exp_add]; congr 1; ring
+    rw [hfac]
+    have hA1 : (0 : ℝ) ≤ (A : ℝ) + 1 := by positivity
+    have he : (0 : ℝ) ≤ Real.exp (-(C / 60) * (A : ℝ)) := (Real.exp_pos _).le
+    calc ((A : ℝ) + 1) ^ 2 * (Real.exp (-(3 * C / 20) * (A : ℝ)) * Real.exp (-(C / 60) * (A : ℝ)))
+        = (((A : ℝ) + 1) * Real.exp (-(3 * C / 20) * (A : ℝ)))
+            * (((A : ℝ) + 1) * Real.exp (-(C / 60) * (A : ℝ))) := by ring
+      _ ≤ (20 / (3 * C) + 1) * (((A : ℝ) + 1) * Real.exp (-(C / 60) * (A : ℝ))) := by
+            apply mul_le_mul_of_nonneg_right hsucc
+            exact mul_nonneg hA1 he
+      _ = (20 / (3 * C) + 1) * ((A : ℝ) + 1) * Real.exp (-(C / 60) * (A : ℝ)) := by ring
+  -- assemble
+  have hC0 : (0 : ℝ) ≤ 2 * sigmaQuadConst * rankDropG := by positivity
+  calc 2 * sigmaQuadConst * (j + 1) ^ 2 * rankDropG * Real.exp (-(C / 2) * j)
+      = (2 * sigmaQuadConst * rankDropG) * ((j + 1) ^ 2 * Real.exp (-(C / 2) * j)) := by ring
+    _ ≤ (2 * sigmaQuadConst * rankDropG)
+          * (((A : ℝ) + 1) ^ 2 * (Real.exp (C / 2) * Real.exp (-(C / 6) * (A : ℝ)))) := by
+          apply mul_le_mul_of_nonneg_left _ hC0
+          have hb : (0 : ℝ) ≤ ((A : ℝ) + 1) ^ 2 := by positivity
+          exact mul_le_mul hsq hexpj (Real.exp_nonneg _) hb
+    _ = (2 * sigmaQuadConst * rankDropG * Real.exp (C / 2))
+          * (((A : ℝ) + 1) ^ 2 * Real.exp (-(C / 6) * (A : ℝ))) := by ring
+    _ ≤ (2 * sigmaQuadConst * rankDropG * Real.exp (C / 2))
+          * ((20 / (3 * C) + 1) * ((A : ℝ) + 1) * Real.exp (-(C / 60) * (A : ℝ))) := by
+          apply mul_le_mul_of_nonneg_left hsplit
+          positivity
+    _ = (2 * sigmaQuadConst * rankDropG * Real.exp (C / 2) * (20 / (3 * C) + 1))
+          * ((A : ℝ) + 1) * Real.exp (-(C / 60) * (A : ℝ)) := by ring
+
 end AnalyticCombinatorics.Ch8.Partitions.Erdos
