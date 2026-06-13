@@ -147,6 +147,9 @@ import AnalyticCombinatorics.Ch8.Partitions.RenewalAlign
 import AnalyticCombinatorics.Ch8.Partitions.ErdosAlignConnect
 import AnalyticCombinatorics.Ch8.Partitions.ScalarRecSolve
 import AnalyticCombinatorics.Ch8.Partitions.ITERCoupling
+import AnalyticCombinatorics.Ch8.Partitions.KhatRes
+import AnalyticCombinatorics.Ch8.Partitions.FKBlockBridge
+import AnalyticCombinatorics.Ch8.Partitions.FKPartitionBridge
 import AnalyticCombinatorics.Ch8.Partitions.CompContraction
 import AnalyticCombinatorics.Ch8.Partitions.OverlapL1
 import AnalyticCombinatorics.Ch8.Partitions.ErdosMinorization
