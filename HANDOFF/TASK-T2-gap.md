@@ -149,7 +149,45 @@ File:line anchors:
 
 So the exp-tail majorant half of the restated T2.1 is now a banked theorem.
 
-### Step 1a (the per-drop minorization) — exact missing analytic input, NUMERICALLY CONFIRMED
+### Step 1a — CLOSED (banked, clean-3). `Pker_rankDrop_minorization`
+
+**Resolved** in `AnalyticCombinatorics/Ch8/Partitions/RankDropMinor.lean` (commit `e54b4b7`):
+
+```lean
+theorem Pker_rankDrop_minorization :
+    ∃ η : ℝ, 0 < η ∧ ∀ᶠ v in atTop, η ≤ rankDropKer v 1 ∧ η ≤ rankDropKer v 2
+```
+
+`#print axioms`: `[propext, Classical.choice, Quot.sound]`. 0 sorry/admit/native_decide/axiom.
+
+The uniform-in-endpoints refinement was achieved by a **finite phase cover** rather than re-proving
+`erdos_kernel_window` uniformly.  Although no single fixed `(a,b)` y-sub-window lies in the drop-1
+set for all phases (empty intersection), the *window mass is monotone in the endpoints* and the
+phase `t := 3√v − ⌊3√v⌋ ∈ [0,1)` is compact: a fixed sub-window `(a,b]` maps entirely into the
+floor-induced drop-`d` set exactly when `t ∈ (3b/2 − d, 3a/2 − d + 1)`.  Eight fixed rational
+sub-windows (four for `d=1`, four for `d=2`) whose phase `t`-bands cover `[0,1)` therefore certify,
+for every phase, at least one sub-window entirely inside the relevant drop set; each window's mass is
+bounded below by the banked positive limit `modelIntegral C a b`, and `η := min` of the eight
+half-masses `> 0`.
+
+Bricks (all clean-3):
+- `drop_eq_of_window_mem` — the analytic heart: every integer `m ∈ (a√v, b√v]`, under the phase
+  condition (A `(rnk v) − d + 3b/2 + 3b²/(2√v) ≤ 3√v`, B `3√v ≤ (rnk v) − d + 1 + 3a/2`), has
+  rank-drop exactly `d`.  Two-sided sqrt-gap algebra: `g = √v − √(v−m) = m/(√v+√(v−m))`, sandwiched
+  by `m/(2√v) ≤ g ≤ b/2 + b²/(2√v)` (since `√v − b ≤ √(v−m) ≤ √v`), pushed through `⌊·⌋`.
+- `rankDropKer_ge_window` — the window mass `kernelWindow a b v / kernelMass v` minorizes
+  `rankDropKer v d` under the phase conditions (reflection `m ↦ v−m` + the membership lemma).
+- `window_div_mass_ge_eventually` — `kernelWindow a b v / kernelMass v ≥ modelIntegral C a b / 2`
+  eventually (banked `erdos_kernel_window` + `kernelMass → 1`).
+- `rankDropKer_ge_const_of_tband` — packages a sub-window + a `t`-band with strict margins, folding
+  the `3b²/(2√v) → 0` error into the eventual filter.
+
+So **both halves of the restated T2.1 are now banked**: the exp-tail majorant (Step 1b,
+`Pker_rankDrop_tail_majorant`) and the phase-uniform per-drop minorization (Step 1a,
+`Pker_rankDrop_minorization`).  Step 2 (the inhomogeneous-renewal-with-holding `enterBandKer`
+coupling) remains the open infrastructure — see below.
+
+### (historical) Step 1a — exact missing analytic input, NUMERICALLY CONFIRMED
 
 The minorization `rankDropKer v 1 ≥ η`, `rankDropKer v 2 ≥ η` is TRUE but is NOT reachable from the
 banked window machinery, for a now-pinned reason. The **drop-1 set in `m`** is the exact integer
