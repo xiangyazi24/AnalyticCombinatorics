@@ -365,4 +365,46 @@ lemma Pker_commonValueWindow_lower :
 
 #print axioms Pker_commonValueWindow_lower
 
+/-! ## Brick 6 — linear cardinality of the window. -/
+
+set_option maxHeartbeats 800000 in
+/-- **Linear window cardinality.**  `(1/2)·T ≤ |W_T|` eventually (the real window length is
+`(7T−1)/9`, so any `q < 7/9` works; `q = 1/2` with margin). -/
+lemma commonValueWindow_card_linear :
+    ∀ᶠ T : ℕ in atTop, (1 / 2 : ℝ) * (T : ℝ) ≤ ((commonValueWindow T).card : ℝ) := by
+  filter_upwards [eventually_ge_atTop 100] with T hT100
+  have hTR : (100 : ℝ) ≤ (T : ℝ) := by exact_mod_cast hT100
+  -- nat sub validity
+  have h2T_le : 2 * T ≤ (T + 1) ^ 2 / 9 := by
+    have : 18 * T ≤ (T + 1) ^ 2 := by nlinarith [hTR]
+    omega
+  have hT_le : T ≤ T ^ 2 / 9 := by
+    have : 9 * T ≤ T ^ 2 := by nlinarith [hTR]
+    omega
+  -- cast bounds
+  obtain ⟨hd1lo, hd1hi⟩ := cast_div9_bounds ((T + 1) ^ 2)
+  obtain ⟨hd2lo, hd2hi⟩ := cast_div9_bounds (T ^ 2)
+  rw [Nat.cast_pow, Nat.cast_add, Nat.cast_one] at hd1lo hd1hi
+  rw [Nat.cast_pow] at hd2lo hd2hi
+  -- real bounds on a, b
+  have ha_ub : (((T + 1) ^ 2 / 9 - 2 * T : ℕ) : ℝ) ≤ ((T : ℝ) + 1) ^ 2 / 9 - 2 * (T : ℝ) := by
+    rw [Nat.cast_sub h2T_le, Nat.cast_mul, Nat.cast_ofNat]; linarith [hd1hi]
+  have hb_lb : (T : ℝ) ^ 2 / 9 - 1 - (T : ℝ) ≤ (((T ^ 2 / 9 - T : ℕ)) : ℝ) := by
+    rw [Nat.cast_sub hT_le]; linarith [hd2lo]
+  -- a ≤ b (so Icc nonempty)
+  have hab : (T + 1) ^ 2 / 9 - 2 * T ≤ T ^ 2 / 9 - T := by
+    have hr : (((T + 1) ^ 2 / 9 - 2 * T : ℕ) : ℝ) ≤ (((T ^ 2 / 9 - T : ℕ)) : ℝ) := by
+      nlinarith [ha_ub, hb_lb, hTR]
+    exact_mod_cast hr
+  -- card = b + 1 − a
+  rw [commonValueWindow, Nat.card_Icc]
+  have hcard_cast : ((T ^ 2 / 9 - T + 1 - ((T + 1) ^ 2 / 9 - 2 * T) : ℕ) : ℝ)
+      = (((T ^ 2 / 9 - T : ℕ)) : ℝ) + 1 - (((T + 1) ^ 2 / 9 - 2 * T : ℕ) : ℝ) := by
+    rw [Nat.cast_sub (by omega), Nat.cast_add, Nat.cast_one]
+  rw [hcard_cast]
+  -- (b+1−a) ≥ (T²/9 − 1 − T) + 1 − ((T+1)²/9 − 2T) = (7T−1)/9 ≥ T/2
+  nlinarith [ha_ub, hb_lb, hTR]
+
+#print axioms commonValueWindow_card_linear
+
 end AnalyticCombinatorics.Ch8.Partitions.Erdos
