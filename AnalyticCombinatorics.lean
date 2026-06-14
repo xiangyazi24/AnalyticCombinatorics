@@ -246,6 +246,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.TreeFunction
 import AnalyticCombinatorics.Ch7.SingularityApp.Forests
 import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTreeBasic
 import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTreeRecurrence
+import AnalyticCombinatorics.Ch7.SingularityApp.TernaryFussCatalan
 import AnalyticCombinatorics.Ch9.LimitLaws.QuasiPowers
 import AnalyticCombinatorics.Ch9.LimitLaws.BinaryWordCLT
 import AnalyticCombinatorics.Ch9.LimitLaws.PermutationCycles
