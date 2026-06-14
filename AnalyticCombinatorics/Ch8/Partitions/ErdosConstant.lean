@@ -49,6 +49,61 @@ lemma saddle_meinardus_const_identity :
     _ = Real.sqrt ((4 * Real.sqrt 3) ^ 2) := by rw [key]
     _ = 4 * Real.sqrt 3 := Real.sqrt_sq hR
 
+/-- The 1-D real-saddle model sum `∑_{k≥1} e^{C√k − tk}/k` (the `k=0` term is `0`). -/
+noncomputable def modelSaddle (t : ℝ) : ℝ :=
+  ∑' n : ℕ, Real.exp (C * Real.sqrt (n : ℝ) - t * (n : ℝ)) / (n : ℝ)
+
+/-- **Brick 5 (combination).** Given the Abelian comparison (brick 3,
+`log P − log a − log modelSaddle → 0`) and the real-saddle asymptotic (brick 4,
+`log modelSaddle − A/t − ½log t − log(4√π/C) → 0`), together with the second-order
+Laplace law (brick 2, `log_partLaplace_second_order`), the Erdős limit constant is
+`a = 1/(4√3)`. -/
+theorem erdos_limit_constant_of_asymptotics
+    {a : ℝ} (ha : 0 < a)
+    (hB3 :
+      Tendsto
+        (fun t : ℝ => Real.log (PartLaplace t) - Real.log a - Real.log (modelSaddle t))
+        (𝓝[>] (0 : ℝ)) (𝓝 0))
+    (hB4 :
+      Tendsto
+        (fun t : ℝ =>
+          Real.log (modelSaddle t) - A / t - (1 / 2 : ℝ) * Real.log t
+            - Real.log (4 * Real.sqrt Real.pi / C))
+        (𝓝[>] (0 : ℝ)) (𝓝 0)) :
+    a = 1 / (4 * Real.sqrt 3) := by
+  have hCpos : 0 < C := C_pos
+  have hKpos : 0 < 4 * Real.sqrt Real.pi / C := div_pos (by positivity) hCpos
+  -- combine brick 3 + brick 4 - brick 2 → a constant tending to 0
+  have hdiff := (hB3.add hB4).sub log_partLaplace_second_order
+  simp only [add_zero, sub_zero] at hdiff
+  have hconst :
+      Tendsto
+        (fun _ : ℝ =>
+          -Real.log a - Real.log (4 * Real.sqrt Real.pi / C)
+            - (1 / 2 : ℝ) * Real.log (2 * Real.pi))
+        (𝓝[>] (0 : ℝ)) (𝓝 0) := by
+    refine hdiff.congr' ?_
+    filter_upwards [self_mem_nhdsWithin] with t ht
+    have htpos : 0 < t := ht
+    rw [Real.log_div (ne_of_gt htpos) (by positivity)]
+    ring
+  have hzero :
+      -Real.log a - Real.log (4 * Real.sqrt Real.pi / C)
+        - (1 / 2 : ℝ) * Real.log (2 * Real.pi) = 0 :=
+    tendsto_nhds_unique tendsto_const_nhds hconst
+  -- solve `log a = log (1/(4√3))`, conclude by injectivity
+  have h2pi : (1 / 2 : ℝ) * Real.log (2 * Real.pi) = Real.log (Real.sqrt (2 * Real.pi)) := by
+    rw [Real.log_sqrt (by positivity)]; ring
+  have hlog_a : Real.log a = Real.log (1 / (4 * Real.sqrt 3)) := by
+    have hstep : Real.log a
+        = -(Real.log (4 * Real.sqrt Real.pi / C) + Real.log (Real.sqrt (2 * Real.pi))) := by
+      rw [← h2pi]; linarith [hzero]
+    rw [hstep, ← Real.log_mul (ne_of_gt hKpos)
+        (ne_of_gt (Real.sqrt_pos.mpr (by positivity))), saddle_meinardus_const_identity,
+      ← Real.log_inv, one_div]
+  exact Real.log_injOn_pos (Set.mem_Ioi.mpr ha)
+    (Set.mem_Ioi.mpr (by positivity)) hlog_a
+
 end
 
 end AnalyticCombinatorics.Ch8.Partitions
