@@ -79,4 +79,30 @@ lemma ternaryTreeCount_eq_fc_one (n : ℕ) :
   push_cast
   ring
 
+/-- The shift identity `fc 3 n = fc 1 (n+1)`: the triple-convolution closed
+form equals the next ternary Fuss–Catalan number. -/
+lemma fc_three_eq_fc_one_succ (n : ℕ) :
+    fc 3 n = fc 1 (n + 1) := by
+  -- Nat-level key identity: (3n+4) * C(3n+3, n) = (n+1) * C(3n+4, n+1).
+  have hkey : ((3 * n + 4) * Nat.choose (3 * n + 3) n : ℕ)
+      = ((n + 1) * Nat.choose (3 * n + 4) (n + 1) : ℕ) := by
+    have h := Nat.add_one_mul_choose_eq (3 * n + 3) n
+    -- h : (3n+3+1) * C(3n+3, n) = C(3n+3+1, n+1) * (n+1)
+    have e : 3 * n + 3 + 1 = 3 * n + 4 := by omega
+    rw [e] at h
+    rw [h]; ring
+  have hChoose : Nat.choose (3 * (n + 1) + 1) (n + 1) = Nat.choose (3 * n + 4) (n + 1) := by
+    rw [show 3 * (n + 1) + 1 = 3 * n + 4 from by omega]
+  unfold fc
+  rw [hChoose]
+  push_cast
+  -- LHS: 3/(3n+3) * C(3n+3,n);  RHS: 1/(3(n+1)+1) * C(3n+4, n+1)
+  rw [div_mul_eq_mul_div, div_mul_eq_mul_div,
+      div_eq_div_iff (by positivity) (by positivity)]
+  have hkeyQ : ((3 * (n : ℚ) + 4) * (Nat.choose (3 * n + 3) n : ℚ))
+      = (((n : ℚ) + 1) * (Nat.choose (3 * n + 4) (n + 1) : ℚ)) := by
+    exact_mod_cast hkey
+  nlinarith [hkeyQ]
+
 end AnalyticCombinatorics.Ch7.SingularityApp.TernaryTreeNS
+
