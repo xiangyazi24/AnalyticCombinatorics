@@ -90,7 +90,7 @@ theorem log1mexpReg_first_cell_tendsto_zero :
 /-- Open-left head theorem (range form): peel cell 0, apply `hcell_pos` on `k ≥ 1`. -/
 theorem trapezoid_head_range_tendsto_of_cell_bound_pos
     {g : ℝ → ℝ} {M : ℝ} (hM : 0 ≤ M)
-    (hint : ∀ ⦃a b : ℝ⦄, 0 ≤ a → b ≤ 2 →
+    (hint : ∀ ⦃a b : ℝ⦄, 0 ≤ a → a ≤ b → b ≤ 2 →
         IntervalIntegrable g MeasureTheory.volume a b)
     (hfirst : Tendsto (firstCellTrapErr g) (𝓝[>] (0 : ℝ)) (𝓝 0))
     (hcell_pos : ∀ ⦃a h : ℝ⦄, 0 < h → 0 < a → a + h ≤ 2 →
@@ -132,7 +132,9 @@ theorem trapezoid_head_range_tendsto_of_cell_bound_pos
         exact_mod_cast Nat.succ_le_of_lt (Finset.mem_range.mp hk)
       have hright_le_two : (((k + 1 : ℕ) : ℝ) * t) ≤ 2 := by
         have := mul_le_mul_of_nonneg_right hkleN_real htpos.le; linarith
-      exact hint (by positivity) hright_le_two
+      have hab : (k : ℝ) * t ≤ ((k + 1 : ℕ) : ℝ) * t := by
+        push_cast; nlinarith [htpos.le]
+      exact hint (by positivity) hab hright_le_two
     have hid := trapezoid_sum_identity_range (g := g) (t := t) (N := N) hIntCells
     let F : ℕ → ℝ := fun k =>
       (((g ((k : ℝ) * t) + g (((k + 1 : ℕ) : ℝ) * t)) / 2)
@@ -195,7 +197,7 @@ theorem trapezoid_head_range_tendsto_of_cell_bound_pos
 /-- Open-left head theorem in `Icc 1 (trapN t)` form. -/
 theorem trapezoid_head_tendsto_of_cell_bound_pos
     {g : ℝ → ℝ} {M : ℝ} (hM : 0 ≤ M)
-    (hint : ∀ ⦃a b : ℝ⦄, 0 ≤ a → b ≤ 2 →
+    (hint : ∀ ⦃a b : ℝ⦄, 0 ≤ a → a ≤ b → b ≤ 2 →
         IntervalIntegrable g MeasureTheory.volume a b)
     (hfirst : Tendsto (firstCellTrapErr g) (𝓝[>] (0 : ℝ)) (𝓝 0))
     (hcell_pos : ∀ ⦃a h : ℝ⦄, 0 < h → 0 < a → a + h ≤ 2 →
@@ -214,7 +216,7 @@ theorem trapezoid_head_tendsto_of_cell_bound_pos
 
 /-- The usable head theorem for `log1mexpReg` (conditional on `[0,b]` integrability). -/
 theorem log1mexpReg_head_trapezoid_tendsto_zero
-    (hint : ∀ ⦃a b : ℝ⦄, 0 ≤ a → b ≤ 2 →
+    (hint : ∀ ⦃a b : ℝ⦄, 0 ≤ a → a ≤ b → b ≤ 2 →
         IntervalIntegrable log1mexpReg MeasureTheory.volume a b) :
     Tendsto
       (fun t : ℝ =>
