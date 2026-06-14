@@ -88,6 +88,12 @@ lemma summable_modelSaddleTerm {t : ℝ} (ht : 0 < t) :
     nlinarith [Real.exp_pos (C * Real.sqrt (n : ℝ) - t * (n : ℝ)),
       (by exact_mod_cast hpos : (1 : ℝ) ≤ (n : ℝ))]
 
+/-- The model-saddle sum is strictly positive for `t > 0`. -/
+lemma modelSaddle_pos {t : ℝ} (ht : 0 < t) : 0 < modelSaddle t := by
+  unfold modelSaddle
+  refine (summable_modelSaddleTerm ht).tsum_pos (fun n => by positivity) 1 ?_
+  positivity
+
 /-- **Brick 5 (combination).** Given the Abelian comparison (brick 3,
 `log P − log a − log modelSaddle → 0`) and the real-saddle asymptotic (brick 4,
 `log modelSaddle − A/t − ½log t − log(4√π/C) → 0`), together with the second-order
