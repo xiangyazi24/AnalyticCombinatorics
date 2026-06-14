@@ -44,3 +44,38 @@ repo-read @ 5ec4233). NOT a documented obstruction — provable via comparison.
 Terminal: `erdos_limit_constant : (Tendsto u atTop (𝓝 a)) → 0<a → a = 1/(4√3)`
 clean-3, then strengthen `erdos_partition_limit_exists` to name the constant.
 Brick 2 is the hard analytic core; attack first.
+
+## Brick 2 decomposition (ChatGPT R2 — WINNING route: singular Euler–Maclaurin, NO ζ'(0))
+
+The 2π comes from Mathlib's **Stirling** (repo already uses it in Ch8/SaddlePoint),
+NOT ζ'(0). Avoids Mellin/ζ'(0) entirely. Shortcut: identify ∫=A via the EXISTING
+first-order `partition_laplace_log_asymptotic` (×t, compare) — no new ζ integral.
+
+L(t)=∑_{k≥1} -log(1-e^{-kt}). N t=⌊1/t⌋, R t=N t·t→1. Split:
+  L = ∑_{k≤N} -log(tk)  +  ∑_{k≤N} h(kt)  +  ∑_{k>N} f(kt),
+  f=log1mexp=-log(1-e^{-x}),  h=log1mexpReg=f+log x  (h→0 at 0+).
+
+3 files:
+- `Ch8/Partitions/LogOneMinusExp.lean`: defs log1mexp, log1mexpReg; lemmas
+  log1mexpReg_tendsto_zero (uses repo exp_sub_one_div_self_tendsto_one), tail exp
+  bound, deriv2 bounds (local/private derivative formulas, don't over-generalize).
+- `Ch8/Partitions/TrapezoidEM.lean`: two one-off lemmas trapezoid_sum_head (g'' bdd
+  on [0,2]) + trapezoid_sum_tail (g,g'' decay on [1/2,∞)). API:
+  intervalIntegral.sum_integral_adjacent_intervals, integral_eq_sub_of_hasDerivAt,
+  norm_integral_le_of_norm_le_const. Per-cell error C·t³, ×N=O(1/t) → O(t)=o(1).
+  NOT a general Euler–Maclaurin framework.
+- `Ch8/Partitions/ProductSecondOrder.lean`: singular head via Stirling
+  (∑-log(tk)=-N log t-log N!; Stirling.log_stirlingSeq_formula +
+  tendsto_stirlingSeq_sqrt_pi give the 2π); assemble A+B+C → with-I form
+  (log P = I/t + ½log(t/2π) + o(1)); log1mexpIntegral_eq_A via first-order theorem;
+  → partLaplace_second_order.
+
+ζ'(0) route (LOSING, do not use): needs Γ'(1)=-γ, ζ Laurent at 1, eulerMascheroni
+API — all likely absent from pinned Mathlib. R2 confirms Euler–Maclaurin is shorter.
+
+Confident Mathlib names (R2): Stirling.{log_stirlingSeq_formula,
+tendsto_stirlingSeq_sqrt_pi, factorial_isEquivalent_stirling}; intervalIntegral.
+{sum_integral_adjacent_intervals, integral_mono_on, norm_integral_le_of_norm_le_const};
+Summable.sum_add_tsum_nat_add; norm_tsum_le_tsum_norm. Repo: PartLaplace,
+partLaplace_eq_finprod_tendsto, partition_laplace_log_asymptotic, log_partLaplace_eq,
+log_series_regroup, exp_sub_one_div_self_tendsto_one.
