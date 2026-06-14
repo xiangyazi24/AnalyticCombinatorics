@@ -127,6 +127,142 @@ theorem cycleType_swap_mul_of_both_fixed (τ : Perm α) {z y : α}
   rw [hdis.cycleType_mul, Equiv.Perm.IsCycle.cycleType (Equiv.Perm.isCycle_swap hzy),
     Equiv.Perm.card_support_swap hzy]
 
+/-- **Cycle insertion (the converse of `Equiv.Perm.IsCycle.swap_mul`).**
+If `c` is a cycle, `y ∈ c.support`, and `z ∉ c.support` with `z ≠ y`, then
+`swap z y * c` is again a cycle whose support is `c.support` with `z` inserted
+(right before `y`).  Mathlib supplies only the *splitting* direction
+(`IsCycle.swap_mul`, which pops an element OUT of a cycle); this insertion
+direction — needed for the cycle-MERGE half of the rising-factorial recursion —
+is built here from the low-level `isCycle_swap_mul_aux₂` machinery via an explicit
+`SameCycle` orbit-threading argument. -/
+theorem isCycle_swap_mul_insert {c : Perm α} (hc : c.IsCycle) {z y : α}
+    (hy : y ∈ c.support) (hz : z ∉ c.support) (hzy : z ≠ y) :
+    (swap z y * c).IsCycle ∧ (swap z y * c).support = insert z c.support := by
+  have hcz : c z = z := by simpa using hz
+  have hcy : c y ≠ y := by simpa using hy
+  set g : Perm α := swap z y * c with hg
+  have hgz : g z = y := by simp [hg, hcz, swap_apply_left]
+  -- For any w ∈ c.support, g w = c w unless w is the wraparound point c.symm y.
+  have hgw : ∀ w : α, w ∈ c.support → w ≠ c.symm y → g w = c w := by
+    intro w hw hwrap
+    have hcw_mem : c w ∈ c.support := apply_mem_support.mpr hw
+    have hcw_ne_z : c w ≠ z := by rintro rfl; exact hz hcw_mem
+    have hcw_ne_y : c w ≠ y := by
+      intro h; exact hwrap (by rw [← h, symm_apply_apply])
+    simp [hg, swap_apply_of_ne_of_ne hcw_ne_z hcw_ne_y]
+  -- forward step: g threads the c-orbit of y (wrapping z in before y)
+  have hstep : ∀ k : ℕ, SameCycle g z ((c ^ k) y) := by
+    intro k
+    induction k with
+    | zero => exact ⟨1, by simpa using hgz⟩
+    | succ k ih =>
+      by_cases hwrap : (c ^ k) y = c.symm y
+      · have : (c ^ (k+1)) y = y := by
+          rw [pow_succ', mul_apply, hwrap, apply_symm_apply]
+        rw [this]; exact ⟨1, by simpa using hgz⟩
+      · obtain ⟨n, hn⟩ := ih
+        refine ⟨n + 1, ?_⟩
+        have hmem : (c ^ k) y ∈ c.support := pow_apply_mem_support.mpr hy
+        have hgck : g ((c ^ k) y) = (c ^ (k+1)) y := by
+          rw [hgw _ hmem hwrap, pow_succ', mul_apply]
+        calc (g ^ (n + 1)) z = g ((g ^ n) z) := by
+                rw [add_comm, zpow_add, zpow_one, mul_apply]
+          _ = g ((c ^ k) y) := by rw [hn]
+          _ = (c ^ (k+1)) y := hgck
+  have hsc : ∀ w : α, w ∈ c.support → SameCycle g z w := by
+    intro w hw
+    obtain ⟨k, hk⟩ := hc.exists_pow_eq hcy (by simpa using hw)
+    rw [← hk]; exact hstep k
+  have hsupp : g.support = insert z c.support := by
+    ext w
+    simp only [Finset.mem_insert]
+    constructor
+    · intro hwg
+      by_cases hwz : w = z
+      · left; exact hwz
+      · right
+        by_contra hwc
+        rw [mem_support] at hwg
+        have hcwfix : c w = w := by simpa using hwc
+        apply hwg
+        have hwy : w ≠ y := by rintro rfl; exact hcy hcwfix
+        simp [hg, hcwfix, swap_apply_of_ne_of_ne hwz hwy]
+    · intro hw
+      rcases hw with rfl | hw
+      · rw [mem_support, hgz]; exact (Ne.symm hzy)
+      · rw [mem_support]
+        intro hfix
+        have hzw : z = w := (hsc w hw).eq_of_right (by simpa using hfix)
+        rw [← hzw] at hw; exact hz hw
+  refine ⟨⟨z, ?_, ?_⟩, hsupp⟩
+  · rw [hgz]; exact (Ne.symm hzy)
+  · intro v hv
+    have hvmem : v ∈ g.support := mem_support.mpr hv
+    rw [hsupp, Finset.mem_insert] at hvmem
+    rcases hvmem with rfl | hvc
+    · exact SameCycle.refl _ _
+    · exact hsc v hvc
+
+/-- **Splice/merge, nontrivial-cycle subcase (Wall 1, the crux).**
+If `z` is a fixed point of `τ` and `y` lies in a *nontrivial* cycle of `τ`
+(`y ∈ τ.support`), `z ≠ y`, then merging the singleton `{z}` into `y`'s cycle via
+`swap z y * τ` leaves the *number* of cycles unchanged (the `y`-cycle is lengthened
+to absorb `z`) while growing the support by one.  Proved by peeling `c := τ.cycleOf y`
+off `τ` with `Disjoint.cycleType_mul` and applying `isCycle_swap_mul_insert`. -/
+theorem merge_counts {τ : Perm α} {z y : α}
+    (hz : τ z = z) (hy : y ∈ τ.support) (hzy : z ≠ y) :
+    Multiset.card (swap z y * τ).cycleType = Multiset.card τ.cycleType ∧
+      (swap z y * τ).support.card = τ.support.card + 1 := by
+  classical
+  set c : Perm α := τ.cycleOf y with hc_def
+  have hc_mem : c ∈ τ.cycleFactorsFinset := cycleOf_mem_cycleFactorsFinset_iff.mpr hy
+  have hc_cyc : c.IsCycle := isCycle_cycleOf _ (mem_support.mp hy)
+  set τ' : Perm α := τ * c⁻¹ with hτ'_def
+  have hdis : Disjoint τ' c := disjoint_mul_inv_of_mem_cycleFactorsFinset hc_mem
+  have hτeq : τ = c * τ' := by
+    rw [← hdis.commute.eq, hτ'_def, mul_assoc, inv_mul_cancel, mul_one]
+  have hzτ : z ∉ τ.support := by simpa using hz
+  have hy_c : y ∈ c.support := by
+    rw [hc_def, mem_support_cycleOf_iff]; exact ⟨SameCycle.rfl, hy⟩
+  have hz_c : z ∉ c.support := by
+    rw [hc_def, mem_support_cycleOf_iff]
+    rintro ⟨hsame, _⟩
+    exact hzy (hsame.eq_of_right (by simpa using hz)).symm
+  have hcz : c z = z := by simpa using hz_c
+  have hcinvz : c⁻¹ z = z := by
+    rw [Equiv.Perm.inv_eq_iff_eq]; exact hcz.symm
+  have hτ'z : τ' z = z := by rw [hτ'_def, mul_apply, hcinvz, hz]
+  have hz_τ' : z ∉ τ'.support := by simpa using hτ'z
+  obtain ⟨hgcyc, hgsupp⟩ := isCycle_swap_mul_insert hc_cyc hy_c hz_c hzy
+  set g : Perm α := swap z y * c with hg_def
+  have hsplit : swap z y * τ = g * τ' := by
+    rw [hτeq, hg_def, ← mul_assoc]
+  have hdis_g : Disjoint g τ' := by
+    rw [disjoint_iff_disjoint_support, hgsupp, Finset.disjoint_insert_left]
+    exact ⟨hz_τ', hdis.symm.disjoint_support⟩
+  have hcard_ct : Multiset.card (swap z y * τ).cycleType = Multiset.card τ.cycleType := by
+    rw [hsplit, hdis_g.cycleType_mul, hτeq, hdis.symm.cycleType_mul,
+      Multiset.card_add, Multiset.card_add,
+      hgcyc.cycleType, hc_cyc.cycleType, Multiset.card_singleton, Multiset.card_singleton]
+  have hcard_supp : (swap z y * τ).support.card = τ.support.card + 1 := by
+    rw [hsplit, hdis_g.card_support_mul, hgsupp, Finset.card_insert_of_notMem hz_c,
+      hτeq, hdis.symm.card_support_mul]
+    ring
+  exact ⟨hcard_ct, hcard_supp⟩
+
+/-- **numC merge identity.**  Merging a fixed point `z` of `τ` into the nontrivial
+cycle through `y` (`y ∈ τ.support`) drops the orbit count by exactly one:
+`numC (swap z y * τ) + 1 = numC τ` (the singleton orbit `{z}` is absorbed). -/
+theorem numC_swap_mul_merge {τ : Perm α} {z y : α}
+    (hz : τ z = z) (hy : y ∈ τ.support) (hzy : z ≠ y) :
+    numC (swap z y * τ) + 1 = numC τ := by
+  obtain ⟨hct, hsupp⟩ := merge_counts hz hy hzy
+  unfold numC
+  rw [hct, hsupp]
+  have hle : (swap z y * τ).support.card ≤ Fintype.card α := support_card_le _
+  rw [hsupp] at hle
+  omega
+
 end PermCycleCountBridge
 end LimitLaws
 end Ch9
@@ -137,3 +273,6 @@ end AnalyticCombinatorics
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.support_card_optionCongr
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.numC_optionCongr
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.cycleType_swap_mul_of_both_fixed
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.isCycle_swap_mul_insert
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.merge_counts
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.numC_swap_mul_merge
