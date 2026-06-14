@@ -8,9 +8,10 @@ This file proves the first integer-exponent standard scale for singularity
 analysis:
 `[z^n] (1 - z)^{-k} ~ n^{k-1} / (k-1)!` for natural `k ≥ 1`.
 
-The general non-integer transfer for `(1 - z)^{-α}` is OUT OF SCOPE here; it
-needs Gamma/binomial infrastructure and analytic domain hypotheses such as
-Δ-domains.
+The general non-integer transfer for `(1 - z)^{-α}` is proved in
+`SingularityGeneral.lean` (coefficient scale) and `TransferGeneral.lean`
+(full transfer theorem), using Gamma/binomial infrastructure and analytic
+domain hypotheses (Δ-domains).
 -/
 
 open Filter Asymptotics

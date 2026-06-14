@@ -5,10 +5,10 @@ open scoped Topology
 
 /--
 A Δ-domain is the central object of Flajolet--Sedgewick Chapter VI singularity
-analysis. The full TRANSFER theorem, deriving coefficient asymptotics from a
-Δ-analytic singular expansion, needs Hankel-contour machinery that is not in
-Mathlib and is out of scope here; this file provides the geometric scaffolding
-and standard-function analyticity.
+analysis. This file provides the geometric scaffolding and standard-function
+analyticity used by the general transfer theorem (`transfer_theorem` in
+`TransferGeneral.lean`), which derives the `(1 - z)^{-α}` coefficient asymptotics
+from a Δ-analytic singular expansion via a little-o Darboux estimate.
 -/
 def DeltaDomainArg (R φ : ℝ) : Set ℂ :=
   { z | ‖z‖ < R ∧ z ≠ 1 ∧ φ < |Complex.arg (z - 1)| }

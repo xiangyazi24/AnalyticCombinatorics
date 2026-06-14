@@ -9,7 +9,8 @@ import Mathlib.Analysis.SpecificLimits.Basic
 This is the Flajolet--Sedgewick Theorem VI.1 standard scale for general `α`:
 `[z^n] (1 - z)^{-α} ~ n^{α-1} / Γ(α)`. The integer case
 `Γ(k) = (k - 1)!` is in `SingularityInteger.lean`; the full transfer theorem
-with Δ-domains and Hankel contours remains out of scope here.
+with Δ-domains and a little-o Darboux estimate is assembled in
+`TransferGeneral.lean` (`transfer_theorem`).
 
 The hypothesis `∀ m : ℕ, α ≠ -m` says `α ∉ {0, -1, -2, ...}`. It holds for
 all non-integer real `α` and is the correct non-vacuous hypothesis.
