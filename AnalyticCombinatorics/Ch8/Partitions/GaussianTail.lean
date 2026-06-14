@@ -200,6 +200,75 @@ lemma gaussianTail_affine_interval {s B : ℝ} (hs : 0 < s)
       rw [mul_pow, Real.sq_sqrt hs.le]; ring, gaussianTail_denom_id hs v]
   field_simp
 
+lemma gaussianTailCut_pos {s : ℝ} (hs : 0 < s) : 0 < gaussianTailCut s := by
+  rw [gaussianTailCut]; exact div_pos C_pos (by positivity)
+
+/-- Shifted Gaussian over `v` is integrable on all of `ℝ`. -/
+lemma integrable_gaussShift {s : ℝ} (hs : 0 < s) :
+    Integrable (fun v : ℝ => Real.exp (-s * (v - C / (2 * s)) ^ 2)) := by
+  have h := (integrable_exp_neg_mul_sq hs).comp_sub_right (C / (2 * s))
+  simpa using h
+
+/-- `e^{-s(v-v₀)²}/v` integrable on `(cut,∞)` (dominated by `(1/cut)·gauss`). -/
+lemma integrableOn_gaussShift_div {s : ℝ} (hs : 0 < s) :
+    IntegrableOn (fun v : ℝ => Real.exp (-s * (v - C / (2 * s)) ^ 2) / v)
+      (Set.Ioi (gaussianTailCut s)) := by
+  have hcutpos : 0 < gaussianTailCut s := gaussianTailCut_pos hs
+  have hmeas : AEStronglyMeasurable
+      (fun v : ℝ => Real.exp (-s * (v - C / (2 * s)) ^ 2) / v)
+      (volume.restrict (Set.Ioi (gaussianTailCut s))) := by
+    apply Measurable.aestronglyMeasurable; fun_prop
+  refine Integrable.mono'
+    ((integrable_gaussShift hs).integrableOn.const_mul (1 / gaussianTailCut s)) hmeas ?_
+  rw [ae_restrict_iff' measurableSet_Ioi]
+  filter_upwards with v hv
+  have hvcut : gaussianTailCut s < v := hv
+  have hvpos : 0 < v := lt_trans hcutpos hvcut
+  rw [Real.norm_eq_abs, abs_of_nonneg (by positivity)]
+  calc Real.exp (-s * (v - C / (2 * s)) ^ 2) / v
+      ≤ Real.exp (-s * (v - C / (2 * s)) ^ 2) / gaussianTailCut s := by
+        gcongr
+    _ = 1 / gaussianTailCut s * Real.exp (-s * (v - C / (2 * s)) ^ 2) := by
+        rw [div_eq_inv_mul, one_div]
+
+/-- `e^{-u²}/(C/(2√s)+u)` integrable on `(α,∞)` (denominator `≥ C/(4√s)`). -/
+lemma integrableOn_uKernel {s : ℝ} (hs : 0 < s) :
+    IntegrableOn (fun u : ℝ => Real.exp (-(u ^ 2)) / (C / (2 * Real.sqrt s) + u))
+      (Set.Ioi (gaussianTailAlpha s)) := by
+  have hCpos : 0 < C := C_pos
+  have hsqrtpos : 0 < Real.sqrt s := Real.sqrt_pos.mpr hs
+  have hgauss : Integrable (fun u : ℝ => Real.exp (-(u ^ 2))) := by
+    have := integrable_exp_neg_mul_sq (by norm_num : (0 : ℝ) < 1)
+    simpa [neg_one_mul] using this
+  have hmeas : AEStronglyMeasurable
+      (fun u : ℝ => Real.exp (-(u ^ 2)) / (C / (2 * Real.sqrt s) + u))
+      (volume.restrict (Set.Ioi (gaussianTailAlpha s))) := by
+    apply Measurable.aestronglyMeasurable; fun_prop
+  refine Integrable.mono'
+    (hgauss.integrableOn.const_mul (4 * Real.sqrt s / C)) hmeas ?_
+  rw [ae_restrict_iff' measurableSet_Ioi]
+  filter_upwards with u hu
+  have hu_lb : gaussianTailAlpha s < u := hu
+  have hkey : C / (2 * Real.sqrt s) - C / (4 * Real.sqrt s) = C / (4 * Real.sqrt s) := by
+    field_simp; ring
+  have hden_lb : C / (4 * Real.sqrt s) ≤ C / (2 * Real.sqrt s) + u := by
+    unfold gaussianTailAlpha at hu_lb
+    have h2 : -C / (4 * Real.sqrt s) = -(C / (4 * Real.sqrt s)) := by ring
+    rw [h2] at hu_lb
+    linarith [hu_lb, hkey]
+  have hden_pos : 0 < C / (2 * Real.sqrt s) + u :=
+    lt_of_lt_of_le (by positivity) hden_lb
+  have hge : (1 : ℝ) ≤ (4 * Real.sqrt s / C) * (C / (2 * Real.sqrt s) + u) := by
+    have hone : (4 * Real.sqrt s / C) * (C / (4 * Real.sqrt s)) = 1 := by field_simp
+    calc (1 : ℝ) = (4 * Real.sqrt s / C) * (C / (4 * Real.sqrt s)) := hone.symm
+      _ ≤ (4 * Real.sqrt s / C) * (C / (2 * Real.sqrt s) + u) :=
+        mul_le_mul_of_nonneg_left hden_lb (by positivity)
+  rw [Real.norm_eq_abs, abs_of_nonneg (by positivity), div_le_iff₀ hden_pos]
+  calc Real.exp (-(u ^ 2)) = Real.exp (-(u ^ 2)) * 1 := (mul_one _).symm
+    _ ≤ Real.exp (-(u ^ 2)) * ((4 * Real.sqrt s / C) * (C / (2 * Real.sqrt s) + u)) :=
+        mul_le_mul_of_nonneg_left hge (Real.exp_pos _).le
+    _ = 4 * Real.sqrt s / C * Real.exp (-(u ^ 2)) * (C / (2 * Real.sqrt s) + u) := by ring
+
 end
 
 end AnalyticCombinatorics.Ch8.Partitions
