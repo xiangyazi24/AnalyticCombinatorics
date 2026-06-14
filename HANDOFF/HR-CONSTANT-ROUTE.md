@@ -79,3 +79,13 @@ tendsto_stirlingSeq_sqrt_pi, factorial_isEquivalent_stirling}; intervalIntegral.
 Summable.sum_add_tsum_nat_add; norm_tsum_le_tsum_norm. Repo: PartLaplace,
 partLaplace_eq_finprod_tendsto, partition_laplace_log_asymptotic, log_partLaplace_eq,
 log_series_regroup, exp_sub_one_div_self_tendsto_one.
+
+## STATUS 2026-06-14: brick2 HEAD COMPLETE (10 files, 2π extracted)
+Built+green+pushed: LogOneMinusExp, TrapezoidEM, TrapezoidCell, TrapezoidCellIoc,
+LogRegLipschitz, LogRegCell, TrapezoidHeadPos (hint narrowed a≤b), LogRegIntegrable,
+StirlingHead (2π via Stirling.log_stirlingSeq_formula), LogHeadAssembly (log1mexp_head_asymp).
+Head asymptotic: headLog1mexp - (1/t)∫_0^R log1mexp - ½log(t/2π) - ½log1mexpReg(R) → 0.
+REMAINING: (1) TAIL trapezoid (R8 dispatched; exp-decay deriv producer + infinite-cell sum);
+(2) head+tail → log_partLaplace_second_order_with_I, via repo log_partLaplace_eq+log_series_regroup;
+(3) identify I=A via partition_laplace_log_asymptotic → partLaplace_second_order;
+(4) bricks 3-5 (Abelian comparison, modelSaddle real saddle, algebra → a=1/(4√3)).
