@@ -138,8 +138,9 @@ theorem CeilingEscape_of_rankDropTail_dropOne : CeilingEscape := by
       rw [hBdef]; exact le_trans hesc_n' (hfin_le_e _)
     exact ⟨hgoal1, hgoal2⟩
 
-/-- **The unconditional Hardy–Ramanujan partition-ratio limit.**  The normalized partition sequence
-`u n = p(n−1)/p(n)·(something)` (the repo's `u`) converges to a positive limit.  Fully unconditional:
+/-- **The unconditional Hardy–Ramanujan partition limit.**  The normalized partition sequence
+`u n = n · p(n) · exp(-C·√n)`, `C = π√(2/3)`, `p n = card (Nat.Partition n)` (the repo's `u`, see
+`ErdosKernel.lean`), converges to a positive limit.  Fully unconditional:
 `CeilingEscape` is now banked clean-3 via the elementary additive escape route (R9), so the only
 inputs are the banked rank-drop tail majorant and drop-1 minorization. -/
 theorem erdos_partition_limit_exists :

@@ -599,3 +599,16 @@
 - starting avenue: (a) close audit loop [async] ‖ (b) Ch2 CYC closed form
 - end: <fill on close>
 - final result: <fill on close>
+
+### 2026-06-14 progress (overnight)
+- (a) whole-book audit CLOSED: 6 independent Opus auditors (Ch1/2/3/5/8-Saddle/8-Part)
+  + ChatGPT ac/ac2 faithfulness — ALL FAITHFUL/CLEAN. erdos clean-3 already at 95b4a77.
+  Summary: HANDOFF/AUDIT-WHOLEBOOK.md. Fixed stale u-docstring in CeilingEscapeClose.
+- (b) CLOSED clean-3: Ch2/EGF/LabelledCycExp.lean — exp_egf_lcyc (exp(CYC(C))=SEQ(C),
+  = CYC=log(1/(1-C))) + egf_lseq_deriv. Resolves CYC closed-form scope note.
+- (c) CLOSED clean-3: Ch5/ContinuedFractions/FlajoletUnbounded.lean —
+  coeff_JFraction_height_indep + Wcoeff_height_indep (height-bound immaterial per coeff).
+  Resolves flajolet_cf height-bound scope note. (step-list↔code bijection still separate.)
+- (d) HR constant: route identified (HANDOFF/HR-CONSTANT-ROUTE.md). NOT extractable from
+  renewal/mass-rate (homogeneity); comparison route via 2nd-order Laplace prefactor →
+  a=1/(4√3). Brick 2 (partLaplace_second_order) is the hard core. GRINDING.
