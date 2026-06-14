@@ -633,3 +633,14 @@
   log1mexpReg deriv2-on-[0,2] (removable singularity h''=e^x/(e^x-1)²-1/x²→1/12); tail
   trapezoid; File3 ProductSecondOrder (Stirling head assembly → partLaplace_second_order);
   bricks 3-5 (Abelian comparison, modelSaddle real saddle, algebra → a=1/(4√3)).
+
+### 2026-06-14 (d) File3 done — generic EM head machinery COMPLETE
+- (d) brick2 File3 TrapezoidCell COMMITTED green (bec6da1, 0 sorry):
+  cell_trapezoid_bound_of_lipschitz_deriv (per-cell |trap-int|≤M h² from M-Lipschitz deriv,
+  chord interpolation). File1+File2+File3 = the REUSABLE generic Euler–Maclaurin head
+  machinery, fully proved.
+- FRONTIER (analytic crux): apply to g=log1mexpReg. gp=log1mexpReg'=-1/(e^x-1)+1/x has a
+  REMOVABLE singularity at 0 (gp(0)=1/2, gp'(0)=1/12). Head sum starts k=1 so args kt≥t>0 —
+  likely apply cell lemma on [t,2] avoiding 0. Need: gp Lipschitz with uniform M on (0,2],
+  HasDerivAt + integrability. R5 dispatched. Then tail trapezoid + Stirling head assembly
+  (∑-log(tk)=-N log t-log N!, Stirling→2π) → partLaplace_second_order; then bricks 3-5.
