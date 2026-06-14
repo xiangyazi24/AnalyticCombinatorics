@@ -168,6 +168,15 @@ lemma modelSaddleInterval_substitution {s B : ℝ} (hB : 1 ≤ B) :
   rw [Real.sqrt_sq (by linarith : (0 : ℝ) ≤ v)]
   field_simp
 
+/-- Saddle complete-the-square: `Cv − sv² = A/s − s(v − C/(2s))²` (uses `C² = 4A`),
+exposing the saddle at `v₀ = C/(2s)` with peak value `A/s`. -/
+lemma saddle_complete_square {s : ℝ} (hs : 0 < s) (v : ℝ) :
+    C * v - s * v ^ 2 = Partitions.A / s - s * (v - C / (2 * s)) ^ 2 := by
+  have hA : Partitions.A = C ^ 2 / 4 := by rw [C_sq_eq_four_mul_A]; ring
+  rw [hA]
+  field_simp
+  ring
+
 end
 
 end AnalyticCombinatorics.Ch8.Partitions
