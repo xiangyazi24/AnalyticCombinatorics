@@ -54,3 +54,28 @@ REMAINING brick 4 (all tools confirmed, no risks):
        (riemann_sum_Ioi_sub_integral_bound mesh=1, M=exp(C√3) on (0,2]) + o() error ⟹
        modelSaddle_ratio_asymp → modelSaddle_log_asymp (brick 4 done).
   Then brick 3 (Abelian) → brick 5 discharges → a=1/(4√3).
+
+## Update 2026-06-14 (cont 3) — brick 4 ~85%: both hard analytic cores DONE
+ModelSaddleIntegral.lean (committed, clean-3): saddleDensity(+deriv), exponent bounds,
+ALL integrabilities (shift, shift-deriv, vIntegrand, saddleDensity_Ioi1), x=y² substitution
+(crux, finite + Ioi-level), complete-square, vIntegral_eq_gaussianForm (pull e^{A/s}),
+riemann_term_eq (tsum-split), modelSaddle_sub_integral_bound (RIEMANN COMPARISON applied:
+|modelSaddle - saddleDensity 1 - ∫_{Ioi0}f| ≤ ∫|f'| + e^{C√3}).
+GaussianTail.lean (committed, clean-3): integral_exp_neg_sq (=√π), alpha/beta tendsto,
+gaussianTailKernel pointwise+dom(2e^{-u²})+DCT ⟹ cut kernel integral → √π. THE moving-limit
+Gaussian DCT (the analytic heart) DONE.
+BOTH hardest analytic cores complete: brick2 tail-trapezoid + brick4 Gaussian-DCT.
+REMAINING (mechanical-but-large, ~300 lines, all patterns established, skeleton in
+HANDOFF/HR-brick4-gaussian-route.md):
+  (A) affine change-of-vars ∫_{cut}^B e^{-s(v-v₀)²}/v = (2√s/C)∫ e^{-u²}/(1+βu) du
+      (integral_comp_mul_deriv' with φ u = v₀+u/√s, same pattern as modelSaddleInterval_substitution),
+      + B→∞, + left-strip ∫_1^{cut} ≤ (C/4s)e^{-C²/16s} negligible ⟹ gaussianTail_asymp
+      (∫_{Ioi1} e^{-s(v-v₀)²}/v ~ (2√π/C)√s).
+  (B) o() estimate: ∫|f'| + e^{C√3} = o(√s e^{A/s}) (∫|f'| via same Gaussian machinery;
+      f' bracket has extra small factor near saddle, so easier than (A)).
+  (C) assemble modelSaddle_ratio_asymp (comparison + (A) + (B): saddleDensity 1 & errors are
+      o(√s e^{A/s}), vIntegral_eq_gaussianForm gives 2e^{A/s}·(2√π/C)√s = (4√π/C)√s e^{A/s})
+      → modelSaddle_log_asymp (BRICK 4 done).
+  (D) BRICK 3 Abelian: P=1+∑ u_n·w_n, modelSaddle=∑ w_n, |∑(u_n-a)w_n| ≤ ε·modelSaddle + bdd head,
+      modelSaddle→∞ ⟹ log P - log a - log modelSaddle → 0.
+  (E) discharge erdos_limit_constant_of_asymptotics (brick 5, already proven) → a=1/(4√3).
