@@ -101,3 +101,31 @@ REMAINING = mechanical connective + brick 3 (all patterns established):
   (B3) Abelian: P=1+∑u_n·w_n, modelSaddle=∑w_n (w_n=saddleDensity s n), |∑(u_n-a)w_n|≤ε·modelSaddle+
        bdd head, modelSaddle→∞ ⟹ log P-log a-log modelSaddle→0.
   (B5) discharge erdos_limit_constant_of_asymptotics (PROVEN) → a=1/(4√3).
+
+## Update 2026-06-14 (cont 5) — bricks 2,3,5 DONE; brick 4 ~90%
+NEW committed (clean-3, pushed):
+- modelGaussCut_eq, integrability inputs (GaussianTail.lean).
+- ErdosAbelian.lean = BRICK 3 COMPLETE: partLaplace_log_sub_modelSaddle_tendsto
+  (log P − log a − log modelSaddle → 0), taking modelSaddle_tendsto_atTop as hypothesis.
+  (modelWeight, weightedU, partLaplace_eq_one_add_weightedU, finite-head/modelSaddle→0,
+   Abelian ε-split ratio→a.)
+ChatGPT drafts saved: HR-brick3-abelian-route.md, HR-brick4-final-route.md, HR-brick4-gaussian-route.md.
+STATUS: bricks 2 (second-order Laplace), 3 (Abelian), 5 (constant algebra + combination) all DONE/clean-3.
+REMAINING (brick 4 final, ~350 lines, fully roadmapped — HR-brick4-final-route.md):
+  (G) gaussianTail_asymp = ∫_{Ioi 1} e^{-s(v-v₀)²}/v ~ (2√π/C)√s:
+      gaussianTail_cut_ratio_tendsto (DONE-able: modelGaussCut_eq + DCT, ratio→1) +
+      gaussianTail_left_ratio_tendsto_zero (strip ∫_{Ioc 1 cut} ≤ (C/4s)e^{-C²/16s},
+        /denom → 0 via tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero ∘ (s↦1/s)) + split assembly.
+  (T) modelSaddle_tendsto_atTop (unconditionalizes brick 3): single-term lower bound
+      modelSaddle s ≥ exp(C√n(s)-s·n(s))/n(s) at n(s)=⌊1/s²⌋, →∞ since (C-1)/s →∞ (C>1).
+  (O) modelSaddle_riemann_error_negligible (the o() estimate — THE last hard piece, ChatGPT punted
+      on a one-screen proof but gave the route): KEY INSIGHT — after x+1=y² subst, on right strip
+      y≥C/(4s) the deriv bracket |C/(2y)-s-1/y²| ≤ (3+16/C²)·s (since C/(2y)≤2s, 1/y²≤16s²/C²),
+      so D_right ≤ K·s·∫_{y≥cut}2e^{Cy-sy²}/y = K·s·O(√s e^{A/s}) = o(√s e^{A/s}); left strip negligible;
+      exp(C√3)/(√s e^{A/s})→0. Needs a deriv-weighted x+1=y² substitution lemma (analogue of
+      modelSaddleIoi_substitution).
+  (A) saddleDensity_shift_integral_eq_Ioi1 (∫_{Ioi0}sd(·+1)=∫_{Ioi1}sd, translation via interval+B→∞)
+      + assemble modelSaddle_log_asymp (= BRICK 4): comparison + main term (2e^{A/s}·gaussianTail_asymp)
+      + (O) ⟹ modelSaddle ~ (4√π/C)√s e^{A/s} → log form.
+  (Z) discharge: a = 1/(4√3) via erdos_limit_constant_of_asymptotics (PROVEN) + brick3 + brick4,
+      with modelSaddle_tendsto_atTop from (T)/(O). Strengthen erdos_partition_limit_exists.
