@@ -10,48 +10,63 @@ statement fidelity to the book).
 Approval: standing — `/goal 完成全书形式化, 以通过 audit 为准` + explicit `/automode`. No further
 "确认开跑吗" gate (the goal directive overrides the handshake's wait-for-approval step).
 
-## Current frontier (2026-06-03)
+## Current frontier (2026-06-14, overnight run, Xiang asleep)
 
-DONE/solid: Ch1(OGF/I), Ch2(EGF/II), Ch3(BGF/III), Ch4(complex+singularity/IV+VI incl Transfer VI.3),
-Ch8(saddle/VIII: exp FAITHFUL, Hayman transfer CONDITIONAL-honest). 74 files, build green.
-MISSING: F&S Ch V, Ch VII, Ch IX, Appendices A/B/C.
+ALL CHAPTERS PRESENT + ADVERSARIALLY AUDITED FAITHFUL:
+- Ch1(I/OGF), Ch2(II/EGF), Ch3(III/BGF) — CLEAN.
+- Ch4(IV complex + VI singularity analysis: transfer_theorem, DeltaDomain, standard scale
+  [z^n](1-z)^{-α}~C n^{α-1}/Γ(α), LogSingularity) — fixed + audited.
+- Ch5(V rational/meromorphic + Flajolet continued fractions) — CLEAN.
+- Ch7(VII singularity apps; tree counts via Lagrange inversion, 钉死 this session) — clean-3, merged.
+- Ch8(VIII saddle-point: HAdmissible 4 instances; + Partitions: HR limit erdos_partition_limit_exists) — FAITHFUL.
+- Ch9(IX limit laws: quasi-powers, permutation cycle Gaussian) — fixed + audited.
 
-## Avenues (ranked; framework-first)
+Whole-book audit (this session): 6 independent Opus adversarial auditors (Ch1/2/3/5/8-SaddlePoint/
+8-Partitions) + ChatGPT ac/ac2 faithfulness leg. Verdict: all FAITHFUL/CLEAN. Two disclosed SCOPE
+NOTES remain (faithful-but-narrower than maximal FS), now the work:
+  1. Ch2 CYC stated as ODE+uniqueness, not literal log closed form.
+  2. Ch5 flajolet_cf is bounded-height + first-return-coded (no h→∞, no step-list bijection).
 
-(a) **Ch V — Applications of Rational & Meromorphic.** Foundational brick: general meromorphic
-    coefficient transfer (F&S IV.10) — analytic remainder =O(R^{-n}) via `norm_coeff_le_of_circleIntegral`,
-    pole-subtraction decomposition, dominant simple-pole asymptotic. Then applications: surjections
-    (EGF 1/(2-e^z), `egf_surjections` already proved → dominant pole at log 2), supercritical sequences,
-    alignments. STATUS: meromorphic-transfer brick dispatched to codex.
+Build discipline: remote ONLY via `/tmp/acbuild.sh <Module>` on uisai2 (local lake BANNED, kernel
+panic). **ONE build at a time** — concurrent acbuild rsyncs corrupt AC-clone (learned tonight).
+codex unavailable (usage out); ChatGPT ac+ac2 online; Opus subagents for parallel grind.
 
-(b) **Ch VII — Applications of Singularity Analysis.** Infra (Transfer VI.3) exists. Bricks: simple
-    varieties of trees / Cayley tree asymptotics, tree-counting via singularity, supercritical-sequence
-    schema, the √-singularity universality examples. Each is an application of the existing transfer.
+## Avenues (ranked)
 
-(c) **Ch IX — Multivariate / Limit Laws.** Infra (Ch3 BGF: mean/variance) exists. Bricks: quasi-powers
-    theorem (Hwang) → Gaussian limit law; CLT for sequence/set parameters from BGF mean+variance.
+(a) **Close the audit loop** [fast; async parts — don't idle]. Retrieve ac (HR) ChatGPT answer +
+    reconcile (Partitions already FAITHFUL); confirm `#print axioms erdos_partition_limit_exists`
+    = clean-3; write `HANDOFF/AUDIT-WHOLEBOOK.md` (verdict table + 2 scope notes); commit.
+    Terminal: summary committed + both confirmations in hand.
 
-(d) **Ch8 deepening.** Wire exp as the first `HAdmissible` instance (CONDITIONAL → FAITHFUL for the
-    general interface). Optionally Bell H-admissibility.
+(b) **钉死 scope-note 1 — Ch2 CYC literal closed form** `CYC(C)(z) = -log(1-C(z))`.
+    Current: `egf_lcyc_ode` (CYC' = C'·SEQ(C)) + `egf_lcyc_unique`. Mirror the `egf_set` exp
+    derivation: Ch1 CycleOGF has `mlog f = ∑ f^{j+1}/(j+1) = -log(1-f)`. Show mlog(egf C) satisfies
+    the same ODE + zero constant term → conclude by `egf_lcyc_unique`.
+    Terminal: `egf_lcyc_closed` clean-3, OR written obstruction (which ODE→closed-form step fails).
 
-(e) **Appendices A/B/C.** Faithful statements of the named auxiliary results (many are Mathlib
-    re-exports — must be genuine, not trivially-true re-skins).
+(c) **钉死 scope-note 2 — Ch5 flajolet_cf unbounded height** (coeff level).
+    Key: for fixed n, `Wcoeff h a b c n` stabilizes once h ≥ n. Prove stabilization lemma
+    `n ≤ h → Wcoeff h a b c n = Wcoeff n a b c n`, define unbounded path-sum/J-fraction = height-n
+    value, lift `flajolet_cf` to unbounded coeff statement.
+    Terminal: `flajolet_cf_unbounded` (coeff-level) clean-3, OR obstruction. (step-list↔code
+    bijection = SEPARATE bigger item; note, don't block.)
+
+(d) **Stretch — HR exact constant a = 1/(4√3)** (full quantitative Hardy–Ramanujan).
+    Current: ∃a>0 (honest fragment). Identifying a is genuine new analysis (renewal limit constant);
+    use mass-rate K (MassRateApprox2, ties A=π²/6) + renewal-limit formula; dispatch ChatGPT for
+    the constant-identification math. Terminal: a identified+proved, OR obstruction theorem.
 
 ## Fallbacks
+- If (b)(c)(d) all blocked: deeper adversarial re-audit of the Ch4 singularity-analysis transfer
+  core (FS Ch6 heart) + appendix math-background gaps vs Mathlib.
+- A WALL → decompose into named sub-lemmas, grind each; never fake with axiom/sorry. Genuinely-absent
+  Mathlib API → document exact missing shape, leave that one theorem unstated (not sorry'd), next brick.
 
-- A foundational theorem that is a WALL → decompose into named sub-lemmas, grind each; never fake with
-  axiom/sorry. Dispatch long proof chains to codex single-line (no effort cap in brief).
-- If a brick blocks on a genuinely-absent Mathlib API, document the exact missing lemma/shape in the
-  reply + RUN_LOG, leave that one theorem unstated (not sorry'd), move to next independent brick.
-
-## Terminal condition per avenue
-
-Every named F&S theorem in the chapter is either FAITHFUL-proved (audit-clean) or documented as
-blocked on a specific missing piece. No "feels done" / "to the limit" exits.
+## Terminal conditions recap
+Success = clean-3 theorem committed (verified by my own rebuild + #print axioms). Failure = written
+obstruction (a Lean `¬...` or precise file:line+tactic diagnosis), never "looks hard"/"to the limit".
 
 ## Workflow
-
-Master (Opus) designs path + Mathlib survey + wiring + audit. Codex (gpt-5.5, uisai1) grinds proof
-chains as `codex exec` nohup, reply → HANDOFF/outbox/*-reply.md. One file one writer; master wires
-imports + Audit.lean + #print axioms + commit + push. git sync (no rsync). Per-brick: pull → lake env
-lean → #print axioms → AUDIT_STATUS verdict → commit. Build green check before each Telegram milestone.
+Master (Opus) designs path + Mathlib survey + wiring + audit. ChatGPT ac/ac2 for math consult (with
+paired waiter + truncation check). Opus subagents for parallel proof grind. ONE acbuild at a time;
+per result: build → #print axioms → verdict → commit + push. git sync (no rsync).

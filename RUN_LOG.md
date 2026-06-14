@@ -592,3 +592,10 @@
   M₂ (boseKernel3 mirror) + sigmaMoment_le_power (crude (r+2)!·2^{r+3}/t^{r+3} bound, descFactorial
   route) written, in fix rounds. R12 bridge capture failed 4× — manual paste requested. (106th–108th
   deliverables.)
+
+## Run 2026-06-14 00:55 (overnight, Xiang asleep)
+- doctrine: refreshed for 2026-06-14 frontier (whole-book audited FAITHFUL; 2 scope notes remain)
+- approval: terminal `/automode` + "我要睡了, 交给你了" (standing /goal, no gate)
+- starting avenue: (a) close audit loop [async] ‖ (b) Ch2 CYC closed form
+- end: <fill on close>
+- final result: <fill on close>
