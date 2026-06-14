@@ -260,6 +260,11 @@ import AnalyticCombinatorics.Ch9.LimitLaws.ExpectedCycles
 import AnalyticCombinatorics.Ch9.LimitLaws.CycleVariance
 import AnalyticCombinatorics.Ch9.LimitLaws.TotalCycleSecondMoment
 import AnalyticCombinatorics.Ch9.LimitLaws.CompositionParts
+import AnalyticCombinatorics.Ch8.Partitions.CenterTrackingHitVal
+import AnalyticCombinatorics.Ch8.Partitions.RankDropTailMaj
+import AnalyticCombinatorics.Ch8.Partitions.RankDropDeepMass
+import AnalyticCombinatorics.Ch8.Partitions.EnterBandAdditiveEscape
+import AnalyticCombinatorics.Ch8.Partitions.CeilingEscapeClose
 
 /-!
 # AnalyticCombinatorics
@@ -338,4 +343,3 @@ Discipline (formalization-playbook):
 
 Modules are added here as they are proved.
 -/
-import AnalyticCombinatorics.Ch8.Partitions.CenterTrackingHitVal
