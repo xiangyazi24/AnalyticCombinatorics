@@ -133,6 +133,73 @@ lemma gaussianTailKernel_integral_tendsto :
     Hmeas gaussianTailKernel_dom integrable_gaussian_dom gaussianTailKernel_pointwise
   rwa [integral_exp_neg_sq] at hlim
 
+/-- Saddle cutoff `q(s) = C/(4s) = v₀/2`. -/
+def gaussianTailCut (s : ℝ) : ℝ := C / (4 * s)
+
+/-- `√s·(c/(k·s)) = c/(k·√s)` (one `√s` cancels). -/
+lemma sqrt_mul_div_self {s k : ℝ} (hs : 0 < s) (hk : 0 < k) (c : ℝ) :
+    Real.sqrt s * (c / (k * s)) = c / (k * Real.sqrt s) := by
+  have hss : Real.sqrt s * Real.sqrt s = s := Real.mul_self_sqrt hs.le
+  have hsqrtpos : 0 < Real.sqrt s := Real.sqrt_pos.mpr hs
+  have hkne : k ≠ 0 := ne_of_gt hk
+  have hsne : s ≠ 0 := ne_of_gt hs
+  have hsqne : Real.sqrt s ≠ 0 := ne_of_gt hsqrtpos
+  field_simp
+  linear_combination c * hss
+
+/-- Key denominator identity: `C/(2√s) + √s·(v − C/(2s)) = √s·v`. -/
+lemma gaussianTail_denom_id {s : ℝ} (hs : 0 < s) (v : ℝ) :
+    C / (2 * Real.sqrt s) + Real.sqrt s * (v - C / (2 * s)) = Real.sqrt s * v := by
+  rw [mul_sub, sqrt_mul_div_self (k := 2) hs (by norm_num) C]; ring
+
+/-- Finite-interval affine substitution `u = √s(v − v₀)` for the cut Gaussian:
+`∫_{cut}^B e^{−s(v−v₀)²}/v = ∫_{α}^{√s(B−v₀)} e^{−u²}/(C/(2√s)+u)`. -/
+lemma gaussianTail_affine_interval {s B : ℝ} (hs : 0 < s)
+    (hcutB : gaussianTailCut s ≤ B) :
+    (∫ v in gaussianTailCut s..B, Real.exp (-s * (v - C / (2 * s)) ^ 2) / v)
+      = ∫ u in gaussianTailAlpha s..(Real.sqrt s * (B - C / (2 * s))),
+          Real.exp (-(u ^ 2)) / (C / (2 * Real.sqrt s) + u) := by
+  have hsqrtpos : 0 < Real.sqrt s := Real.sqrt_pos.mpr hs
+  have hss : Real.sqrt s * Real.sqrt s = s := Real.mul_self_sqrt hs.le
+  have hCpos : 0 < C := C_pos
+  have hcutpos : 0 < gaussianTailCut s := by
+    rw [gaussianTailCut]; exact div_pos hCpos (by positivity)
+  set f : ℝ → ℝ := fun v => Real.sqrt s * (v - C / (2 * s)) with hf
+  set g : ℝ → ℝ := fun u => Real.exp (-(u ^ 2)) / (C / (2 * Real.sqrt s) + u) with hg
+  have hderiv : ∀ v ∈ Set.uIcc (gaussianTailCut s) B, HasDerivAt f (Real.sqrt s) v := by
+    intro v _
+    simpa using ((hasDerivAt_id v).sub_const (C / (2 * s))).const_mul (Real.sqrt s)
+  have hcont' : ContinuousOn (fun _ : ℝ => Real.sqrt s) (Set.uIcc (gaussianTailCut s) B) :=
+    continuousOn_const
+  have hcontg : ContinuousOn g (f '' Set.uIcc (gaussianTailCut s) B) := by
+    refine ContinuousOn.div (Continuous.continuousOn (by fun_prop))
+      (Continuous.continuousOn (by fun_prop)) ?_
+    rintro u ⟨v, hv, rfl⟩
+    rw [Set.uIcc_of_le hcutB] at hv
+    have hvpos : 0 < v := lt_of_lt_of_le hcutpos hv.1
+    rw [hf, gaussianTail_denom_id hs v]
+    exact ne_of_gt (mul_pos hsqrtpos hvpos)
+  have hsqrtne : Real.sqrt s ≠ 0 := ne_of_gt hsqrtpos
+  have hfcut : f (gaussianTailCut s) = gaussianTailAlpha s := by
+    simp only [hf, gaussianTailCut, gaussianTailAlpha]
+    rw [mul_sub, sqrt_mul_div_self (k := 4) hs (by norm_num) C,
+      sqrt_mul_div_self (k := 2) hs (by norm_num) C]
+    field_simp
+    ring
+  have hsub := intervalIntegral.integral_comp_mul_deriv' hderiv hcont' hcontg
+  rw [hfcut] at hsub
+  rw [← hsub]
+  refine (intervalIntegral.integral_congr ?_)
+  intro v hv
+  rw [Set.uIcc_of_le hcutB] at hv
+  have hvpos : 0 < v := lt_of_lt_of_le hcutpos hv.1
+  have hvne : v ≠ 0 := ne_of_gt hvpos
+  have hsne : Real.sqrt s ≠ 0 := ne_of_gt hsqrtpos
+  simp only [Function.comp, hf, hg]
+  rw [show -(Real.sqrt s * (v - C / (2 * s))) ^ 2 = -s * (v - C / (2 * s)) ^ 2 by
+      rw [mul_pow, Real.sq_sqrt hs.le]; ring, gaussianTail_denom_id hs v]
+  field_simp
+
 end
 
 end AnalyticCombinatorics.Ch8.Partitions
