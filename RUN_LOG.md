@@ -623,3 +623,13 @@
   ChatGPT R3 dispatched for the full Lean proof of trapezoid_sum_head (no effort cap).
   Then File3 (Stirling assembly) + bricks 3,4,5 (Abelian comparison, modelSaddle, algebra).
   (d) is a deep multi-file analysis subproject (Meinardus 2nd-order); File1 foundation in.
+
+### 2026-06-14 (d) File2 done
+- (d) brick2 File2 `TrapezoidEM.lean` COMMITTED green (c1bdac1, 0 sorry): the generic
+  Euler-Maclaurin summation core (trapezoid_sum_identity_range +
+  trapezoid_head_(range_)tendsto_of_cell_bound). Structural core of singular-EM route DONE.
+  Bug fought: integral-notation precedence (∫…,g x - … absorbs trailing term → parenthesize).
+- FRONTIER: per-cell bound cell_trapezoid_bound_of_deriv_lipschitz (R4 dispatched);
+  log1mexpReg deriv2-on-[0,2] (removable singularity h''=e^x/(e^x-1)²-1/x²→1/12); tail
+  trapezoid; File3 ProductSecondOrder (Stirling head assembly → partLaplace_second_order);
+  bricks 3-5 (Abelian comparison, modelSaddle real saddle, algebra → a=1/(4√3)).
