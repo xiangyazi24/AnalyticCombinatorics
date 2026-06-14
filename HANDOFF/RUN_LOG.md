@@ -33,3 +33,24 @@ REMAINING — BRICK 4 (modelSaddle_log_asymp), 4-file plan in HANDOFF/HR-brick4-
       B→∞ via integral_gaussian; assemble ySaddleIntegral_ratio → modelSaddle_ratio_asymp → log form.
   Then BRICK 3 (Abelian): P=1+∑ u_n·w_n, modelSaddle=∑ w_n, w_n=e^{C√n-tn}/n; |∑(u_n-a)w_n|≤ε·modelSaddle
   + bounded head, modelSaddle→∞ ⟹ log P - log a - log modelSaddle → 0. Then brick 5 discharges → a=1/(4√3).
+
+## Update 2026-06-14 (cont 2) — brick 4 CRUX RESOLVED + more plumbing
+ModelSaddleIntegral.lean (all committed, clean-3, pushed):
+- saddleDensity + saddleDensity_hasDerivAt; saddle_exponent_bound_real.
+- integrableOn_saddleDensity_shift + ..._deriv (riemann inputs, shift dodges 1/x singularity).
+- saddleDensity_shift_hasDerivAt (chain rule).
+- modelSaddleInterval_substitution: ∫₁^{B²} e^{C√u-su}/u = ∫₁^B 2e^{Cv-sv²}/v
+  ★ THE flagged-risk x=y² substitution — RESOLVED via intervalIntegral.integral_comp_mul_deriv'
+  (image-continuity version; image [1,B²]⊂Ioi 0 avoids the singularity). No open API risks left.
+- saddle_complete_square: Cv-sv² = A/s - s(v-C/2s)² (saddle v₀=C/2s, peak A/s).
+REMAINING brick 4 (all tools confirmed, no risks):
+  (i)  B→∞: ∫_{Ioi 1} saddleDensity s = lim_B ∫₁^{B²} = lim ∫₁^B 2e^{Cv-sv²}/v  (intervalIntegral
+       → setIntegral via integral_Ioi as limit; integrableOn already have).
+  (ii) linear sub u=√s(v-C/2s) (intervalIntegral.inv_smul_integral_comp_div) + complete_square ⟹
+       ∫₁^B 2e^{Cv-sv²}/v = (4√s/C)e^{A/s} ∫ e^{-u²}/(1+(2√s/C)u) du.
+  (iii) Gaussian DCT: ∫_{-B}^B e^{-u²}/(1+βu) → √π (central |u|≥-C/4√t bound by 2e^{-u²} +
+        far-left exp-negligible); B→∞ via integral_gaussian (b=1 → √π).
+  (iv) assemble modelSaddleIntegral ~ (4√π/C)√s e^{A/s}; riemann comparison
+       (riemann_sum_Ioi_sub_integral_bound mesh=1, M=exp(C√3) on (0,2]) + o() error ⟹
+       modelSaddle_ratio_asymp → modelSaddle_log_asymp (brick 4 done).
+  Then brick 3 (Abelian) → brick 5 discharges → a=1/(4√3).
