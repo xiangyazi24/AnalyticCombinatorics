@@ -146,6 +146,63 @@ theorem log_partLaplace_second_order_with_I :
   refine hadd.congr' (Eventually.of_forall fun t => ?_)
   ring
 
+/-- The Laplace integral constant equals the first-order constant: `∫₀^∞ log1mexp = A`.
+Proof: `t·log P → I` (from the second-order law) and `t·log P → A`
+(`partition_laplace_log_asymptotic`); limits are unique. -/
+theorem log1mexp_integral_eq_A :
+    (∫ x in Set.Ioi (0 : ℝ), log1mexp x) = A := by
+  have ht0 : Tendsto (fun t : ℝ => t) (𝓝[>] (0 : ℝ)) (𝓝 0) :=
+    tendsto_nhdsWithin_of_tendsto_nhds tendsto_id
+  -- `t·φ(t) → 0` where `φ` is the second-order remainder
+  have htphi := ht0.mul log_partLaplace_second_order_with_I
+  rw [mul_zero] at htphi
+  -- `t·½log(t/2π) → 0`
+  have htlog :
+      Tendsto (fun t : ℝ => t * ((1 / 2 : ℝ) * Real.log (t / (2 * Real.pi))))
+        (𝓝[>] (0 : ℝ)) (𝓝 0) := by
+    have hxlogx : Tendsto (fun x : ℝ => x * Real.log x) (𝓝[>] (0 : ℝ)) (𝓝 0) := by
+      have h := tendsto_log_mul_rpow_nhdsGT_zero (r := 1) (by norm_num : (0 : ℝ) < 1)
+      simp only [Real.rpow_one] at h
+      exact h.congr (fun x => mul_comm _ _)
+    have hconst : Tendsto (fun t : ℝ => t * Real.log (2 * Real.pi)) (𝓝[>] (0 : ℝ)) (𝓝 0) := by
+      simpa using ht0.mul_const (Real.log (2 * Real.pi))
+    have hcombo :
+        Tendsto (fun t : ℝ => (1 / 2 : ℝ) * (t * Real.log t - t * Real.log (2 * Real.pi)))
+          (𝓝[>] (0 : ℝ)) (𝓝 0) := by
+      simpa using (hxlogx.sub hconst).const_mul (1 / 2 : ℝ)
+    refine hcombo.congr' ?_
+    filter_upwards [self_mem_nhdsWithin] with t ht
+    have htpos : 0 < t := ht
+    rw [Real.log_div (ne_of_gt htpos) (by positivity)]
+    ring
+  -- assemble `t·log P → I`
+  have hL :
+      Tendsto (fun t : ℝ => t * Real.log (PartLaplace t)) (𝓝[>] (0 : ℝ))
+        (𝓝 (∫ x in Set.Ioi (0 : ℝ), log1mexp x)) := by
+    have hcomb :=
+      (htphi.add (tendsto_const_nhds
+        (x := (∫ x in Set.Ioi (0 : ℝ), log1mexp x)))).add htlog
+    simp only [zero_add, add_zero] at hcomb
+    refine hcomb.congr' ?_
+    filter_upwards [self_mem_nhdsWithin] with t ht
+    have htne : t ≠ 0 := ne_of_gt ht
+    field_simp
+    ring
+  exact tendsto_nhds_unique hL partition_laplace_log_asymptotic
+
+/-- **Second-order Laplace asymptotic (Meinardus main term), final form.**
+`log P(e^{-t}) − A/t − ½·log(t/2π) → 0` as `t → 0⁺`, with `A = π²/6`. -/
+theorem log_partLaplace_second_order :
+    Tendsto
+      (fun t : ℝ =>
+        Real.log (PartLaplace t)
+          - (1 / t) * A
+          - (1 / 2 : ℝ) * Real.log (t / (2 * Real.pi)))
+      (𝓝[>] (0 : ℝ)) (𝓝 0) := by
+  have h := log_partLaplace_second_order_with_I
+  rw [log1mexp_integral_eq_A] at h
+  exact h
+
 end
 
 end AnalyticCombinatorics.Ch8.Partitions
