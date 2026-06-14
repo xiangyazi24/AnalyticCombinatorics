@@ -88,6 +88,55 @@ lemma integrableOn_saddleDensity_shift {s : ℝ} (hs : 0 < s) :
         have := saddle_exponent_bound_real hs (y := x + 1) (by linarith)
         linarith
 
+/-- Derivative of the shifted density (chain rule with `y ↦ y+1`). -/
+lemma saddleDensity_shift_hasDerivAt {s x : ℝ} (hx : -1 < x) :
+    HasDerivAt (fun y : ℝ => saddleDensity s (y + 1))
+      (saddleDensity s (x + 1) * (C / (2 * Real.sqrt (x + 1)) - s - 1 / (x + 1))) x := by
+  have hxp1 : 0 < x + 1 := by linarith
+  have h := (saddleDensity_hasDerivAt (t := s) hxp1).comp x ((hasDerivAt_id x).add_const 1)
+  simpa using h
+
+/-- The shifted-density derivative is integrable on `(0,∞)`: the bracket factor is bounded
+by `C/2 + s + 1`, so `|f'| ≤ (C/2+s+1)·saddleDensity`, which is integrable. -/
+lemma integrableOn_saddleDensity_shift_deriv {s : ℝ} (hs : 0 < s) :
+    IntegrableOn
+      (fun x : ℝ => saddleDensity s (x + 1) * (C / (2 * Real.sqrt (x + 1)) - s - 1 / (x + 1)))
+      (Set.Ioi (0 : ℝ)) := by
+  have hCpos : 0 < C := C_pos
+  have hg : IntegrableOn (fun x : ℝ => (C / 2 + s + 1) * saddleDensity s (x + 1)) (Set.Ioi 0) :=
+    (integrableOn_saddleDensity_shift hs).const_mul _
+  have hmeas : AEStronglyMeasurable
+      (fun x : ℝ => saddleDensity s (x + 1) * (C / (2 * Real.sqrt (x + 1)) - s - 1 / (x + 1)))
+      (volume.restrict (Set.Ioi (0 : ℝ))) := by
+    apply Measurable.aestronglyMeasurable
+    unfold saddleDensity
+    fun_prop
+  refine Integrable.mono' hg hmeas ?_
+  rw [ae_restrict_iff' measurableSet_Ioi]
+  filter_upwards with x hx
+  have hx0 : 0 < x := hx
+  have hden : (0 : ℝ) < x + 1 := by linarith
+  have hsq1 : (1 : ℝ) ≤ Real.sqrt (x + 1) := by
+    have h := Real.sqrt_le_sqrt (show (1 : ℝ) ≤ x + 1 by linarith)
+    rwa [Real.sqrt_one] at h
+  have hsd_nonneg : 0 ≤ saddleDensity s (x + 1) := by
+    unfold saddleDensity; exact div_nonneg (Real.exp_pos _).le hden.le
+  have hfac : |C / (2 * Real.sqrt (x + 1)) - s - 1 / (x + 1)| ≤ C / 2 + s + 1 := by
+    have hsp : 0 < Real.sqrt (x + 1) := Real.sqrt_pos.mpr hden
+    have h1 : C / (2 * Real.sqrt (x + 1)) ≤ C / 2 := by
+      rw [div_mul_eq_div_div]
+      exact div_le_self (div_nonneg hCpos.le (by norm_num)) hsq1
+    have h1' : 0 ≤ C / (2 * Real.sqrt (x + 1)) := by positivity
+    have h2 : 1 / (x + 1) ≤ 1 := by rw [div_le_one hden]; linarith
+    have h2' : 0 ≤ 1 / (x + 1) := by positivity
+    rw [abs_le]
+    constructor <;> nlinarith [hCpos.le, hs.le]
+  rw [Real.norm_eq_abs, abs_mul, abs_of_nonneg hsd_nonneg]
+  calc saddleDensity s (x + 1) * |C / (2 * Real.sqrt (x + 1)) - s - 1 / (x + 1)|
+      ≤ saddleDensity s (x + 1) * (C / 2 + s + 1) :=
+        mul_le_mul_of_nonneg_left hfac hsd_nonneg
+    _ = (C / 2 + s + 1) * saddleDensity s (x + 1) := by ring
+
 end
 
 end AnalyticCombinatorics.Ch8.Partitions
