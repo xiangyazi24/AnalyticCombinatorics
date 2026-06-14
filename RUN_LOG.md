@@ -666,3 +666,13 @@
   (2) Stirling head Σ-log(tk)=-N log t-log N! → 2π via Stirling (THE prefactor source);
   (3) assemble head → log_partLaplace head with (1/2)log(t/2π); (4) tail trapezoid (deriv-decay).
   R7 dispatched for (1)(2)(3). Then partLaplace_second_order; bricks 3-5.
+
+### 2026-06-14 (d) brick2 — 2π EXTRACTED (9 files)
+- LogRegIntegrable (118d29d): log1mexpReg ContinuousOn[0,2]+integrable (head hint discharge).
+- StirlingHead (f0ef242): singularHead_stirling — Σ-log(tk)-[(R-R log R)/t+½log(t/2π)]→0.
+  THE 2π source, from Mathlib Stirling.log_stirlingSeq_formula+tendsto_stirlingSeq_sqrt_pi.
+  9 brick-2 files all green/0-sorry. The 2π prefactor of √(t/2π) is now formalized.
+- REMAINING brick2: head assembly log1mexp_head_asymp (combine StirlingHead singular +
+  TrapezoidHeadPos regularized via log1mexp=log1mexpReg-log, ∫_0^R log x=R log R-R) →
+  Σlog1mexp(kt)-(1/t)∫_0^R log1mexp-½log(t/2π)-½log1mexpReg(R)→0; then tail; then
+  log_partLaplace_second_order (identify I=A via first-order). Then bricks 3-5 → a=1/(4√3).
