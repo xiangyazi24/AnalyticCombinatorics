@@ -100,14 +100,37 @@ Even granting Wall 1, the remaining assembly is substantial:
    measures agree.)
 4. Conclude `permutationCycles_gaussian_uniformPerm` on `uniformPermMeasure`.
 
-## STATUS
-Route confirmed sound; foundation + 3 of the recursion's pieces banked
-(clean-3, 0 sorry, build green).  The cycle-insertion `IsCycle` lemma (Wall 1)
-is the irreducible hard core absent from Mathlib; it gates the full faithful
-bridge.  Until it is proved, the Gaussian cycle CLT remains formally about the
-Feller coupling `cycleP`, not `uniformPermMeasure` — the audit naming finding
-stands (NOT yet upgraded to FAITHFUL).
+## STATUS — CLOSED (FAITHFUL)
+The audit finding is **resolved**.  The full equidistribution bridge and the
+faithful uniform-permutation Gaussian cycle CLT are formalized (clean-3, 0 sorry,
+build green).  Walls 1 and 2 are both done.
+
+Banked tail (all in `PermCycleCountBridge.lean`, all clean-3
+`[propext, Classical.choice, Quot.sound]`):
+
+- `cycleBase_eq_div` : `cycleBase k z = (exp z + k)/(k+1)`.
+- `prod_cycleBase_eq` : `∏_{i<n} cycleBase i z = (∏_{k<n}(exp z + k))/n!`
+  (the Feller charFun product = rising-factorial product / n!).
+- `uniform_totalCycleCount_charFun` : computes
+  `charFun ((uniformPermMeasure n).map (totalCycleCount n)) s
+     = ∏_{i<n} cycleBase i (I·s)` from the rising-factorial identity
+  `cycleGen_fin` (via `PMF.integral_eq_sum` on `uniformOfFintype`),
+  i.e. it equals the Feller `cycleCount_charFun` (`PermutationCycles.lean:156`).
+- `identDistrib_totalCycleCount_cycleCount` : the **equidistribution bridge** on
+  `ℝ`, `IdentDistrib (totalCycleCount n) (cycleCount n) (uniformPermMeasure n)
+  (cycleP n)`, from equal char functions via `Measure.ext_of_charFun`.
+- `permutationCycles_gaussian_uniformPerm` : the **FAITHFUL** Gaussian cycle CLT,
+  `TendstoInDistribution (fun n σ => (totalCycleCount n σ − H_n)/√H_n) atTop id
+  uniformPermMeasure (gaussianReal 0 1)`, obtained by transporting the banked
+  Feller CLT `permutationCycles_tendstoInDistribution_gaussian`
+  (`PermutationCycles.lean:536`) across the IdentDistrib (push the standardizing
+  map `x ↦ (x−H_n)/√H_n` through `IdentDistrib.comp`, matching per-`n`
+  pushforward measures in the `TendstoInDistribution.tendsto` field).
+
+The Gaussian cycle CLT is now FAITHFUL on `uniformPermMeasure`: the standardized
+total cycle count of a genuine uniform random permutation converges to the
+standard Gaussian.  The naming over-claim is closed.
 
 Build/audit: `bash /tmp/acbuild.sh AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge`
-→ "Build completed successfully"; all four new theorems
+→ "Build completed successfully (8256 jobs)"; all theorems
 `#print axioms` = `[propext, Classical.choice, Quot.sound]`.

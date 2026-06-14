@@ -449,6 +449,155 @@ theorem numC_eq_totalCycleCount (n : ℕ) (σ : Perm (Fin n)) :
       rw [RCyclesPoissonNS.rCycleCount_eq_cycleType_count_of_ne_one (by omega)]
     rw [hge2, sum_cycleType_count_eq_card]
 
+/-! ## The equidistribution bridge and the faithful uniform-permutation Gaussian CLT
+
+We now finish the tail.  The remaining steps are purely the standard assembly:
+
+1. compute the characteristic function of the law of `totalCycleCount` under
+   `uniformPermMeasure` from the rising-factorial identity `cycleGen_fin`;
+2. match it to the Feller `cycleCount_charFun`;
+3. conclude `IdentDistrib` on `ℝ` via `Measure.ext_of_charFun`;
+4. transport the banked Feller Gaussian CLT across the `IdentDistrib`.
+-/
+
+open MeasureTheory ProbabilityTheory Complex Filter
+
+/-- Algebraic normalization of a single Feller factor:
+`cycleBase k z = (exp z + k) / (k + 1)`. -/
+theorem cycleBase_eq_div (k : ℕ) (z : ℂ) :
+    cycleBase k z = (Complex.exp z + (k : ℂ)) / ((k : ℂ) + 1) := by
+  have hk : ((k : ℂ) + 1) ≠ 0 := by
+    have : (0 : ℝ) ≤ (k : ℝ) := Nat.cast_nonneg k
+    have h2 : ((k : ℝ) + 1) ≠ 0 := by positivity
+    exact_mod_cast h2
+  rw [cycleBase]
+  rw [show ((1 - ((k : ℝ) + 1)⁻¹ : ℝ) : ℂ) = 1 - (((k : ℝ) + 1 : ℝ) : ℂ)⁻¹ by push_cast; ring]
+  rw [show ((((k : ℝ) + 1)⁻¹ : ℝ) : ℂ) = (((k : ℝ) + 1 : ℝ) : ℂ)⁻¹ by push_cast; ring]
+  rw [show (((k : ℝ) + 1 : ℝ) : ℂ) = (k : ℂ) + 1 by push_cast; ring]
+  field_simp
+  ring
+
+/-- The Feller characteristic-function product equals the rising-factorial product
+divided by `n!`:
+`∏_{i<n} cycleBase i z = (∏_{k<n} (exp z + k)) / n!`. -/
+theorem prod_cycleBase_eq (n : ℕ) (z : ℂ) :
+    (∏ i : Fin n, cycleBase i.1 z) =
+      (∏ k ∈ Finset.range n, (Complex.exp z + (k : ℂ))) / (n.factorial : ℂ) := by
+  rw [show (∏ i : Fin n, cycleBase i.1 z) = ∏ k ∈ Finset.range n, cycleBase k z from
+    Fin.prod_univ_eq_prod_range (fun k => cycleBase k z) n]
+  have hfac : (n.factorial : ℂ) = ∏ k ∈ Finset.range n, ((k : ℂ) + 1) := by
+    induction n with
+    | zero => simp
+    | succ m ih =>
+      rw [Finset.prod_range_succ, ← ih, Nat.factorial_succ]
+      push_cast; ring
+  rw [hfac, ← Finset.prod_div_distrib]
+  apply Finset.prod_congr rfl
+  intro k _
+  rw [cycleBase_eq_div]
+
+/-- The characteristic function of the law of `totalCycleCount` under the uniform
+permutation measure, computed from the rising-factorial identity:
+`charFun ((uniformPermMeasure n).map (totalCycleCount n)) s = ∏_{i<n} cycleBase i (I·s)`,
+i.e. exactly the Feller `cycleCount_charFun`. -/
+theorem uniform_totalCycleCount_charFun (n : ℕ) (s : ℝ) :
+    charFun ((RCyclesPoissonNS.uniformPermMeasure n).map
+        (fun σ => (RCyclesPoissonNS.totalCycleCount n σ : ℝ))) s =
+      ∏ i : Fin n, cycleBase i.1 (Complex.I * (s : ℂ)) := by
+  classical
+  rw [charFun_apply_real]
+  rw [integral_map (by exact (measurable_of_finite _).aemeasurable) (by fun_prop)]
+  unfold RCyclesPoissonNS.uniformPermMeasure
+  rw [PMF.integral_eq_sum]
+  -- ∑_σ (1/card)·exp(s·(numC σ)·I) = (1/n!)·∑_σ (exp(I s))^{numC σ}
+  have hterm : ∀ σ : Equiv.Perm (Fin n),
+      (PMF.uniformOfFintype (Equiv.Perm (Fin n)) σ).toReal •
+          Complex.exp ((s : ℂ) * ((RCyclesPoissonNS.totalCycleCount n σ : ℝ) : ℂ) * Complex.I)
+        = ((n.factorial : ℝ)⁻¹ : ℝ) •
+          (Complex.exp (Complex.I * (s : ℂ))) ^ numC σ := by
+    intro σ
+    rw [PMF.uniformOfFintype_apply, Fintype.card_perm, Fintype.card_fin]
+    rw [ENNReal.toReal_inv, ENNReal.toReal_natCast]
+    congr 1
+    rw [numC_eq_totalCycleCount]
+    rw [← Complex.exp_nat_mul]
+    congr 1
+    push_cast
+    ring
+  calc
+    (∑ σ : Equiv.Perm (Fin n),
+        (PMF.uniformOfFintype (Equiv.Perm (Fin n)) σ).toReal •
+          Complex.exp ((s : ℂ) *
+            ((RCyclesPoissonNS.totalCycleCount n σ : ℝ) : ℂ) * Complex.I))
+        = ∑ σ : Equiv.Perm (Fin n),
+            ((n.factorial : ℝ)⁻¹ : ℝ) •
+              (Complex.exp (Complex.I * (s : ℂ))) ^ numC σ :=
+          Finset.sum_congr rfl (fun σ (_ : σ ∈ Finset.univ) => hterm σ)
+    _ = ((n.factorial : ℝ)⁻¹ : ℝ) •
+          cycleGen ℂ (Complex.exp (Complex.I * (s : ℂ))) (Fin n) := by
+          rw [cycleGen]; exact Finset.smul_sum.symm
+    _ = ((n.factorial : ℝ)⁻¹ : ℝ) •
+          ∏ k ∈ Finset.range n, (Complex.exp (Complex.I * (s : ℂ)) + (k : ℂ)) := by
+          rw [cycleGen_fin]
+    _ = ∏ i : Fin n, cycleBase i.1 (Complex.I * (s : ℂ)) := by
+          rw [prod_cycleBase_eq, real_smul]
+          rw [show ((((n.factorial : ℝ)⁻¹ : ℝ)) : ℂ) = ((n.factorial : ℂ))⁻¹ by
+            push_cast; ring]
+          rw [div_eq_inv_mul]
+
+/-- **The equidistribution bridge.**
+The total cycle count of a uniform random permutation of `Fin n` is identically
+distributed (on `ℝ`) to the Feller-coupling cycle count `∑_{k=1}^n Bern(1/k)`.
+Equal characteristic functions (`uniform_totalCycleCount_charFun` = `cycleCount_charFun`)
+imply equal laws by `Measure.ext_of_charFun`. -/
+theorem identDistrib_totalCycleCount_cycleCount (n : ℕ) :
+    IdentDistrib (fun σ => (RCyclesPoissonNS.totalCycleCount n σ : ℝ)) (cycleCount n)
+      (RCyclesPoissonNS.uniformPermMeasure n) (cycleP n) where
+  aemeasurable_fst := (measurable_of_finite _).aemeasurable
+  aemeasurable_snd := cycleCount_aemeasurable n
+  map_eq := by
+    have hu : IsProbabilityMeasure
+        ((RCyclesPoissonNS.uniformPermMeasure n).map
+          (fun σ => (RCyclesPoissonNS.totalCycleCount n σ : ℝ))) :=
+      Measure.isProbabilityMeasure_map (measurable_of_finite _).aemeasurable
+    have hc : IsProbabilityMeasure ((cycleP n).map (cycleCount n)) :=
+      Measure.isProbabilityMeasure_map (cycleCount_aemeasurable n)
+    refine Measure.ext_of_charFun ?_
+    funext s
+    rw [uniform_totalCycleCount_charFun, cycleCount_charFun]
+
+/-- **Faithful Gaussian cycle CLT on the uniform permutation measure.**
+The standardized total cycle count `(totalCycleCount n − H_n)/√H_n` of a uniform
+random permutation of `Fin n` converges in distribution to the standard Gaussian.
+
+This upgrades `permutationCycles_tendstoInDistribution_gaussian` (stated for the
+Feller coupling `cycleP`) to the genuine uniform permutation measure, transporting
+the Feller CLT across the equidistribution bridge
+`identDistrib_totalCycleCount_cycleCount`. -/
+theorem permutationCycles_gaussian_uniformPerm :
+    TendstoInDistribution
+      (fun n (σ : Equiv.Perm (Fin n)) =>
+        ((RCyclesPoissonNS.totalCycleCount n σ : ℝ) - cycleH n) / Real.sqrt (cycleH n))
+      atTop (fun x : ℝ => x) RCyclesPoissonNS.uniformPermMeasure (gaussianReal 0 1) := by
+  -- The standardizing map applied to each side.
+  set g : ℕ → ℝ → ℝ := fun n x => (x - cycleH n) / Real.sqrt (cycleH n) with hg
+  have hbridge := permutationCycles_tendstoInDistribution_gaussian
+  refine ⟨?_, hbridge.aemeasurable_limit, ?_⟩
+  · intro n
+    exact (measurable_of_finite _).aemeasurable
+  · -- per-`n` laws agree: pushforward of standardized totalCycleCount = pushforward
+    -- of standardized cycleCount, via the IdentDistrib + continuity of `g n`.
+    convert hbridge.tendsto using 2 with n
+    apply Subtype.ext
+    change (RCyclesPoissonNS.uniformPermMeasure n).map
+        (fun σ => g n ((RCyclesPoissonNS.totalCycleCount n σ : ℝ)))
+      = (cycleP n).map (fun ω => g n (cycleCount n ω))
+    have hid := identDistrib_totalCycleCount_cycleCount n
+    have hmeas : Measurable (g n) := by
+      simp only [hg]; fun_prop
+    have h1 := (hid.comp hmeas).map_eq
+    simpa [Function.comp] using h1
+
 end PermCycleCountBridge
 end LimitLaws
 end Ch9
@@ -466,3 +615,8 @@ end AnalyticCombinatorics
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.cycleGen_option
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.cycleGen_fin
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.numC_eq_totalCycleCount
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.cycleBase_eq_div
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.prod_cycleBase_eq
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.uniform_totalCycleCount_charFun
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.identDistrib_totalCycleCount_cycleCount
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.permutationCycles_gaussian_uniformPerm
