@@ -246,6 +246,23 @@ lemma modelSaddleIoi_substitution {s : ℝ} (hs : 0 < s) :
     exact modelSaddleInterval_substitution hB
   exact tendsto_nhds_unique (hlim1.congr' heq) hlim2
 
+/-- Pull out the peak factor `e^{A/s}` via complete-the-square:
+`∫_{Ioi 1} 2e^{Cv−sv²}/v = 2e^{A/s}·∫_{Ioi 1} e^{−s(v−v₀)²}/v`, `v₀ = C/(2s)`. -/
+lemma vIntegral_eq_gaussianForm {s : ℝ} (hs : 0 < s) :
+    (∫ v in Set.Ioi (1 : ℝ), 2 * Real.exp (C * v - s * v ^ 2) / v)
+      = 2 * Real.exp (Partitions.A / s) *
+          ∫ v in Set.Ioi (1 : ℝ), Real.exp (-s * (v - C / (2 * s)) ^ 2) / v := by
+  have hcongr : Set.EqOn (fun v : ℝ => 2 * Real.exp (C * v - s * v ^ 2) / v)
+      (fun v : ℝ => (2 * Real.exp (Partitions.A / s)) *
+        (Real.exp (-s * (v - C / (2 * s)) ^ 2) / v)) (Set.Ioi 1) := by
+    intro v _
+    simp only
+    rw [saddle_complete_square hs v,
+      show Partitions.A / s - s * (v - C / (2 * s)) ^ 2
+        = Partitions.A / s + -s * (v - C / (2 * s)) ^ 2 by ring, Real.exp_add]
+    ring
+  rw [setIntegral_congr_fun measurableSet_Ioi hcongr, integral_const_mul]
+
 end
 
 end AnalyticCombinatorics.Ch8.Partitions
