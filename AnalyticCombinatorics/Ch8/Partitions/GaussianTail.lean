@@ -269,6 +269,62 @@ lemma integrableOn_uKernel {s : ℝ} (hs : 0 < s) :
         mul_le_mul_of_nonneg_left hge (Real.exp_pos _).le
     _ = 4 * Real.sqrt s / C * Real.exp (-(u ^ 2)) * (C / (2 * Real.sqrt s) + u) := by ring
 
+/-- `∫_{Ioi cut} e^{-s(v-v₀)²}/v = (2√s/C)·∫_ℝ gaussianTailKernel s` (affine subst + B→∞). -/
+lemma modelGaussCut_eq {s : ℝ} (hs : 0 < s) :
+    (∫ v in Set.Ioi (gaussianTailCut s), Real.exp (-s * (v - C / (2 * s)) ^ 2) / v)
+      = (2 * Real.sqrt s / C) * ∫ u : ℝ, gaussianTailKernel s u := by
+  have hCpos : 0 < C := C_pos
+  have hsqrtpos : 0 < Real.sqrt s := Real.sqrt_pos.mpr hs
+  -- step 1: ∫_{Ioi cut} = ∫_{Ioi α} e^{-u²}/(C/2√s+u)
+  have hb : Tendsto (fun B : ℝ => Real.sqrt s * (B - C / (2 * s))) atTop atTop := by
+    have h1 : Tendsto (fun B : ℝ => B - C / (2 * s)) atTop atTop :=
+      tendsto_atTop_add_const_right atTop _ tendsto_id
+    exact Tendsto.const_mul_atTop hsqrtpos h1
+  have hlimL := intervalIntegral_tendsto_integral_Ioi (gaussianTailCut s)
+    (integrableOn_gaussShift_div hs) (tendsto_id (α := ℝ))
+  have hlimR := intervalIntegral_tendsto_integral_Ioi (gaussianTailAlpha s)
+    (integrableOn_uKernel hs) hb
+  have heq : ∀ᶠ B : ℝ in atTop,
+      (∫ v in gaussianTailCut s..B, Real.exp (-s * (v - C / (2 * s)) ^ 2) / v)
+        = ∫ u in gaussianTailAlpha s..(Real.sqrt s * (B - C / (2 * s))),
+            Real.exp (-(u ^ 2)) / (C / (2 * Real.sqrt s) + u) := by
+    filter_upwards [eventually_ge_atTop (gaussianTailCut s)] with B hB
+    exact gaussianTail_affine_interval hs hB
+  have step1 :
+      (∫ v in Set.Ioi (gaussianTailCut s), Real.exp (-s * (v - C / (2 * s)) ^ 2) / v)
+        = ∫ u in Set.Ioi (gaussianTailAlpha s),
+            Real.exp (-(u ^ 2)) / (C / (2 * Real.sqrt s) + u) :=
+    tendsto_nhds_unique (hlimL.congr' heq) hlimR
+  rw [step1]
+  -- step 2: kernel integral = ∫_{Ioi α} e^{-u²}/(1+βu); pull (2√s/C)
+  have hkernel_int : (∫ u, gaussianTailKernel s u)
+      = ∫ u in Set.Ioi (gaussianTailAlpha s),
+          Real.exp (-(u ^ 2)) / (1 + gaussianTailBeta s * u) := by
+    simp only [gaussianTailKernel]
+    exact integral_indicator measurableSet_Ioi
+  rw [hkernel_int, ← integral_const_mul]
+  refine setIntegral_congr_fun measurableSet_Ioi (fun u hu => ?_)
+  have hu_lb : gaussianTailAlpha s < u := hu
+  have hbpos : 0 < 1 + gaussianTailBeta s * u := by
+    have hmono : gaussianTailBeta s * gaussianTailAlpha s < gaussianTailBeta s * u :=
+      mul_lt_mul_of_pos_left hu_lb (by unfold gaussianTailBeta; positivity)
+    have hval : gaussianTailBeta s * gaussianTailAlpha s = -(1 / 2 : ℝ) := by
+      unfold gaussianTailBeta gaussianTailAlpha; rw [neg_div, mul_neg]; field_simp; ring
+    rw [hval] at hmono; linarith
+  have hdenpos : 0 < C / (2 * Real.sqrt s) + u := by
+    have h2 : gaussianTailAlpha s = -(C / (4 * Real.sqrt s)) := by
+      unfold gaussianTailAlpha; ring
+    have hval2 : C / (2 * Real.sqrt s) + gaussianTailAlpha s = C / (4 * Real.sqrt s) := by
+      rw [h2, ← sub_eq_add_neg]; field_simp; ring
+    have hlt : C / (2 * Real.sqrt s) + gaussianTailAlpha s < C / (2 * Real.sqrt s) + u := by
+      linarith
+    rw [hval2] at hlt
+    exact lt_trans (by positivity) hlt
+  have hbne : (1 + gaussianTailBeta s * u) ≠ 0 := ne_of_gt hbpos
+  have hdne : (C / (2 * Real.sqrt s) + u) ≠ 0 := ne_of_gt hdenpos
+  unfold gaussianTailBeta
+  field_simp
+
 end
 
 end AnalyticCombinatorics.Ch8.Partitions
