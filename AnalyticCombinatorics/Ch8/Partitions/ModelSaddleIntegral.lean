@@ -1,4 +1,5 @@
 import AnalyticCombinatorics.Ch8.Partitions.ErdosConstant
+import AnalyticCombinatorics.Ch8.Partitions.MassRateRiemannGeneral
 
 /-!
 # Model-saddle integrand: density + derivative (HR brick 4, integral comparison)
@@ -315,6 +316,39 @@ lemma riemann_term_eq {s : ℝ} (hs : 0 < s) :
   simp only [hr]
   rw [if_neg (show i + 1 ≠ 0 by omega)]
   congr 1; push_cast; ring
+
+/-- Sum↔integral comparison (riemann, mesh 1): the discrete `modelSaddle` differs from the
+shifted continuous integral by at most `∫|f'| + e^{C√3}`. -/
+lemma modelSaddle_sub_integral_bound {s : ℝ} (hs : 0 < s) :
+    |modelSaddle s - saddleDensity s 1 - ∫ x in Set.Ioi (0 : ℝ), saddleDensity s (x + 1)|
+      ≤ (∫ x in Set.Ioi (0 : ℝ),
+            |saddleDensity s (x + 1) * (C / (2 * Real.sqrt (x + 1)) - s - (x + 1)⁻¹)|)
+        + Real.exp (C * Real.sqrt 3) := by
+  have hCpos : 0 < C := C_pos
+  have hbdd : ∀ x : ℝ, 0 < x → x ≤ 2 → |saddleDensity s (x + 1)| ≤ Real.exp (C * Real.sqrt 3) := by
+    intro x hx0 hx2
+    have hden : (0 : ℝ) < x + 1 := by linarith
+    have hx1 : (1 : ℝ) ≤ x + 1 := by linarith
+    rw [saddleDensity, abs_of_nonneg (div_nonneg (Real.exp_pos _).le hden.le)]
+    calc Real.exp (C * Real.sqrt (x + 1) - s * (x + 1)) / (x + 1)
+        ≤ Real.exp (C * Real.sqrt (x + 1) - s * (x + 1)) := div_le_self (by positivity) hx1
+      _ ≤ Real.exp (C * Real.sqrt (x + 1)) := by
+          apply Real.exp_le_exp.mpr
+          nlinarith [mul_nonneg hs.le hden.le]
+      _ ≤ Real.exp (C * Real.sqrt 3) := by
+          apply Real.exp_le_exp.mpr
+          exact mul_le_mul_of_nonneg_left (Real.sqrt_le_sqrt (by linarith)) hCpos.le
+  have hmain := riemann_sum_Ioi_sub_integral_bound
+    (f := fun x => saddleDensity s (x + 1))
+    (f' := fun x => saddleDensity s (x + 1) * (C / (2 * Real.sqrt (x + 1)) - s - 1 / (x + 1)))
+    (M := Real.exp (C * Real.sqrt 3)) (η := 2) (by norm_num) (by positivity)
+    (fun x hx => saddleDensity_shift_hasDerivAt (by linarith))
+    (integrableOn_saddleDensity_shift_deriv hs)
+    (integrableOn_saddleDensity_shift hs)
+    hbdd 1 (by norm_num) (by norm_num)
+  simp only [one_div, inv_one, one_mul] at hmain
+  rw [riemann_term_eq hs] at hmain
+  exact hmain
 
 end
 
