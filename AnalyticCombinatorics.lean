@@ -259,6 +259,7 @@ import AnalyticCombinatorics.Ch9.LimitLaws.MultivariateCyclePoisson
 import AnalyticCombinatorics.Ch9.LimitLaws.ExpectedCycles
 import AnalyticCombinatorics.Ch9.LimitLaws.CycleVariance
 import AnalyticCombinatorics.Ch9.LimitLaws.TotalCycleSecondMoment
+import AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge
 import AnalyticCombinatorics.Ch9.LimitLaws.CompositionParts
 import AnalyticCombinatorics.Ch8.Partitions.CenterTrackingHitVal
 import AnalyticCombinatorics.Ch8.Partitions.RankDropTailMaj
