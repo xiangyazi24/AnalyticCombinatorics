@@ -104,5 +104,47 @@ lemma fc_three_eq_fc_one_succ (n : ℕ) :
     exact_mod_cast hkey
   nlinarith [hkeyQ]
 
+/-- Nat-level contiguous recurrence for the Fuss–Catalan binomials:
+`(n+1)·(2n+s+1)·(2n+s+2)·C(3n+3+s, n+1) = (3n+3+s)·(3n+s+1)·(3n+s+2)·C(3n+s, n)`.
+
+This is the cleared-denominator form of the hypergeometric term ratio
+`fc s (n+1) / fc s n = (3n+s)(3n+s+1)(3n+s+2) / ((n+1)(2n+s+1)(2n+s+2))`.
+It is the contiguous (two-term, polynomial-coefficient) recurrence that the
+generalized Fuss–Catalan / Raney rationals satisfy, and is the foundational
+building block for any creative-telescoping (WZ) proof of the Raney convolution
+additivity `convAdd` (see HANDOFF/AUDIT-FIX-ch7.md). -/
+lemma fc_choose_recurrence (s n : ℕ) :
+    (n + 1) * (2 * n + s + 1) * (2 * n + s + 2) * Nat.choose (3 * n + 3 + s) (n + 1)
+      = (3 * n + 3 + s) * (3 * n + s + 1) * (3 * n + s + 2) * Nat.choose (3 * n + s) n := by
+  -- Expand both binomials into factorials over ℚ and clear denominators; descend to ℕ.
+  -- (Both sides are products of Nats; equality over ℚ ⇒ equality over ℕ.)
+  have hQ : ((n + 1) * (2 * n + s + 1) * (2 * n + s + 2) * Nat.choose (3 * n + 3 + s) (n + 1) : ℚ)
+      = ((3 * n + 3 + s) * (3 * n + s + 1) * (3 * n + s + 2) * Nat.choose (3 * n + s) n : ℚ) := by
+    -- Express both choose's via `Nat.cast_choose` (factorials) and clear.
+    have hk1 : (n + 1) ≤ 3 * n + 3 + s := by omega
+    have hk0 : n ≤ 3 * n + s := by omega
+    rw [Nat.cast_choose ℚ hk1, Nat.cast_choose ℚ hk0]
+    have hf1 : (Nat.factorial (n + 1) : ℚ) ≠ 0 := by positivity
+    have hf2 : (Nat.factorial (3 * n + 3 + s - (n + 1)) : ℚ) ≠ 0 := by positivity
+    have hf3 : (Nat.factorial n : ℚ) ≠ 0 := by positivity
+    have hf4 : (Nat.factorial (3 * n + s - n) : ℚ) ≠ 0 := by positivity
+    -- factorial argument simplifications
+    have a1 : 3 * n + 3 + s - (n + 1) = 2 * n + s + 2 := by omega
+    have a2 : 3 * n + s - n = 2 * n + s := by omega
+    rw [a1, a2]
+    -- Peel the factorials: (n+1)!, (3n+3+s)! down to (3n+s)!, (2n+s+2)! down to (2n+s)!.
+    rw [Nat.factorial_succ n]
+    rw [show 3 * n + 3 + s = (3 * n + 2 + s) + 1 from by omega, Nat.factorial_succ,
+        show 3 * n + 2 + s = (3 * n + 1 + s) + 1 from by omega, Nat.factorial_succ,
+        show 3 * n + 1 + s = (3 * n + s) + 1 from by omega, Nat.factorial_succ]
+    rw [show 2 * n + s + 2 = (2 * n + s + 1) + 1 from by omega, Nat.factorial_succ,
+        show 2 * n + s + 1 = (2 * n + s) + 1 from by omega, Nat.factorial_succ]
+    push_cast
+    field_simp
+    ring
+  exact_mod_cast hQ
+
+#print axioms fc_choose_recurrence
+
 end AnalyticCombinatorics.Ch7.SingularityApp.TernaryTreeNS
 

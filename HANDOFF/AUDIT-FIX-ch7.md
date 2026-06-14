@@ -53,27 +53,70 @@ Then close Part B by:
        from `ternaryTreeCount_eq_fc_one` + step 2 (cast back to ℕ; both are ℕ,
        equal as ℚ ⇒ equal as ℕ via `Nat.cast_injective`).
 
-#### How to prove `convAdd` (Gosper / Raney telescoping)
-This is the laborious-but-classical core (Mathlib has NO Fuss–Catalan; it is an
-explicit TODO in `Mathlib/Combinatorics/Enumerative/Catalan.lean`).  Mirror the
-Mathlib `catalan_eq_centralBinom_div` Gosper proof (`gosperCatalan`,
-`gosper_trick`, telescope via `Finset.sum_range_sub`) but for the kernel
-`fc s k · fc t (n-k)`.  Concretely:
-  - Define a Gosper helper `gosperRaney s t n k : ℚ` (a rational multiple of
-    `fc s k · fc t (n-k)`; the certificate is linear-in-k over the product).
-  - Prove `gosper_trick : gosperRaney s t (n) (k+1) - gosperRaney s t n k
-      = fc s k · fc t (n-k)`  by `Nat.cast_choose`-expand to factorials +
-    `field_simp; ring` (the certificate equation is a rational-function identity,
-    self-verifying once the right certificate is plugged in).
-  - Telescope with `Finset.sum_range_sub`, evaluate endpoints to `fc (s+t) n`.
-  The single unknown is the explicit certificate `gosperRaney`; derive it by the
-  Gosper algorithm on the term ratio
-    `fc s (k+1)/fc s k = (3k+s)/(3k+3+s) · C(3k+3+s,k+1)/C(3k+s,k)`
-  (a degree-3 rational in k).  Reference: Raney's lemma / Concrete Mathematics
-  eq. (5.62) generalized; the certificate is standard.
+#### STATUS UPDATE (2026-06-13, audit-fix-ch7-trees): convAdd is a genuine WALL for the suggested Gosper route. Precise findings below.
 
-File:line of the gap: `TernaryFussCatalan.lean` end of file — add `convAdd`
-(currently absent) and the three closing lemmas above.
+**The Gosper-telescope route suggested above does NOT work.** It was based on the
+Mathlib `catalan_eq_centralBinom_div` analogy, but that analogy fails for `β = 3`
+(ternary). Verified with sympy `gosper_term`:
+
+  - Catalan summand `centralBinom(k)/(k+1) · centralBinom(n-k)/(n-k+1)`
+    IS Gosper-summable (an antidifference hypergeometric term exists) — this is
+    *why* Mathlib's `gosperCatalan` certificate exists.
+  - The Fuss–Catalan summand `fc s k · fc t (n-k)` (β=3) is **NOT Gosper-summable**:
+    `gosper_term` returns `None` both for symbolic `s,t,n` AND for every concrete
+    case tested, INCLUDING the specific `fc 1 k · fc 1 (n-k)` (s=t=1) that the
+    triple-convolution actually needs.  So there is no `gosperRaney` certificate of
+    the assumed "rational multiple of the product" form.  A `gosper_trick` lemma as
+    described cannot be stated, let alone proved.
+
+**What convAdd actually is.** It is the *Rothe–Hagen / Raney convolution identity*
+(Concrete Mathematics eq. 5.62, generalized; OEIS Fuss–Catalan / Raney numbers):
+
+    ∑_{i+j=n} (s/(3i+s))C(3i+s,i) · (t/(3(n-j)+t))C(3j+t,j) = (s+t)/(3n+s+t)C(3n+s+t,n).
+
+Mathlib has NO support for it (Fuss–Catalan is an explicit TODO in
+`Mathlib/Combinatorics/Enumerative/Catalan/Basic.lean`), NO Lagrange inversion
+theorem (`PowerSeries/{Substitution,Expand,Inverse}.lean` do not provide it), and
+NO Rothe–Hagen/Abel-convolution lemma.
+
+**The remaining viable routes (each a substantial standalone development):**
+  1. **Creative telescoping (Zeilberger), induction on n.** The sum `S(s,t,n)`
+     provably satisfies the SAME first-order contiguous recurrence as `fc(s+t,n)`:
+        (n+1)(2n+u+1)(2n+u+2)·S(s,t,n+1) = (3n+u)(3n+u+1)(3n+u+2)·S(s,t,n), u=s+t.
+     With matching base `S(s,t,0)=1=fc(s+t,0)` this closes convAdd by induction on
+     n.  Proving the recurrence-for-the-sum requires the Zeilberger certificate
+     `R(n,k)` with `L(n)·a(n+1,k) − Rc(n)·a(n,k) = G(n,k+1) − G(n,k)`,
+     `a(n,k)=fc s k·fc t(n−k)`, telescoped via `Finset.sum_range_sub`.  The
+     certificate is a *genuinely rational* function of k whose denominator spans
+     the shifted factors `(3(n−k)+t),(3(n−k)+t+1),(3(n−k)+t+2)` (verified
+     numerically: e.g. for s=1,t=2,n=3 the certificate values are −2600/7, −2344/3,
+     …, NOT polynomial).  Each telescoped term then needs `Nat.cast_choose` expand +
+     `field_simp; ring` with careful nonzero-denominator bookkeeping across BOTH the
+     `(3i+s+·)` and `(3(n−i)+t+·)` factor families.  Heavy but mechanical once the
+     exact certificate is pinned.
+  2. **Lagrange inversion via PowerSeries (from scratch).** Define `B : ℚ⟦X⟧` with
+     `B = 1 + X·B^3`; then `fc s n = coeff n (B^s)` and convAdd = `B^s·B^t=B^{s+t}`
+     (trivial).  The hard part `coeff n (B^s) = fc s n` is exactly Lagrange
+     inversion, which would have to be built (Mathlib lacks it).
+
+**BANKED THIS SESSION (clean-3 [propext, Classical.choice, Quot.sound], green):**
+  - `fc_choose_recurrence (s n : ℕ)` in `TernaryFussCatalan.lean`: the Nat-level
+    contiguous recurrence
+      (n+1)(2n+s+1)(2n+s+2)·C(3n+3+s,n+1) = (3n+3+s)(3n+s+1)(3n+s+2)·C(3n+s,n),
+    i.e. the cleared form of `fc s (n+1)/fc s n`.  This is the foundational brick
+    for route 1 (it is the per-term recurrence; the sum-level Zeilberger recurrence
+    is built on top of it).
+
+**Therefore Part B (ternary counting) is NOT yet a theorem.** `convAdd`,
+`ternaryCount_eq_fc_one`, and `ternaryCount_eq_ternaryTreeCount` remain open; the
+blocker is the Rothe–Hagen identity, which is a Mathlib-contribution-scale piece of
+work, not a quick grind.  Next concrete step: pin the exact Zeilberger certificate
+`G(n,k)` symbolically (a CAS with a Zeilberger implementation — Maple/Mathematica,
+or `Sigma`/`HolonomicFunctions`; sympy lacks Zeilberger), then formalize route 1.
+
+File:line of the gap: `TernaryFussCatalan.lean` end of file — `convAdd` and the
+three closing lemmas (`convAdd`, `ternaryCount_eq_fc_one`,
+`ternaryCount_eq_ternaryTreeCount`) are still absent.
 
 ---
 
