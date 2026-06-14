@@ -350,6 +350,24 @@ lemma modelSaddle_sub_integral_bound {s : ℝ} (hs : 0 < s) :
   rw [riemann_term_eq hs] at hmain
   exact hmain
 
+/-- Translation: `∫_{Ioi 0} saddleDensity s (x+1) = ∫_{Ioi 1} saddleDensity s`. -/
+lemma saddleDensity_shift_integral_eq_Ioi1 {s : ℝ} (hs : 0 < s) :
+    (∫ x in Set.Ioi (0 : ℝ), saddleDensity s (x + 1))
+      = ∫ x in Set.Ioi (1 : ℝ), saddleDensity s x := by
+  have hb : Tendsto (fun B : ℝ => B + 1) atTop atTop :=
+    tendsto_atTop_add_const_right atTop 1 tendsto_id
+  have hlimL := intervalIntegral_tendsto_integral_Ioi 0
+    (integrableOn_saddleDensity_shift hs) (tendsto_id (α := ℝ))
+  have hlimR := intervalIntegral_tendsto_integral_Ioi 1
+    (integrableOn_saddleDensity_Ioi1 hs) hb
+  have heq : ∀ᶠ B : ℝ in atTop,
+      (∫ x in (0 : ℝ)..B, saddleDensity s (x + 1))
+        = ∫ x in (1 : ℝ)..(B + 1), saddleDensity s x := by
+    filter_upwards with B
+    rw [intervalIntegral.integral_comp_add_right (saddleDensity s) 1]
+    norm_num
+  exact tendsto_nhds_unique (hlimL.congr' heq) hlimR
+
 end
 
 end AnalyticCombinatorics.Ch8.Partitions
