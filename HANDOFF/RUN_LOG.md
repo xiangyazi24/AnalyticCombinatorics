@@ -129,3 +129,24 @@ REMAINING (brick 4 final, ~350 lines, fully roadmapped — HR-brick4-final-route
       + (O) ⟹ modelSaddle ~ (4√π/C)√s e^{A/s} → log form.
   (Z) discharge: a = 1/(4√3) via erdos_limit_constant_of_asymptotics (PROVEN) + brick3 + brick4,
       with modelSaddle_tendsto_atTop from (T)/(O). Strengthen erdos_partition_limit_exists.
+
+## Update 2026-06-14 (cont 6) — gaussianTail_asymp COMPLETE
+GaussianTailAsymp.lean (committed, clean-3): gaussianTail_cut_ratio_tendsto (→1),
+gaussianTail_strip_bound_tendsto_zero, gaussianTail_left_ratio_tendsto_zero,
+gaussianTail_asymp = ∫_{Ioi 1} e^{-s(v-v₀)²}/v ~ (2√π/C)√s. The full main Gaussian
+asymptotic DONE. Bricks 2,3,5 done; brick 4 ~95%.
+REMAINING (only the o()-error + mechanical assembly, ~180 lines):
+  (O) modelSaddle_riemann_error_negligible: ∫_{Ioi0}|f'| = o(√s e^{A/s}).
+      Route (verified arithmetic): via x+1=y² substitution,
+      ∫_{Ioi0}|f'| = ∫_{Ioi1} 2e^{Cy-sy²}/y · |C/(2y)-s-1/y²| dy.  Split at cut=C/4s:
+      - right (y≥cut): |C/(2y)-s-1/y²| ≤ (3+16/C²)·s [C/(2y)≤2s since y≥C/4s; 1/y²≤16s²/C²≤16s/C² for s≤1],
+        so D_right ≤ Ks·∫_{Ioi cut}2e^{Cy-sy²}/y = Ks·2e^{A/s}·(2√s/C)·∫kernel ~ Ks·(4√π/C)√s e^{A/s};
+        D_right/main ≤ (Ks/√π)·∫kernel → 0 (O(s)).  [uses vIntegral_eq_gaussianForm + modelGaussCut_eq]
+      - left (1<y≤cut): exp-negligible (same pattern as gaussianTail_left_ratio).
+      Needs: a derivative-weighted x+1=y² substitution lemma (analogue of modelSaddleInterval_substitution).
+  (A) saddleDensity_shift_integral_eq_Ioi1 (∫_{Ioi0}sd(·+1)=∫_{Ioi1}sd, translation interval+B→∞)
+      ⟹ modelSaddle_log_asymp: from modelSaddle_sub_integral_bound, main term
+      ∫_{Ioi1}sd = ∫_{Ioi1}2e^{Cv-sv²}/v = 2e^{A/s}·gaussianTail_asymp ~ (4√π/C)√s e^{A/s},
+      sd 1 & (O) = o(main) ⟹ modelSaddle ~ (4√π/C)√s e^{A/s} → log form (BRICK 4).
+  (T) modelSaddle_tendsto_atTop from modelSaddle_log_asymp (denom→∞), OR single-term lower bound.
+  (Z) discharge erdos_limit_constant_of_asymptotics (PROVEN) with brick2 + brick3(+T) + brick4 → a=1/(4√3).
