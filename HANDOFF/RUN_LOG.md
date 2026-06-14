@@ -79,3 +79,25 @@ HANDOFF/HR-brick4-gaussian-route.md):
   (D) BRICK 3 Abelian: P=1+∑ u_n·w_n, modelSaddle=∑ w_n, |∑(u_n-a)w_n| ≤ ε·modelSaddle + bdd head,
       modelSaddle→∞ ⟹ log P - log a - log modelSaddle → 0.
   (E) discharge erdos_limit_constant_of_asymptotics (brick 5, already proven) → a=1/(4√3).
+
+## Update 2026-06-14 (cont 4) — brick4 Gaussian: DCT core + affine change BOTH done
+GaussianTail.lean (committed, clean-3): integral_exp_neg_sq=√π; gaussianTailAlpha/Beta tendsto;
+gaussianTailKernel pointwise+dom(2e^{-u²})+DCT ⟹ ∫kernel→√π (analytic heart);
+sqrt_mul_div_self, gaussianTail_denom_id, gaussianTail_affine_interval (u=√s(v-v₀) substitution
+via integral_comp_mul_deriv' — the API-sensitive piece, DONE).
+EVERY hard/uncertain piece of the whole a=1/(4√3) derivation is now resolved in code:
+brick2 tail-trapezoid, brick4 Gaussian-DCT, the x=y² + affine substitutions, riemann comparison.
+REMAINING = mechanical connective + brick 3 (all patterns established):
+  (G1) affine→kernel: e^{-u²}/(C/(2√s)+u) = (2√s/C)·e^{-u²}/(1+βu) [since C/(2√s)+u=(C/(2√s))(1+βu)];
+       B→∞ on gaussianTail_affine_interval (intervalIntegral_tendsto_integral_Ioi, need integrability
+       of e^{-u²}/(C/(2√s)+u) on Ioi α) ⟹ ∫_{Ioi cut} e^{-s(v-v₀)²}/v = (2√s/C)·∫_ℝ gaussianTailKernel.
+  (G2) left strip ∫_1^{cut} e^{-s(v-v₀)²}/v ≤ (C/4s)e^{-C²/16s} negligible; combine with DCT
+       (∫kernel→√π) ⟹ gaussianTail_asymp: ∫_{Ioi 1} e^{-s(v-v₀)²}/v ~ (2√π/C)√s.
+  (G3) with vIntegral_eq_gaussianForm ⟹ ∫_{Ioi 1} 2e^{Cv-sv²}/v ~ (4√π/C)√s e^{A/s}
+       = modelSaddleIoi_substitution RHS ~ ; so ∫_{Ioi1} saddleDensity ~ (4√π/C)√s e^{A/s}.
+  (O)  o() estimate: ∫|f'| + e^{C√3} = o(√s e^{A/s}) (modelSaddle_sub_integral_bound RHS; f' bracket
+       has extra small factor → same Gaussian machinery, easier). saddleDensity s 1 also o(√s e^{A/s}).
+  (R)  modelSaddle_ratio_asymp (comparison + G3 + O) → modelSaddle_log_asymp = BRICK 4.
+  (B3) Abelian: P=1+∑u_n·w_n, modelSaddle=∑w_n (w_n=saddleDensity s n), |∑(u_n-a)w_n|≤ε·modelSaddle+
+       bdd head, modelSaddle→∞ ⟹ log P-log a-log modelSaddle→0.
+  (B5) discharge erdos_limit_constant_of_asymptotics (PROVEN) → a=1/(4√3).
