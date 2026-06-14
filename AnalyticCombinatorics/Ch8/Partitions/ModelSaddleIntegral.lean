@@ -177,6 +177,35 @@ lemma saddle_complete_square {s : ℝ} (hs : 0 < s) (v : ℝ) :
   field_simp
   ring
 
+/-- The `v`-integrand `2e^{Cv−sv²}/v` is integrable on `(1,∞)` (Gaussian domination). -/
+lemma integrableOn_vIntegrand {s : ℝ} (hs : 0 < s) :
+    IntegrableOn (fun v : ℝ => 2 * Real.exp (C * v - s * v ^ 2) / v) (Set.Ioi (1 : ℝ)) := by
+  have hCpos : 0 < C := C_pos
+  have hgauss : Integrable (fun v : ℝ => Real.exp (-(s / 2) * v ^ 2)) :=
+    integrable_exp_neg_mul_sq (half_pos hs)
+  have hdom : IntegrableOn
+      (fun v : ℝ => 2 * Real.exp (C ^ 2 / (2 * s)) * Real.exp (-(s / 2) * v ^ 2)) (Set.Ioi 1) :=
+    (hgauss.integrableOn).const_mul _
+  have hmeas : AEStronglyMeasurable (fun v : ℝ => 2 * Real.exp (C * v - s * v ^ 2) / v)
+      (volume.restrict (Set.Ioi (1 : ℝ))) := by
+    apply Measurable.aestronglyMeasurable; fun_prop
+  refine Integrable.mono' hdom hmeas ?_
+  rw [ae_restrict_iff' measurableSet_Ioi]
+  filter_upwards with v hv
+  have hv1 : (1 : ℝ) ≤ v := le_of_lt hv
+  have hvpos : 0 < v := by linarith
+  have hexp : C * v - s * v ^ 2 ≤ C ^ 2 / (2 * s) - (s / 2) * v ^ 2 := by
+    rw [le_sub_iff_add_le, le_div_iff₀ (by positivity : (0 : ℝ) < 2 * s)]
+    nlinarith [sq_nonneg (s * v - C)]
+  rw [Real.norm_eq_abs, abs_of_nonneg (by positivity)]
+  calc 2 * Real.exp (C * v - s * v ^ 2) / v
+      ≤ 2 * Real.exp (C * v - s * v ^ 2) := div_le_self (by positivity) hv1
+    _ ≤ 2 * Real.exp (C ^ 2 / (2 * s) - (s / 2) * v ^ 2) :=
+        mul_le_mul_of_nonneg_left (Real.exp_le_exp.mpr hexp) (by norm_num)
+    _ = 2 * Real.exp (C ^ 2 / (2 * s)) * Real.exp (-(s / 2) * v ^ 2) := by
+        rw [show C ^ 2 / (2 * s) - (s / 2) * v ^ 2 = C ^ 2 / (2 * s) + -(s / 2) * v ^ 2 by ring,
+          Real.exp_add]; ring
+
 end
 
 end AnalyticCombinatorics.Ch8.Partitions
