@@ -263,6 +263,136 @@ theorem numC_swap_mul_merge {τ : Perm α} {z y : α}
   rw [hsupp] at hle
   omega
 
+/-- **numC, both-fixed splice.**  Merging two fixed points `z`, `y` of `τ` into a
+single transposition via `swap z y * τ` drops the orbit count by one. -/
+theorem numC_swap_mul_of_both_fixed (τ : Perm α) {z y : α}
+    (hz : τ z = z) (hy : τ y = y) (hzy : z ≠ y) :
+    numC (swap z y * τ) + 1 = numC τ := by
+  have hct := cycleType_swap_mul_of_both_fixed τ hz hy hzy
+  have hdis : Disjoint (swap z y) τ := by
+    rw [Equiv.Perm.disjoint_iff_eq_or_eq]
+    intro w
+    by_cases hw : w = z
+    · subst hw; right; exact hz
+    · by_cases hw2 : w = y
+      · subst hw2; right; exact hy
+      · left; rw [Equiv.swap_apply_of_ne_of_ne hw hw2]
+  have hsupp : (swap z y * τ).support.card = τ.support.card + 2 := by
+    rw [hdis.card_support_mul, Equiv.Perm.card_support_swap hzy, add_comm]
+  unfold numC
+  rw [hct, hsupp]
+  simp only [Multiset.card_add, Multiset.insert_eq_cons, Multiset.card_cons,
+    Multiset.card_singleton]
+  have hle : (swap z y * τ).support.card ≤ Fintype.card α := support_card_le _
+  rw [hsupp] at hle
+  omega
+
+/-- **Per-term cycle-count under `decomposeOption.symm`.**
+For `i : Option α` and `σ : Perm α`, the orbit count of
+`decomposeOption.symm (i, σ) = swap none i * σ.optionCongr` is `numC σ` if `i ≠ none`
+and `numC σ + 1` if `i = none` (a brand-new fixed point).  Case-split: `none`
+(banked `numC_optionCongr`), `some a` with `σ a = a` (`numC_swap_mul_of_both_fixed`),
+and `some a` with `σ a ≠ a` (the merge crux `numC_swap_mul_merge`). -/
+theorem numC_decomposeOption_symm (i : Option α) (σ : Perm α) :
+    numC (decomposeOption.symm (i, σ)) =
+      if i = none then numC σ + 1 else numC σ := by
+  rw [Equiv.Perm.decomposeOption_symm_apply]
+  cases i with
+  | none =>
+    rw [if_pos rfl]
+    rw [show swap (none : Option α) none * σ.optionCongr = σ.optionCongr from by
+      rw [swap_self]; simp]
+    exact numC_optionCongr σ
+  | some a =>
+    simp only [if_neg (by simp : (some a : Option α) ≠ none)]
+    have hnone : (σ.optionCongr) none = none := by simp
+    have hzy : (none : Option α) ≠ some a := by simp
+    by_cases ha : σ a = a
+    · have hsa : (σ.optionCongr) (some a) = some a := by simp [ha]
+      have h1 := numC_swap_mul_of_both_fixed (σ.optionCongr) hnone hsa hzy
+      have h2 := numC_optionCongr σ
+      omega
+    · have hmem : (some a) ∈ Equiv.Perm.support (σ.optionCongr : Perm (Option α)) := by
+        rw [Equiv.Perm.mem_support]; simp [ha]
+      have h1 := numC_swap_mul_merge (τ := σ.optionCongr) (z := none) (y := some a)
+        hnone hmem hzy
+      have h2 := numC_optionCongr σ
+      omega
+
+/-- The cycle-count generating polynomial of `Perm α`:
+`cycleGen R x α = ∑_{σ : Perm α} x^{numC σ}`. -/
+def cycleGen (R : Type*) [CommRing R] (x : R) (α : Type*) [DecidableEq α] [Fintype α] : R :=
+  ∑ σ : Perm α, x ^ numC σ
+
+/-- **Rising-factorial recursion.**
+`∑_{e : Perm (Option α)} x^{numC e} = (x + #α) · ∑_{σ : Perm α} x^{numC σ}`.
+Reindex `Perm (Option α)` by `decomposeOption`, split the product sum, and apply
+`numC_decomposeOption_symm`: the `none` term contributes the leading `x`, each of
+the `#α` `some a` terms contributes `1`. -/
+theorem cycleGen_option (R : Type*) [CommRing R] (x : R) :
+    cycleGen R x (Option α) = (x + Fintype.card α) * cycleGen R x α := by
+  unfold cycleGen
+  rw [← Equiv.sum_comp Equiv.Perm.decomposeOption.symm (fun e => x ^ numC e)]
+  rw [Fintype.sum_prod_type]
+  have hterm : ∀ i : Option α, ∀ σ : Perm α,
+      x ^ numC (Equiv.Perm.decomposeOption.symm (i, σ)) =
+        (if i = none then x ^ (numC σ + 1) else x ^ numC σ) := by
+    intro i σ
+    rw [numC_decomposeOption_symm]
+    split <;> rfl
+  simp_rw [hterm]
+  rw [Fintype.sum_option]
+  simp only [↓reduceIte, Option.some_ne_none]
+  rw [add_mul]
+  congr 1
+  · rw [Finset.mul_sum]
+    apply Finset.sum_congr rfl
+    intro σ _
+    rw [pow_succ]; ring
+  · rw [Finset.sum_const, Finset.card_univ]
+    simp [nsmul_eq_mul]
+
+/-- `numC` is invariant under transporting a permutation along a type equivalence. -/
+theorem numC_permCongr {β : Type*} [DecidableEq β] [Fintype β]
+    (e : α ≃ β) (σ : Perm α) : numC (e.permCongr σ) = numC σ := by
+  have huniv : ∀ b : β, (fun _ : β => True) b := fun _ => trivial
+  set f : α ≃ {b : β // (fun _ : β => True) b} :=
+    e.trans (Equiv.subtypeUnivEquiv huniv).symm with hf
+  have heq : e.permCongr σ = σ.extendDomain f := by
+    ext b
+    rw [Equiv.Perm.extendDomain_apply_subtype σ f (huniv b)]
+    simp [hf, Equiv.permCongr_apply, Equiv.subtypeUnivEquiv]
+  unfold numC
+  rw [heq, Equiv.Perm.cycleType_extendDomain, Equiv.Perm.card_support_extend_domain,
+    Fintype.card_congr e]
+
+/-- `cycleGen` depends only on the cardinality (transports along equivalences). -/
+theorem cycleGen_congr (R : Type*) [CommRing R] (x : R) {β : Type*} [DecidableEq β] [Fintype β]
+    (e : α ≃ β) : cycleGen R x α = cycleGen R x β := by
+  unfold cycleGen
+  rw [← Equiv.sum_comp e.permCongr (fun τ => x ^ numC τ)]
+  apply Finset.sum_congr rfl
+  intro σ _
+  rw [numC_permCongr]
+
+/-- **Rising-factorial cycle-count identity.**
+`∑_{σ : Perm (Fin n)} x^{numC σ} = ∏_{k=0}^{n-1} (x + k)`.
+This is `∑_j #{σ : numC σ = j} x^j = x^{(n)}` (unsigned Stirling numbers of the
+first kind as coefficients), the uniform-permutation side of the equidistribution
+bridge.  Proved by induction on `n` from `cycleGen_option`. -/
+theorem cycleGen_fin (R : Type*) [CommRing R] (x : R) (n : ℕ) :
+    cycleGen R x (Fin n) = ∏ k ∈ Finset.range n, (x + k) := by
+  induction n with
+  | zero =>
+    rw [Finset.prod_range_zero]
+    unfold cycleGen
+    rw [Fintype.sum_unique]
+    simp [numC]
+  | succ n ih =>
+    rw [Finset.prod_range_succ, cycleGen_congr R x (finSuccEquiv n), cycleGen_option R x,
+      ih, Fintype.card_fin]
+    ring
+
 end PermCycleCountBridge
 end LimitLaws
 end Ch9
@@ -276,3 +406,6 @@ end AnalyticCombinatorics
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.isCycle_swap_mul_insert
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.merge_counts
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.numC_swap_mul_merge
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.numC_decomposeOption_symm
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.cycleGen_option
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.cycleGen_fin
