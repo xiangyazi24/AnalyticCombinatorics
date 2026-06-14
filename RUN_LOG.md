@@ -658,3 +658,11 @@
   → 2π via Stirling.log_stirlingSeq_formula; (iv) assemble + identify I=A via
   partition_laplace_log_asymptotic → partLaplace_second_order.
   Then bricks 3 (Abelian comparison), 4 (modelSaddle real saddle), 5 (algebra → 1/(4√3)).
+
+### 2026-06-14 (d) brick2 head asymptotic DONE (7 files)
+- TrapezoidCellIoc, LogRegLipschitz, LogRegCell, TrapezoidHeadPos all green/0-sorry/pushed.
+- log1mexpReg head trapezoid asymptotic proven (cond. on [0,b] integrability).
+- REMAINING brick2: (1) [0,b] integrability discharge (ContinuousOn Icc 0 b via right-limit=0);
+  (2) Stirling head Σ-log(tk)=-N log t-log N! → 2π via Stirling (THE prefactor source);
+  (3) assemble head → log_partLaplace head with (1/2)log(t/2π); (4) tail trapezoid (deriv-decay).
+  R7 dispatched for (1)(2)(3). Then partLaplace_second_order; bricks 3-5.
