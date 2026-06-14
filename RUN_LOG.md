@@ -676,3 +676,9 @@
   TrapezoidHeadPos regularized via log1mexp=log1mexpReg-log, ∫_0^R log x=R log R-R) →
   Σlog1mexp(kt)-(1/t)∫_0^R log1mexp-½log(t/2π)-½log1mexpReg(R)→0; then tail; then
   log_partLaplace_second_order (identify I=A via first-order). Then bricks 3-5 → a=1/(4√3).
+
+### 2026-06-14 (d) brick2 HEAD COMPLETE (10 files)
+- LogHeadAssembly (head asymptotic w/ 2π): log1mexp_head_asymp green. Head side of brick2 done.
+- REMAINING: tail trapezoid (Σ_{k>N} log1mexp(kt) - tail integral + ½f(R)→0; needs exp-decay
+  deriv producer per R6) + final assembly (head+tail → log P - I/t - ½log(t/2π)→0, identify
+  I=A via partition_laplace_log_asymptotic) → partLaplace_second_order. Then bricks 3-5.
