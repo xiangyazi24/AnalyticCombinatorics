@@ -693,3 +693,15 @@
   tail_trapezoid_bound_of_exp_cell_errors HasSum theorem); head+tail → partLaplace_second_order
   (via log_partLaplace_eq + log_series_regroup, identify I=A); bricks 3-5 (Abelian comparison,
   modelSaddle real saddle, algebra → a=1/(4√3)).
+
+### 2026-06-14 (d) brick2 tail — set machinery done, summation theorem WIP
+- TailCell (local cell bound, fills R8 sorry) + TailLip (log1mexp per-cell ≤4e^{-a}h²) COMMITTED green.
+- TailSum: tailCell/tailTrapErr defs + pairwise_disjoint_tailCell + iUnion_tailCell_eq_Ioi all
+  COMPILE; tail_trapezoid_bound_of_exp_cell_errors (HasSum, R8-flagged iteration-prone) ~90% —
+  2 remaining structural issues: (1) hpartial line ~146: B = ∫ tailCell (SET integral over Ioc) vs
+  tailTrapErr's INTERVAL integral ∫ a..b — need intervalIntegral.integral_of_le bridge inside the
+  Finset.sum; (2) hright_lim line ~210: Tendsto .sub/.add limit-chaining elaboration. WIP preserved
+  at HANDOFF/TailSum-WIP.lean.txt. main GREEN at 13 brick-2 files.
+- (d) STATE: brick2 head 100% (2π extracted+assembled); brick2 tail ~90% (foundation+cells+set
+  machinery green; summation theorem WIP w/ 2 documented issues). REMAINING: close TailSum HasSum
+  (B bridge + .sub) → final tail theorem → head+tail → partLaplace_second_order → bricks 3-5.
