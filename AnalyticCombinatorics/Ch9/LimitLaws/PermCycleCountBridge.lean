@@ -393,6 +393,62 @@ theorem cycleGen_fin (R : Type*) [CommRing R] (x : R) (n : ℕ) :
       ih, Fintype.card_fin]
     ring
 
+/-- `fixedPointCount = #α − #support` (number of fixed points). -/
+theorem fixedPointCount_eq (n : ℕ) (σ : Perm (Fin n)) :
+    FixedPointsPoissonNS.fixedPointCount n σ = Fintype.card (Fin n) - σ.support.card := by
+  classical
+  unfold FixedPointsPoissonNS.fixedPointCount
+  have hsupp : σ.support = Finset.univ.filter (fun i => ¬ σ i = i) := by
+    ext i; simp [Equiv.Perm.mem_support]
+  rw [Fintype.card_subtype, hsupp]
+  have := Finset.card_filter_add_card_filter_not
+    (s := (Finset.univ : Finset (Fin n))) (p := fun i => σ i = i)
+  rw [Finset.card_univ] at this
+  omega
+
+/-- The sum over `r ≥ 2` of `cycleType.count r` is the number of nontrivial cycles
+(all cycle lengths lie in `[2, n]`). -/
+theorem sum_cycleType_count_eq_card (n : ℕ) (σ : Perm (Fin n)) :
+    ∑ r ∈ Finset.Icc 2 n, σ.cycleType.count r = Multiset.card σ.cycleType := by
+  rw [← Multiset.toFinset_sum_count_eq σ.cycleType]
+  symm
+  apply Finset.sum_subset
+  · intro r hr
+    rw [Multiset.mem_toFinset] at hr
+    rw [Finset.mem_Icc]
+    refine ⟨two_le_of_mem_cycleType hr, ?_⟩
+    calc r ≤ σ.support.card := le_card_support_of_mem_cycleType hr
+      _ ≤ Fintype.card (Fin n) := Finset.card_le_univ _
+      _ = n := Fintype.card_fin n
+  · intro r _ hr
+    rw [Multiset.mem_toFinset] at hr
+    exact Multiset.count_eq_zero_of_notMem hr
+
+/-- **Orbit count = per-length cycle-count sum.**
+`numC σ = totalCycleCount n σ` for `σ : Perm (Fin n)`: the orbit-count statistic
+`numC` (used in the rising-factorial identity) coincides with the repo's
+`RCyclesPoissonNS.totalCycleCount = ∑_{r=1}^n rCycleCount n r`, the number of
+orbits including fixed points.  This wires `cycleGen_fin` to the measure-theoretic
+total cycle count. -/
+theorem numC_eq_totalCycleCount (n : ℕ) (σ : Perm (Fin n)) :
+    numC σ = RCyclesPoissonNS.totalCycleCount n σ := by
+  unfold numC RCyclesPoissonNS.totalCycleCount
+  rcases Nat.eq_zero_or_pos n with hn | hn
+  · subst hn
+    simp only [Finset.Icc_eq_empty_of_lt (by norm_num : (1:ℕ) > 0), Finset.Icc_self]
+    simp [Subsingleton.elim σ 1]
+  · have hsplit : Finset.Icc 1 n = insert 1 (Finset.Icc 2 n) := by
+      ext r; simp only [Finset.mem_Icc, Finset.mem_insert]; omega
+    rw [hsplit, Finset.sum_insert (by simp)]
+    rw [RCyclesPoissonNS.rCycleCount_one, fixedPointCount_eq]
+    have hge2 : ∑ r ∈ Finset.Icc 2 n, RCyclesPoissonNS.rCycleCount n r σ
+        = ∑ r ∈ Finset.Icc 2 n, σ.cycleType.count r := by
+      apply Finset.sum_congr rfl
+      intro r hr
+      rw [Finset.mem_Icc] at hr
+      rw [RCyclesPoissonNS.rCycleCount_eq_cycleType_count_of_ne_one (by omega)]
+    rw [hge2, sum_cycleType_count_eq_card]
+
 end PermCycleCountBridge
 end LimitLaws
 end Ch9
@@ -409,3 +465,4 @@ end AnalyticCombinatorics
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.numC_decomposeOption_symm
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.cycleGen_option
 #print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.cycleGen_fin
+#print axioms AnalyticCombinatorics.Ch9.LimitLaws.PermCycleCountBridge.numC_eq_totalCycleCount
