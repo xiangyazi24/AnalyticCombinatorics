@@ -612,3 +612,14 @@
 - (d) HR constant: route identified (HANDOFF/HR-CONSTANT-ROUTE.md). NOT extractable from
   renewal/mass-rate (homogeneity); comparison route via 2nd-order Laplace prefactor →
   a=1/(4√3). Brick 2 (partLaplace_second_order) is the hard core. GRINDING.
+
+### 2026-06-14 (d) progress — File1 done
+- (d) brick2 File1 `LogOneMinusExp.lean` COMMITTED green (ad444c6, 0 sorry, Mathlib-only):
+  log1mexp/log1mexpReg defs + log1mexpReg_eq + log1mexp_nonneg + log1mexp_tail_bound
+  (|f|≤2e^{-x}) + log1mexpReg_tendsto_zero (singularity removed). Foundation done.
+- FRONTIER (the deep core): File2 TrapezoidEM.lean — one-off Euler–Maclaurin/trapezoid
+  lemma with C² error (per-cell C·t³ → o(1)). Needs log1mexp deriv2 bounds
+  (f'=-1/(e^x-1), f''=e^x/(e^x-1)²; h'' bounded on [0,2] via removable singularity).
+  ChatGPT R3 dispatched for the full Lean proof of trapezoid_sum_head (no effort cap).
+  Then File3 (Stirling assembly) + bricks 3,4,5 (Abelian comparison, modelSaddle, algebra).
+  (d) is a deep multi-file analysis subproject (Meinardus 2nd-order); File1 foundation in.
