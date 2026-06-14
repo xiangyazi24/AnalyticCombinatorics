@@ -77,14 +77,43 @@ File:line of the gap: `TernaryFussCatalan.lean` end of file — add `convAdd`
 
 ---
 
-## PART A — Cayley via Prüfer  (status: not yet started in this run; see /tmp/ac_a_cayley.txt §1,§4)
-Object `LabeledTree n := {G : SimpleGraph (Fin n) // G.IsTree}`,
-`RootedLabeledTree n := LabeledTree n × Fin n`.
-Bricks to bank independently: Fintype instances; `exists_leaf_of_finite_tree`;
-`pruferEncode`/`pruferDecode`; one inverse direction; `pruferEquiv`;
-`card_labeledTree = n^(n-2)` (n≥2; n=1 separate); `card_rooted = n^(n-1)`;
-connection `cayleyRootedTree n = card (RootedLabeledTree n)`.
-HARD CORE: the decode↔encode inverse invariant.
+## PART A — Cayley via Prüfer  (status: object + Fintype + base cases BANKED;
+                                Prüfer bijection = remaining hard core)
+See /tmp/ac_a_cayley.txt §1,§4.
+
+### Banked (built green, clean-3):  commit 2138aeb
+- `LabeledTreeBasic.lean`:
+  - `LabeledTree n := {G : SimpleGraph (Fin n) // G.IsTree}`
+  - `RootedLabeledTree n := LabeledTree n × Fin n`
+  - `Finite`/`Fintype` instances (Fintype.ofFinite — noncomputable, fine)
+  - `card_rootedLabeledTree_eq : card (RootedLabeledTree n) = card (LabeledTree n) * n`
+- `Cayley.lean`:
+  - `labeledTree_zero_isEmpty`, `card_labeledTree_zero : card (LabeledTree 0) = 0`
+  - `isTree_bot_fin_one : (⊥ : SimpleGraph (Fin 1)).IsTree`
+  - `card_labeledTree_one : card (LabeledTree 1) = 1`
+  - `card_rootedLabeledTree_one : card (RootedLabeledTree 1) = 1`
+
+### REMAINING HARD CORE (Part A): the Prüfer bijection for n ≥ 2.
+Need (in `Prufer.lean`):
+  - `PruferList n := {xs : List (Fin n) // xs.length = n - 2}`
+  - `exists_leaf_of_finite_tree` (least leaf of a finite tree on ≥2 vertices)
+  - `pruferEncode hn : LabeledTree n → PruferList n` (repeatedly delete least
+    leaf, append its neighbor)
+  - `pruferDecode hn : PruferList n → LabeledTree n` (standard reconstruction:
+    least vertex not in remaining code = next leaf; neighbor = code head)
+  - `prufer_decode_encode` / `prufer_encode_decode` (the inverse INVARIANT — the
+    genuine hard lemma; see /tmp/ac_a_cayley.txt "Hard core for Cayley")
+  - `pruferEquiv hn : LabeledTree n ≃ PruferList n`
+Then in `Cayley.lean`:
+  - `card_labeledTree_of_two_le : card (LabeledTree n) = n^(n-2)`
+    from `Fintype.card_congr pruferEquiv` + `card (PruferList n) = n^(n-2)`
+    (PruferList ≃ (Fin (n-2) → Fin n); card = n^(n-2)).
+  - `card_labeledTree (1≤n)`, `card_rooted_labeledTree : card (RootedLabeledTree n)
+     = n^(n-1)` (from card_rootedLabeledTree_eq + n^(n-2)*n = n^(n-1) for n≥1).
+  - CONNECTION: `cayleyRootedTree n = card (RootedLabeledTree n)` for 1≤n
+    (cayleyRootedTree n := n^(n-1), so this is card_rooted_labeledTree restated).
+    NOTE cayleyRootedTree lives in namespace
+    `AnalyticCombinatorics.Ch7.SingularityApp.TreeFunctionNS` (TreeFunction.lean).
 
 Build ONLY via `bash /tmp/acbuild.sh AnalyticCombinatorics.Ch7.SingularityApp.<Module>`
 (local lake BANNED).  uisai2 root disk was full; AC-clone `.lake/build` was moved
