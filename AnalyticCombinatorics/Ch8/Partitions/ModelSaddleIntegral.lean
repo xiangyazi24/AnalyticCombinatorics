@@ -263,6 +263,59 @@ lemma vIntegral_eq_gaussianForm {s : ℝ} (hs : 0 < s) :
     ring
   rw [setIntegral_congr_fun measurableSet_Ioi hcongr, integral_const_mul]
 
+/-- `n ↦ saddleDensity s n` is summable (it is the modelSaddle summand). -/
+lemma summable_saddleDensity_nat {s : ℝ} (hs : 0 < s) :
+    Summable (fun n : ℕ => saddleDensity s (n : ℝ)) :=
+  (summable_modelSaddleTerm hs).congr (fun n => by rw [saddleDensity])
+
+/-- `modelSaddle s = ∑'_n saddleDensity s n`. -/
+lemma modelSaddle_eq_tsum {s : ℝ} :
+    modelSaddle s = ∑' n : ℕ, saddleDensity s (n : ℝ) :=
+  tsum_congr (fun n => by rw [saddleDensity])
+
+/-- The two-term split: `modelSaddle s = saddleDensity s 1 + ∑'_i saddleDensity s (i+2)`
+(`saddleDensity s 0 = 0`). -/
+lemma modelSaddle_two_term_split {s : ℝ} (hs : 0 < s) :
+    modelSaddle s = saddleDensity s 1 + ∑' i : ℕ, saddleDensity s ((i : ℝ) + 2) := by
+  rw [modelSaddle_eq_tsum]
+  have hsum := (summable_saddleDensity_nat hs).sum_add_tsum_nat_add 2
+  rw [← hsum]
+  have hr : (∑ i ∈ Finset.range 2, saddleDensity s (i : ℝ)) = saddleDensity s 1 := by
+    rw [Finset.sum_range_succ, Finset.sum_range_one]
+    have h0 : saddleDensity s ((0 : ℕ) : ℝ) = 0 := by simp [saddleDensity]
+    rw [h0]; norm_num
+  rw [hr]
+  congr 1
+  refine tsum_congr (fun i => ?_)
+  congr 1; push_cast; ring
+
+/-- The riemann-sum term (mesh 1, `f = saddleDensity s (·+1)`) equals
+`modelSaddle s − saddleDensity s 1`. -/
+lemma riemann_term_eq {s : ℝ} (hs : 0 < s) :
+    (∑' k : ℕ, if k = 0 then (0 : ℝ) else saddleDensity s ((k : ℝ) + 1))
+      = modelSaddle s - saddleDensity s 1 := by
+  set r : ℕ → ℝ := fun k => if k = 0 then (0 : ℝ) else saddleDensity s ((k : ℝ) + 1) with hr
+  -- r is summable: it agrees with the (summable) shift away from 0
+  have hshift2 : Summable (fun i : ℕ => saddleDensity s ((i : ℝ) + 2)) := by
+    have := (summable_saddleDensity_nat hs)
+    rw [← summable_nat_add_iff 2] at this
+    exact this.congr (fun i => by push_cast; ring_nf)
+  have hrsucc : Summable (fun k : ℕ => r (k + 1)) := by
+    refine hshift2.congr (fun i => ?_)
+    simp only [hr]
+    rw [if_neg (show i + 1 ≠ 0 by omega)]
+    congr 1; push_cast; ring
+  have hrsumm : Summable r := (summable_nat_add_iff 1).mp hrsucc
+  have hsplit := hrsumm.sum_add_tsum_nat_add 1
+  rw [Finset.sum_range_one] at hsplit
+  have hr0 : r 0 = 0 := by simp [hr]
+  rw [hr0, zero_add] at hsplit
+  rw [← hsplit, modelSaddle_two_term_split hs, add_sub_cancel_left]
+  refine tsum_congr (fun i => ?_)
+  simp only [hr]
+  rw [if_neg (show i + 1 ≠ 0 by omega)]
+  congr 1; push_cast; ring
+
 end
 
 end AnalyticCombinatorics.Ch8.Partitions
