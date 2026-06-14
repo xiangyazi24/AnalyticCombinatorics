@@ -53,6 +53,41 @@ lemma saddle_meinardus_const_identity :
 noncomputable def modelSaddle (t : ℝ) : ℝ :=
   ∑' n : ℕ, Real.exp (C * Real.sqrt (n : ℝ) - t * (n : ℝ)) / (n : ℝ)
 
+/-- AM–GM exponent bound: `C√n − tn ≤ C²/(2t) − (t/2)n` for all `n` (`t > 0`),
+since `(C − t√n)² ≥ 0`. -/
+lemma modelSaddle_exponent_bound {t : ℝ} (ht : 0 < t) (n : ℕ) :
+    C * Real.sqrt (n : ℝ) - t * (n : ℝ) ≤ C ^ 2 / (2 * t) - (t / 2) * (n : ℝ) := by
+  have hsn : Real.sqrt (n : ℝ) ^ 2 = (n : ℝ) := Real.sq_sqrt (Nat.cast_nonneg n)
+  have ht2 : t ^ 2 * Real.sqrt (n : ℝ) ^ 2 = t ^ 2 * (n : ℝ) := by rw [hsn]
+  rw [le_sub_iff_add_le, le_div_iff₀ (by positivity : (0 : ℝ) < 2 * t)]
+  nlinarith [sq_nonneg (C - t * Real.sqrt (n : ℝ)), ht2]
+
+/-- The model-saddle summand is summable for `t > 0`. -/
+lemma summable_modelSaddleTerm {t : ℝ} (ht : 0 < t) :
+    Summable (fun n : ℕ => Real.exp (C * Real.sqrt (n : ℝ) - t * (n : ℝ)) / (n : ℝ)) := by
+  -- exp-only majorant: `exp(C√n−tn) ≤ exp(C²/2t)·exp(−t/2)^n`, geometric
+  have hexp_summ :
+      Summable (fun n : ℕ => Real.exp (C * Real.sqrt (n : ℝ) - t * (n : ℝ))) := by
+    have hgeo :
+        Summable (fun n : ℕ => Real.exp (C ^ 2 / (2 * t)) * Real.exp (-(t / 2)) ^ n) :=
+      (summable_geometric_of_lt_one (Real.exp_pos _).le
+        (by rw [Real.exp_lt_one_iff]; linarith)).mul_left _
+    refine Summable.of_nonneg_of_le (fun n => (Real.exp_pos _).le) ?_ hgeo
+    intro n
+    calc Real.exp (C * Real.sqrt (n : ℝ) - t * (n : ℝ))
+        ≤ Real.exp (C ^ 2 / (2 * t) - (t / 2) * (n : ℝ)) :=
+          Real.exp_le_exp.mpr (modelSaddle_exponent_bound ht n)
+      _ = Real.exp (C ^ 2 / (2 * t)) * Real.exp (-(t / 2)) ^ n := by
+          rw [← Real.exp_nat_mul, ← Real.exp_add]; congr 1; ring
+  -- divide by `n`: `/n ≤ 1`, so termwise `≤` the exp-only majorant
+  refine Summable.of_nonneg_of_le (fun n => by positivity) ?_ hexp_summ
+  intro n
+  rcases Nat.eq_zero_or_pos n with h0 | hpos
+  · subst h0; simp only [Nat.cast_zero, div_zero]; positivity
+  · rw [div_le_iff₀ (by exact_mod_cast hpos : (0 : ℝ) < (n : ℝ))]
+    nlinarith [Real.exp_pos (C * Real.sqrt (n : ℝ) - t * (n : ℝ)),
+      (by exact_mod_cast hpos : (1 : ℝ) ≤ (n : ℝ))]
+
 /-- **Brick 5 (combination).** Given the Abelian comparison (brick 3,
 `log P − log a − log modelSaddle → 0`) and the real-saddle asymptotic (brick 4,
 `log modelSaddle − A/t − ½log t − log(4√π/C) → 0`), together with the second-order
