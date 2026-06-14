@@ -27,6 +27,7 @@ import AnalyticCombinatorics.Ch2.EGF.LabelledSetExp
 import AnalyticCombinatorics.Ch2.EGF.LabelledSeq
 import AnalyticCombinatorics.Ch2.EGF.Applications
 import AnalyticCombinatorics.Ch2.EGF.LabelledCyc
+import AnalyticCombinatorics.Ch2.EGF.LabelledCycExp
 import AnalyticCombinatorics.Ch3.BGF.Defs
 import AnalyticCombinatorics.Ch3.BGF.Moments
 import AnalyticCombinatorics.Ch3.BGF.Variance
@@ -57,6 +58,7 @@ import AnalyticCombinatorics.Ch2.SetPartitions.BellMean
 import AnalyticCombinatorics.Ch2.SetPartitions.BellVariance
 import AnalyticCombinatorics.Ch5.ContinuedFractions.Flajolet
 import AnalyticCombinatorics.Ch5.ContinuedFractions.FlajoletPathSum
+import AnalyticCombinatorics.Ch5.ContinuedFractions.FlajoletUnbounded
 import AnalyticCombinatorics.Ch8.Partitions.UpperBound
 import AnalyticCombinatorics.Ch8.Partitions.LaplaceAsymptotic
 import AnalyticCombinatorics.Ch8.Partitions.EulerProduct
