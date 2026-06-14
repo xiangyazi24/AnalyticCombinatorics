@@ -137,6 +137,37 @@ lemma integrableOn_saddleDensity_shift_deriv {s : ℝ} (hs : 0 < s) :
         mul_le_mul_of_nonneg_left hfac hsd_nonneg
     _ = (C / 2 + s + 1) * saddleDensity s (x + 1) := by ring
 
+/-- Finite-interval `u = v²` substitution: `∫₁^{B²} e^{C√u−su}/u du = ∫₁^B 2e^{Cv−sv²}/v dv`.
+The image `[1,B²] ⊂ (0,∞)` dodges the `1/u` singularity, so `integral_comp_mul_deriv'` applies. -/
+lemma modelSaddleInterval_substitution {s B : ℝ} (hB : 1 ≤ B) :
+    (∫ u in (1 : ℝ)..(B ^ 2), saddleDensity s u)
+      = ∫ v in (1 : ℝ)..B, 2 * Real.exp (C * v - s * v ^ 2) / v := by
+  have hderiv : ∀ v ∈ Set.uIcc (1 : ℝ) B, HasDerivAt (fun y : ℝ => y ^ 2) (2 * v) v := by
+    intro v _; simpa using hasDerivAt_pow 2 v
+  have hcont' : ContinuousOn (fun v : ℝ => 2 * v) (Set.uIcc 1 B) :=
+    (continuous_const.mul continuous_id).continuousOn
+  have hcontg : ContinuousOn (saddleDensity s) ((fun y : ℝ => y ^ 2) '' Set.uIcc 1 B) := by
+    refine ContinuousOn.mono (s := Set.Ioi (0 : ℝ)) ?_ ?_
+    · unfold saddleDensity
+      refine ContinuousOn.div ?_ continuousOn_id ?_
+      · exact (by fun_prop : Continuous fun u : ℝ => Real.exp (C * Real.sqrt u - s * u)).continuousOn
+      · intro u hu; exact ne_of_gt hu
+    · rintro u ⟨v, hv, rfl⟩
+      rw [Set.uIcc_of_le hB] at hv
+      have hv1 : (1 : ℝ) ≤ v := hv.1
+      show (0 : ℝ) < v ^ 2
+      nlinarith [hv1]
+  have hsub := intervalIntegral.integral_comp_mul_deriv' hderiv hcont' hcontg
+  simp only [one_pow] at hsub
+  rw [← hsub]
+  apply intervalIntegral.integral_congr
+  intro v hv
+  rw [Set.uIcc_of_le hB] at hv
+  have hv1 : (1 : ℝ) ≤ v := hv.1
+  simp only [Function.comp, saddleDensity]
+  rw [Real.sqrt_sq (by linarith : (0 : ℝ) ≤ v)]
+  field_simp
+
 end
 
 end AnalyticCombinatorics.Ch8.Partitions
