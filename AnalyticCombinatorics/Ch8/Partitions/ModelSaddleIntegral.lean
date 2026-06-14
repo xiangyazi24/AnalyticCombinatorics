@@ -206,6 +206,46 @@ lemma integrableOn_vIntegrand {s : ℝ} (hs : 0 < s) :
         rw [show C ^ 2 / (2 * s) - (s / 2) * v ^ 2 = C ^ 2 / (2 * s) + -(s / 2) * v ^ 2 by ring,
           Real.exp_add]; ring
 
+/-- `saddleDensity s` is integrable on `(1,∞)` (exp domination, no singularity for `u ≥ 1`). -/
+lemma integrableOn_saddleDensity_Ioi1 {s : ℝ} (hs : 0 < s) :
+    IntegrableOn (saddleDensity s) (Set.Ioi (1 : ℝ)) := by
+  have hmeas : AEStronglyMeasurable (saddleDensity s) (volume.restrict (Set.Ioi (1 : ℝ))) := by
+    apply Measurable.aestronglyMeasurable; unfold saddleDensity; fun_prop
+  have hdom : IntegrableOn
+      (fun u : ℝ => Real.exp (C ^ 2 / (2 * s)) * Real.exp (-(s / 2) * u)) (Set.Ioi 1) :=
+    (exp_neg_integrableOn_Ioi 1 (half_pos hs)).const_mul _
+  refine Integrable.mono' hdom hmeas ?_
+  rw [ae_restrict_iff' measurableSet_Ioi]
+  filter_upwards with u hu
+  have hu1 : (1 : ℝ) ≤ u := le_of_lt hu
+  have hupos : 0 < u := by linarith
+  rw [Real.norm_eq_abs,
+    abs_of_nonneg (by rw [saddleDensity]; exact div_nonneg (Real.exp_pos _).le hupos.le)]
+  unfold saddleDensity
+  calc Real.exp (C * Real.sqrt u - s * u) / u
+      ≤ Real.exp (C * Real.sqrt u - s * u) := div_le_self (by positivity) hu1
+    _ ≤ Real.exp (C ^ 2 / (2 * s) - (s / 2) * u) :=
+        Real.exp_le_exp.mpr (saddle_exponent_bound_real hs (le_of_lt hupos))
+    _ = Real.exp (C ^ 2 / (2 * s)) * Real.exp (-(s / 2) * u) := by
+        rw [show C ^ 2 / (2 * s) - (s / 2) * u = C ^ 2 / (2 * s) + -(s / 2) * u by ring,
+          Real.exp_add]
+
+/-- `Ioi`-level `x=y²` substitution: `∫_{Ioi 1} e^{C√u−su}/u = ∫_{Ioi 1} 2e^{Cv−sv²}/v`. -/
+lemma modelSaddleIoi_substitution {s : ℝ} (hs : 0 < s) :
+    (∫ u in Set.Ioi (1 : ℝ), saddleDensity s u)
+      = ∫ v in Set.Ioi (1 : ℝ), 2 * Real.exp (C * v - s * v ^ 2) / v := by
+  have hb2 : Tendsto (fun B : ℝ => B ^ 2) atTop atTop := by
+    simpa [pow_two] using tendsto_id.atTop_mul_atTop₀ tendsto_id
+  have hlim1 := intervalIntegral_tendsto_integral_Ioi 1 (integrableOn_saddleDensity_Ioi1 hs) hb2
+  have hlim2 := intervalIntegral_tendsto_integral_Ioi 1 (integrableOn_vIntegrand hs)
+    (tendsto_id (α := ℝ))
+  have heq : ∀ᶠ B : ℝ in atTop,
+      (∫ u in (1 : ℝ)..B ^ 2, saddleDensity s u)
+        = ∫ v in (1 : ℝ)..B, 2 * Real.exp (C * v - s * v ^ 2) / v := by
+    filter_upwards [eventually_ge_atTop (1 : ℝ)] with B hB
+    exact modelSaddleInterval_substitution hB
+  exact tendsto_nhds_unique (hlim1.congr' heq) hlim2
+
 end
 
 end AnalyticCombinatorics.Ch8.Partitions
