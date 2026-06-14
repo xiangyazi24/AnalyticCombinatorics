@@ -682,3 +682,14 @@
 - REMAINING: tail trapezoid (Σ_{k>N} log1mexp(kt) - tail integral + ½f(R)→0; needs exp-decay
   deriv producer per R6) + final assembly (head+tail → log P - I/t - ½log(t/2π)→0, identify
   I=A via partition_laplace_log_asymptotic) → partLaplace_second_order. Then bricks 3-5.
+
+### 2026-06-14 (d) brick2 tail — foundation drafted, consolidation
+- Tail helpers (R8 plan, HANDOFF/HR-tail-R8.md) drafted; ~6 API mismatches remain
+  (tsum_congr not ext, manual AEStronglyMeasurable, field_simp/ring tweaks). Draft preserved
+  at HANDOFF/LogOneMinusExpTail-WIP.lean.txt. NOT committed to source (main stays green).
+- (d) STATE: brick2 HEAD COMPLETE (10 green files, 2π extracted + head asymptotic assembled).
+  REMAINING (all specified in HANDOFF/HR-tail-R8.md + HR-CONSTANT-ROUTE.md):
+  brick2 tail (helpers API-fix + local cell-bound refactor of TrapezoidCellIoc +
+  tail_trapezoid_bound_of_exp_cell_errors HasSum theorem); head+tail → partLaplace_second_order
+  (via log_partLaplace_eq + log_series_regroup, identify I=A); bricks 3-5 (Abelian comparison,
+  modelSaddle real saddle, algebra → a=1/(4√3)).
