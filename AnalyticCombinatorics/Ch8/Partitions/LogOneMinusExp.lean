@@ -73,6 +73,22 @@ lemma log1mexp_tail_bound {x : ℝ} (hx : Real.log 2 ≤ x) :
   nlinarith [hlb, hw, hwpos, hy0, hle, h1,
     mul_nonneg hy0.le (show (0:ℝ) ≤ 1 - 2 * y by linarith)]
 
+/-- Derivative of `f(x) = -log(1 - e^{-x})` for `x > 0`:
+`f'(x) = -e^{-x}/(1 - e^{-x}) = -1/(e^x - 1)`. -/
+lemma log1mexp_hasDerivAt {x : ℝ} (hx : 0 < x) :
+    HasDerivAt log1mexp (-Real.exp (-x) / (1 - Real.exp (-x))) x := by
+  have hpos : 0 < 1 - Real.exp (-x) := one_sub_exp_neg_pos hx
+  have hin : HasDerivAt (fun x : ℝ => 1 - Real.exp (-x)) (Real.exp (-x)) x := by
+    have h1 : HasDerivAt (fun x : ℝ => Real.exp (-x)) (-Real.exp (-x)) x := by
+      have := (Real.hasDerivAt_exp (-x)).comp x ((hasDerivAt_id x).neg)
+      simpa using this
+    simpa using (hasDerivAt_const x (1 : ℝ)).sub h1
+  have hout : HasDerivAt (fun y : ℝ => -Real.log y)
+      (-(1 - Real.exp (-x))⁻¹) (1 - Real.exp (-x)) :=
+    (Real.hasDerivAt_log (ne_of_gt hpos)).neg
+  have hcomp := hout.comp x hin
+  simpa [log1mexp, div_eq_mul_inv, mul_comm] using hcomp
+
 /-- The regularized summand vanishes at the singularity: `h(x) → 0` as `x → 0+`.
 Proof: `h(x) = -log((1 - e^{-x})/x)` and `(1 - e^{-x})/x → 1` (slope of
 `x ↦ 1 - e^{-x}` at `0`), so `h(x) → -log 1 = 0`. -/
