@@ -644,3 +644,17 @@
   likely apply cell lemma on [t,2] avoiding 0. Need: gp Lipschitz with uniform M on (0,2],
   HasDerivAt + integrability. R5 dispatched. Then tail trapezoid + Stirling head assembly
   (∑-log(tk)=-N log t-log N!, Stirling→2π) → partLaplace_second_order; then bricks 3-5.
+
+### 2026-06-14 (d) brick2 analytic core COMPLETE (6 files)
+- TrapezoidCellIoc (9391734): open-left per-cell producer (cells a>0, deriv on Ioc 0 2).
+- LogRegLipschitz (231e7dd): log1mexpReg'=Erdos.boseAntideriv, 5-Lipschitz on (0,2]
+  (REUSES repo boseReg0 bounds — removable-singularity crux dissolved, no new analysis).
+- LogRegCell (c1a529b): log1mexpReg_cell_trapezoid_bound_pos (|trap-int|≤5h² per cell).
+- (d) brick2 conceptual core DONE: generic EM machinery (File1/2/3) + log1mexpReg cells
+  bounded. All 6 files green/0-sorry/pushed.
+- REMAINING brick2 assembly: (i) head-peel summation trapezoid_head_..._pos (File2 head
+  variant peeling first cell [0,t] via log1mexpReg_tendsto_zero + a first-cell lemma);
+  (ii) tail trapezoid (exp tail on [R,∞)); (iii) Stirling head ∑-log(tk)=-N log t-log N!
+  → 2π via Stirling.log_stirlingSeq_formula; (iv) assemble + identify I=A via
+  partition_laplace_log_asymptotic → partLaplace_second_order.
+  Then bricks 3 (Abelian comparison), 4 (modelSaddle real saddle), 5 (algebra → 1/(4√3)).
