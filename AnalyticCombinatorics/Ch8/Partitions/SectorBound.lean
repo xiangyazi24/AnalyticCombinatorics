@@ -127,10 +127,100 @@ lemma edgeSign_path_sum {a b x y : ℤ} (hab : a ≤ b)
             simp [edgeSign, hpos, hneg]
 
 
-/- The exact cut identity `aAnti = −½∑ divJ·f·g − ∑ Hcut(f)·grad g` (discharging `hanti`)
-and the Hardy estimate `Hcut_l2_le` (discharging `hH`) are the remaining connective steps;
-ChatGPT ac/ac2 R15/R16 gave proof sketches needing Mathlib-shape adaptation. The genuine wall
-is the kernel-specific `erdos_rankdiff_sector_input` (see DOCTRINE-walls.md R13). -/
+/-- `aAnti` reduces to the antisymmetric-flow double sum (the diagonal `πfg` terms cancel; the
+residual `K`-terms combine into `Jflow` after an `x↔y` swap). -/
+lemma aAnti_eq_J_sum (I : Finset ℤ) (π : ℤ → ℝ) (K : ℤ → ℤ → ℝ) (f g : ℤ → ℝ) :
+    aAnti I π K f g = - (1 / 2 : ℝ) * ∑ x ∈ I, ∑ y ∈ I, Jflow π K x y * f x * g y := by
+  have expand : ∀ (u v : ℤ → ℝ),
+      (∑ x ∈ I, π x * u x * (v x - ∑ y ∈ I, K x y * v y))
+        = (∑ x ∈ I, π x * u x * v x) - ∑ x ∈ I, ∑ y ∈ I, π x * K x y * u x * v y := by
+    intro u v
+    rw [← Finset.sum_sub_distrib]
+    refine Finset.sum_congr rfl (fun x _ => ?_)
+    rw [mul_sub, Finset.mul_sum]
+    congr 1
+    exact Finset.sum_congr rfl (fun y _ => by ring)
+  have hswap : (∑ x ∈ I, ∑ y ∈ I, π x * K x y * g x * f y)
+      = ∑ x ∈ I, ∑ y ∈ I, π y * K y x * f x * g y := by
+    rw [Finset.sum_comm]
+    exact Finset.sum_congr rfl (fun x _ => Finset.sum_congr rfl (fun y _ => by ring))
+  have hdiag : (∑ x ∈ I, π x * f x * g x) = ∑ x ∈ I, π x * g x * f x :=
+    Finset.sum_congr rfl (fun x _ => by ring)
+  have hJ : (∑ x ∈ I, ∑ y ∈ I, Jflow π K x y * f x * g y)
+      = (∑ x ∈ I, ∑ y ∈ I, π x * K x y * f x * g y)
+        - ∑ x ∈ I, ∑ y ∈ I, π y * K y x * f x * g y := by
+    rw [← Finset.sum_sub_distrib]
+    refine Finset.sum_congr rfl (fun x _ => ?_)
+    rw [← Finset.sum_sub_distrib]
+    refine Finset.sum_congr rfl (fun y _ => ?_)
+    unfold Jflow; ring
+  unfold aAnti aK
+  rw [expand f g, expand g f, hJ, ← hswap, hdiag]
+  ring
+
+/-- **Exact antisymmetric cut identity**: `aAnti = −½∑ divJ·f·g − ∑ Hcut(f)·grad g`. -/
+lemma aAnti_eq_div_plus_Hcut {a b : ℤ} (hab : a ≤ b) (π : ℤ → ℝ) (K : ℤ → ℤ → ℝ) (f g : ℤ → ℝ) :
+    aAnti (Finset.Icc a b) π K f g
+      = - (1 / 2 : ℝ) * (∑ x ∈ Finset.Icc a b, divJ (Finset.Icc a b) (Jflow π K) x * f x * g x)
+        - ∑ e ∈ Finset.Icc a (b - 1), Hcut (Finset.Icc a b) (Jflow π K) f e * grad g e := by
+  rw [aAnti_eq_J_sum]
+  have hsplit :
+      (∑ x ∈ Finset.Icc a b, ∑ y ∈ Finset.Icc a b, Jflow π K x y * f x * g y)
+        = (∑ x ∈ Finset.Icc a b, divJ (Finset.Icc a b) (Jflow π K) x * f x * g x)
+          + 2 * ∑ e ∈ Finset.Icc a (b - 1), Hcut (Finset.Icc a b) (Jflow π K) f e * grad g e := by
+    have step1 :
+        (∑ x ∈ Finset.Icc a b, ∑ y ∈ Finset.Icc a b, Jflow π K x y * f x * g y)
+          = (∑ x ∈ Finset.Icc a b, ∑ y ∈ Finset.Icc a b, Jflow π K x y * f x * g x)
+            + ∑ x ∈ Finset.Icc a b, ∑ y ∈ Finset.Icc a b, Jflow π K x y * f x * (g y - g x) := by
+      rw [← Finset.sum_add_distrib]
+      refine Finset.sum_congr rfl (fun x _ => ?_)
+      rw [← Finset.sum_add_distrib]
+      exact Finset.sum_congr rfl (fun y _ => by ring)
+    have step2 :
+        (∑ x ∈ Finset.Icc a b, ∑ y ∈ Finset.Icc a b, Jflow π K x y * f x * g x)
+          = ∑ x ∈ Finset.Icc a b, divJ (Finset.Icc a b) (Jflow π K) x * f x * g x := by
+      refine Finset.sum_congr rfl (fun x _ => ?_)
+      unfold divJ
+      rw [Finset.sum_mul, Finset.sum_mul]
+    have hpush : ∀ e : ℤ,
+        (∑ x ∈ Finset.Icc a b, ∑ y ∈ Finset.Icc a b,
+            Jflow π K x y * f x * (edgeSign e x y * grad g e))
+          = (∑ x ∈ Finset.Icc a b, ∑ y ∈ Finset.Icc a b,
+              Jflow π K x y * f x * edgeSign e x y) * grad g e := by
+      intro e
+      rw [Finset.sum_mul]
+      refine Finset.sum_congr rfl (fun x _ => ?_)
+      rw [Finset.sum_mul]
+      exact Finset.sum_congr rfl (fun y _ => by ring)
+    have step3 :
+        (∑ x ∈ Finset.Icc a b, ∑ y ∈ Finset.Icc a b, Jflow π K x y * f x * (g y - g x))
+          = 2 * ∑ e ∈ Finset.Icc a (b - 1), Hcut (Finset.Icc a b) (Jflow π K) f e * grad g e := by
+      have hsub :
+          (∑ x ∈ Finset.Icc a b, ∑ y ∈ Finset.Icc a b, Jflow π K x y * f x * (g y - g x))
+            = ∑ x ∈ Finset.Icc a b, ∑ y ∈ Finset.Icc a b, ∑ e ∈ Finset.Icc a (b - 1),
+                Jflow π K x y * f x * (edgeSign e x y * grad g e) := by
+        refine Finset.sum_congr rfl (fun x hx => ?_)
+        refine Finset.sum_congr rfl (fun y hy => ?_)
+        rw [edgeSign_path_sum hab hx hy g, Finset.mul_sum]
+      rw [hsub, Finset.sum_congr rfl (fun x _ => Finset.sum_comm), Finset.sum_comm,
+        Finset.mul_sum]
+      refine Finset.sum_congr rfl (fun e he => ?_)
+      rw [hpush e]
+      unfold Hcut
+      ring
+    rw [step1, step2, step3]
+  rw [hsplit]; ring
+
+/-- Divergence-free corollary: if `div J = 0` on `I`, then `aAnti = −∑ Hcut(f)·grad g`. -/
+lemma aAnti_eq_neg_sum_Hcut {a b : ℤ} (hab : a ≤ b) (π : ℤ → ℝ) (K : ℤ → ℤ → ℝ) (f g : ℤ → ℝ)
+    (hdiv : ∀ x ∈ Finset.Icc a b, divJ (Finset.Icc a b) (Jflow π K) x = 0) :
+    aAnti (Finset.Icc a b) π K f g
+      = - ∑ e ∈ Finset.Icc a (b - 1), Hcut (Finset.Icc a b) (Jflow π K) f e * grad g e := by
+  rw [aAnti_eq_div_plus_Hcut hab]
+  have hzero : (∑ x ∈ Finset.Icc a b, divJ (Finset.Icc a b) (Jflow π K) x * f x * g x) = 0 := by
+    refine Finset.sum_eq_zero (fun x hx => ?_)
+    rw [hdiv x hx]; ring
+  rw [hzero]; ring
 
 /-- **Sector bound from a Hardy estimate** (Cauchy–Schwarz + ellipticity).  Abstract: consumes the
 cut identity `hanti`, the Hardy bound `hH`, and ellipticity `helliptic`. -/
