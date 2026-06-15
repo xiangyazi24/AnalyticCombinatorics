@@ -40,6 +40,14 @@ def divJ (I : Finset ℤ) (J : ℤ → ℤ → ℝ) (x : ℤ) : ℝ := ∑ y ∈
 def Hcut (I : Finset ℤ) (J : ℤ → ℤ → ℝ) (f : ℤ → ℝ) (e : ℤ) : ℝ :=
   (1 / 2 : ℝ) * ∑ x ∈ I, ∑ y ∈ I, J x y * f x * edgeSign e x y
 
+/-- The (non-symmetric) bilinear form `⟨f, π·(I−K)g⟩`. -/
+def aK (I : Finset ℤ) (π : ℤ → ℝ) (K : ℤ → ℤ → ℝ) (f g : ℤ → ℝ) : ℝ :=
+  ∑ x ∈ I, π x * f x * (g x - ∑ y ∈ I, K x y * g y)
+
+/-- Antisymmetric part of `aK`. -/
+def aAnti (I : Finset ℤ) (π : ℤ → ℝ) (K : ℤ → ℤ → ℝ) (f g : ℤ → ℝ) : ℝ :=
+  (aK I π K f g - aK I π K g f) / 2
+
 /-- Edge energy over an explicit edge set. -/
 def edgeEnergyOn (E : Finset ℤ) (f : ℤ → ℝ) : ℝ := ∑ e ∈ E, (grad f e) ^ 2
 
@@ -49,6 +57,80 @@ def SectorBound (aAnti aSym : (ℤ → ℝ) → (ℤ → ℝ) → ℝ) (θ : ℝ
 
 lemma Jflow_skew (π : ℤ → ℝ) (K : ℤ → ℤ → ℝ) (x y : ℤ) :
     Jflow π K y x = - Jflow π K x y := by unfold Jflow; ring
+
+/-- Telescoping identity for gradients on an integer interval (`Int.le_induction` + top-element peel). -/
+lemma sum_Icc_grad_of_le {x y : ℤ} (hxy : x ≤ y) (g : ℤ → ℝ) :
+    (∑ e ∈ Finset.Icc x (y - 1), grad g e) = g y - g x := by
+  induction y, hxy using Int.le_induction with
+  | base =>
+      have hempty : Finset.Icc x (x - 1) = ∅ := Finset.Icc_eq_empty (by omega)
+      rw [hempty]; simp
+  | succ y hxy ih =>
+      have hins : Finset.Icc x (y + 1 - 1) = insert y (Finset.Icc x (y - 1)) := by
+        ext e; simp only [Finset.mem_insert, Finset.mem_Icc]; omega
+      have hy_notin : y ∉ Finset.Icc x (y - 1) := by simp only [Finset.mem_Icc]; omega
+      rw [hins, Finset.sum_insert hy_notin, ih]
+      unfold grad; ring
+
+/-- **Signed path-sum identity**: the oriented edge-sign sum over `Icc a (b-1)` collapses to the
+path from `x` to `y`. -/
+lemma edgeSign_path_sum {a b x y : ℤ} (hab : a ≤ b)
+    (hx : x ∈ Finset.Icc a b) (hy : y ∈ Finset.Icc a b) (g : ℤ → ℝ) :
+    g y - g x = ∑ e ∈ Finset.Icc a (b - 1), edgeSign e x y * grad g e := by
+  classical
+  have hxa : a ≤ x := (Finset.mem_Icc.mp hx).1
+  have hxb : x ≤ b := (Finset.mem_Icc.mp hx).2
+  have hya : a ≤ y := (Finset.mem_Icc.mp hy).1
+  have hyb : y ≤ b := (Finset.mem_Icc.mp hy).2
+  by_cases hxy : x ≤ y
+  · have hfilter :
+        (Finset.Icc a (b - 1)).filter (fun e : ℤ => x ≤ e ∧ e < y) = Finset.Icc x (y - 1) := by
+      ext e
+      simp only [Finset.mem_filter, Finset.mem_Icc]
+      constructor
+      · rintro ⟨⟨hae, heb⟩, hxe, hey⟩; exact ⟨hxe, by omega⟩
+      · rintro ⟨hxe, hey⟩; exact ⟨⟨by omega, by omega⟩, hxe, by omega⟩
+    calc g y - g x = ∑ e ∈ Finset.Icc x (y - 1), grad g e := by rw [sum_Icc_grad_of_le hxy g]
+      _ = ∑ e ∈ (Finset.Icc a (b - 1)).filter (fun e : ℤ => x ≤ e ∧ e < y), grad g e := by
+          rw [hfilter]
+      _ = ∑ e ∈ Finset.Icc a (b - 1), (if x ≤ e ∧ e < y then grad g e else 0) := by
+          rw [Finset.sum_filter]
+      _ = ∑ e ∈ Finset.Icc a (b - 1), edgeSign e x y * grad g e := by
+          refine Finset.sum_congr rfl ?_
+          intro e he
+          by_cases hpos : x ≤ e ∧ e < y
+          · simp [edgeSign, hpos]
+          · have hneg : ¬ (y ≤ e ∧ e < x) := by omega
+            simp [edgeSign, hpos, hneg]
+  · have hyx : y ≤ x := by omega
+    have hfilter :
+        (Finset.Icc a (b - 1)).filter (fun e : ℤ => y ≤ e ∧ e < x) = Finset.Icc y (x - 1) := by
+      ext e
+      simp only [Finset.mem_filter, Finset.mem_Icc]
+      constructor
+      · rintro ⟨⟨hae, heb⟩, hye, hex⟩; exact ⟨hye, by omega⟩
+      · rintro ⟨hye, hex⟩; exact ⟨⟨by omega, by omega⟩, hye, by omega⟩
+    calc g y - g x = - (g x - g y) := by ring
+      _ = - (∑ e ∈ Finset.Icc y (x - 1), grad g e) := by rw [sum_Icc_grad_of_le hyx g]
+      _ = ∑ e ∈ Finset.Icc y (x - 1), - grad g e := by rw [Finset.sum_neg_distrib]
+      _ = ∑ e ∈ (Finset.Icc a (b - 1)).filter (fun e : ℤ => y ≤ e ∧ e < x), - grad g e := by
+          rw [hfilter]
+      _ = ∑ e ∈ Finset.Icc a (b - 1), (if y ≤ e ∧ e < x then - grad g e else 0) := by
+          rw [Finset.sum_filter]
+      _ = ∑ e ∈ Finset.Icc a (b - 1), edgeSign e x y * grad g e := by
+          refine Finset.sum_congr rfl ?_
+          intro e he
+          by_cases hneg : y ≤ e ∧ e < x
+          · have hpos : ¬ (x ≤ e ∧ e < y) := by omega
+            simp [edgeSign, hpos, hneg]
+          · have hpos : ¬ (x ≤ e ∧ e < y) := by omega
+            simp [edgeSign, hpos, hneg]
+
+
+/- The exact cut identity `aAnti = −½∑ divJ·f·g − ∑ Hcut(f)·grad g` (discharging `hanti`)
+and the Hardy estimate `Hcut_l2_le` (discharging `hH`) are the remaining connective steps;
+ChatGPT ac/ac2 R15/R16 gave proof sketches needing Mathlib-shape adaptation. The genuine wall
+is the kernel-specific `erdos_rankdiff_sector_input` (see DOCTRINE-walls.md R13). -/
 
 /-- **Sector bound from a Hardy estimate** (Cauchy–Schwarz + ellipticity).  Abstract: consumes the
 cut identity `hanti`, the Hardy bound `hH`, and ellipticity `helliptic`. -/
