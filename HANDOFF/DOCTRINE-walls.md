@@ -815,3 +815,33 @@ verified the exp-tail machinery against the repo.  Status:
 
 So of the wall: stages 1,2,3a,5 BANKED clean-3; 3b+4 in flight (ChatGPT); 3c mechanical.
 The lone genuinely-hard residual is STAGE 4 (sector/drift perturbation for nonreversibility).
+
+## R11–R13 (06-15): Green-comparison program fully banked except ONE kernel-specific sector input
+The Dirichlet-form Green-comparison route is now formalized stage-by-stage; the lone genuine residual
+is precisely isolated. BANKED this run (all clean-3):
+ - GreenForm.green_domination_of_form_le (Stage 3b: Q_K ≤ Λ Q_R ⟹ ⟨h,G_K h⟩ ≥ Λ⁻¹⟨h,G_R h⟩);
+ - DirichletForm.bounded_jump_energy_le_edge_energy (Stage 3c upper: E_K ≤ 3B²·E_edge);
+ - SymmetricDirichlet.greenQ_eq_half_jumpEnergy_add_killEnergy (the bridge greenQ = ½jumpEnergy +
+   killEnergy) + greenQ_nonneg_of_symm_substochastic (discharges GreenForm's hQnonneg);
+ - GreenComparison.{distPow_mono, green_neumann_mono, sq_diff_le_path_energy_nat}.
+ - TruncationTransfer (Stage 5) + CentralBinomSum (Stage 2) earlier.
+
+REMAINING deterministic (mechanical, in flight):
+ - edge_energy_le_jumpEnergy_of_pm1_minor (Stage 3c lower: 2p·E_edge ≤ E_K from ±1 minorization) —
+   ac2 R13 filling the one edge→NN-pairs subset `sorry` (masked double sum).
+ - elementary discrete Poincaré (edgeSign_path_sum, point_sq_le_path_energy,
+   interval_l2_le_L2_edgeEnergy) + abstract sector (aAnti_eq_div_plus_Hcut, Hcut_l2_le,
+   sector_bound_from_Hcut) — ac R13 gave full skeletons; all finite-sum, bankable.
+
+THE LONE GENUINE RESIDUAL (ac R13 verdict, kernel-specific, NOT derivable from existing repo facts):
+ - `erdos_rankdiff_sector_input`: a SectorBound θ ≤ 1/2 for the actual nonreversible rank-difference
+   kernel. ac R13 PROVED this does NOT follow from the row-drift bound (|D|-drift ≤ η): the drift
+   controls antisymmetry only against the single test fn D, while the sector needs control against ALL
+   (f,g) via the total crossing-variation Γ_e = ½∑|J(x,y)||χ_e|. Moreover counting measure is NOT
+   divergence-free (Pker is row-normalized not column; Pker_mass), so the divergence term −½∑divJ·f·g
+   must be carried OR a reference measure π with the killed-kernel stationarity balance
+   (π_x·rowsum = ∑_y π_y K(y,x)) must be constructed — and the repo's Doeblin/minorization material
+   (Pker_window_minor is an overlap lower bound, not a reversible measure) does NOT supply such π.
+ - SO: the wall is now a single, well-defined, genuinely-new analytic theorem — construct π (or prove
+   a direct crossing-TV + divergence bound) for the killed residual rank-diff kernel. Everything
+   around it is banked or mechanical. This is the honest stopping point of the deterministic reduction.
