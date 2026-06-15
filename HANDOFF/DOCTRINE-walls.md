@@ -950,3 +950,50 @@ Jflow(statOffset, resStep) (the antisymmetric magnitude); (b) finite-window/kill
 to divJ≡0 (statOffset stationarity is for the infinite chain; the windowed/killed chain leaks mass at
 edges); (c) connecting the 1-D residual-chain sector Green to the two-copy coalescence. (a)+(b) are
 concrete next; (c) is the modeling bridge.
+
+## R17–R18 (06-15): ChatGPT Pro two-tab verdict — PAIR-LEVEL is the right object; Γ is genuinely new
+Both Pro tabs (ac strategic, ac2 concrete) answered R17 decisively. Synthesis:
+
+### ac (strategic crux) verdict
+- The sector route AVOIDS the false local limit Pker_rankDrop_asymptotic — NOT blocked by it.
+- BUT Γ (cut-flux) is a GENUINE NEW analytic theorem, NOT implied by the banked aggregates
+  (minorization / tail-majorant / moments). Γ is an L¹ ANTISYMMETRIC-CURRENT bound — strictly stronger
+  than tail/moment control; one can preserve ±1 minorization + exponential tails + first/second moments
+  while adding a bounded-jump antisymmetric circulation that the sector |J| sees but scalar drift misses.
+- The formulation MUST be PAIR-LEVEL: D(x,y)=rnk x−rnk y is a COORDINATE on KhatResPair, NOT a Markov
+  lump (the pair walk is NOT lumpable w.r.t. D). So statOffset_stationary (single residual chain) is
+  NOT automatically stationarity for KhatResPair (conditioning inside the good window removes common
+  mass). Two valid Lean paths: (A) generalize aAnti_eq_div_plus_Hcut / Hcut_l2_le_boundary /
+  sector_bound_from_Hcut_on from ℤ-states to pair states with observable D; (B) weak D-projection:
+  define ΠD = D-pushforward, KD = D-projected kernel, prove pairAK = aK(ΠD,KD) for D-pullback test fns,
+  then the 1-D lemmas apply verbatim. NOT strong lumping.
+- New-lemma list (banked machinery → erdos_rankdiff_sector_input, pair-level):
+  pair_D_weak_lump_forms · pair_stationary_or_fiber_divergence_free · pair_pm1_minorization_from_rankDropMinor ·
+  pair_D_tail_truncation_from_rankDrop_tail · pair_crossingTV_bound_erdos (THE crux, floor phase summed
+  uniformly) · pair_sector_to_block_heat_input.
+
+### ac2 (concrete single-chain template) verdict — the residual chain worked out EXACTLY
+- crossingTV on PREFIX window [0,b]: Γ_b(e) = (2τ_{max(2,e+1)} − τ_{b+1})/μ ≤ 2τ₂/μ, BUT B≈b (nonlocal
+  0→b jump), so θ does NOT shrink as b grows. Prefix windows are the wrong shape.
+- crossingTV on POSITIVE window [a,b] (1≤a): chain is NEAREST-NEIGHBOR inside (B=1, no 0-jump),
+  Γ = τ_{e+1}/μ ≤ τ_{a+1}/μ — TAIL-CONTROLLED, shrinks as the lower edge a is pushed into the tail.
+- Window/killing divergence correction: divJ on [0,b] = boundary atoms ±statOffset(b+1) (escaped mass
+  τ_{b+1}/μ); on [a,b] the L¹ divergence = 2τ_{a+1}/μ (interior NOT zero when a>0 — the removed state 0
+  no longer cancels positive-state bulk). So statOffset stationarity (divJ≡0) is INFINITE-VOLUME only;
+  the windowed chain leaks and the divergence term must be CARRIED, not dropped.
+- Fix: a new abstract `sector_bound_with_divergence_on` carrying Δ (the divergence term), giving constant
+  (√8·√B·Γ·L + Δ)/p (or (4·…) since banked Hcut_l2_le_boundary const is 16, not 8). For positive window
+  [a,b]: θ ≤ L(√8+1)/p · τ_{a+1}/μ ≤ 1/2 by pushing a out. THIS is the smallness mechanism.
+
+### R18 dispatched (06-15, both tabs, dispatch-before-process)
+- ac R18: drive PAIR-LEVEL — (1) cheapest path A-vs-B for pair_D_weak_lump_forms; (2) THE crux
+  pair_crossingTV_bound_erdos (does the single-chain τ_{a+1}/μ template carry to KhatResPair with
+  frac(3√v) summed away, from banked tail-majorant + drop-minorization? quantify product-reference
+  non-stationarity divergence); (3) final ordered lemma list mechanical-vs-genuine.
+- ac2 R18: COMPLETE compiling proofs (no sorry) of (1) abstract sector_bound_with_divergence_on
+  (immediately bankable, reusable 1-D AND pair-level) + (2) the generic divergence-form ≤
+  ½L(∑|D|)√Ef√Eg helper. ac2's R17 residual flow/crossingTV/divJ lemmas are the concrete template.
+
+NET STATUS: reference-measure half banked (statOffset_stationary). The genuinely-new remaining analytic
+content is the PAIR-LEVEL cut-flux bound pair_crossingTV_bound_erdos; the divergence-carrying sector
+theorem (sector_bound_with_divergence_on) is the immediately-bankable abstract piece (ac2 R18 producing).
