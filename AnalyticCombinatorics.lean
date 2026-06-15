@@ -292,6 +292,7 @@ import AnalyticCombinatorics.Ch8.Partitions.GreenComparison
 import AnalyticCombinatorics.Ch8.Partitions.GreenForm
 import AnalyticCombinatorics.Ch8.Partitions.DirichletForm
 import AnalyticCombinatorics.Ch8.Partitions.SymmetricDirichlet
+import AnalyticCombinatorics.Ch8.Partitions.Ellipticity
 
 /-!
 # AnalyticCombinatorics
