@@ -277,6 +277,7 @@ import AnalyticCombinatorics.Ch8.Partitions.RankDropTailMaj
 import AnalyticCombinatorics.Ch8.Partitions.RankDropDeepMass
 import AnalyticCombinatorics.Ch8.Partitions.EnterBandAdditiveEscape
 import AnalyticCombinatorics.Ch8.Partitions.CeilingEscapeClose
+import AnalyticCombinatorics.Ch8.Partitions.ErdosHRConstant
 -- Hardy–Ramanujan exact constant `a = 1/(4√3)` (bricks 2–5, unconditional in the Riemann error)
 import AnalyticCombinatorics.Ch8.Partitions.ErdosRiemannError
 import AnalyticCombinatorics.Ch8.Partitions.SoftTailDrift
