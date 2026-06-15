@@ -60,6 +60,7 @@ import AnalyticCombinatorics.Ch5.ContinuedFractions.Flajolet
 import AnalyticCombinatorics.Ch5.ContinuedFractions.FlajoletPathSum
 import AnalyticCombinatorics.Ch5.ContinuedFractions.FlajoletUnbounded
 import AnalyticCombinatorics.Ch5.ContinuedFractions.FlajoletPathBijection
+import AnalyticCombinatorics.Ch5.ContinuedFractions.FlajoletStepPath
 import AnalyticCombinatorics.Ch8.Partitions.UpperBound
 import AnalyticCombinatorics.Ch8.Partitions.LaplaceAsymptotic
 import AnalyticCombinatorics.Ch8.Partitions.EulerProduct
