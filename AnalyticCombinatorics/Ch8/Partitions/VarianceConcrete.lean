@@ -91,24 +91,30 @@ lemma sqrt_decrement_lower {x k : ℕ} (hk : k < x) :
   rw [hid]
   exact mul_le_mul_of_nonneg_left (by linarith [hsk]) (by linarith [hsk])
 
-/-- Upper bound on the √-decrement when `√k ≥ (7/10)√x`: `√x − √k ≤ (10/17)(x−k)/√x`. -/
-lemma sqrt_decrement_upper {x k : ℕ} (hk : k < x)
-    (hkge : (7 : ℝ) / 10 * Real.sqrt (x : ℝ) ≤ Real.sqrt (k : ℝ)) :
-    Real.sqrt (x : ℝ) - Real.sqrt (k : ℝ) ≤ 10 / 17 * ((x - k : ℕ) : ℝ) / Real.sqrt (x : ℝ) := by
+/-- Upper bound on the √-decrement when `√k ≥ ρ√x` (`0 ≤ ρ`):
+`√x − √k ≤ (1/(1+ρ))(x−k)/√x`. -/
+lemma sqrt_decrement_upper {x k : ℕ} {ρ : ℝ} (hk : k < x) (hρ0 : 0 ≤ ρ)
+    (hkge : ρ * Real.sqrt (x : ℝ) ≤ Real.sqrt (k : ℝ)) :
+    Real.sqrt (x : ℝ) - Real.sqrt (k : ℝ) ≤ 1 / (1 + ρ) * ((x - k : ℕ) : ℝ) / Real.sqrt (x : ℝ) := by
   have hxk : ((x - k : ℕ) : ℝ) = (x : ℝ) - (k : ℝ) := Nat.cast_sub hk.le
   have hkx : (k : ℝ) ≤ (x : ℝ) := by exact_mod_cast hk.le
   have hsk : Real.sqrt (k : ℝ) ≤ Real.sqrt (x : ℝ) := Real.sqrt_le_sqrt hkx
   have hx0 : (0 : ℝ) < (x : ℝ) := by exact_mod_cast (lt_of_le_of_lt (Nat.zero_le k) hk)
   have hsx : 0 < Real.sqrt (x : ℝ) := Real.sqrt_pos.mpr hx0
+  have h1ρ : 0 < 1 + ρ := by linarith
   have hid : ((x : ℝ) - (k : ℝ))
       = (Real.sqrt (x : ℝ) - Real.sqrt (k : ℝ)) * (Real.sqrt (x : ℝ) + Real.sqrt (k : ℝ)) := by
     have h1 : Real.sqrt (x : ℝ) ^ 2 = (x : ℝ) := Real.sq_sqrt (by positivity)
     have h2 : Real.sqrt (k : ℝ) ^ 2 = (k : ℝ) := Real.sq_sqrt (by positivity)
     nlinarith [h1, h2]
-  rw [hxk, hid, le_div_iff₀ hsx]
-  -- (√x-√k)·√x ≤ 10/17·((√x-√k)(√x+√k))
-  nlinarith [hkge, sub_nonneg.mpr hsk, hsx,
-    mul_nonneg (sub_nonneg.mpr hsk) (sub_nonneg.mpr (by linarith [hkge] : (7:ℝ)/10 * Real.sqrt (x:ℝ) ≤ Real.sqrt (k:ℝ)))]
+  rw [hxk, hid, le_div_iff₀ hsx,
+    show (1 : ℝ) / (1 + ρ) * ((Real.sqrt (x : ℝ) - Real.sqrt (k : ℝ)) *
+      (Real.sqrt (x : ℝ) + Real.sqrt (k : ℝ)))
+      = ((Real.sqrt (x : ℝ) - Real.sqrt (k : ℝ)) *
+          (Real.sqrt (x : ℝ) + Real.sqrt (k : ℝ))) / (1 + ρ) by ring,
+    le_div_iff₀ h1ρ]
+  -- (√x-√k)·√x·(1+ρ) ≤ (√x-√k)(√x+√k)
+  nlinarith [mul_nonneg (sub_nonneg.mpr hsk) (sub_nonneg.mpr hkge), hsx, hρ0]
 
 /-- For `k ≥ x − 2⌊√x⌋` with `x ≥ 16`, the predecessor satisfies `√k ≥ (7/10)√x`. -/
 lemma sqrt_ge_of_window {x k : ℕ} (hx16 : 16 ≤ x) (hk : x - 2 * Nat.sqrt x ≤ k) :
