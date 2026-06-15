@@ -17,7 +17,8 @@ supplies the one remaining finite identity `cycleFitPairSum n = H_n² − H_n^{(
 
 noncomputable section
 
-open scoped BigOperators
+open Filter Asymptotics
+open scoped BigOperators Topology
 
 namespace AnalyticCombinatorics
 namespace Ch9
@@ -171,6 +172,86 @@ theorem totalCycleCount_variance_eq_harmonic_sub_harmonic2 (n : ℕ) :
     cycleFitPairSum_eq_harmonic_sq_sub_harmonic2]
   have hH : (∑ r ∈ Finset.Icc 1 n, (r : ℝ)⁻¹) = cycleH1 n := rfl
   rw [hH]; ring
+
+/-- `cycleH1 n` is Mathlib's harmonic number, cast to `ℝ`. -/
+lemma cycleH1_eq_harmonic (n : ℕ) : cycleH1 n = (harmonic n : ℝ) := by
+  rw [cycleH1]; norm_num [harmonic_eq_sum_Icc]
+
+/-- First harmonic sum is asymptotic to `log n`. -/
+lemma cycleH1_isEquivalent_log :
+    (fun n : ℕ => cycleH1 n) ~[atTop] (fun n : ℕ => Real.log n) := by
+  have hharm :
+      (fun n : ℕ => (harmonic n : ℝ)) ~[atTop] (fun n : ℕ => Real.log n) := by
+    rw [Asymptotics.IsEquivalent]
+    have hdiffO :
+        (fun n : ℕ => (harmonic n : ℝ) - Real.log n) =O[atTop] fun _ : ℕ => (1 : ℝ) :=
+      isBigO_const_of_tendsto Real.tendsto_harmonic_sub_log one_ne_zero
+    have hlog_atTop : Tendsto (fun n : ℕ => Real.log n) atTop atTop :=
+      Real.tendsto_log_atTop.comp tendsto_natCast_atTop_atTop
+    have honeLittleO : (fun _ : ℕ => (1 : ℝ)) =o[atTop] (fun n : ℕ => Real.log n) :=
+      (isLittleO_one_left_iff ℝ).mpr (tendsto_norm_atTop_atTop.comp hlog_atTop)
+    exact hdiffO.trans_isLittleO honeLittleO
+  exact hharm.congr_left (Eventually.of_forall fun n => (cycleH1_eq_harmonic n).symm)
+
+/-- Rewrite `H_n^{(2)}` as a shifted `range` partial sum. -/
+lemma cycleH2_eq_sum_range (n : ℕ) :
+    cycleH2 n = ∑ k ∈ Finset.range n, ((((k + 1 : ℕ) : ℝ)⁻¹) ^ 2) := by
+  induction n with
+  | zero => simp [cycleH2]
+  | succ n ih => rw [cycleH2_succ, ih, Finset.sum_range_succ]
+
+/-- Summability of the shifted reciprocal-square terms. -/
+lemma cycleH2_term_summable :
+    Summable (fun k : ℕ => ((((k + 1 : ℕ) : ℝ)⁻¹) ^ 2)) := by
+  have hraw := (Real.summable_one_div_nat_add_rpow 1 2).2 (by norm_num : (1 : ℝ) < 2)
+  refine hraw.congr ?_
+  intro k
+  have hk : 0 < (k : ℝ) + 1 := by positivity
+  rw [abs_of_pos hk]
+  push_cast
+  rw [Real.rpow_two]
+  field_simp
+
+lemma cycleH2_nonneg (n : ℕ) : 0 ≤ cycleH2 n := by
+  unfold cycleH2; exact Finset.sum_nonneg (fun r _ => sq_nonneg _)
+
+/-- The second harmonic sum is `O(1)`. -/
+lemma cycleH2_isBigO_one :
+    (fun n : ℕ => cycleH2 n) =O[atTop] fun _ : ℕ => (1 : ℝ) := by
+  refine Asymptotics.isBigO_iff.mpr ⟨∑' k : ℕ, ((((k + 1 : ℕ) : ℝ)⁻¹) ^ 2), ?_⟩
+  filter_upwards with n
+  have hle : cycleH2 n ≤ ∑' k : ℕ, ((((k + 1 : ℕ) : ℝ)⁻¹) ^ 2) := by
+    rw [cycleH2_eq_sum_range]
+    exact cycleH2_term_summable.sum_le_tsum (Finset.range n) (fun k _ => sq_nonneg _)
+  calc ‖cycleH2 n‖ = cycleH2 n := Real.norm_of_nonneg (cycleH2_nonneg n)
+    _ ≤ _ := hle
+    _ = _ * ‖(1 : ℝ)‖ := by simp
+
+/-- Since `log n → ∞`, bounded `H_n^{(2)}` is negligible versus `log n`. -/
+lemma cycleH2_isLittleO_log :
+    (fun n : ℕ => cycleH2 n) =o[atTop] (fun n : ℕ => Real.log n) := by
+  have hlog_atTop : Tendsto (fun n : ℕ => Real.log n) atTop atTop :=
+    Real.tendsto_log_atTop.comp tendsto_natCast_atTop_atTop
+  have honeLittleO : (fun _ : ℕ => (1 : ℝ)) =o[atTop] (fun n : ℕ => Real.log n) :=
+    (isLittleO_one_left_iff ℝ).mpr (tendsto_norm_atTop_atTop.comp hlog_atTop)
+  exact cycleH2_isBigO_one.trans_isLittleO honeLittleO
+
+/-- **Goncharov–Kolchin variance asymptotic**: `Var(K_n) ~ log n`. -/
+theorem totalCycleCount_variance_isEquivalent_log :
+    (fun n : ℕ =>
+      FixedPointsPoissonNS.uniformPermExpectation n
+          (fun σ : Equiv.Perm (Fin n) => (totalCycleCount n σ : ℝ) ^ 2)
+        -
+        (FixedPointsPoissonNS.uniformPermExpectation n
+          (fun σ : Equiv.Perm (Fin n) => (totalCycleCount n σ : ℝ))) ^ 2)
+      ~[atTop] (fun n : ℕ => Real.log n) := by
+  have hmain : (fun n : ℕ => cycleH1 n + -cycleH2 n) ~[atTop] (fun n : ℕ => Real.log n) :=
+    cycleH1_isEquivalent_log.add_isLittleO (by simpa using cycleH2_isLittleO_log.neg_left)
+  have hsub : (fun n : ℕ => cycleH1 n - cycleH2 n) ~[atTop] (fun n : ℕ => Real.log n) :=
+    hmain.congr_left (Eventually.of_forall fun n => by ring)
+  exact hsub.congr_left
+    (Eventually.of_forall fun n =>
+      (totalCycleCount_variance_eq_harmonic_sub_harmonic2 n).symm)
 
 end RCyclesPoissonNS
 end LimitLaws
