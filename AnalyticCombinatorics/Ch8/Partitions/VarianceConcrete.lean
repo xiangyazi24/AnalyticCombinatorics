@@ -292,6 +292,70 @@ lemma Pker_highclump {x : ℕ} (hx : 100 ≤ x) (hkmx : kernelMass x ≤ 2) (hkm
       linarith [h710, hge]
     linarith [hbound]
 
+/-- **Low clump**: mass `≥ e^{-2C}/13` and ρ-decrement `≤ 45/22` on the low jump window
+`[s, 5s/4]` (`s = ⌊√x⌋`), for `x ≥ 100`.  Separated from `Pker_highclump`'s `≥ 21/10` (gap `3/55`),
+so the two clumps feed `product_locVar_ge` to give `v0 > 0`. -/
+lemma Pker_lowclump {x : ℕ} (hx : 100 ≤ x) (hkmx : kernelMass x ≤ 2) (hkmx0 : 0 < kernelMass x) :
+    (Real.exp (-C * 2) / 13
+        ≤ ∑ a ∈ Finset.Icc (x - 5 * Nat.sqrt x / 4) (x - Nat.sqrt x), Pker x a)
+      ∧ (∀ a ∈ Finset.Icc (x - 5 * Nat.sqrt x / 4) (x - Nat.sqrt x),
+          3 * (Real.sqrt (x : ℝ) - Real.sqrt (a : ℝ)) ≤ (45 : ℝ) / 22) := by
+  have hx25 : 25 ≤ x := by omega
+  set s := Nat.sqrt x with hs
+  have hs5 : 5 ≤ s := by
+    rw [hs]; calc 5 = Nat.sqrt 25 := by norm_num
+      _ ≤ Nat.sqrt x := Nat.sqrt_le_sqrt hx25
+  have hss : s * s ≤ x := by rw [hs]; have h := Nat.sqrt_le' x; rwa [pow_two] at h
+  have hsx : 2 * s ≤ x := le_trans (by nlinarith [hs5]) hss
+  have hxpos : (0 : ℝ) < (x : ℝ) := by positivity
+  have hsqrtx : (0 : ℝ) < Real.sqrt (x : ℝ) := Real.sqrt_pos.mpr hxpos
+  have hsq16 : (16 : ℝ) / 25 * (x : ℝ) ≤ (s : ℝ) ^ 2 := sq_floor_lower hx25
+  have hsx2 : (s : ℝ) * (s : ℝ) ≤ (x : ℝ) := by exact_mod_cast hss
+  have hsroot : (s : ℝ) ≤ Real.sqrt (x : ℝ) := by
+    rw [show (s : ℝ) = Real.sqrt ((s : ℝ) * (s : ℝ)) from (Real.sqrt_mul_self (by positivity)).symm]
+    exact Real.sqrt_le_sqrt hsx2
+  have hsab : s ≤ 5 * s / 4 := by omega
+  have hb54 : 5 * s / 4 ≤ 2 * s := by omega
+  refine ⟨?_, ?_⟩
+  · -- mass
+    have hmass := Pker_subwindow_mass (x := x) (by omega) hkmx hkmx0 (le_refl s) hsab hb54
+    refine le_trans ?_ hmass
+    have hexp : 0 < Real.exp (-C * 2) := Real.exp_pos _
+    have hwidth : (s : ℝ) ≤ 4 * ((5 * s / 4 - s + 1 : ℕ) : ℝ) := by
+      have : s ≤ 4 * (5 * s / 4 - s + 1) := by omega
+      exact_mod_cast this
+    have hWnn : (0 : ℝ) ≤ ((5 * s / 4 - s + 1 : ℕ) : ℝ) := Nat.cast_nonneg _
+    have hprod : (s : ℝ) / 4 * (s : ℝ) ≤ ((5 * s / 4 - s + 1 : ℕ) : ℝ) * (s : ℝ) :=
+      mul_le_mul (by linarith [hwidth]) (le_refl _) (by positivity) hWnn
+    have key : 2 * (x : ℝ) ≤ 13 * (((5 * s / 4 - s + 1 : ℕ) : ℝ) * (s : ℝ)) := by
+      nlinarith [hprod, hsq16, hxpos]
+    show Real.exp (-C * 2) / 13 ≤
+      ((5 * s / 4 - s + 1 : ℕ) : ℝ) * ((s : ℝ) * Real.exp (-C * 2) / (2 * (x : ℝ)))
+    have hLHSeq : ((5 * s / 4 - s + 1 : ℕ) : ℝ) * ((s : ℝ) * Real.exp (-C * 2) / (2 * (x : ℝ)))
+        = ((5 * s / 4 - s + 1 : ℕ) : ℝ) * (s : ℝ) * Real.exp (-C * 2) / (2 * (x : ℝ)) := by ring
+    rw [hLHSeq, le_div_iff₀ (mul_pos (by norm_num : (0:ℝ) < 2) hxpos),
+        div_mul_eq_mul_div, div_le_iff₀ (by norm_num : (0:ℝ) < 13)]
+    nlinarith [mul_le_mul_of_nonneg_left key hexp.le, hexp]
+  · -- decrement ≤ 45/22
+    intro a ha
+    rw [Finset.mem_Icc] at ha
+    have haxlt : a < x := by omega
+    have hlow56 : (5 : ℝ) / 6 * Real.sqrt (x : ℝ) ≤ Real.sqrt (a : ℝ) := sqrt_ge_low hx25 ha.1
+    have hupper := sqrt_decrement_upper (x := x) (k := a) haxlt (by norm_num : (0:ℝ) ≤ 5/6) hlow56
+    have h4xa : 4 * (x - a) ≤ 5 * s := by omega
+    have hjr : ((x - a : ℕ) : ℝ) ≤ 5 / 4 * (s : ℝ) := by
+      have h : (4 : ℝ) * ((x - a : ℕ) : ℝ) ≤ 5 * (s : ℝ) := by exact_mod_cast h4xa
+      linarith
+    have hb1 : (1 : ℝ) / (1 + 5 / 6) = 6 / 11 := by norm_num
+    rw [hb1] at hupper
+    have hkey : 6 / 11 * ((x - a : ℕ) : ℝ) ≤ 15 / 22 * Real.sqrt (x : ℝ) := by
+      nlinarith [hjr, hsroot, hsqrtx]
+    have hdec : Real.sqrt (x : ℝ) - Real.sqrt (a : ℝ) ≤ 15 / 22 := by
+      calc Real.sqrt (x : ℝ) - Real.sqrt (a : ℝ)
+          ≤ 6 / 11 * ((x - a : ℕ) : ℝ) / Real.sqrt (x : ℝ) := hupper
+        _ ≤ 15 / 22 := by rw [div_le_iff₀ hsqrtx]; linarith [hkey]
+    linarith [hdec]
+
 /-- Off the coalescence window, the conditioned pair kernel `KhatResPair` IS the product kernel, so
 their local variances agree.  Bridges the abstract `product_locVar_ge` to the concrete `KhatRes`. -/
 lemma khatResPair_locVar_eq_of_not_GoodW {α : Type*} [Fintype α] [DecidableEq α]

@@ -287,6 +287,8 @@ import AnalyticCombinatorics.Ch8.Partitions.VarianceConcrete
 import AnalyticCombinatorics.Ch8.Partitions.GreenLowerWall
 import AnalyticCombinatorics.Ch8.Partitions.CentralBinomSum
 import AnalyticCombinatorics.Ch8.Partitions.GreenBridge
+import AnalyticCombinatorics.Ch8.Partitions.TruncationTransfer
+import AnalyticCombinatorics.Ch8.Partitions.GreenComparison
 
 /-!
 # AnalyticCombinatorics
