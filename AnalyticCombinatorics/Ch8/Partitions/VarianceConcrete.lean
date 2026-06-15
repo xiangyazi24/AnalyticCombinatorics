@@ -1,5 +1,6 @@
 import AnalyticCombinatorics.Ch8.Partitions.ErdosMinorization
 import AnalyticCombinatorics.Ch8.Partitions.VarianceLower
+import AnalyticCombinatorics.Ch8.Partitions.KhatRes
 
 /-!
 # Concrete `v0`: single-chain jump-window mass for the Erdős kernel (renewal route B)
@@ -72,5 +73,17 @@ lemma Pker_subwindow_mass {x : ℕ} (hx16 : 16 ≤ x)
     _ ≤ ∑ k ∈ Finset.Icc (x - b) (x - a), Pker x k := by
         rw [← nsmul_eq_mul]
         exact Finset.card_nsmul_le_sum _ _ _ hperterm
+
+/-- Off the coalescence window, the conditioned pair kernel `KhatResPair` IS the product kernel, so
+their local variances agree.  Bridges the abstract `product_locVar_ge` to the concrete `KhatRes`. -/
+lemma khatResPair_locVar_eq_of_not_GoodW {α : Type*} [Fintype α] [DecidableEq α]
+    (P : α → α → ℝ) (rnk : α → ℕ) (W : ℕ) (D : α × α → ℝ) {x y : α}
+    (hxy : ¬ GoodW rnk W x y) :
+    locVar (KhatResPair P rnk W) D (x, y)
+      = locVar (fun p q : α × α => P p.1 q.1 * P p.2 q.2) D (x, y) := by
+  unfold locVar
+  refine Finset.sum_congr rfl (fun zw _ => ?_)
+  rw [show KhatResPair P rnk W (x, y) zw = P x zw.1 * P y zw.2 from
+    KhatRes_eq_prod_of_not_GoodW P rnk W hxy]
 
 end AnalyticCombinatorics.Ch8.Partitions.Erdos
