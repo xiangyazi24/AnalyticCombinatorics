@@ -159,6 +159,26 @@ lemma toSteps_walk : ∀ (h n : ℕ) (p : MotzkinPath h n), Walk h 0 (toSteps h 
       · exact Walk_shift ihInner
       · rw [endLevel_toSteps]; exact Walk.down ihRest
 
+/-- **Weight preservation:** the genuine step-product weight of `toSteps h n p` (run from level 0)
+equals the first-return-code weight `pathWeight`. -/
+lemma stepWeight_toSteps : ∀ (h n : ℕ) (p : MotzkinPath h n) (a b c : ℕ → R),
+    stepWeight a b c 0 (toSteps h n p) = pathWeight a b c h n p := by
+  intro h n p
+  induction h, n, p using toSteps.induct with
+  | case1 h pt => intro a b c; simp [toSteps, pathWeight]
+  | case2 n pt ih => intro a b c; simp only [toSteps, stepWeight, pathWeight, ih]
+  | case3 h pt ih => intro a b c; simp [toSteps, pathWeight, stepWeight]
+  | case4 h n sig path heq ih =>
+      intro a b c
+      simp only [toSteps, heq, pathWeight, stepWeight, ih]
+  | case5 h n sig path heq ihInner ihRest =>
+      intro a b c
+      simp only [toSteps, heq, pathWeight, stepWeight, stepWeight_append,
+        endLevel_toSteps, Nat.sub_self]
+      rw [stepWeight_shift a b c (toSteps_walk h (↑sig.fst) sig.snd.1),
+        ihInner (shift a) (shift b) (shift c), ihRest a b c]
+      ring
+
 end
 
 end AnalyticCombinatorics.Ch5.ContinuedFractions
