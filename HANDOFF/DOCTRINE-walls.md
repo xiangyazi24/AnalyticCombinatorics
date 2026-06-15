@@ -860,3 +860,21 @@ The symmetric finite-interval Green comparison is now COMPLETE end-to-end as ban
 LONE remaining: (a) elementary discrete Poincaré + abstract sector (ac/ac2 in flight, finite-sum,
 bankable); (b) THE genuine wall = erdos_rankdiff_sector_input (kernel-specific SectorBound θ≤1/2,
 needs a reference measure π / cut-flux+divergence bound — new analysis, not from existing repo facts).
+
+## FINAL STATE (06-15): abstract sector framework banked; root compiles (8578 jobs)
+Added this run beyond the form sandwich: SectorPoincare (point_sq_le_path_energy,
+interval_l2_le_L2_edgeEnergy) + SectorBound (edgeSign/grad/Jflow/divJ/Hcut/aK/aAnti/edgeEnergyOn/
+SectorBound defs + Jflow_skew + sector_bound_from_Hcut_on). The abstract nonreversible sector
+perturbation is now banked: GIVEN (i) the cut identity aAnti = -∑ Hcut·grad [hanti], (ii) a Hardy
+bound ∑ Hcut² ≤ 8BΓ²L²·E_edge [hH], (iii) ellipticity p·E_edge ≤ aSym [helliptic], THEN
+SectorBound θ with θ = √8·√B·Γ·L/p (Cauchy-Schwarz + sq_le_sq₀, sector_bound_from_Hcut_on, clean-3).
+
+14 clean-3 modules banked this run; `AnalyticCombinatorics` root compiles (8578 jobs).
+REMAINING to a complete unconditional renewal proof:
+ (A) connective (mechanical, fragile ℤ-telescoping — ac R14 gave skeletons): edgeSign_path_sum,
+     aAnti_eq_div_plus_Hcut (discharges hanti), Hcut_l2_le (discharges hH via SectorPoincare).
+ (B) THE genuine wall: erdos_rankdiff_sector_input — discharge hanti/hH/helliptic + θ≤1/2 for the
+     ACTUAL killed residual rank-difference kernel. Needs a reference measure π with the killed-kernel
+     stationarity balance (or a direct crossing-TV+divergence bound); ac R13 proved this is NOT
+     derivable from the repo's row-drift facts. This is the single new analytic theorem the whole
+     renewal limit now rests on; everything else is banked or mechanical.
