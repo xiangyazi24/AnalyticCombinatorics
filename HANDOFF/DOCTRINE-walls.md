@@ -845,3 +845,18 @@ THE LONE GENUINE RESIDUAL (ac R13 verdict, kernel-specific, NOT derivable from e
  - SO: the wall is now a single, well-defined, genuinely-new analytic theorem — construct π (or prove
    a direct crossing-TV + divergence bound) for the killed residual rank-diff kernel. Everything
    around it is banked or mechanical. This is the honest stopping point of the deterministic reduction.
+
+## MILESTONE (06-15): full library compiles clean with entire Green-comparison backbone banked
+Root build of AnalyticCombinatorics (8576 jobs) = SUCCESS. All 12 new clean-3 modules this run wire
+together and the whole library compiles. Banked modules (all axioms {propext, Classical.choice,
+Quot.sound}, 0 sorry):
+  CentralBinomSum, GreenBridge, TruncationTransfer, GreenComparison, GreenForm, DirichletForm,
+  SymmetricDirichlet, Ellipticity  (+ VarianceConcrete Pker_high/lowclump).
+The symmetric finite-interval Green comparison is now COMPLETE end-to-end as banked lemmas:
+  E_K ≤ 3B²·E_edge (DirichletForm) ∧ 2p·E_edge ≤ E_K (Ellipticity)  [form sandwich]
+  ⟹ greenQ_K ≤ (3B²/2p)·greenQ_edge via greenQ_eq_half_jumpEnergy_add_killEnergy (SymmetricDirichlet)
+  ⟹ G_K ≥ (2p/3B²)·G_edge via green_domination_of_form_le (GreenForm)
+  + SRW reference Green ≳ √L (CentralBinomSum) + truncated→real transfer (TruncationTransfer).
+LONE remaining: (a) elementary discrete Poincaré + abstract sector (ac/ac2 in flight, finite-sum,
+bankable); (b) THE genuine wall = erdos_rankdiff_sector_input (kernel-specific SectorBound θ≤1/2,
+needs a reference measure π / cut-flux+divergence bound — new analysis, not from existing repo facts).
