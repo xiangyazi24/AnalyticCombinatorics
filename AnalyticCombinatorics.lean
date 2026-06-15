@@ -284,6 +284,7 @@ import AnalyticCombinatorics.Ch8.Partitions.OccupationTransfer
 import AnalyticCombinatorics.Ch8.Partitions.TentDefect
 import AnalyticCombinatorics.Ch8.Partitions.VarianceLower
 import AnalyticCombinatorics.Ch8.Partitions.VarianceConcrete
+import AnalyticCombinatorics.Ch8.Partitions.GreenLowerWall
 
 /-!
 # AnalyticCombinatorics
