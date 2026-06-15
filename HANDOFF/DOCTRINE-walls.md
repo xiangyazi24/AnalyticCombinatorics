@@ -712,3 +712,13 @@ expected window LOCAL TIME = greenT, NOT terminal Φ_W defect / occupation_unbou
 khatResPair_locVar_eq_of_not_GoodW (VarianceConcrete). Remaining for v0: ρ-decrement two-clump
 separation (jump sub-windows [s,6s/5],[9s/5,2s], √x−√k ≈ m/(2√x), gap ≥ const via √(x−2s) ≥ √x/√2 for
 x≥16). Then v0 = δ₁δ₂(hi−lo)² > 0 via product_locVar_ge + the bridge.
+
+## greenT_lower_fixed_window = the lone analytic wall (ChatGPT ac R5, 06-15)
+ac R5: greenT_lower_fixed_window (c√T ≤ greenT/window-occupation) is "the only genuine analytic wall",
+"a local-CLT/Green theorem in substance" even deterministically — NO clean universal subsolution for the
+soft-tailed kernel (the tent/quadratic only works for nearest-neighbor/hard-increment). Proof shape:
+multi-block heat-kernel lower bound — from |D|≤L√m, prob ≥c/√m to hit window in m steps (via ±1
+minorization); sum O(T/m) blocks → c√T. Banked stack: greenT_subsolution + occupation_ge_green_tight;
+need (small) greenT_le_T + (the wall) greenT_lower_fixed_window. Scaling: T~R active horizon ⟹
+greenT ≳ √R → ∞ ≥ 1/δ_W (fixed W). R6 dispatched: block lemma via p-lazy-SRW domination + elementary
+∑P(S_t=0)≥c√T.
