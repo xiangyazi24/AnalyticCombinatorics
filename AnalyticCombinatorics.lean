@@ -281,6 +281,7 @@ import AnalyticCombinatorics.Ch8.Partitions.CeilingEscapeClose
 import AnalyticCombinatorics.Ch8.Partitions.ErdosRiemannError
 import AnalyticCombinatorics.Ch8.Partitions.SoftTailDrift
 import AnalyticCombinatorics.Ch8.Partitions.OccupationTransfer
+import AnalyticCombinatorics.Ch8.Partitions.TentDefect
 
 /-!
 # AnalyticCombinatorics
