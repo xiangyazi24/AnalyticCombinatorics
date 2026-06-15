@@ -659,3 +659,35 @@ TWO SEPARATE obstructions, correctly disentangled:
   REAL η~1/r² (small, so v0−2Rη = v0−2/r > 0 ✓ — no truncation catastrophe). Concrete moments needed:
   v0>0 (rank-diff local variance), η~1/r² (two_term_local_lip, banked), B₄ (per-step 4th moment, from
   the e^{-cs} tail). The v0 second-moment is the likely genuine new analytic input (ac2 R3 pending).
+
+## MOMENT AUDIT (ChatGPT ac2 R3, 06-14) — v0 (local variance) is the lone genuine analytic input
+Classification of the three concrete moment inputs route B needs for the rank-difference walk
+D = 3√(rnk X) − 3√(rnk Y):
+ (2) DRIFT η: ALREADY IMPLIED modulo wiring. η = |μ̃(X) − μ̃(Y)| via muTilde_eq_drift + muTilde_two_term
+     + two_term_local_lip + KhatRes_eq_prod_of_not_GoodW (off-GoodW = product kernel). Scale η = O(ρ⁻²)
+     (ρ = rank ~ r). Just assembly.
+ (3) INCREMENT: soft only. Product tail P(|ΔD|>b) ≤ 2K/n by union bound from the single-chain tail
+     (far_erdos_tail_le). But the exported occupation theorems demand HARD hbinc (|ΔD|≤b) — a soft tail
+     does NOT instantiate it. ⟹ confirms route A dead AND that route B must use the FINITE-4th-MOMENT
+     occupation variant (no hard increment), not the banked bounded-increment ones.
+ (1) LOCAL VARIANCE v0 > 0: THE GENUINE MISSING CONCRETE INPUT. Need a positive lower bound on
+       locVar (KhatResPair) D xy  for off-GoodW high-rank pairs.
+     ChatGPT target: ρSqTilde(n) = ∑ erdosWeight·rhoDrop²/kernelMass → 27/(2λ²) (single-chain
+       ρ-decrement 2nd moment); product variance ≈ 2(ρSqTilde − μ̃²) > 0. The repo has sigmaMoment 2,
+       modelSummand, rhoDropModel, kernel-error machinery, but NO assembled 2nd-moment theorem. This is
+       the concrete lemma to add — a parallel to the (huge) muNum/muTilde 1st-moment assembly.
+     OPUS NOTE: for route B we only need v0 > 0 (a uniform POSITIVE LOWER BOUND), NOT the exact limit
+       27/(2λ²). Likely far cheaper via a TWO-CLUMP argument: the jump m has ≥δ₁ mass on [a√n,1.5a√n]
+       and ≥δ₂ mass on [2a√n,2.5a√n] (separated), so Δρ takes two separated values w.p. ≥δ ⟹
+       Var(Δρ) ≥ δ·(gap)² > 0. Uses banked window-mass / σ(m)≥m bounds, avoids the full 2nd-moment
+       Lambert assembly. THIS is the recommended next concrete build for v0.
+ Also: TASK8-gap.md — no theorem yet instantiates KhatRes drift/QV/increment on the ACTIVE domain
+   (global occupation hyps fail on killed/frozen boundary rows); the localized (off-window-only)
+   occupation + active-horizon statement is still needed.
+
+### Route B remaining build (pinned, gated on v0):
+ 1. v0 > 0 lower bound (two-clump argument) — the gating analytic input.
+ 2. Φ_W defect Tanaka telescope (TentDefect.lean base banked: tentW + props + expected_tentW_ge).
+ 3. finite-4th-moment occupation (η-approx-mart + finite per-step 4th → const horizon).
+ 4. crossing→coalescence bridge (κ_W·defectMass ≤ goodMass → CoalesceBridge).
+ 5. active-domain KhatRes instantiation (TASK8-gap).
