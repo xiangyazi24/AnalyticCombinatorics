@@ -51,4 +51,25 @@ lemma green_neumann_mono (A B : α → α → ℝ)
   refine Finset.sum_le_sum (fun t _ => ?_)
   exact distPow_mono A B _ hBnn (fun z => by split <;> norm_num) hBA t y
 
+/-- **SOS path-energy bound** (ac R10 "workhorse" for the Dirichlet-form comparison): a bounded jump
+`d → d+n` has squared increment controlled by the path edge-energy times the jump length,
+`(f(d+n) − f d)² ≤ n·∑_{k<n}(f(d+k+1) − f(d+k))²`.  Plain Cauchy–Schwarz on a telescoping sum. -/
+lemma sq_diff_le_path_energy_nat (f : ℤ → ℝ) (d : ℤ) (n : ℕ) :
+    (f (d + (n : ℤ)) - f d) ^ 2
+      ≤ (n : ℝ) * ∑ k ∈ Finset.range n, (f (d + (k : ℤ) + 1) - f (d + (k : ℤ))) ^ 2 := by
+  have htel : f (d + (n : ℤ)) - f d
+      = ∑ k ∈ Finset.range n, (f (d + (k : ℤ) + 1) - f (d + (k : ℤ))) := by
+    induction n with
+    | zero => simp
+    | succ m ih =>
+        rw [Finset.sum_range_succ, ← ih]
+        push_cast
+        ring
+  rw [htel]
+  have hcs : (∑ k ∈ Finset.range n, (f (d + (k : ℤ) + 1) - f (d + (k : ℤ)))) ^ 2
+      ≤ ((Finset.range n).card : ℝ)
+          * ∑ k ∈ Finset.range n, (f (d + (k : ℤ) + 1) - f (d + (k : ℤ))) ^ 2 :=
+    sq_sum_le_card_mul_sum_sq
+  simpa [Finset.card_range] using hcs
+
 end AnalyticCombinatorics.Ch8.Partitions.Erdos
