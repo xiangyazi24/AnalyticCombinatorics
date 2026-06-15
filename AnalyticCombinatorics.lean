@@ -294,6 +294,7 @@ import AnalyticCombinatorics.Ch8.Partitions.DirichletForm
 import AnalyticCombinatorics.Ch8.Partitions.SymmetricDirichlet
 import AnalyticCombinatorics.Ch8.Partitions.Ellipticity
 import AnalyticCombinatorics.Ch8.Partitions.SectorPoincare
+import AnalyticCombinatorics.Ch8.Partitions.SectorBound
 
 /-!
 # AnalyticCombinatorics
