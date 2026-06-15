@@ -900,3 +900,12 @@ REMAINING (precisely characterized):
    the actual killed rank-diff kernel. Needs a constructed reference measure π (killed-kernel
    stationarity balance) or a direct crossing-TV+divergence bound; NOT derivable from the repo's
    row-drift facts (ac R13). This single theorem is what the unconditional renewal limit now rests on.
+
+## aAnti CUT IDENTITY BANKED (06-15, from-scratch derivation)
+aAnti_eq_div_plus_Hcut (+ aAnti_eq_J_sum, aAnti_eq_neg_sum_Hcut) now banked clean-3 in SectorBound.lean
+— derived from scratch (NOT ac R15's broken-shape proof): Lemma A `aAnti = -½∑∑ Jflow·f·g` (diagonal
+πfg cancels; residual K-terms combine into Jflow via an x↔y sum_comm swap), then split
+`g y = g x + (g y - g x)`, substitute edgeSign_path_sum, reorder ∑_x∑_y∑_e → ∑_e∑_x∑_y, factor grad g e,
+and the inner double sum is exactly 2·Hcut. This DISCHARGES sector_bound_from_Hcut_on's `hanti`.
+Remaining: Hcut_l2_le_boundary (discharges hH; ac R16 helper sketches) + the genuine wall
+erdos_rankdiff_sector_input.
