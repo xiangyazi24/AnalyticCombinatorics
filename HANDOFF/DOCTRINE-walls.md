@@ -997,3 +997,43 @@ Both Pro tabs (ac strategic, ac2 concrete) answered R17 decisively. Synthesis:
 NET STATUS: reference-measure half banked (statOffset_stationary). The genuinely-new remaining analytic
 content is the PAIR-LEVEL cut-flux bound pair_crossingTV_bound_erdos; the divergence-carrying sector
 theorem (sector_bound_with_divergence_on) is the immediately-bankable abstract piece (ac2 R18 producing).
+
+## R18 ROADMAP (06-15): pair-level route fully mapped — path B (weak D-projection), 15-lemma list
+ChatGPT-Pro R18 (ac) returned the complete decisive roadmap. VERDICT: use **(B) weak D-projection**,
+NOT a fresh pair-state reproof (which hits a weighted-fiber/multiplicity problem in the pair Hardy
+lemma). Build the D-pushforward πD, projected kernel KD, prove pairAK = aK πD KD, then ALL banked 1-D
+sector lemmas (aK/aAnti/Jflow/divJ/Hcut/crossingTV/sector_bound_from_Hcut_on/sector_bound_with_divergence_on)
+apply verbatim.
+
+### THE make-or-break trap (must audit before deep coding): p_pair = FORM CONDUCTANCE
+sector_bound_from_Hcut_on consumes helliptic: p·edgeEnergyOn ≤ aSym — p is a FORM-conductance constant,
+NOT the raw ±1 transition minorization (rankDropKer v 1,2 ≥ η). Since πD(d) ~ τ_d/μ DECAYS as the
+positive window edge a is pushed out, p_pair may decay at the SAME rate as Γ_pair — then Γ_pair/p_pair =
+O(1), does NOT →0, and "push the window out" FAILS. Closing condition is Γ_pair ≤ p_pair/(2L(cH√Btr+1)),
+NOT Γ_pair→0. R19 dispatched (both tabs) to settle this decay race concretely (incl. adversarial: the
+residual chain is NON-REVERSIBLE pure-descent, so symmetric-form ellipticity p may be illusory and a
+direct Green/hitting estimate may replace the spectral denominator). THIS decides if the route closes.
+
+### Ordered 15-lemma list (mechanical M / banked-consumer BC / genuine-analytic GA)
+Layer A (projection infra): 1 πD/massD/KD [M ✓DONE] · 2 πD_mul_KD_eq_massD [M ✓DONE] · 3 sum_over_D_fibers
+[M ✓DONE] · 4 sum_over_D_transition_fibers [M] · 5 pairAK_eq_projected_aK [M, main payoff] ·
+6 crossingTV_projected_le_pairCrossingTV [M].
+Layer B (divergence sector): 7 sector_bound_from_Hcut_div_on [M ✓DONE = banked sector_bound_with_divergence_on,
+commit 6ef9ecf] · 8 projected_pair_sector_from_inputs [M wrapper].
+Layer C (concrete pair estimates): 9 pair_rankDiff_jump_tail [BC, uses Pker_rankDrop_tail_majorant γ=C/60] ·
+10 pair_pm1_transition_minorization [BC, uses Pker_rankDrop_minorization; ηpair=η² from (Δx,Δy)=(1,2),(2,1)] ·
+11 pair_projected_conductance_pm1_lower [GA — THE p_pair trap] · 12 pairCrossingTV_bound_KhatRes_posWindow
+[GA, L¹/tail only, no local limit] · 13 pair_projected_divL1_bound_KhatRes_posWindow [GA, same tail family
++ KhatResPair=product-off-GoodW conditioning defect] · 14 pair_theta_le_half_of_window [M arithmetic] ·
+15 erdos_rankdiff_sector_input [final assembly].
+Two SEPARATE inputs, don't conflate: pair_crossingTV_bound_product (stationary, clean) vs
+pair_divergence_defect_bound_KhatRes (conditioning defect). Γ_pair shape: Cπ(a+1)exp(−γπa) +
+Cjump(a−Wgood+1)exp(−γjump(a−Wgood)); 2nd term vanishes for truncated kernel with Wgood+Btr<a.
+
+### Banked this session (clean-3, [propext,Classical.choice,Quot.sound], 0 sorry):
+- SectorBoundDivergence.lean: sector_bound_with_divergence_on (Layer B #7). commit 6ef9ecf, pushed.
+- DProjection.lean: ΩD/πD/massD/KD + πD_mul_KD_eq_massD (#2) + sum_over_D_fibers (#3). (NOTE: Π is a
+  reserved Lean binder token — used lowercase π; πD identifier.)
+NEXT after R19 verdict: if route survives, build #4,#5 (pure regrouping, framework-independent), then
+Layer C. If R19 says p_pair is illusory (non-reversible), pivot the denominator to a Green/hitting
+estimate (cut identity + crossingTV remain valid; only the closing ellipticity step changes).
