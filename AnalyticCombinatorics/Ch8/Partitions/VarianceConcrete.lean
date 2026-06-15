@@ -74,6 +74,76 @@ lemma Pker_subwindow_mass {x : ℕ} (hx16 : 16 ≤ x)
         rw [← nsmul_eq_mul]
         exact Finset.card_nsmul_le_sum _ _ _ hperterm
 
+/-- Lower bound on the √-decrement: `√x − √k ≥ (x−k)/(2√x)`. -/
+lemma sqrt_decrement_lower {x k : ℕ} (hk : k < x) :
+    ((x - k : ℕ) : ℝ) / (2 * Real.sqrt x) ≤ Real.sqrt (x : ℝ) - Real.sqrt (k : ℝ) := by
+  have hxk : ((x - k : ℕ) : ℝ) = (x : ℝ) - (k : ℝ) := Nat.cast_sub hk.le
+  have hkx : (k : ℝ) ≤ (x : ℝ) := by exact_mod_cast hk.le
+  have hsk : Real.sqrt (k : ℝ) ≤ Real.sqrt (x : ℝ) := Real.sqrt_le_sqrt hkx
+  have hx0 : (0 : ℝ) < (x : ℝ) := by exact_mod_cast (lt_of_le_of_lt (Nat.zero_le k) hk)
+  have hsx : 0 < Real.sqrt (x : ℝ) := Real.sqrt_pos.mpr hx0
+  rw [hxk, div_le_iff₀ (by positivity)]
+  have hid : ((x : ℝ) - (k : ℝ))
+      = (Real.sqrt (x : ℝ) - Real.sqrt (k : ℝ)) * (Real.sqrt (x : ℝ) + Real.sqrt (k : ℝ)) := by
+    have h1 : Real.sqrt (x : ℝ) ^ 2 = (x : ℝ) := Real.sq_sqrt (by positivity)
+    have h2 : Real.sqrt (k : ℝ) ^ 2 = (k : ℝ) := Real.sq_sqrt (by positivity)
+    nlinarith [h1, h2]
+  rw [hid]
+  exact mul_le_mul_of_nonneg_left (by linarith [hsk]) (by linarith [hsk])
+
+/-- Upper bound on the √-decrement when `√k ≥ (7/10)√x`: `√x − √k ≤ (10/17)(x−k)/√x`. -/
+lemma sqrt_decrement_upper {x k : ℕ} (hk : k < x)
+    (hkge : (7 : ℝ) / 10 * Real.sqrt (x : ℝ) ≤ Real.sqrt (k : ℝ)) :
+    Real.sqrt (x : ℝ) - Real.sqrt (k : ℝ) ≤ 10 / 17 * ((x - k : ℕ) : ℝ) / Real.sqrt (x : ℝ) := by
+  have hxk : ((x - k : ℕ) : ℝ) = (x : ℝ) - (k : ℝ) := Nat.cast_sub hk.le
+  have hkx : (k : ℝ) ≤ (x : ℝ) := by exact_mod_cast hk.le
+  have hsk : Real.sqrt (k : ℝ) ≤ Real.sqrt (x : ℝ) := Real.sqrt_le_sqrt hkx
+  have hx0 : (0 : ℝ) < (x : ℝ) := by exact_mod_cast (lt_of_le_of_lt (Nat.zero_le k) hk)
+  have hsx : 0 < Real.sqrt (x : ℝ) := Real.sqrt_pos.mpr hx0
+  have hid : ((x : ℝ) - (k : ℝ))
+      = (Real.sqrt (x : ℝ) - Real.sqrt (k : ℝ)) * (Real.sqrt (x : ℝ) + Real.sqrt (k : ℝ)) := by
+    have h1 : Real.sqrt (x : ℝ) ^ 2 = (x : ℝ) := Real.sq_sqrt (by positivity)
+    have h2 : Real.sqrt (k : ℝ) ^ 2 = (k : ℝ) := Real.sq_sqrt (by positivity)
+    nlinarith [h1, h2]
+  rw [hxk, hid, le_div_iff₀ hsx]
+  -- (√x-√k)·√x ≤ 10/17·((√x-√k)(√x+√k))
+  nlinarith [hkge, sub_nonneg.mpr hsk, hsx,
+    mul_nonneg (sub_nonneg.mpr hsk) (sub_nonneg.mpr (by linarith [hkge] : (7:ℝ)/10 * Real.sqrt (x:ℝ) ≤ Real.sqrt (k:ℝ)))]
+
+/-- For `k ≥ x − 2⌊√x⌋` with `x ≥ 16`, the predecessor satisfies `√k ≥ (7/10)√x`. -/
+lemma sqrt_ge_of_window {x k : ℕ} (hx16 : 16 ≤ x) (hk : x - 2 * Nat.sqrt x ≤ k) :
+    (7 : ℝ) / 10 * Real.sqrt (x : ℝ) ≤ Real.sqrt (k : ℝ) := by
+  set s := Nat.sqrt x with hs
+  have hs4 : 4 ≤ s := by
+    rw [hs]; calc 4 = Nat.sqrt 16 := by norm_num
+      _ ≤ Nat.sqrt x := Nat.sqrt_le_sqrt hx16
+  have hssx : s * s ≤ x := by rw [hs, ← pow_two]; exact Nat.sqrt_le' x
+  have hsqrtle : Real.sqrt ((s : ℝ) * (s : ℝ)) ≤ Real.sqrt (x : ℝ) :=
+    Real.sqrt_le_sqrt (by exact_mod_cast hssx)
+  have hsroot : (s : ℝ) ≤ Real.sqrt (x : ℝ) := by
+    rwa [Real.sqrt_mul_self (by positivity)] at hsqrtle
+  -- x/2 ≤ k : from x - 2s ≤ k and 2s ≤ x/2 (since s ≤ √x and 4s ≤ x... use 4s≤x)
+  have h4sx : 4 * s ≤ x := by nlinarith [hssx, hs4]
+  have hxhalf : (x : ℝ) / 2 ≤ (k : ℝ) := by
+    have hks : x - 2 * s ≤ k := hk
+    have : (x : ℝ) - 2 * (s : ℝ) ≤ (k : ℝ) := by
+      have hcast : ((x - 2 * s : ℕ) : ℝ) = (x : ℝ) - 2 * (s : ℝ) := by
+        rw [Nat.cast_sub (by omega), Nat.cast_mul]; norm_num
+      rw [← hcast]; exact_mod_cast hks
+    have h4sxr : 4 * (s : ℝ) ≤ (x : ℝ) := by exact_mod_cast h4sx
+    linarith
+  -- √k ≥ √(x/2) ≥ (7/10)√x
+  have hsqrt_half : Real.sqrt ((x : ℝ) / 2) ≤ Real.sqrt (k : ℝ) := Real.sqrt_le_sqrt hxhalf
+  have hx0 : (0 : ℝ) ≤ (x : ℝ) := by positivity
+  have hhalf_ge : (7 : ℝ) / 10 * Real.sqrt (x : ℝ) ≤ Real.sqrt ((x : ℝ) / 2) := by
+    rw [show (x : ℝ) / 2 = (x : ℝ) * (1 / 2) by ring, Real.sqrt_mul hx0]
+    have hsqrt2 : (7 : ℝ) / 10 ≤ Real.sqrt (1 / 2) := by
+      rw [show (1 : ℝ) / 2 = (1 / 2) by rfl]
+      have : ((7 : ℝ) / 10) ^ 2 ≤ 1 / 2 := by norm_num
+      nlinarith [Real.sq_sqrt (by norm_num : (0:ℝ) ≤ 1/2), Real.sqrt_nonneg (1/2 : ℝ), this]
+    nlinarith [hsqrt2, Real.sqrt_nonneg (x : ℝ)]
+  linarith [hsqrt_half, hhalf_ge]
+
 /-- Off the coalescence window, the conditioned pair kernel `KhatResPair` IS the product kernel, so
 their local variances agree.  Bridges the abstract `product_locVar_ge` to the concrete `KhatRes`. -/
 lemma khatResPair_locVar_eq_of_not_GoodW {α : Type*} [Fintype α] [DecidableEq α]
