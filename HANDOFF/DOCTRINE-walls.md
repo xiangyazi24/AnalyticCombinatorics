@@ -878,3 +878,25 @@ REMAINING to a complete unconditional renewal proof:
      stationarity balance (or a direct crossing-TV+divergence bound); ac R13 proved this is NOT
      derivable from the repo's row-drift facts. This is the single new analytic theorem the whole
      renewal limit now rests on; everything else is banked or mechanical.
+
+## SECTOR FRAMEWORK BANKED (06-15, R14-R16): 16 clean-3 modules; one research wall + 2 mechanical
+SectorBound.lean banked (clean-3): sum_Icc_grad_of_le (ℤ gradient telescope, Int.le_induction +
+top-peel — NOTE Finset.sum_Icc_succ_top and Finset.sum_Ico_eq_sum_range are ℕ-only here, use the
+insert-peel route), edgeSign_path_sum (g y−g x = ∑ edgeSign·grad), aK/aAnti defs,
+sector_bound_from_Hcut_on (Hardy bound + cut identity + ellipticity ⟹ SectorBound θ=√8√B·Γ·L/p,
+via Finset.sum_mul_sq_le_sq_mul_sq + sq_le_sq₀). SectorPoincare banked
+(point_sq_le_path_energy, interval_l2_le_L2_edgeEnergy).
+
+REMAINING (precisely characterized):
+ (mechanical, ac R15/R16 proof sketches need Mathlib-shape adaptation — deferred this run):
+   • aAnti_eq_div_plus_Hcut (the cut identity, discharges sector_bound's `hanti`): ac's proof uses
+     `unfold aAnti aK; rw [Finset.sum_sub_distrib]` but the unfold gives `(∑A − ∑B)/2` (subtraction
+     between two sums, not inside one), so sum_sub_distrib doesn't match; needs a reshaped proof.
+   • Hcut_l2_le_boundary (discharges `hH`): ac R15 CORRECTED my false statement (boundary edge needed:
+     RHS must be edgeEnergyOn (Icc (a−1)(b−1)), not (Icc a (b−1)) — a constant has 0 internal edge
+     energy but nonzero Hcut). Needs defs crossingTV/nearEdge + helpers abs_Hcut_le_crossingTV_sqrt_local
+     + nearEdge_multiplicity_le (ac R16 in flight) + interval_l2_le_L2_edgeEnergy [banked].
+ (THE genuine research wall): erdos_rankdiff_sector_input — discharge hanti/hH/helliptic + θ≤1/2 for
+   the actual killed rank-diff kernel. Needs a constructed reference measure π (killed-kernel
+   stationarity balance) or a direct crossing-TV+divergence bound; NOT derivable from the repo's
+   row-drift facts (ac R13). This single theorem is what the unconditional renewal limit now rests on.
