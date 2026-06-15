@@ -926,3 +926,27 @@ with Γ·√B·L/p ≤ 1/2, plus ellipticity p·E_edge ≤ aSym, the SectorBound
 LONE REMAINING WALL: erdos_rankdiff_sector_input — construct such a π (or carry the divergence term)
 for the actual killed rank-difference kernel and prove the crossingTV ≤ ηL cut-flux bound. This is the
 single genuinely-new analytic input; the entire surrounding deterministic+abstract framework is banked.
+
+## REFERENCE MEASURE π CONSTRUCTED (06-15): statOffset proven stationary for residual chain
+Grounding erdos_rankdiff_sector_input in the actual repo revealed the renewal is modeled via the
+1-D RESIDUAL CHAIN resStep p (RenewalOffset): from 0 jump to r'=d−1 w.p. p(d); from r+1 descend to r.
+Its size-biased stationary law statOffset p = incrTail p/incrMean p was already built (RenewalOverlap)
+but NOT proven stationary. Banked now (RenewalStationary.lean, clean-3):
+  • incrTail_succ: incrTail p A = p(A+1) + incrTail p (A+1) (tail recurrence).
+  • statOffset_stationary: ∑'_r statOffset·resStep r r' = statOffset r' (the residual row in r is
+    supported on {0,r'+1}; two-term tsum + tail recurrence + statOffset 0 = 1/μ).
+KEY: a STATIONARY π makes the sector cut-flux divergence divJ(x) = π_x·rowsum − ∑_y π_y K(y,x) ≡ 0
+(infinite chain), so the divergence term of aAnti_eq_div_plus_Hcut drops — π = statOffset is the
+divergence-free reference measure. This is the reference-measure half of erdos_rankdiff_sector_input.
+
+CONTEXT (verified): the homogeneous renewal coalescence core T2.2
+(homogeneousRenewal_uniform_overshoot_overlap) is DONE; the documented blocker T2.1 is the floor-rank
+⌊3√n⌋ rank-drop LOCAL LIMIT, which is mathematically FALSE (frac(3√v) Θ(1)-oscillation, Erdős–Feller–
+Pollard non-lattice content). The sector route uses aggregate CUT-FLUX, not a local limit, so it is a
+genuine candidate to SIDESTEP the floor-rank obstruction.
+
+REMAINING for full erdos_rankdiff_sector_input: (a) crossing-variation/cut-flux bound Γ for
+Jflow(statOffset, resStep) (the antisymmetric magnitude); (b) finite-window/killing boundary correction
+to divJ≡0 (statOffset stationarity is for the infinite chain; the windowed/killed chain leaks mass at
+edges); (c) connecting the 1-D residual-chain sector Green to the two-copy coalescence. (a)+(b) are
+concrete next; (c) is the modeling bridge.
