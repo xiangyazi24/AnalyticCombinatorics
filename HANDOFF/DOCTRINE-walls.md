@@ -691,3 +691,24 @@ D = 3√(rnk X) − 3√(rnk Y):
  3. finite-4th-moment occupation (η-approx-mart + finite per-step 4th → const horizon).
  4. crossing→coalescence bridge (κ_W·defectMass ≤ goodMass → CoalesceBridge).
  5. active-domain KhatRes instantiation (TASK8-gap).
+
+## OCCUPATION CAPSTONE = greenT (ChatGPT ac R4, 06-15) — Tanaka occupation is the WRONG tool
+Confirmed the κ_W one-pass self-consistency wall (off-window |D|-drift ≤ η + κ_W, κ_W=e^{−cW}·const
+fixed; single-window single-pass gives occ ~ e^{cW}/W < 1/δ_W = e^{cW}, loses by log). FIX = multi-pass
+expected window LOCAL TIME = greenT, NOT terminal Φ_W defect / occupation_unbounded_*.
+ - RIGHT capstone (BANKED): ITERGreen.occupation_ge_green_tight (greenT ≥ any Poisson subsolution at
+   start − tail) + ITERGreenT.greenT_subsolution (finite-horizon greenT IS a subsolution for free).
+   occupation_unbounded_eta/_loc are WRONG (hard hbinc + terminal E|D_T| growth + κ_W wall).
+ - The lone remaining analytic theorem: greenT_lower_fixed_window : c·√T ≤ ∑_{t<T} window-occupation,
+   for the conditioned residual rank-diff walk. Inputs: {v0>0, η~1/r², finite 4th moment B4, |D|≤R}
+   PLUS local accessibility = the banked drop-1/drop-2 minorization (RankDropMinor.lean:
+   ∀x p ≤ ∑_z K x z·1[D z = D x±1]). Green algebra removes κ_W (changes the object) but the
+   recurrence/local-time lower bound is the genuine wall.
+ - Clean route: occupation_ge_green_tight + greenT_subsolution (banked) + greenT_le_T + NEW
+   greenT_lower_fixed_window (explicit Poisson subsolution g on {−R..R}: K·g ≤ g − 1[|D|≤W], g(start)
+   ≥ c√T, via drop-minor p + drift + range) → CoalesceBridge. T ~ active horizon ~ R², √T ~ R → ∞.
+
+### v0 progress (this run, all clean-3): product_locVar_ge (VarianceLower) + Pker_subwindow_mass +
+khatResPair_locVar_eq_of_not_GoodW (VarianceConcrete). Remaining for v0: ρ-decrement two-clump
+separation (jump sub-windows [s,6s/5],[9s/5,2s], √x−√k ≈ m/(2√x), gap ≥ const via √(x−2s) ≥ √x/√2 for
+x≥16). Then v0 = δ₁δ₂(hi−lo)² > 0 via product_locVar_ge + the bridge.
