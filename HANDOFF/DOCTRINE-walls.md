@@ -722,3 +722,71 @@ minorization); sum O(T/m) blocks → c√T. Banked stack: greenT_subsolution + o
 need (small) greenT_le_T + (the wall) greenT_lower_fixed_window. Scaling: T~R active horizon ⟹
 greenT ≳ √R → ∞ ≥ 1/δ_W (fixed W). R6 dispatched: block lemma via p-lazy-SRW domination + elementary
 ∑P(S_t=0)≥c√T.
+
+## R7–R8 (06-15): wall narrowed to `erdos_rankdiff_block_heat_lower`; two shortcuts REFUTED
+ChatGPT ac R7+R8 + ac2 R7 settled the structure of `greenT_lower_fixed_window`:
+
+REFUTED shortcuts (do NOT attempt):
+ - **Lazy-SRW domination** (K ≥ p·δ_{±1}+(1−2p)·δ_0): FALSE. Bare ±1 minorization only gives
+   K ≥ Q = p·δ_{+1}+p·δ_{-1} (substochastic, mass 2p); Q^t has mass (2p)^t so ∑Q^t·1_W ≤ 1/(1−2p)
+   = O(1), NOT √T. The residual is NOT a hold kernel — without a stay-minorization mass (1−2p) it
+   can jump away. Counterexample: K(0,±1)=p, K(0,±3)=(1−2p)/2, symmetric, finite 2nd/4th moment,
+   ±1-minorized, but P(|D_1|≤1)=2p≠1.
+ - **tent/Jensen subsolution** g(d)=max(L−max(|d|−W,0),0): FALSE — g is not concave (x=W,y=W+2L,
+   mid gives 0 ≥ L/2); the untruncated cone is concave but Jensen gives the WRONG direction (upper
+   bound on K·g, Green subsolution needs lower). So tentW is NOT a universal soft-kernel subsolution.
+
+STEP RANGE settled (ac R8, verified against source): `Pker n k = [1≤k<n]·erdosWeight n (n−k)/kernelMass n`
+supports ALL 1≤k<n — NOT bounded-step. The √-block window is only the minorization OVERLAP window
+(Pker_window_minor), not the support. One-step rank decrement can be ~3√n. So the kernel is in the
+soft NONLOCAL-residual regime; the R7 obstruction is structurally real.
+
+TWO-LAYER decomposition (the path forward):
+ - **Layer 1 = `green_lower_from_block_heat`** (deterministic finite-sum BRIDGE, NOT hard): from
+   (hM2: second-moment tightness ∑ distPow·D² ≤ V(m+1)) + (hblock: c0/√(m+1) ≤ block-heat window
+   mass from a tight start) ⟹ c√T ≤ ∑_{t<T} window-occupation. Proof: Chebyshev gives ≥1/2 mass in
+   {|D|≤Λ√(m+1)}, feed hblock via Chapman–Kolmogorov, telescope ∑1/√(m+1) ≥ c√T. ac2 R8 building
+   the full Lean proof.
+ - **Layer 2 = `erdos_rankdiff_block_heat_lower`** = THE lone hard wall: c0/√(m+1) ≤ P_x(|D_m|≤W)
+   for |D x|≤Λ√(m+1). Route under an exp-tail hypothesis on |ΔD| (hExpTail: ∑ K x z·e^{θ|Δ|}≤Mθ,
+   which the erdosWeight exp-penalty should supply): (A) truncate jumps at L_m=A·log m, tail mass
+   ≤ m·M·e^{−θL_m}=o(1/√m); (B) bounded-increment block heat for the truncated kernel (the genuine
+   hard combinatorial lemma — local elliptic 1-D heat lower); (C) transfer truncated→real via the
+   BANKED OccupationTransfer.distPow_L1_le / occupation_transfer (L¹ error t·ε); (D) sum blocks.
+
+BANKED THIS RUN (clean-3): CentralBinomSum.centralBinom_prob_sum_ge_sqrt (√N ≤ ∑_{m<N} C_m/4^m,
+exact const 1, via 1/√(4m+1)≤C_m/4^m + telescope) — the SRW-Green helper feeding Layer-2 step (B/D).
+Also OccupationTransfer (distPow_L1_le, occupation_transfer) = the Layer-2 step-C transfer, already
+banked earlier this run. So of the four Layer-2 steps, C is DONE and the SRW-Green input is DONE;
+the remaining hard piece is the bounded-increment block-heat lower (B) + assembling A,D.
+
+## R9–R10 (06-15): exact-time heat lower is overkill; lone wall = finite-interval Green comparison
+ChatGPT ac R9 sharpened the Layer-2 wall:
+ - The EXACT-TIME heat lower `K^m(x,W) ≥ c/√(m+1)` is HARDER than needed (parity/aperiodicity +
+   genuine near-diagonal local-CLT). REPLACE with the BLOCK-GREEN lower from a tight start:
+       ∑_{t<m} K^t(x, {|D|≤W}) ≥ c√m   for |D x| ≤ Λ√(m+1),
+   which is more robust and avoids parity. (Our banked `green_lower_from_block_heat` consumes the
+   exact-time `hblock`; it is still a correct reduction, but the block-green form is the recommended
+   consumer — a future bridge variant.)
+ - Last-exit/skeleton convolution is NOT a shortcut: the skeleton S = p·δ_{±1} is substochastic
+   (mass 2p), Sᵐ ~ (2p)ᵐ exponentially small; the residual correction being o(1/√m) is the same hard
+   theorem in disguise. Tightness→window smoothing also needs a multi-step Harnack, not a one-step
+   minorization.
+ - THE LONE HARD WALL (ac R9 step 2): `finite_interval_green_lower_uniform_elliptic_1d` — a
+   finite-interval Green/Harnack comparison inside a box I=[−L,L], L≍√m:
+       killedGreen_K(I,W,x) ≥ c · killedGreen_SRW(I,W,0)
+   for bounded-range, locally ±1-elliptic, small-drift 1-D kernels.  Chain: (1) lazySRW Green lower
+   from centralBinom [BANKED]; (2) finite-interval Green comparison [THE WALL]; (3) time-truncation
+   by 2nd moment (P(τ_I ≤ m) ≤ E[D_m²]/(L−B)²); (4) block_green ⟹ (5) global Green.  ac says this is
+   finite-sum formalizable (electrical-network/gambler's-ruin for the reference SRW + bounded
+   perturbation for K) but a "serious theorem"; central-binomial handles ONLY the reference SRW Green.
+ - R10 dispatched: drill the comparison — resolvent positivity (A≥B≥0 substochastic ⟹ (I−A)⁻¹≥(I−B)⁻¹
+   via Neumann series ∑Aᵗ ≥ ∑Bᵗ) vs Dirichlet-form/SOS comparison; resolve the "K_I not entrywise ≥
+   p·SRW_I (nonlocal residual)" subtlety.
+
+### Banked this run (clean-3, axioms {propext, Classical.choice, Quot.sound}):
+ - CentralBinomSum.lean : `centralBinom_prob_sum_ge_sqrt` (√N ≤ ∑_{m<N} Nat.centralBinom m/4^m).
+ - GreenBridge.lean : `green_lower_from_block_heat` (Layer-1 bridge) + helpers (Chapman–Kolmogorov
+   `distPow_expect_comp`, Chebyshev `good_mass_ge_half`, even-time block, √T-telescope).
+ - VarianceConcrete.lean : `Pker_highclump` (v0 high jump-window: mass ≥ e^{-2C}/13 + ρ-decrement
+   ≥ 21/10 on [x−2s, x−7s/4], x ≥ 100) — last v0 high-clump component.

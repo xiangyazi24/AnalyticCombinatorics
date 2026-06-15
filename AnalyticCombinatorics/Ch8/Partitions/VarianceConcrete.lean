@@ -22,7 +22,7 @@ each term is `≥ a·e^{-2C}/(2x)`, and there are `b−a+1` of them. -/
 lemma Pker_subwindow_mass {x : ℕ} (hx16 : 16 ≤ x)
     (hkmx : kernelMass x ≤ 2) (hkmx0 : 0 < kernelMass x)
     {a b : ℕ} (ha : Nat.sqrt x ≤ a) (hab : a ≤ b) (hb2 : b ≤ 2 * Nat.sqrt x) :
-    ((b - a + 1 : ℕ) : ℝ) * ((a : ℝ) * Real.exp (-C * 2) / (2 * x))
+    ((b - a + 1 : ℕ) : ℝ) * ((a : ℝ) * Real.exp (-C * 2) / (2 * (x:ℝ)))
       ≤ ∑ k ∈ Finset.Icc (x - b) (x - a), Pker x k := by
   have hCpos := C_pos
   set s := Nat.sqrt x with hs
@@ -43,7 +43,7 @@ lemma Pker_subwindow_mass {x : ℕ} (hx16 : 16 ≤ x)
     exact Real.sqrt_le_sqrt hsx2
   -- per-term lower bound, uniform over the window
   have hperterm : ∀ k ∈ Finset.Icc (x - b) (x - a),
-      (a : ℝ) * Real.exp (-C * 2) / (2 * x) ≤ Pker x k := by
+      (a : ℝ) * Real.exp (-C * 2) / (2 * (x:ℝ)) ≤ Pker x k := by
     intro k hk
     rw [Finset.mem_Icc] at hk
     obtain ⟨hk1', hk2'⟩ := hk
@@ -67,8 +67,8 @@ lemma Pker_subwindow_mass {x : ℕ} (hx16 : 16 ≤ x)
   have hcard : (Finset.Icc (x - b) (x - a)).card = b - a + 1 := by
     rw [Nat.card_Icc]
     omega
-  calc ((b - a + 1 : ℕ) : ℝ) * ((a : ℝ) * Real.exp (-C * 2) / (2 * x))
-      = ((Finset.Icc (x - b) (x - a)).card : ℝ) * ((a : ℝ) * Real.exp (-C * 2) / (2 * x)) := by
+  calc ((b - a + 1 : ℕ) : ℝ) * ((a : ℝ) * Real.exp (-C * 2) / (2 * (x:ℝ)))
+      = ((Finset.Icc (x - b) (x - a)).card : ℝ) * ((a : ℝ) * Real.exp (-C * 2) / (2 * (x:ℝ))) := by
         rw [hcard]
     _ ≤ ∑ k ∈ Finset.Icc (x - b) (x - a), Pker x k := by
         rw [← nsmul_eq_mul]
@@ -206,6 +206,91 @@ lemma sqrt_ge_of_window {x k : ℕ} (hx16 : 16 ≤ x) (hk : x - 2 * Nat.sqrt x �
       nlinarith [Real.sq_sqrt (by norm_num : (0:ℝ) ≤ 1/2), Real.sqrt_nonneg (1/2 : ℝ), this]
     nlinarith [hsqrt2, Real.sqrt_nonneg (x : ℝ)]
   linarith [hsqrt_half, hhalf_ge]
+
+/-- `s² ≥ (16/25)x` for `x ≥ 25` (from `s ≥ (4/5)√x`). -/
+lemma sq_floor_lower {x : ℕ} (hx : 25 ≤ x) :
+    (16 : ℝ) / 25 * (x : ℝ) ≤ (Nat.sqrt x : ℝ) ^ 2 := by
+  have h := sqrt_floor_lower hx
+  have hsq : Real.sqrt (x : ℝ) ^ 2 = (x : ℝ) := Real.sq_sqrt (by positivity)
+  nlinarith [h, hsq, Real.sqrt_nonneg (x : ℝ), (Nat.cast_nonneg (Nat.sqrt x) : (0:ℝ) ≤ (Nat.sqrt x : ℝ))]
+
+/-- **High clump**: mass `≥ e^{-2C}/13` and ρ-decrement `≥ 21/10` on the high jump window
+`[7s/4, 2s]` (`s = ⌊√x⌋`), for `x ≥ 25`. -/
+lemma Pker_highclump {x : ℕ} (hx : 100 ≤ x) (hkmx : kernelMass x ≤ 2) (hkmx0 : 0 < kernelMass x) :
+    (Real.exp (-C * 2) / 13
+        ≤ ∑ a ∈ Finset.Icc (x - 2 * Nat.sqrt x) (x - 7 * Nat.sqrt x / 4), Pker x a)
+      ∧ (∀ a ∈ Finset.Icc (x - 2 * Nat.sqrt x) (x - 7 * Nat.sqrt x / 4),
+          (21 : ℝ) / 10 ≤ 3 * (Real.sqrt (x : ℝ) - Real.sqrt (a : ℝ))) := by
+  have hx25 : 25 ≤ x := by omega
+  set s := Nat.sqrt x with hs
+  have hs5 : 5 ≤ s := by
+    rw [hs]; calc 5 = Nat.sqrt 25 := by norm_num
+      _ ≤ Nat.sqrt x := Nat.sqrt_le_sqrt hx25
+  have hss : s * s ≤ x := by rw [hs]; have h := Nat.sqrt_le' x; rwa [pow_two] at h
+  have hsx : 2 * s ≤ x := le_trans (by nlinarith [hs5]) hss
+  have hxpos : (0 : ℝ) < (x : ℝ) := by positivity
+  have hsqrtx : (0 : ℝ) < Real.sqrt (x : ℝ) := Real.sqrt_pos.mpr hxpos
+  have hsfloor : (4 : ℝ) / 5 * Real.sqrt (x : ℝ) ≤ (s : ℝ) := sqrt_floor_lower hx25
+  have hsq16 : (16 : ℝ) / 25 * (x : ℝ) ≤ (s : ℝ) ^ 2 := sq_floor_lower hx25
+  -- tight floor bound `√x < s + 1` and `10 ≤ √x` (from `x ≥ 100`)
+  have hsx1 : Real.sqrt (x : ℝ) < (s : ℝ) + 1 := by
+    rw [Real.sqrt_lt' (by positivity), sq]
+    exact_mod_cast Nat.lt_succ_sqrt x
+  have hsqrt10 : (10 : ℝ) ≤ Real.sqrt (x : ℝ) := by
+    rw [show (10 : ℝ) = Real.sqrt 100 by
+      rw [show (100 : ℝ) = 10 ^ 2 by norm_num]; exact (Real.sqrt_sq (by norm_num)).symm]
+    exact Real.sqrt_le_sqrt (by exact_mod_cast hx)
+  -- bounds on window endpoints (Nat)
+  have hab : 7 * s / 4 ≤ 2 * s := by omega
+  have hsa : s ≤ 7 * s / 4 := by omega
+  have hb2 : 2 * s ≤ 2 * s := le_refl _
+  refine ⟨?_, ?_⟩
+  · -- mass
+    have hmass := Pker_subwindow_mass (x := x) (by omega) hkmx hkmx0 hsa hab hb2
+    refine le_trans ?_ hmass
+    have hexp : 0 < Real.exp (-C * 2) := Real.exp_pos _
+    have hwidth : (s : ℝ) ≤ 4 * ((2 * s - 7 * s / 4 + 1 : ℕ) : ℝ) := by
+      have : s ≤ 4 * (2 * s - 7 * s / 4 + 1) := by omega
+      exact_mod_cast this
+    have ha7 : (s : ℝ) ≤ ((7 * s / 4 : ℕ) : ℝ) := by
+      exact_mod_cast (by omega : s ≤ 7 * s / 4)
+    have hWnn : (0 : ℝ) ≤ ((2 * s - 7 * s / 4 + 1 : ℕ) : ℝ) := Nat.cast_nonneg _
+    have ha7nn : (0 : ℝ) ≤ ((7 * s / 4 : ℕ) : ℝ) := Nat.cast_nonneg _
+    -- key: 2x ≤ 13·W·(7s/4)
+    have hprod : (s : ℝ) / 4 * (s : ℝ)
+        ≤ ((2 * s - 7 * s / 4 + 1 : ℕ) : ℝ) * ((7 * s / 4 : ℕ) : ℝ) :=
+      mul_le_mul (by linarith [hwidth]) ha7 (by positivity) hWnn
+    have key : 2 * (x : ℝ) ≤ 13 * (((2 * s - 7 * s / 4 + 1 : ℕ) : ℝ) * ((7 * s / 4 : ℕ) : ℝ)) := by
+      nlinarith [hprod, hsq16, hxpos]
+    show Real.exp (-C * 2) / 13 ≤
+      ((2 * s - 7 * s / 4 + 1 : ℕ) : ℝ) * (((7 * s / 4 : ℕ) : ℝ) * Real.exp (-C * 2) / (2 * (x : ℝ)))
+    have hLHSeq : ((2 * s - 7 * s / 4 + 1 : ℕ) : ℝ)
+        * (((7 * s / 4 : ℕ) : ℝ) * Real.exp (-C * 2) / (2 * (x : ℝ)))
+        = ((2 * s - 7 * s / 4 + 1 : ℕ) : ℝ) * ((7 * s / 4 : ℕ) : ℝ) * Real.exp (-C * 2)
+            / (2 * (x : ℝ)) := by ring
+    rw [hLHSeq, le_div_iff₀ (mul_pos (by norm_num : (0:ℝ) < 2) hxpos),
+        div_mul_eq_mul_div, div_le_iff₀ (by norm_num : (0:ℝ) < 13)]
+    nlinarith [mul_le_mul_of_nonneg_left key hexp.le, hexp]
+  · -- decrement ≥ 21/10
+    intro a ha
+    rw [Finset.mem_Icc] at ha
+    have haxlt : a < x := by omega
+    have hjump : 7 * s / 4 ≤ x - a := by omega
+    have hjr : ((7 * s / 4 : ℕ) : ℝ) ≤ ((x - a : ℕ) : ℝ) := by exact_mod_cast hjump
+    have hlow := sqrt_decrement_lower (x := x) (k := a) haxlt
+    -- √x − √a ≥ (x−a)/(2√x); and 4(x−a) ≥ 7s−3 > 7√x−10 ≥ 2.8√x (since √x ≥ 10) ⟹ (x−a) ≥ 0.7·2√x
+    have hbound : (7 : ℝ) / 10 ≤ Real.sqrt (x : ℝ) - Real.sqrt (a : ℝ) := by
+      have hge : ((x - a : ℕ) : ℝ) / (2 * Real.sqrt (x : ℝ)) ≤ Real.sqrt (x : ℝ) - Real.sqrt (a : ℝ) :=
+        hlow
+      -- nat floor fact `7s ≤ 4(x−a) + 3`, cast to ℝ
+      have hnat : 7 * s ≤ 4 * (x - a) + 3 := by omega
+      have hnatR : 7 * (s : ℝ) ≤ 4 * ((x - a : ℕ) : ℝ) + 3 := by exact_mod_cast hnat
+      have hnum : (7 : ℝ) / 10 * (2 * Real.sqrt (x : ℝ)) ≤ ((x - a : ℕ) : ℝ) := by
+        nlinarith [hnatR, hsx1, hsqrt10]
+      have h710 : (7 : ℝ) / 10 ≤ ((x - a : ℕ) : ℝ) / (2 * Real.sqrt (x : ℝ)) :=
+        (le_div_iff₀ (by positivity)).mpr hnum
+      linarith [h710, hge]
+    linarith [hbound]
 
 /-- Off the coalescence window, the conditioned pair kernel `KhatResPair` IS the product kernel, so
 their local variances agree.  Bridges the abstract `product_locVar_ge` to the concrete `KhatRes`. -/

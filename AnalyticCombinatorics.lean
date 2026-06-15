@@ -285,6 +285,8 @@ import AnalyticCombinatorics.Ch8.Partitions.TentDefect
 import AnalyticCombinatorics.Ch8.Partitions.VarianceLower
 import AnalyticCombinatorics.Ch8.Partitions.VarianceConcrete
 import AnalyticCombinatorics.Ch8.Partitions.GreenLowerWall
+import AnalyticCombinatorics.Ch8.Partitions.CentralBinomSum
+import AnalyticCombinatorics.Ch8.Partitions.GreenBridge
 
 /-!
 # AnalyticCombinatorics
