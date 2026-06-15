@@ -790,3 +790,28 @@ ChatGPT ac R9 sharpened the Layer-2 wall:
    `distPow_expect_comp`, Chebyshev `good_mass_ge_half`, even-time block, √T-telescope).
  - VarianceConcrete.lean : `Pker_highclump` (v0 high jump-window: mass ≥ e^{-2C}/13 + ρ-decrement
    ≥ 21/10 on [x−2s, x−7s/4], x ≥ 100) — last v0 high-clump component.
+
+## R10 staged Green-comparison program + what's now banked (06-15)
+ChatGPT ac R10 decomposed the lone wall (finite-interval Green comparison) into 5 stages; ac2 R9
+verified the exp-tail machinery against the repo.  Status:
+
+ STAGE 1 [BANKED] entrywise Neumann/Green monotonicity — GreenComparison.distPow_mono +
+   green_neumann_mono (0≤B≤A ⟹ ∑Bᵗ ≤ ∑Aᵗ).  Honest infra, but alone gives only O(1) (the ±1
+   minorant is substochastic mass 2p<1) — NOT the Θ(L) bound.
+ STAGE 2 [BANKED] SRW reference Green — CentralBinomSum.centralBinom_prob_sum_ge_sqrt.
+ STAGE 3a [BANKED] SOS path-energy workhorse — GreenComparison.sq_diff_le_path_energy_nat
+   ((f(d+n)−f d)² ≤ n·∑edge²), the Cauchy–Schwarz heart of the Dirichlet-form comparison.
+ STAGE 3b [IN FLIGHT, ac2 R10] reversible Green-from-form: complete-the-square duality
+   ⟨h,G_K h⟩ = sup_f(2⟨h,f⟩−Q_K(f)) ⟹ (Q_K ≤ Λ Q_R ⟹ G_K ≥ Λ⁻¹ G_R).  Finite-dim linear algebra.
+ STAGE 3c [TODO] assemble bounded_jump_energy_le_edge_energy (E_K ≤ Λ E_SRW, Λ≍B²/p) from STAGE 3a
+   + ±1 minorization + sum-swap.
+ STAGE 4 [IN FLIGHT, ac R11] sector/drift perturbation — THE genuine hard residual: the actual
+   kernel is nonreversible; need |E^antisym| ≤ θ√E^sym√E^sym with θ≍η→0 (small drift, r→∞) so
+   Lax–Milgram coercivity ⟨(I−K)f,f⟩_π ≥ (1−θ)E^sym squeezes the nonreversible Green by the
+   symmetric one.  This is the last research-level piece.
+ STAGE 5 [BANKED] truncation transfer — TruncationTransfer.normalize_truncate_L1_eq_two_tail +
+   truncated_block_heat_transfer (consume occupation_transfer); repo's Pker_rankDrop_tail_majorant
+   (γ=C/60) supplies the exp tail; L_m = (240/C)·log m makes the block error o(1/√m).
+
+So of the wall: stages 1,2,3a,5 BANKED clean-3; 3b+4 in flight (ChatGPT); 3c mechanical.
+The lone genuinely-hard residual is STAGE 4 (sector/drift perturbation for nonreversibility).
