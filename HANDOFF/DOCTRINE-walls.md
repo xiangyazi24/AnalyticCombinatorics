@@ -909,3 +909,20 @@ aAnti_eq_div_plus_Hcut (+ aAnti_eq_J_sum, aAnti_eq_neg_sum_Hcut) now banked clea
 and the inner double sum is exactly 2·Hcut. This DISCHARGES sector_bound_from_Hcut_on's `hanti`.
 Remaining: Hcut_l2_le_boundary (discharges hH; ac R16 helper sketches) + the genuine wall
 erdos_rankdiff_sector_input.
+
+## Hcut_l2_le BANKED (06-15): both sector form-inputs now discharged; only the kernel wall remains
+Hcut_l2_le_boundary banked clean-3 in SectorBound.lean (∑ Hcut² ≤ 16BΓ²L²·edgeEnergyOn(Icc(a-1)(b-1)))
+with helpers nearEdge_of_cross_left/right, nearEdge_edge_card_le, abs_le_sqrt_local_l2,
+abs_Hcut_le_crossingTV_sqrt_local, nearEdge_multiplicity_le. Uses the boundary-edge energy (ac R15
+correction: a constant has 0 internal edge energy but nonzero Hcut) + banked interval_l2_le_L2_edgeEnergy.
+The one-edge bound uses a uniform abs_mul (no Cauchy-Schwarz); the multiplicity is ≤ 2B+3.
+
+STATE: sector_bound_from_Hcut_on's hypotheses are now BOTH derivable from banked lemmas —
+  hanti  ← aAnti_eq_neg_sum_Hcut (divergence-free cut identity), and
+  hH     ← Hcut_l2_le_boundary (Hardy estimate, with Γ a crossingTV bound).
+So given a reference measure π with (i) div Jflow(π,K) = 0 on the interval and (ii) crossingTV ≤ Γ
+with Γ·√B·L/p ≤ 1/2, plus ellipticity p·E_edge ≤ aSym, the SectorBound θ≤1/2 follows by composition.
+
+LONE REMAINING WALL: erdos_rankdiff_sector_input — construct such a π (or carry the divergence term)
+for the actual killed rank-difference kernel and prove the crossingTV ≤ ηL cut-flux bound. This is the
+single genuinely-new analytic input; the entire surrounding deterministic+abstract framework is banked.
