@@ -289,6 +289,7 @@ import AnalyticCombinatorics.Ch8.Partitions.CentralBinomSum
 import AnalyticCombinatorics.Ch8.Partitions.GreenBridge
 import AnalyticCombinatorics.Ch8.Partitions.TruncationTransfer
 import AnalyticCombinatorics.Ch8.Partitions.GreenComparison
+import AnalyticCombinatorics.Ch8.Partitions.GreenForm
 
 /-!
 # AnalyticCombinatorics
