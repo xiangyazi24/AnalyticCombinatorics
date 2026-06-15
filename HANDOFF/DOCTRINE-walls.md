@@ -603,3 +603,26 @@ soft-tail mass is negligible over the active horizon M~r (weighted_far_erdos_tai
 i.e. a LOCALIZED occupation that only uses the off-window martingale + window-truncated increments. The
 v0/b moments come from the product Erdős kernel off-window; η~1/r² from muTilde via two_term_local_lip.
 This is design-heavy (master to design the truncation + KhatRes instantiation, then codex to grind).
+
+## RENEWAL ROUTE UPDATE (Opus + ChatGPT ac R2, 06-14) — fixed-window Tanaka-DEFECT local time
+The b-vs-W tension (occupation needs large truncation scale b~r^{1/3} for soft-tail control, but
+coalescence needs fixed small window W with δ bounded below) is REAL and confirmed:
+RankDropGeoMinor records minorization rate d·e^{-Cd/3} — exponential in window width, so a growing
+window kills coalescence (route (c) dead). Charging every >W jump as 2R additive Tanaka error
+(my abs_drift_le_soft, SoftTailDrift.lean — banked, valid, but too lossy here: 4R²·farMass=O(1)·r²→∞
+at fixed W) does NOT close it either.
+CORRECT object (ChatGPT R2): fixed-window crossing / Tanaka-DEFECT local time with the tent/defect
+  Φ_W(d) = max(|d| - W, 0).
+Non-crossing large jumps are handled by the martingale drift (they don't push |D| up on average);
+crossing jumps are NOT errors — they are coalescence opportunities. Recommended stack:
+  1. tanakaDefect W D x z  (per-step defect of Φ_W).
+  2. defect telescope: E[Φ_W(D_T)] - E[Φ_W(D_0)] - ηT ≤ ∑_t ∑_x μ_t(x) ∑_z K(x,z)·tanakaDefect.
+  3. QV/PZ growth for Φ_W: since Φ_W(d) ≥ |d| - W, the banked E|D_T| ≥ c√T lower bound transfers
+     with a -W loss ⟹ E[Φ_W(D_T)] large.
+  4. coalescence bridge: κ_W · defectMass_t ≤ goodMass_t.
+  5. ∑_t goodMass_t ≥ κ_W ∑_t defectMass_t → ∞ ⟹ umass→0 (via CoalesceBridge) ⟹ overlap→1 ⟹ hhit.
+This keeps W FIXED for coalescence and counts crossings instead of discarding far mass. SoftTailDrift's
+abs_drift_le_soft stays banked as general infra but is NOT the closing route; the defect local time is.
+(ac2 KhatRes-bridge query failed to capture — re-dispatch when needed.)
+NOTE 06-14: uisai2 remote Lean build server began refusing SSH mid-session (host up, sshd refusing —
+likely MaxStartups throttle from concurrent ssh or load). Blocks all Lean verification until restored.
