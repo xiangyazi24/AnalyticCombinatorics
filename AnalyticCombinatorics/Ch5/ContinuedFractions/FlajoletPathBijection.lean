@@ -109,6 +109,56 @@ def toSteps : (h n : ℕ) → MotzkinPath h n → List Step
 termination_by h n _p => h + n
 decreasing_by all_goals omega
 
+/-- `toSteps` of a code is balanced: it returns to its start level. -/
+lemma endLevel_toSteps : ∀ (h n : ℕ) (p : MotzkinPath h n) (s : ℕ),
+    endLevel s (toSteps h n p) = s := by
+  intro h n p
+  induction h, n, p using toSteps.induct <;>
+    intro s <;>
+    simp_all [toSteps, endLevel_cons, endLevel_append, Step.nextLevel, Nat.add_sub_cancel]
+
+/-- `toSteps` has the right length. -/
+lemma toSteps_length : ∀ (h n : ℕ) (p : MotzkinPath h n), (toSteps h n p).length = n := by
+  intro h n p
+  induction h, n, p using toSteps.induct <;>
+    simp_all [toSteps, List.length_append, List.length_cons] <;>
+    omega
+
+/-- Level relabel: a valid walk in `[0,h]` from `s` is a valid walk in `[0,h+1]` from `s+1`. -/
+lemma Walk_shift {h s : ℕ} {p : List Step} (hp : Walk h s p) : Walk (h + 1) (s + 1) p := by
+  induction hp with
+  | nil => exact Walk.nil
+  | level _ ih => exact Walk.level ih
+  | up hle _ ih => exact Walk.up (by omega) ih
+  | down _ ih => exact Walk.down ih
+
+/-- Concatenation of valid walks (second starts where the first ends). -/
+lemma Walk_append {h : ℕ} : ∀ {s : ℕ} {l₁ l₂ : List Step},
+    Walk h s l₁ → Walk h (endLevel s l₁) l₂ → Walk h s (l₁ ++ l₂) := by
+  intro s l₁ l₂ h1 h2
+  induction h1 with
+  | nil => simpa using h2
+  | level _ ih =>
+      exact Walk.level (ih (by simpa [endLevel_cons, Step.nextLevel] using h2))
+  | up hle _ ih =>
+      exact Walk.up hle (ih (by simpa [endLevel_cons, Step.nextLevel] using h2))
+  | @down s rest _ ih =>
+      exact Walk.down (ih (by simpa [endLevel_cons, Step.nextLevel, Nat.add_sub_cancel] using h2))
+
+/-- `toSteps` lands in valid walks from level `0`. -/
+lemma toSteps_walk : ∀ (h n : ℕ) (p : MotzkinPath h n), Walk h 0 (toSteps h n p) := by
+  intro h n p
+  induction h, n, p using toSteps.induct with
+  | case1 h a => simp only [toSteps]; exact Walk.nil
+  | case2 n a ih => simp only [toSteps]; exact Walk.level ih
+  | case3 h a ih => simp only [toSteps]; exact Walk.level Walk.nil
+  | case4 h n a rest heq ih => simp only [toSteps, heq]; exact Walk.level ih
+  | case5 h n a arch heq ihInner ihRest =>
+      simp only [toSteps, heq]
+      refine Walk.up (by omega) (Walk_append ?_ ?_)
+      · exact Walk_shift ihInner
+      · rw [endLevel_toSteps]; exact Walk.down ihRest
+
 end
 
 end AnalyticCombinatorics.Ch5.ContinuedFractions
