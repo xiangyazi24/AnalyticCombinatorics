@@ -51,6 +51,15 @@ def aAnti (I : Finset ℤ) (π : ℤ → ℝ) (K : ℤ → ℤ → ℝ) (f g : �
 /-- Edge energy over an explicit edge set. -/
 def edgeEnergyOn (E : Finset ℤ) (f : ℤ → ℝ) : ℝ := ∑ e ∈ E, (grad f e) ^ 2
 
+/-- Total antisymmetric crossing variation at edge `e`. -/
+def crossingTV (I : Finset ℤ) (J : ℤ → ℤ → ℝ) (e : ℤ) : ℝ :=
+  (1 / 2 : ℝ) * ∑ x ∈ I, ∑ y ∈ I, |J x y| * |edgeSign e x y|
+
+/-- `x` lies in the `B`-neighborhood of edge `e`. -/
+def nearEdge (B : ℕ) (e x : ℤ) : Prop := e - (B : ℤ) ≤ x ∧ x ≤ e + (B : ℤ)
+
+instance (B : ℕ) (e x : ℤ) : Decidable (nearEdge B e x) := by unfold nearEdge; infer_instance
+
 /-- Abstract sector condition: `|aAnti f g| ≤ θ·√(aSym f f)·√(aSym g g)`. -/
 def SectorBound (aAnti aSym : (ℤ → ℝ) → (ℤ → ℝ) → ℝ) (θ : ℝ) : Prop :=
   ∀ f g, |aAnti f g| ≤ θ * Real.sqrt (aSym f f) * Real.sqrt (aSym g g)
@@ -282,5 +291,196 @@ theorem sector_bound_from_Hcut_on
     _ = θ ^ 2 * aSym f f * aSym g g := by rw [hθsq]
     _ = (θ * Real.sqrt (aSym f f) * Real.sqrt (aSym g g)) ^ 2 := by
           rw [mul_pow, mul_pow, Real.sq_sqrt hAf_nonneg, Real.sq_sqrt hAg_nonneg]
+
+/-- A jump crossing edge `e` (left→right) of size `≤ B` has its start in the `B`-neighborhood. -/
+private lemma nearEdge_of_cross_left {B : ℕ} {e x y : ℤ}
+    (hxy : x ≤ e ∧ e < y) (hdist : Int.natAbs (y - x) ≤ B) : nearEdge B e x := by
+  obtain ⟨h1, h2⟩ := hxy
+  unfold nearEdge; omega
+
+/-- A jump crossing edge `e` (right→left) of size `≤ B` has its start in the `B`-neighborhood. -/
+private lemma nearEdge_of_cross_right {B : ℕ} {e x y : ℤ}
+    (hyx : y ≤ e ∧ e < x) (hdist : Int.natAbs (y - x) ≤ B) : nearEdge B e x := by
+  obtain ⟨h1, h2⟩ := hyx
+  unfold nearEdge; omega
+
+/-- At most `2B+1` edges have a fixed point in their `B`-neighborhood. -/
+private lemma nearEdge_edge_card_le {a b x : ℤ} (B : ℕ) :
+    ((Finset.Icc a (b - 1)).filter (fun e : ℤ => nearEdge B e x)).card ≤ 2 * B + 3 := by
+  classical
+  have hsub : (Finset.Icc a (b - 1)).filter (fun e : ℤ => nearEdge B e x)
+        ⊆ Finset.Icc (x - (B : ℤ)) (x + (B : ℤ)) := by
+    intro e he
+    rw [Finset.mem_filter] at he
+    rw [Finset.mem_Icc]
+    rcases he with ⟨_heI, hnear⟩
+    unfold nearEdge at hnear
+    constructor <;> omega
+  have hcard := Finset.card_le_card hsub
+  have hcardIcc : (Finset.Icc (x - (B : ℤ)) (x + (B : ℤ))).card = 2 * B + 1 := by
+    rw [Int.card_Icc]; omega
+  rw [hcardIcc] at hcard
+  omega
+
+/-- `|f x| ≤ √(local L²-window)` when `x` is in the window. -/
+private lemma abs_le_sqrt_local_l2 {a b e x : ℤ} {B : ℕ} (f : ℤ → ℝ)
+    (hx : x ∈ (Finset.Icc a b).filter (fun x : ℤ => nearEdge B e x)) :
+    |f x| ≤ Real.sqrt (∑ u ∈ (Finset.Icc a b).filter (fun u : ℤ => nearEdge B e u), f u ^ 2) := by
+  classical
+  set S : Finset ℤ := (Finset.Icc a b).filter (fun u : ℤ => nearEdge B e u) with hS
+  have hS_nonneg : 0 ≤ ∑ u ∈ S, f u ^ 2 := Finset.sum_nonneg (fun u _ => sq_nonneg (f u))
+  have hterm : f x ^ 2 ≤ ∑ u ∈ S, f u ^ 2 :=
+    Finset.single_le_sum (f := fun u : ℤ => f u ^ 2) (fun u _ => sq_nonneg (f u)) hx
+  apply (sq_le_sq₀ (abs_nonneg (f x)) (Real.sqrt_nonneg _)).mp
+  rw [sq_abs, Real.sq_sqrt hS_nonneg]
+  exact hterm
+
+/-- **One-edge cut estimate**: `|Hcut(f,e)| ≤ crossingTV(e)·√(local L²-window of f)`. -/
+lemma abs_Hcut_le_crossingTV_sqrt_local {a b e : ℤ} {B : ℕ} (J : ℤ → ℤ → ℝ) (f : ℤ → ℝ)
+    (he : e ∈ Finset.Icc a (b - 1))
+    (hstep : ∀ x ∈ Finset.Icc a b, ∀ y ∈ Finset.Icc a b, J x y ≠ 0 → Int.natAbs (y - x) ≤ B) :
+    |Hcut (Finset.Icc a b) J f e|
+      ≤ crossingTV (Finset.Icc a b) J e
+          * Real.sqrt (∑ x ∈ (Finset.Icc a b).filter (fun x : ℤ => nearEdge B e x), f x ^ 2) := by
+  classical
+  set I : Finset ℤ := Finset.Icc a b with hI
+  set S : Finset ℤ := I.filter (fun x : ℤ => nearEdge B e x) with hSdef
+  set R : ℝ := Real.sqrt (∑ x ∈ S, f x ^ 2) with hRdef
+  have hterm : ∀ x ∈ I, ∀ y ∈ I,
+      |J x y * f x * edgeSign e x y| ≤ |J x y| * |edgeSign e x y| * R := by
+    intro x hx y hy
+    by_cases hJ : J x y = 0
+    · simp [hJ]
+    · rw [abs_mul, abs_mul]
+      -- goal: |J x y| * |f x| * |edgeSign e x y| ≤ |J x y| * |edgeSign e x y| * R
+      by_cases hsgn0 : edgeSign e x y = 0
+      · rw [hsgn0]; simp
+      · have hxnear : nearEdge B e x := by
+          unfold edgeSign at hsgn0
+          split_ifs at hsgn0 with h1 h2
+          · exact nearEdge_of_cross_left h1 (hstep x hx y hy hJ)
+          · exact nearEdge_of_cross_right h2 (hstep x hx y hy hJ)
+          · exact absurd rfl hsgn0
+        have hxS : x ∈ S := by rw [hSdef, Finset.mem_filter]; exact ⟨hx, hxnear⟩
+        have hfx : |f x| ≤ R := by
+          rw [hRdef, hSdef]; exact abs_le_sqrt_local_l2 f (by rw [← hSdef]; exact hxS)
+        have hJnn : 0 ≤ |J x y| := abs_nonneg _
+        have hsnn : 0 ≤ |edgeSign e x y| := abs_nonneg _
+        nlinarith [mul_nonneg (mul_nonneg hJnn hsnn) (sub_nonneg.mpr hfx), hfx, hJnn, hsnn]
+  have hsum_abs : |∑ x ∈ I, ∑ y ∈ I, J x y * f x * edgeSign e x y|
+      ≤ ∑ x ∈ I, ∑ y ∈ I, |J x y| * |edgeSign e x y| * R := by
+    calc |∑ x ∈ I, ∑ y ∈ I, J x y * f x * edgeSign e x y|
+          ≤ ∑ x ∈ I, |∑ y ∈ I, J x y * f x * edgeSign e x y| := Finset.abs_sum_le_sum_abs _ _
+      _ ≤ ∑ x ∈ I, ∑ y ∈ I, |J x y * f x * edgeSign e x y| := by
+            refine Finset.sum_le_sum (fun x _ => Finset.abs_sum_le_sum_abs _ _)
+      _ ≤ ∑ x ∈ I, ∑ y ∈ I, |J x y| * |edgeSign e x y| * R := by
+            refine Finset.sum_le_sum (fun x hx => Finset.sum_le_sum (fun y hy => hterm x hx y hy))
+  have hfactor : (∑ x ∈ I, ∑ y ∈ I, |J x y| * |edgeSign e x y| * R)
+      = (∑ x ∈ I, ∑ y ∈ I, |J x y| * |edgeSign e x y|) * R := by
+    rw [Finset.sum_mul]
+    refine Finset.sum_congr rfl (fun x _ => ?_)
+    rw [Finset.sum_mul]
+  have hH : |Hcut I J f e| ≤ crossingTV I J e * R := by
+    unfold Hcut crossingTV
+    rw [abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 1 / 2)]
+    calc (1 / 2 : ℝ) * |∑ x ∈ I, ∑ y ∈ I, J x y * f x * edgeSign e x y|
+          ≤ (1 / 2 : ℝ) * (∑ x ∈ I, ∑ y ∈ I, |J x y| * |edgeSign e x y| * R) :=
+            mul_le_mul_of_nonneg_left hsum_abs (by norm_num)
+      _ = (1 / 2 : ℝ) * (∑ x ∈ I, ∑ y ∈ I, |J x y| * |edgeSign e x y|) * R := by
+            rw [hfactor]; ring
+  rw [hRdef, hSdef, hI] at hH ⊢
+  exact hH
+
+/-- **Local-window multiplicity**: each point lies in `≤ 2B+3` edge windows. -/
+lemma nearEdge_multiplicity_le {a b : ℤ} (B : ℕ) (f : ℤ → ℝ) :
+    ∑ e ∈ Finset.Icc a (b - 1),
+      ∑ x ∈ (Finset.Icc a b).filter (fun x : ℤ => nearEdge B e x), f x ^ 2
+      ≤ ((2 * B + 3 : ℕ) : ℝ) * ∑ x ∈ Finset.Icc a b, f x ^ 2 := by
+  classical
+  have hinner : ∀ x ∈ Finset.Icc a b,
+      (∑ e ∈ Finset.Icc a (b - 1), if nearEdge B e x then f x ^ 2 else 0)
+        ≤ ((2 * B + 3 : ℕ) : ℝ) * f x ^ 2 := by
+    intro x hx
+    have hsum_eq : (∑ e ∈ Finset.Icc a (b - 1), if nearEdge B e x then f x ^ 2 else 0)
+        = (((Finset.Icc a (b - 1)).filter (fun e : ℤ => nearEdge B e x)).card : ℝ) * f x ^ 2 := by
+      rw [← Finset.sum_filter]; simp [nsmul_eq_mul]
+    rw [hsum_eq]
+    have hcardR : (((Finset.Icc a (b - 1)).filter (fun e : ℤ => nearEdge B e x)).card : ℝ)
+        ≤ ((2 * B + 3 : ℕ) : ℝ) := by exact_mod_cast nearEdge_edge_card_le (a := a) (b := b) (x := x) B
+    exact mul_le_mul_of_nonneg_right hcardR (sq_nonneg (f x))
+  calc ∑ e ∈ Finset.Icc a (b - 1),
+        ∑ x ∈ (Finset.Icc a b).filter (fun x : ℤ => nearEdge B e x), f x ^ 2
+        = ∑ e ∈ Finset.Icc a (b - 1), ∑ x ∈ Finset.Icc a b, if nearEdge B e x then f x ^ 2 else 0 := by
+        refine Finset.sum_congr rfl (fun e _ => ?_)
+        rw [Finset.sum_filter]
+    _ = ∑ x ∈ Finset.Icc a b, ∑ e ∈ Finset.Icc a (b - 1), if nearEdge B e x then f x ^ 2 else 0 := by
+        rw [Finset.sum_comm]
+    _ ≤ ∑ x ∈ Finset.Icc a b, ((2 * B + 3 : ℕ) : ℝ) * f x ^ 2 :=
+        Finset.sum_le_sum hinner
+    _ = ((2 * B + 3 : ℕ) : ℝ) * ∑ x ∈ Finset.Icc a b, f x ^ 2 := by rw [Finset.mul_sum]
+
+/-- **Hardy estimate** `∑ Hcut² ≤ 16BΓ²L²·E_edge` (discharges `sector_bound_from_Hcut_on`'s `hH`).
+The energy uses the boundary edge `Icc (a-1) (b-1)` (ac R15 correction: a constant has zero internal
+edge energy but nonzero `Hcut`). -/
+theorem Hcut_l2_le_boundary {a b : ℤ} (hab : a ≤ b) (B : ℕ) (Γ L : ℝ)
+    (J : ℤ → ℤ → ℝ) (f : ℤ → ℝ) (hBpos : 1 ≤ B)
+    (hLen : ((b - a + 2 : ℤ).toNat : ℝ) ≤ L) (hbase : f (a - 1) = 0)
+    (hstep : ∀ x ∈ Finset.Icc a b, ∀ y ∈ Finset.Icc a b, J x y ≠ 0 → Int.natAbs (y - x) ≤ B)
+    (hΓ : ∀ e ∈ Finset.Icc a (b - 1), crossingTV (Finset.Icc a b) J e ≤ Γ) :
+    ∑ e ∈ Finset.Icc a (b - 1), (Hcut (Finset.Icc a b) J f e) ^ 2
+      ≤ 16 * (B : ℝ) * Γ ^ 2 * L ^ 2 * edgeEnergyOn (Finset.Icc (a - 1) (b - 1)) f := by
+  classical
+  have hpoint : ∀ e ∈ Finset.Icc a (b - 1),
+      (Hcut (Finset.Icc a b) J f e) ^ 2
+        ≤ Γ ^ 2 * ∑ x ∈ (Finset.Icc a b).filter (fun x : ℤ => nearEdge B e x), f x ^ 2 := by
+    intro e he
+    have h1 := abs_Hcut_le_crossingTV_sqrt_local (a := a) (b := b) (e := e) (B := B) J f he hstep
+    have hloc_nonneg : 0 ≤ ∑ x ∈ (Finset.Icc a b).filter (fun x : ℤ => nearEdge B e x), f x ^ 2 :=
+      Finset.sum_nonneg (fun x _ => sq_nonneg _)
+    have habs : |Hcut (Finset.Icc a b) J f e|
+        ≤ Γ * Real.sqrt (∑ x ∈ (Finset.Icc a b).filter (fun x : ℤ => nearEdge B e x), f x ^ 2) :=
+      le_trans h1 (mul_le_mul_of_nonneg_right (hΓ e he) (Real.sqrt_nonneg _))
+    calc (Hcut (Finset.Icc a b) J f e) ^ 2
+          = |Hcut (Finset.Icc a b) J f e| ^ 2 := (sq_abs _).symm
+      _ ≤ (Γ * Real.sqrt (∑ x ∈ (Finset.Icc a b).filter (fun x : ℤ => nearEdge B e x), f x ^ 2)) ^ 2 :=
+            pow_le_pow_left₀ (abs_nonneg _) habs 2
+      _ = Γ ^ 2 * ∑ x ∈ (Finset.Icc a b).filter (fun x : ℤ => nearEdge B e x), f x ^ 2 := by
+            rw [mul_pow, Real.sq_sqrt hloc_nonneg]
+  have hEnn : 0 ≤ edgeEnergyOn (Finset.Icc (a - 1) (b - 1)) f :=
+    Finset.sum_nonneg (fun e _ => sq_nonneg _)
+  have hpoinc : ∑ x ∈ Finset.Icc a b, f x ^ 2
+      ≤ L ^ 2 * edgeEnergyOn (Finset.Icc (a - 1) (b - 1)) f := by
+    have h := interval_l2_le_L2_edgeEnergy hab f hbase
+    have hE : edgeEnergyOn (Finset.Icc (a - 1) (b - 1)) f
+        = ∑ e ∈ Finset.Icc (a - 1) (b - 1), (f (e + 1) - f e) ^ 2 := by
+      simp only [edgeEnergyOn, grad]
+    rw [hE]
+    have hMsq : (((b - a + 2 : ℤ).toNat : ℝ)) ^ 2 ≤ L ^ 2 := pow_le_pow_left₀ (by positivity) hLen 2
+    have hEnn' : 0 ≤ ∑ e ∈ Finset.Icc (a - 1) (b - 1), (f (e + 1) - f e) ^ 2 :=
+      Finset.sum_nonneg (fun e _ => sq_nonneg _)
+    exact le_trans h (mul_le_mul_of_nonneg_right hMsq hEnn')
+  calc ∑ e ∈ Finset.Icc a (b - 1), (Hcut (Finset.Icc a b) J f e) ^ 2
+        ≤ ∑ e ∈ Finset.Icc a (b - 1),
+            Γ ^ 2 * ∑ x ∈ (Finset.Icc a b).filter (fun x : ℤ => nearEdge B e x), f x ^ 2 :=
+        Finset.sum_le_sum hpoint
+    _ = Γ ^ 2 * ∑ e ∈ Finset.Icc a (b - 1),
+            ∑ x ∈ (Finset.Icc a b).filter (fun x : ℤ => nearEdge B e x), f x ^ 2 := by
+        rw [Finset.mul_sum]
+    _ ≤ Γ ^ 2 * (((2 * B + 3 : ℕ) : ℝ) * ∑ x ∈ Finset.Icc a b, f x ^ 2) :=
+        mul_le_mul_of_nonneg_left (nearEdge_multiplicity_le B f) (sq_nonneg Γ)
+    _ ≤ Γ ^ 2 * (((2 * B + 3 : ℕ) : ℝ) * (L ^ 2 * edgeEnergyOn (Finset.Icc (a - 1) (b - 1)) f)) := by
+        have h23 : (0 : ℝ) ≤ ((2 * B + 3 : ℕ) : ℝ) := by positivity
+        exact mul_le_mul_of_nonneg_left
+          (mul_le_mul_of_nonneg_left hpoinc h23) (sq_nonneg Γ)
+    _ ≤ 16 * (B : ℝ) * Γ ^ 2 * L ^ 2 * edgeEnergyOn (Finset.Icc (a - 1) (b - 1)) f := by
+        have hB : ((2 * B + 3 : ℕ) : ℝ) ≤ 16 * (B : ℝ) := by
+          have : 2 * B + 3 ≤ 16 * B := by omega
+          exact_mod_cast this
+        have hLE : 0 ≤ L ^ 2 * edgeEnergyOn (Finset.Icc (a - 1) (b - 1)) f :=
+          mul_nonneg (sq_nonneg L) hEnn
+        calc Γ ^ 2 * (((2 * B + 3 : ℕ) : ℝ) * (L ^ 2 * edgeEnergyOn (Finset.Icc (a - 1) (b - 1)) f))
+              ≤ Γ ^ 2 * (16 * (B : ℝ) * (L ^ 2 * edgeEnergyOn (Finset.Icc (a - 1) (b - 1)) f)) :=
+              mul_le_mul_of_nonneg_left (mul_le_mul_of_nonneg_right hB hLE) (sq_nonneg Γ)
+          _ = 16 * (B : ℝ) * Γ ^ 2 * L ^ 2 * edgeEnergyOn (Finset.Icc (a - 1) (b - 1)) f := by ring
 
 end AnalyticCombinatorics.Ch8.Partitions.Erdos
