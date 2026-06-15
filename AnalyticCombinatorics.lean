@@ -280,6 +280,7 @@ import AnalyticCombinatorics.Ch8.Partitions.CeilingEscapeClose
 -- Hardy–Ramanujan exact constant `a = 1/(4√3)` (bricks 2–5, unconditional in the Riemann error)
 import AnalyticCombinatorics.Ch8.Partitions.ErdosRiemannError
 import AnalyticCombinatorics.Ch8.Partitions.SoftTailDrift
+import AnalyticCombinatorics.Ch8.Partitions.OccupationTransfer
 
 /-!
 # AnalyticCombinatorics
