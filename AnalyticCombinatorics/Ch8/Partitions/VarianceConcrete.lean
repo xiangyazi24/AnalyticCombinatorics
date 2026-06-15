@@ -116,6 +116,63 @@ lemma sqrt_decrement_upper {x k : ℕ} {ρ : ℝ} (hk : k < x) (hρ0 : 0 ≤ ρ)
   -- (√x-√k)·√x·(1+ρ) ≤ (√x-√k)(√x+√k)
   nlinarith [mul_nonneg (sub_nonneg.mpr hsk) (sub_nonneg.mpr hkge), hsx, hρ0]
 
+/-- `⌊√x⌋ ≥ (4/5)√x` for `x ≥ 25`. -/
+lemma sqrt_floor_lower {x : ℕ} (hx : 25 ≤ x) :
+    (4 : ℝ) / 5 * Real.sqrt (x : ℝ) ≤ (Nat.sqrt x : ℝ) := by
+  have hlt : Real.sqrt (x : ℝ) < (Nat.sqrt x : ℝ) + 1 := by
+    rw [Real.sqrt_lt' (by positivity), sq]
+    exact_mod_cast Nat.lt_succ_sqrt x
+  have h5 : (5 : ℝ) ≤ Real.sqrt (x : ℝ) := by
+    rw [show (5 : ℝ) = Real.sqrt 25 by
+      rw [show (25 : ℝ) = 5 ^ 2 by norm_num, Real.sqrt_sq (by norm_num)]]
+    exact Real.sqrt_le_sqrt (by exact_mod_cast hx)
+  linarith
+
+/-- For `b ≥ y − 5⌊√y⌋/4` with `y ≥ 25`, the predecessor satisfies `√b ≥ (5/6)√y`. -/
+lemma sqrt_ge_low {y b : ℕ} (hy : 25 ≤ y) (hb : y - 5 * Nat.sqrt y / 4 ≤ b) :
+    (5 : ℝ) / 6 * Real.sqrt (y : ℝ) ≤ Real.sqrt (b : ℝ) := by
+  set t := Nat.sqrt y with ht
+  have ht5 : 5 ≤ t := by
+    rw [ht]; calc 5 = Nat.sqrt 25 := by norm_num
+      _ ≤ Nat.sqrt y := Nat.sqrt_le_sqrt hy
+  have ht1 : 1 ≤ t := by omega
+  have htty : t * t ≤ y := by rw [ht, ← pow_two]; exact Nat.sqrt_le' y
+  have h5ty : 5 * t / 4 ≤ y := by
+    have h5t : 5 * t ≤ y := le_trans (by nlinarith [ht5]) htty
+    omega
+  have htroot : (t : ℝ) ≤ Real.sqrt (y : ℝ) := by
+    rw [show (t : ℝ) = Real.sqrt ((t : ℝ) * (t : ℝ)) from (Real.sqrt_mul_self (by positivity)).symm]
+    exact Real.sqrt_le_sqrt (by exact_mod_cast htty)
+  -- 25y/36 ≤ b
+  have hbig : (25 : ℝ) / 36 * (y : ℝ) ≤ (b : ℝ) := by
+    have hyb : (y : ℝ) - 5 / 4 * (t : ℝ) ≤ (b : ℝ) := by
+      have hcast : ((y - 5 * t / 4 : ℕ) : ℝ) ≤ (b : ℝ) := by exact_mod_cast hb
+      have hle : ((y - 5 * t / 4 : ℕ) : ℝ) = (y : ℝ) - ((5 * t / 4 : ℕ) : ℝ) := by
+        rw [Nat.cast_sub (by omega)]
+      have hdiv : ((5 * t / 4 : ℕ) : ℝ) ≤ 5 / 4 * (t : ℝ) := by
+        have : (5 * t / 4 : ℕ) ≤ 5 * t / 4 + 0 := by omega
+        have h2 : ((5 * t / 4 : ℕ) : ℝ) * 4 ≤ 5 * (t : ℝ) := by
+          have := Nat.div_mul_le_self (5 * t) 4
+          have : ((5 * t / 4 * 4 : ℕ) : ℝ) ≤ ((5 * t : ℕ) : ℝ) := by exact_mod_cast this
+          push_cast at this; linarith
+        linarith
+      rw [hle] at hcast; linarith
+    -- y - 5/4 t ≥ y - 5/4 √y ≥ 25/36 y  (since √y ≥ 5, y ≥ 25 ⟹ (11/36)y ≥ 5/4 √y)
+    have hsqy : Real.sqrt (y : ℝ) ≤ (y : ℝ) / 5 := by
+      have h5 : (5 : ℝ) ≤ Real.sqrt (y : ℝ) := by
+        rw [show (5 : ℝ) = Real.sqrt 25 by
+          rw [show (25 : ℝ) = 5 ^ 2 by norm_num, Real.sqrt_sq (by norm_num)]]
+        exact Real.sqrt_le_sqrt (by exact_mod_cast hy)
+      have hsq : Real.sqrt (y : ℝ) ^ 2 = (y : ℝ) := Real.sq_sqrt (by positivity)
+      nlinarith [hsq, h5, Real.sqrt_nonneg (y : ℝ)]
+    have htle : (t : ℝ) ≤ (y : ℝ) / 5 := le_trans htroot hsqy
+    nlinarith [hyb, htle]
+  -- √b ≥ √(25y/36) = 5/6 √y
+  have hsqrt : Real.sqrt ((25 : ℝ) / 36 * (y : ℝ)) ≤ Real.sqrt (b : ℝ) := Real.sqrt_le_sqrt hbig
+  rw [show (25 : ℝ) / 36 * (y : ℝ) = (5 / 6) ^ 2 * (y : ℝ) by norm_num,
+    Real.sqrt_mul (by positivity), Real.sqrt_sq (by norm_num)] at hsqrt
+  exact hsqrt
+
 /-- For `k ≥ x − 2⌊√x⌋` with `x ≥ 16`, the predecessor satisfies `√k ≥ (7/10)√x`. -/
 lemma sqrt_ge_of_window {x k : ℕ} (hx16 : 16 ≤ x) (hk : x - 2 * Nat.sqrt x ≤ k) :
     (7 : ℝ) / 10 * Real.sqrt (x : ℝ) ≤ Real.sqrt (k : ℝ) := by
