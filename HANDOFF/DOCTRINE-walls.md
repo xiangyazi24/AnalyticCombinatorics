@@ -626,3 +626,36 @@ abs_drift_le_soft stays banked as general infra but is NOT the closing route; th
 (ac2 KhatRes-bridge query failed to capture — re-dispatch when needed.)
 NOTE 06-14: uisai2 remote Lean build server began refusing SSH mid-session (host up, sshd refusing —
 likely MaxStartups throttle from concurrent ssh or load). Blocks all Lean verification until restored.
+
+## ROUTE-A DEAD + route-B structure clarified (Opus + ChatGPT ac R3, 06-14)
+Re-attacked the occupation→coalescence closure. Built route-independent transfer primitives
+(OccupationTransfer.lean: distPow_L1_le — t-step laws within per-step L¹ ε differ by ≤t·ε;
+occupation_transfer — window-occ transfers between kernels, discrepancy (∑t)·ε). Both clean-3.
+
+DECISIVE FINDING (route A = truncate-K̂res-at-fixed-b + transfer is DEAD):
+ - occupation_unbounded_loc/eta give occ of {|D|≤b} with b = the increment bound; to lower-bound the
+   FIXED coalescence window {|D|≤W} need b ≤ W. That needs hbinc(b) for small b.
+ - Truncating K̂res at fixed b≤W removes the per-step mass ρ = P(|ΔD|>b). For the Erdős kernel the
+   rank-drop tail is P(drop>b) ~ e^{-cb} = CONSTANT in r (NOT ~1/r²). weighted_far_erdos_tail_le only
+   bounds drop > n^{2/3} (mass ~1/n), i.e. a GROWING threshold, not fixed b.
+ - So truncation drift-perturbation η_tr = η + 4Rρ/(1−ρ) ~ R·ρ ~ r·const, and 2R·η_tr ~ r²·const → ∞
+   ≫ v0. Hence v0_tr − 2R·η_tr < 0: occupation_unbounded_loc's hv' FAILS. Route A cannot apply.
+ - ChatGPT ac R3 confirmed: route A valid only if ρ ≲ 1/R²; here ρ~const, so DEAD.
+
+TWO SEPARATE obstructions, correctly disentangled:
+ (a) TANAKA/skip: window-occupation local time needs bounded increment (to cross {|D|≤W} you must
+     LAND in it); soft far jumps SKIP the window → the local-time = occupation identity breaks. This is
+     what the Φ_W DEFECT (R2) fixes: Φ_W(d)=max(|d|−W,0) counts crossings robustly to skips.
+ (b) 4th moment / horizon: PZ needs E[D_T⁴] ≤ C(v0T)² (quadratic, → const horizon). The banked
+     quadratic 4th moment (fourth_moment_le_quadratic) needs EXACT mart + bounded incr. The η-robust
+     occupation uses the TRIVIAL R⁴ → horizon ~R⁶ (useless). BUT: the Erdős increment has a FINITE 4th
+     moment (e^{-cs} drop tail ⟹ ∑_s e^{-cs}s⁴ = const), so E[D_T⁴] ≤ C(v0T)² + C'T holds via a
+     FINITE-4th-MOMENT hypothesis (∑_z K x z (Dz−Dx)⁴ ≤ B₄ uniform) — NO truncation needed. The current
+     bricks are stated with "bounded increment b"; the right generalization is "finite per-step 4th
+     moment B₄" (+ for Tanaka, the Φ_W defect instead of the indicator window).
+
+⇒ CORRECT PATH (route B, no truncation): Φ_W-defect Tanaka (skip-robust) + finite-4th-moment PZ
+  (const horizon) + a new coalescence bridge from crossing-defect → one-step coalescence mass. Uses the
+  REAL η~1/r² (small, so v0−2Rη = v0−2/r > 0 ✓ — no truncation catastrophe). Concrete moments needed:
+  v0>0 (rank-diff local variance), η~1/r² (two_term_local_lip, banked), B₄ (per-step 4th moment, from
+  the e^{-cs} tail). The v0 second-moment is the likely genuine new analytic input (ac2 R3 pending).
