@@ -179,6 +179,80 @@ lemma stepWeight_toSteps : ∀ (h n : ℕ) (p : MotzkinPath h n) (a b c : ℕ �
         ihInner (shift a) (shift b) (shift c), ihRest a b c]
       ring
 
+/-- **First-passage decomposition** (the cycle lemma): a valid walk from level `L ≥ 1` that reaches
+level `L-1` splits as `M ++ down :: B`, where `M` (read at floor `L-1`) is a balanced walk that never
+dips below `L-1` (the first excursion), the `down` is the first crossing to `L-1`, and `B` is the
+remainder from level `L-1`.  Strong induction on length; an `up` step triggers a double split. -/
+lemma first_passage {h : ℕ} : ∀ (n : ℕ) (q : List Step) (L : ℕ), q.length = n → 1 ≤ L →
+    Walk (h + 1) L q → endLevel L q ≤ L - 1 →
+    ∃ M B, q = M ++ Step.down :: B
+      ∧ Walk h (L - 1) M ∧ endLevel (L - 1) M = L - 1
+      ∧ Walk (h + 1) (L - 1) B ∧ endLevel (L - 1) B = endLevel L q := by
+  intro n
+  induction n using Nat.strong_induction_on with
+  | _ n IH =>
+    intro q L hlen hL hw hend
+    cases hw with
+    | nil =>
+        simp only [endLevel_nil] at hend; omega
+    | @level _ rest sub =>
+        -- q = level :: rest, stays at L
+        have hend' : endLevel L rest ≤ L - 1 := by
+          simpa [endLevel_cons, Step.nextLevel] using hend
+        have hrlt : rest.length < n := by
+          have h := hlen; simp only [List.length_cons] at h; omega
+        obtain ⟨M, B, hsplit, hWM, hEM, hWB, hEB⟩ :=
+          IH rest.length hrlt rest L rfl hL sub hend'
+        refine ⟨Step.level :: M, B, by rw [hsplit]; rfl, Walk.level hWM, ?_, hWB, ?_⟩
+        · simpa [endLevel_cons, Step.nextLevel] using hEM
+        · simpa [endLevel_cons, Step.nextLevel] using hEB
+    | @down s rest sub =>
+        -- q = down :: rest, L = s + 1, first step is the crossing
+        refine ⟨[], rest, rfl, Walk.nil, by simp [endLevel_nil], ?_, ?_⟩
+        · simpa [Nat.add_sub_cancel] using sub
+        · simp only [endLevel_cons, Step.nextLevel, Nat.add_sub_cancel]
+    | @up _ rest hle sub =>
+        -- q = up :: rest, after up we are at L+1; double split
+        have hrlt : rest.length < n := by
+          have h := hlen; simp only [List.length_cons] at h; omega
+        have hend1 : endLevel (L + 1) rest ≤ (L + 1) - 1 := by
+          have : endLevel L (Step.up :: rest) ≤ L - 1 := hend
+          simp only [endLevel_cons, Step.nextLevel] at this
+          omega
+        obtain ⟨M1, rest1, hsp1, hWM1, hEM1, hWr1, hEr1⟩ :=
+          IH rest.length hrlt rest (L + 1) rfl (by omega) sub hend1
+        have hr1len : rest1.length < n := by
+          have h1 : rest1.length < rest.length := by
+            rw [hsp1]; simp only [List.length_append, List.length_cons]; omega
+          omega
+        have hWr1' : Walk (h + 1) L rest1 := by simpa [Nat.add_sub_cancel] using hWr1
+        have hEr1' : endLevel L rest1 ≤ L - 1 := by
+          have hee : endLevel L rest1 = endLevel (L + 1) rest := by
+            simpa [Nat.add_sub_cancel] using hEr1
+          rw [hee]
+          have : endLevel L (Step.up :: rest) ≤ L - 1 := hend
+          simpa [endLevel_cons, Step.nextLevel] using this
+        obtain ⟨M2, B, hsp2, hWM2, hEM2, hWB, hEB⟩ :=
+          IH rest1.length hr1len rest1 L rfl hL hWr1' hEr1'
+        refine ⟨Step.up :: (M1 ++ Step.down :: M2), B, ?_, ?_, ?_, ?_, ?_⟩
+        · rw [hsp1, hsp2]; simp [List.append_assoc]
+        · have hsm1 : Walk h L M1 := by simpa [Nat.add_sub_cancel] using hWM1
+          have hsm1e : endLevel L M1 = L := by simpa [Nat.add_sub_cancel] using hEM1
+          have hdn : Walk h L (Step.down :: M2) := by
+            have hd := Walk.down hWM2
+            rwa [Nat.sub_add_cancel hL] at hd
+          refine Walk.up (by omega) ?_
+          rw [Nat.sub_add_cancel hL]
+          exact Walk_append hsm1 (by rw [hsm1e]; exact hdn)
+        · have hsm1e : endLevel L M1 = L := by simpa [Nat.add_sub_cancel] using hEM1
+          simp only [endLevel_cons, Step.nextLevel, Nat.sub_add_cancel hL,
+            endLevel_append, hsm1e, hEM2]
+        · exact hWB
+        · rw [hEB]
+          have hee : endLevel L rest1 = endLevel (L + 1) rest := by
+            simpa [Nat.add_sub_cancel] using hEr1
+          rw [hee]; simp only [endLevel_cons, Step.nextLevel]
+
 end
 
 end AnalyticCombinatorics.Ch5.ContinuedFractions
