@@ -1037,3 +1037,94 @@ Cjump(a−Wgood+1)exp(−γjump(a−Wgood)); 2nd term vanishes for truncated ker
 NEXT after R19 verdict: if route survives, build #4,#5 (pure regrouping, framework-independent), then
 Layer C. If R19 says p_pair is illusory (non-reversible), pivot the denominator to a Green/hitting
 estimate (cut identity + crossingTV remain valid; only the closing ellipticity step changes).
+
+## R19 VERDICT (06-15): elliptic SECTOR FRAMEWORK IS A DEAD END for the single residual chain
+ChatGPT-Pro R19 (ac2, decisive + adversarial, explicit geometric numbers) PROVED the sector route
+cannot reach θ≤1/2 for the single residual chain on a positive window. The obstruction is structural:
+- On a positive window the chain is the DIRECTED SHIFT: resStep(d+1,d)=1 (deterministic descent),
+  resStep(d,d+1)=0 (no positive→up). The only up-move is the renewal row out of 0. NON-REVERSIBLE.
+- Edge conductance c(d) = π_d·K(d,d+1)+π_{d+1}·K(d+1,d) = π_{d+1} = τ_{d+1}/μ. The antisymmetric flow
+  |J(d,d+1)| = τ_{d+1}/μ = c(d) EXACTLY — the antisymmetric part IS the transport, not a small
+  perturbation. crossingTV(e) = c(e) edge-by-edge.
+- Hence Γ/p_ell = (max crossingTV)/(min c) = τ_{a+1}/τ_b = r^{-(b-a-1)} BLOWS UP in window WIDTH (not
+  location). θ_cut = 4L·τ_{a+1}/τ_b ≥ 4L ≥ 12 for any nontrivial window. Divergence correction worse.
+  Geometric p(d)=(1−r)r^{d-1}: τ_d=r^d, π_d=(1−r)r^d, c(d)=crossingTV(d)=(1−r)r^{d+1}, θ≈4(W+2)r^{-(W-1)}.
+- A weighted local comparison gives crossingTV(e)/c(e)=1 (antisymmetric COMPARABLE to symmetric, still
+  NOT small) — no perturbative θ≤1/2 either way.
+HONEST REPLACEMENT (ac2): direct oriented Green/Volterra. Killed Green kernel on [a,b] is EXPLICIT:
+K_I nilpotent deterministic ⇒ K_I^n(i,j)=1 iff j=i−n ⇒ G_I(i,j)=Σ_n K_I^n = 1_{a≤j≤i≤b}. So (I−K_I)u=h
+solves by Volterra u(i)=Σ_{j=a}^i h(j). No spectral gap, no tiny τ_b/μ denominator. π_d=τ_d/μ is the
+normalized occupation measure of ONE renewal cycle — the right analytic object. Conclusion: for the
+single chain the small-sector/elliptic framework is a dead end; use a renewal/Green-function argument
+exploiting directed descent + explicit cycle structure.
+
+CAVEAT (not yet resolved): R19 is the SINGLE chain (positive states pure-descend). The PAIR walk
+D=rnk x−rnk y is TWO-SIDED (D moves ± by the difference of two descents — birth-death-like, NOT a
+directed shift), so the single-chain obstruction may NOT transfer to the pair. R20 dispatched (ac2) to
+settle: does the pair D-projection escape (genuine reversible conductance) OR pivot entirely to the
+direct renewal/Green-Volterra route. THE ac TAB IS CROSS-CONTAMINATED (R19 came back answering a
+different project's ampU/DepthBudget/write_reach questions, prov=?) — do not use ac until reset.
+
+IMPACT on banked infra: sector_bound_with_divergence_on (6ef9ecf) + DProjection core (3e5abee) are
+correct clean-3 lemmas regardless; they remain useful IF the pair escapes (R20 pending). If R20 says
+pivot to Green/Volterra, the D-projection (πD/KD) likely still serves (pair→D reduction needed), but
+the elliptic sector bound becomes dormant rather than wrong.
+
+## R20 VERDICT (06-15): PIVOT to occupation/Green/coalescence — sector was the wrong battlefield
+ChatGPT-Pro R20 (ac2, repo-grounded, ALL claims verified present): the pair D=rnk x−rnk y walk BREAKS
+the single-chain obstruction — D'=D−X+Y is a centered TWO-SIDED symmetric difference walk, reversible
+w.r.t. counting measure; in the homogeneous equal-row model pairCrossingTV(e)=|m₊−m₋|=0 while
+conductance m₊+m₋>0 (ratio = IMBALANCE, not tail size). So the pair sector is NOT structurally
+impossible. BUT it is still the wrong battlefield: closing it would repackage the same approximate-
+symmetry/moment content as a hard antisymmetric-flux estimate with boundary bookkeeping — not shortest.
+
+REAL ROUTE (already the repo's active shape — verified files/theorems):
+  Pker_window_minor (ErdosMinorization:86) → umass_le_one_sub_occupation + overlap_ge_occupation
+  (ITEROccupation:37,63) → occupation_ge_green_tight (ITERGreen:117) + greenT_subsolution
+  (ITERGreenT:104) [reduce to ∑_{t<T} P(|D_t|≤W) ≳ 1/δ, Tanaka/Paley-Zygmund + η-robust for the
+  approx-martingale Erdős kernel] → harmonic_diff_le_overlap (HarmonicOverlap:46, |h(i)−h(j)|≤2B(1−overlap))
+  → center tracking/summable → erdos_partition_limit_exists_of_hit (ErdosLimit:24).
+Banked feeders: homogeneousRenewal_uniform_overshoot_overlap (T2.2), Pker_rankDrop_tail_majorant,
+Pker_rankDrop_minorization, Pker_window_minor, statOffset_stationary (cycle occupation measure, NOT a
+sector denominator).
+
+MAINLINE target theorem: umass_tendsto_zero_of_conditioned_D_occupation (or finite
+exists_time_umass_le_of_conditioned_occupation), consuming δ-minorization + conditioned occupation
+lower bound + goodMass=umass·conditionedGood + telescoping; then overlap_ge_occupation +
+harmonic_diff_le_overlap. New lemmas (occupation route, NOT sector):
+  conditioned_Kres_stochastic (K̂res=Kres/(1−cmass) stochastic on unmatched support) ·
+  goodMass_eq_umass_mul_conditionedGood · conditioned_occupation_forces_umass_small (contradiction) ·
+  Pker_unrounded_rankDiff_eta_martingale (D̃=3√X−3√Y, |E[ΔD̃]|≤η(r)→0; floor diff is NOT approx-mart) ·
+  Pker_rankDiff_localVariance · Pker_rankDiff_boundedIncrement_tail · conditioned_Kres_moment_transfer.
+
+INFRA disposition: DProjection (πD/massD/KD + sum_over_D_fibers) STAYS — pair→D fiber bookkeeping the
+occupation route needs (projected_goodMass_eq_fiber_sum etc.). sector_bound_with_divergence_on is
+correct-but-side infra, OFF critical path (keep compiling, don't force the chain into it). Sector
+campaign R10–R20 conclusion: detour; the real frontier is the occupation Green/Tanaka local-time bound.
+
+## ⚠️ RECONCILIATION (06-15): THE MAIN GOAL IS ALREADY CLOSED — sector route targets a closed goal
+While grounding the occupation pivot I checked the actual top-level theorem and VERIFIED:
+  `erdos_partition_limit_exists : ∃ a, 0 < a ∧ Tendsto u atTop (𝓝 a)` (CeilingEscapeClose.lean:146)
+is UNCONDITIONAL, **clean-3** (#print axioms = [propext, Classical.choice, Quot.sound]), 0 sorry. It is
+proven via `erdos_partition_limit_exists_of_escape CeilingEscape_of_rankDropTail_dropOne` — the R9
+CEILING-ESCAPE route — NOT the sector or Doeblin-walls route. The whole chain is clean-3:
+oneStep_deep_mass_le_rankDropTail, rankDrop_one_mass_offBand_ge, CeilingEscape_of_rankDropTail_dropOne.
+Statement is genuine HR: u n = n·part(n)·exp(−C√n), C = π√(2/3); limit a = 1/(4√3) ≈ 0.144 (HR
+leading order). NOT vacuous (no hypotheses), NOT axiom-backed, NOT trivially renormalized.
+
+The DOCTRINE head's "WALL 2 unsatisfiable (fixed B, e(R)→0)" subtlety was RESOLVED by the ceiling route:
+the band width is ceilA R → ∞ (GROWING), so escape mass e R = (1/η)·∑'_i U(ceilA R + i) → 0 as the tail
+of the summable rank-drop majorant U beyond a growing threshold. Growing band, not fixed band.
+
+CONSEQUENCE: `erdos_rankdiff_sector_input` is NEVER STATED as a theorem and NOTHING depends on it (grep:
+appears only in this DOCTRINE + docstrings of RenewalStationary/SectorBound). The sector/Green campaign
+(R10–R20) — and this session's work — targets a goal that R9 already closed. The R19/R20 finding (sector
+is the wrong battlefield; the occupation route is the repo's real shape) is correct AS FAR AS the
+unconditional limit goes, but the unconditional limit is ALREADY DONE via ceiling-escape; the occupation
+route is ALSO not needed for it.
+
+This is a coordination/staleness gap (the sector campaign continued past the R9 closure without noting
+it). Banked-this-session lemmas (sector_bound_with_divergence_on 6ef9ecf, DProjection 3e5abee) are
+correct clean-3 but are NOT on any critical path to the main theorem. STOPPED to reconcile with Xiang:
+is the sector/Green route wanted as an INDEPENDENT second proof (model-robust confirmation, or paper
+exhibit), or was this premise stale? Awaiting his call before any further sector/occupation building.
