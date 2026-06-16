@@ -236,6 +236,7 @@ import AnalyticCombinatorics.Ch4.Analytic.LogTransferNatural
 import AnalyticCombinatorics.Ch4.Analytic.OneSubCpowMul
 import AnalyticCombinatorics.Ch4.Analytic.LogSqTransfer
 import AnalyticCombinatorics.Ch4.Analytic.LogKCoeff
+import AnalyticCombinatorics.Ch4.Analytic.LogKFaithful
 import AnalyticCombinatorics.Ch4.Analytic.LogSqTransferNatural
 import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermPairBoth
 import AnalyticCombinatorics.Ch7.SingularityApp.Schroeder
@@ -1022,6 +1023,10 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.coeff_logKGF_succ_recurrence
 #print axioms AnalyticCombinatorics.logKCoeffℂ_succ_recurrence
 #print axioms AnalyticCombinatorics.coeff_logKGF_eq_logKCoeffℂ
+-- log^k faithfulness/analyticity: logKGF realizes (1-z)^{-α}(-log(1-z))^k on the unit ball + Δ-analytic.
+#print axioms AnalyticCombinatorics.logKGF_hasSum
+#print axioms AnalyticCombinatorics.logKSingularityFun_hasFPowerSeriesAt
+#print axioms AnalyticCombinatorics.analyticOnNhd_logKSingularityFun_deltaDomain
 #print axioms logSqSingularityScale_isEquivalent
 #print axioms AnalyticCombinatorics.logSq_transfer_theorem_strong_remainder_unconditional
 

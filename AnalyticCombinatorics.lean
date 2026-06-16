@@ -202,6 +202,7 @@ import AnalyticCombinatorics.Ch4.Analytic.OneSubCpowMul
 import AnalyticCombinatorics.Ch4.Analytic.LogSqSingularity
 import AnalyticCombinatorics.Ch4.Analytic.LogSqCoeff
 import AnalyticCombinatorics.Ch4.Analytic.LogKCoeff
+import AnalyticCombinatorics.Ch4.Analytic.LogKFaithful
 import AnalyticCombinatorics.Ch4.Analytic.LogSqTransfer
 import AnalyticCombinatorics.Ch4.Analytic.LogSqTransferNatural
 import AnalyticCombinatorics.Ch4.Analytic.SingularityGeneral
