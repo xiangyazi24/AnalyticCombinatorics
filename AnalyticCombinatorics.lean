@@ -199,6 +199,9 @@ import AnalyticCombinatorics.Ch4.Analytic.LogTransferBranch
 import AnalyticCombinatorics.Ch4.Analytic.LogFaithful
 import AnalyticCombinatorics.Ch4.Analytic.LogTransferNatural
 import AnalyticCombinatorics.Ch4.Analytic.OneSubCpowMul
+import AnalyticCombinatorics.Ch4.Analytic.LogSqSingularity
+import AnalyticCombinatorics.Ch4.Analytic.LogSqCoeff
+import AnalyticCombinatorics.Ch4.Analytic.LogSqTransfer
 import AnalyticCombinatorics.Ch4.Analytic.SingularityGeneral
 import AnalyticCombinatorics.Ch4.Analytic.CentralBinomial
 import AnalyticCombinatorics.Ch4.Analytic.Catalan

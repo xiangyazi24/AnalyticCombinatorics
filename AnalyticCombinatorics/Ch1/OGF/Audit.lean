@@ -233,6 +233,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermTuple
 import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleMarkedPermTuple
 import AnalyticCombinatorics.Ch4.Analytic.LogTransferNatural
 import AnalyticCombinatorics.Ch4.Analytic.OneSubCpowMul
+import AnalyticCombinatorics.Ch4.Analytic.LogSqTransfer
 import AnalyticCombinatorics.Ch7.SingularityApp.Schroeder
 import AnalyticCombinatorics.Ch7.SingularityApp.Riordan
 import AnalyticCombinatorics.Ch7.SingularityApp.TreeFunction
@@ -1006,6 +1007,12 @@ namespace AnalyticCombinatorics.Ch1
 -- Natural-remainder necessity at EVERY integer α=k≥2: undirectedCycle ⋆ perm^k,
 -- residual ‖·‖‖1-z‖^k→3/4≠0 (strong fails) but /log→0 ⇒ aₙ/n! ~ ½·n^{k-1}/(k-1)!·log n.
 #print axioms AnalyticCombinatorics.undirectedCycleMarkedPermTupleClass_counts_div_factorial_isEquivalent
+
+-- Ch4 SQUARED-logarithm singularity transfer: (1-z)^{-α}log²(1/(1-z)), strong residual o(|1-z|^{-α})
+-- ⇒ [zⁿ]f ~ C·n^{α-1}/Γ(α)·(log n)². Coeff identity via recurrence (2·logSingularityCoeff source).
+#print axioms AnalyticCombinatorics.coeff_logSqGF_eq_logSqSingularityCoeffℂ
+#print axioms logSqSingularityScale_isEquivalent
+#print axioms AnalyticCombinatorics.logSq_transfer_theorem_strong_remainder_unconditional
 
 -- Ch5 GENUINE supercritical-sequence schema (F&S V.2): the principal+remainder decomposition is now
 -- DERIVED from the supercritical data (C(ρ)=1, analytic, C'(ρ)≠0, ρ dominant), not assumed —
