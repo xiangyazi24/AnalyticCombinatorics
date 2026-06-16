@@ -235,6 +235,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleLogSqPermPair
 import AnalyticCombinatorics.Ch4.Analytic.LogTransferNatural
 import AnalyticCombinatorics.Ch4.Analytic.OneSubCpowMul
 import AnalyticCombinatorics.Ch4.Analytic.LogSqTransfer
+import AnalyticCombinatorics.Ch4.Analytic.LogKCoeff
 import AnalyticCombinatorics.Ch4.Analytic.LogSqTransferNatural
 import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermPairBoth
 import AnalyticCombinatorics.Ch7.SingularityApp.Schroeder
@@ -1014,6 +1015,13 @@ namespace AnalyticCombinatorics.Ch1
 -- Ch4 SQUARED-logarithm singularity transfer: (1-z)^{-α}log²(1/(1-z)), strong residual o(|1-z|^{-α})
 -- ⇒ [zⁿ]f ~ C·n^{α-1}/Γ(α)·(log n)². Coeff identity via recurrence (2·logSingularityCoeff source).
 #print axioms AnalyticCombinatorics.coeff_logSqGF_eq_logSqSingularityCoeffℂ
+
+-- General log^k coefficient-identity layer: GF (1-z)^{-α}·(-log(1-z))^k via ODE recurrence
+-- (n+1)T_k(n+1)=(α+n)T_k(n)+k·T_{k-1}(n), closed form k!·binCoeffℂ·e_k({(α+j)⁻¹}).
+#print axioms AnalyticCombinatorics.logKGF_two
+#print axioms AnalyticCombinatorics.coeff_logKGF_succ_recurrence
+#print axioms AnalyticCombinatorics.logKCoeffℂ_succ_recurrence
+#print axioms AnalyticCombinatorics.coeff_logKGF_eq_logKCoeffℂ
 #print axioms logSqSingularityScale_isEquivalent
 #print axioms AnalyticCombinatorics.logSq_transfer_theorem_strong_remainder_unconditional
 
