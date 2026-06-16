@@ -227,6 +227,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalan
 import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegular
 import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalanInstances
 import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularClass
+import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermPairs
 import AnalyticCombinatorics.Ch7.SingularityApp.Schroeder
 import AnalyticCombinatorics.Ch7.SingularityApp.Riordan
 import AnalyticCombinatorics.Ch7.SingularityApp.TreeFunction
@@ -971,6 +972,12 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms _root_.TwoRegularClass.undirectedCycle_card_of_three_le
 #print axioms _root_.TwoRegularClass.twoRegularClass_counts_eq_twoRegularGraphCount
 #print axioms _root_.TwoRegularClass.twoRegularClass_counts_div_factorial_isEquivalent
+
+-- Ch7 first application of the UNCONDITIONAL logarithmic transfer to a genuine labelled species:
+-- cycleMarkedPermPairClass = (CYC ⋆ SET(CYC)) ⋆ SET(CYC), EGF log(1/(1-z))·(1-z)^{-2} = logSingularityFun 2;
+-- formal identity mapℂ A.egf = logSingularityGF 2, then transfer at α=2, C=1, zero remainder ⇒ aₙ/n! ~ n log n.
+#print axioms AnalyticCombinatorics.mapℂ_cycleMarkedPermPairClass_egf
+#print axioms AnalyticCombinatorics.cycleMarkedPermPairClass_counts_div_factorial_isEquivalent
 
 -- Ch5 GENUINE supercritical-sequence schema (F&S V.2): the principal+remainder decomposition is now
 -- DERIVED from the supercritical data (C(ρ)=1, analytic, C'(ρ)≠0, ρ dominant), not assumed —
