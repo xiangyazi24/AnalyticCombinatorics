@@ -197,6 +197,7 @@ import AnalyticCombinatorics.Ch4.Analytic.LogTransfer
 import AnalyticCombinatorics.Ch4.Analytic.ComplexLogSeries
 import AnalyticCombinatorics.Ch4.Analytic.LogTransferBranch
 import AnalyticCombinatorics.Ch4.Analytic.LogFaithful
+import AnalyticCombinatorics.Ch4.Analytic.LogTransferNatural
 import AnalyticCombinatorics.Ch4.Analytic.SingularityGeneral
 import AnalyticCombinatorics.Ch4.Analytic.CentralBinomial
 import AnalyticCombinatorics.Ch4.Analytic.Catalan
