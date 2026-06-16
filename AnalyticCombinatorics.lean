@@ -256,6 +256,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularClass
 import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermPairs
 import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleMarkedPermPairs
 import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermTuple
+import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleMarkedPermTuple
 import AnalyticCombinatorics.Ch7.SingularityApp.Schroeder
 import AnalyticCombinatorics.Ch7.SingularityApp.Riordan
 import AnalyticCombinatorics.Ch7.SingularityApp.TreeFunction

@@ -230,6 +230,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularClass
 import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermPairs
 import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleMarkedPermPairs
 import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermTuple
+import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleMarkedPermTuple
 import AnalyticCombinatorics.Ch4.Analytic.LogTransferNatural
 import AnalyticCombinatorics.Ch4.Analytic.OneSubCpowMul
 import AnalyticCombinatorics.Ch7.SingularityApp.Schroeder
@@ -1001,6 +1002,10 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.oneSubCpowGF_add
 #print axioms AnalyticCombinatorics.mapℂ_cycleMarkedPermTupleClass_egf
 #print axioms AnalyticCombinatorics.cycleMarkedPermTupleClass_counts_div_factorial_isEquivalent
+
+-- Natural-remainder necessity at EVERY integer α=k≥2: undirectedCycle ⋆ perm^k,
+-- residual ‖·‖‖1-z‖^k→3/4≠0 (strong fails) but /log→0 ⇒ aₙ/n! ~ ½·n^{k-1}/(k-1)!·log n.
+#print axioms AnalyticCombinatorics.undirectedCycleMarkedPermTupleClass_counts_div_factorial_isEquivalent
 
 -- Ch5 GENUINE supercritical-sequence schema (F&S V.2): the principal+remainder decomposition is now
 -- DERIVED from the supercritical data (C(ρ)=1, analytic, C'(ρ)≠0, ρ dominant), not assumed —
