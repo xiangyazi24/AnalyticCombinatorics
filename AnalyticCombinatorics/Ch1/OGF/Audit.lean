@@ -228,6 +228,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegular
 import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalanInstances
 import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularClass
 import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermPairs
+import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleMarkedPermPairs
 import AnalyticCombinatorics.Ch4.Analytic.LogTransferNatural
 import AnalyticCombinatorics.Ch7.SingularityApp.Schroeder
 import AnalyticCombinatorics.Ch7.SingularityApp.Riordan
@@ -986,6 +987,12 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms coeff_norm_isLittleO_atTop_of_delta_littleO_log_beta_gt_one
 #print axioms log_transfer_theorem_natural_remainder
 #print axioms AnalyticCombinatorics.log_transfer_theorem_natural_remainder_unconditional
+
+-- First application that GENUINELY needs the natural remainder: (undirectedCycle ⋆ perm) ⋆ perm,
+-- EGF (½log(1/(1-z)) - z/2 - z²/4)(1-z)^{-2}; residual ‖·‖·‖1-z‖²→3/4≠0 (strong transfer fails)
+-- but /log(1/‖1-z‖)→0 (natural transfer applies) ⇒ aₙ/n! ~ ½·n·log n.
+#print axioms AnalyticCombinatorics.mapℂ_undirectedCycleMarkedPermPairClass_egf
+#print axioms AnalyticCombinatorics.undirectedCycleMarkedPermPairClass_counts_div_factorial_isEquivalent
 
 -- Ch5 GENUINE supercritical-sequence schema (F&S V.2): the principal+remainder decomposition is now
 -- DERIVED from the supercritical data (C(ρ)=1, analytic, C'(ρ)≠0, ρ dominant), not assumed —

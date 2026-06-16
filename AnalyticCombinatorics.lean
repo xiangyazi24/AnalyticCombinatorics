@@ -253,6 +253,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegular
 import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalanInstances
 import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularClass
 import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermPairs
+import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleMarkedPermPairs
 import AnalyticCombinatorics.Ch7.SingularityApp.Schroeder
 import AnalyticCombinatorics.Ch7.SingularityApp.Riordan
 import AnalyticCombinatorics.Ch7.SingularityApp.TreeFunction
