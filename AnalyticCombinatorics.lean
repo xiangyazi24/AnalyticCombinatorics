@@ -262,6 +262,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleMarkedPermPairs
 import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermTuple
 import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermPairBoth
 import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleMarkedPermTuple
+import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleLogSqPermPair
 import AnalyticCombinatorics.Ch7.SingularityApp.Schroeder
 import AnalyticCombinatorics.Ch7.SingularityApp.Riordan
 import AnalyticCombinatorics.Ch7.SingularityApp.TreeFunction

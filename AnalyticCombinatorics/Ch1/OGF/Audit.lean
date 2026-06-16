@@ -231,6 +231,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermPairs
 import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleMarkedPermPairs
 import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermTuple
 import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleMarkedPermTuple
+import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleLogSqPermPair
 import AnalyticCombinatorics.Ch4.Analytic.LogTransferNatural
 import AnalyticCombinatorics.Ch4.Analytic.OneSubCpowMul
 import AnalyticCombinatorics.Ch4.Analytic.LogSqTransfer
@@ -1022,6 +1023,12 @@ namespace AnalyticCombinatorics.Ch1
 -- Natural-remainder log² transfer (residual o(|1-z|^{-α}log²)) via the log²-weighted circle kernel.
 #print axioms coeff_norm_isLittleO_atTop_of_delta_littleO_logSq_beta_gt_one
 #print axioms AnalyticCombinatorics.logSq_transfer_theorem_natural_remainder
+
+-- log²-NEEDING application: undirectedCycle ⋆ (perm-pair with marked cycle), EGF (½L-z/2-z²/4)·L·(1-z)^{-2}.
+-- residual -(z/2+z²/4)·(1-z)^{-2}·L has ‖·‖‖1-z‖²≍|log(1-z)|→∞ (strong log² fails) but /log²→0
+-- (natural log² applies) ⇒ aₙ/n! ~ ½·n·(log n)².
+#print axioms AnalyticCombinatorics.mapℂ_undirectedCycleLogSqPermPairClass_egf
+#print axioms AnalyticCombinatorics.undirectedCycleLogSqPermPairClass_counts_div_factorial_isEquivalent
 
 -- Ch5 GENUINE supercritical-sequence schema (F&S V.2): the principal+remainder decomposition is now
 -- DERIVED from the supercritical data (C(ρ)=1, analytic, C'(ρ)≠0, ρ dominant), not assumed —
