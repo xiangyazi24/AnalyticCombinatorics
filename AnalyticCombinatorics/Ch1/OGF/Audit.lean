@@ -234,6 +234,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleMarkedPermTuple
 import AnalyticCombinatorics.Ch4.Analytic.LogTransferNatural
 import AnalyticCombinatorics.Ch4.Analytic.OneSubCpowMul
 import AnalyticCombinatorics.Ch4.Analytic.LogSqTransfer
+import AnalyticCombinatorics.Ch4.Analytic.LogSqTransferNatural
 import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermPairBoth
 import AnalyticCombinatorics.Ch7.SingularityApp.Schroeder
 import AnalyticCombinatorics.Ch7.SingularityApp.Riordan
@@ -1017,6 +1018,10 @@ namespace AnalyticCombinatorics.Ch1
 
 -- First log² combinatorial application: pair of perms each with a marked cycle ⇒ aₙ/n! ~ n·(log n)².
 #print axioms AnalyticCombinatorics.cycleMarkedPermPairBothClass_counts_div_factorial_isEquivalent
+
+-- Natural-remainder log² transfer (residual o(|1-z|^{-α}log²)) via the log²-weighted circle kernel.
+#print axioms coeff_norm_isLittleO_atTop_of_delta_littleO_logSq_beta_gt_one
+#print axioms AnalyticCombinatorics.logSq_transfer_theorem_natural_remainder
 
 -- Ch5 GENUINE supercritical-sequence schema (F&S V.2): the principal+remainder decomposition is now
 -- DERIVED from the supercritical data (C(ρ)=1, analytic, C'(ρ)≠0, ρ dominant), not assumed —
