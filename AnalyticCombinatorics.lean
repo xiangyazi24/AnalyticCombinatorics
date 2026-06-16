@@ -232,6 +232,7 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.ExpHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.BellHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.BellRealSaddle
 import AnalyticCombinatorics.Ch8.SaddlePoint.InvolutionRealSaddle
+import AnalyticCombinatorics.Ch8.SaddlePoint.Blocks3RealSaddle
 import AnalyticCombinatorics.Ch8.SaddlePoint.InvolutionHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.Blocks3HAdmissible
 import AnalyticCombinatorics.Ch5.Meromorphic.Transfer
