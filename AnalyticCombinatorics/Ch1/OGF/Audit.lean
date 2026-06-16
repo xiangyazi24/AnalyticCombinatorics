@@ -229,7 +229,9 @@ import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalanInstances
 import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularClass
 import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermPairs
 import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleMarkedPermPairs
+import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermTuple
 import AnalyticCombinatorics.Ch4.Analytic.LogTransferNatural
+import AnalyticCombinatorics.Ch4.Analytic.OneSubCpowMul
 import AnalyticCombinatorics.Ch7.SingularityApp.Schroeder
 import AnalyticCombinatorics.Ch7.SingularityApp.Riordan
 import AnalyticCombinatorics.Ch7.SingularityApp.TreeFunction
@@ -993,6 +995,12 @@ namespace AnalyticCombinatorics.Ch1
 -- but /log(1/‖1-z‖)→0 (natural transfer applies) ⇒ aₙ/n! ~ ½·n·log n.
 #print axioms AnalyticCombinatorics.mapℂ_undirectedCycleMarkedPermPairClass_egf
 #print axioms AnalyticCombinatorics.undirectedCycleMarkedPermPairClass_counts_div_factorial_isEquivalent
+
+-- Ch4 cpow exponent additivity (1-z)^{-α}(1-z)^{-β}=(1-z)^{-(α+β)} as formal series + the integer
+-- family of cycle-marked perm tuples: log(1/(1-z))(1-z)^{-k} ⇒ aₙ/n! ~ n^{k-1}/(k-1)!·log n (k≥2).
+#print axioms AnalyticCombinatorics.oneSubCpowGF_add
+#print axioms AnalyticCombinatorics.mapℂ_cycleMarkedPermTupleClass_egf
+#print axioms AnalyticCombinatorics.cycleMarkedPermTupleClass_counts_div_factorial_isEquivalent
 
 -- Ch5 GENUINE supercritical-sequence schema (F&S V.2): the principal+remainder decomposition is now
 -- DERIVED from the supercritical data (C(ρ)=1, analytic, C'(ρ)≠0, ρ dominant), not assumed —
