@@ -1029,6 +1029,9 @@ namespace AnalyticCombinatorics.Ch1
 -- (natural log² applies) ⇒ aₙ/n! ~ ½·n·(log n)².
 #print axioms AnalyticCombinatorics.mapℂ_undirectedCycleLogSqPermPairClass_egf
 #print axioms AnalyticCombinatorics.undirectedCycleLogSqPermPairClass_counts_div_factorial_isEquivalent
+-- and the certificate that this class genuinely NEEDS the natural (not strong) log² transfer:
+-- along z=1-1/(n+2), ‖R‖·‖1-z‖² = ‖z/2+z²/4‖·log(n+2) → ∞, so R is not o(|1-z|^{-2}).
+#print axioms AnalyticCombinatorics.logSqResidual_not_strong_remainder
 
 -- Ch5 GENUINE supercritical-sequence schema (F&S V.2): the principal+remainder decomposition is now
 -- DERIVED from the supercritical data (C(ρ)=1, analytic, C'(ρ)≠0, ρ dominant), not assumed —

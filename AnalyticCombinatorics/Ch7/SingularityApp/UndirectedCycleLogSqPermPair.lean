@@ -209,4 +209,235 @@ theorem undirectedCycleLogSqPermPairClass_counts_div_factorial_isEquivalent :
   rw [hLHS, hRHS] at htransfer
   exact ofReal_isEquivalent_iff.mp htransfer
 
+/-! ### This class genuinely NEEDS the natural transfer: the strong log² remainder fails.
+Along the real radial path `z = 1 - 1/(n+2) → 1`, `‖R(z)‖·‖1-z‖² = ‖z/2+z²/4‖·log(n+2) → ∞`,
+so `R` is not `o(|1-z|^{-2})` — the strong-remainder log² transfer cannot apply. -/
+
+/-- Positive radial approach to the dominant singularity. -/
+def radialSeq (n : ℕ) : ℂ :=
+  (((1 : ℝ) - ((n : ℝ) + 2)⁻¹ : ℝ) : ℂ)
+
+private lemma natCast_add_two_tendsto_atTop :
+    Tendsto (fun n : ℕ => (n : ℝ) + 2) atTop atTop := by
+  refine tendsto_atTop.2 ?_
+  intro b
+  have hb : ∀ᶠ n : ℕ in atTop, b - 2 ≤ (n : ℝ) :=
+    tendsto_natCast_atTop_atTop.eventually (eventually_ge_atTop (b - 2))
+  filter_upwards [hb] with n hn
+  linarith
+
+lemma radialSeq_tendsto_one :
+    Tendsto radialSeq atTop (𝓝 (1 : ℂ)) := by
+  have hinv :
+      Tendsto (fun n : ℕ => ((n : ℝ) + 2)⁻¹) atTop (𝓝 (0 : ℝ)) :=
+    tendsto_inv_atTop_zero.comp natCast_add_two_tendsto_atTop
+  have h0 :
+      Tendsto (fun n : ℕ => (1 : ℝ) - ((n : ℝ) + 2)⁻¹) atTop (𝓝 (1 : ℝ)) := by
+    simpa using tendsto_const_nhds.sub hinv
+  have hC := (Complex.continuous_ofReal.tendsto (1 : ℝ)).comp h0
+  simpa [radialSeq] using hC
+
+private lemma radialSeq_norm (n : ℕ) :
+    ‖radialSeq n‖ = 1 - ((n : ℝ) + 2)⁻¹ := by
+  have hn0 : (0 : ℝ) ≤ (n : ℝ) := by positivity
+  have hxpos : 0 < (n : ℝ) + 2 := by linarith
+  have hxone : (1 : ℝ) ≤ (n : ℝ) + 2 := by linarith
+  have hinv_le_one : ((n : ℝ) + 2)⁻¹ ≤ 1 := by
+    have hdiv : (1 : ℝ) / ((n : ℝ) + 2) ≤ 1 := by
+      rw [div_le_one hxpos]
+      exact hxone
+    simpa [one_div] using hdiv
+  have hnonneg : 0 ≤ 1 - ((n : ℝ) + 2)⁻¹ := by linarith
+  rw [radialSeq, Complex.norm_real, Real.norm_of_nonneg hnonneg]
+
+private lemma radialSeq_mem_delta (n : ℕ) :
+    radialSeq n ∈ DeltaDomainArg 2 (Real.pi / 4) := by
+  let r : ℝ := 1 - ((n : ℝ) + 2)⁻¹
+  have hn0 : (0 : ℝ) ≤ (n : ℝ) := by positivity
+  have hxpos : 0 < (n : ℝ) + 2 := by linarith
+  have hinvpos : 0 < ((n : ℝ) + 2)⁻¹ := inv_pos.mpr hxpos
+  have hr1 : r < 1 := by
+    dsimp [r]
+    linarith
+  have hrR : r < (2 : ℝ) := by linarith
+  have hφ0 : 0 < Real.pi / 4 := by positivity
+  have hφ2 : Real.pi / 4 < Real.pi / 2 := by linarith [Real.pi_pos]
+  have hmem : radialSeq n ∈ Metric.closedBall (0 : ℂ) r := by
+    rw [Metric.mem_closedBall, dist_eq_norm, sub_zero, radialSeq_norm]
+  exact closedBall_subset_deltaDomain
+    (R := (2 : ℝ)) (φ := Real.pi / 4) (r := r) hr1 hrR hφ0 hφ2 hmem
+
+lemma radialSeq_mem_delta_eventually :
+    ∀ᶠ n : ℕ in atTop, radialSeq n ∈ DeltaDomainArg 2 (Real.pi / 4) :=
+  Eventually.of_forall radialSeq_mem_delta
+
+lemma radialSeq_tendsto_delta :
+    Tendsto radialSeq atTop (𝓝[DeltaDomainArg 2 (Real.pi / 4)] (1 : ℂ)) := by
+  rw [tendsto_nhdsWithin_iff]
+  exact ⟨radialSeq_tendsto_one, radialSeq_mem_delta_eventually⟩
+
+private lemma radialSeq_one_sub (n : ℕ) :
+    (1 : ℂ) - radialSeq n = (((n : ℝ) + 2)⁻¹ : ℂ) := by
+  simp [radialSeq]
+
+private lemma radialSeq_logSingularity_norm_mul (n : ℕ) :
+    ‖logSingularityFun ((2 : ℝ) : ℂ) (radialSeq n)‖ *
+        ‖(1 : ℂ) - radialSeq n‖ ^ (2 : ℝ)
+      =
+    Real.log ((n : ℝ) + 2) := by
+  set x : ℝ := (n : ℝ) + 2 with hxdef
+  set t : ℝ := x⁻¹ with htdef
+  have hn0 : (0 : ℝ) ≤ (n : ℝ) := by positivity
+  have hxpos : 0 < x := by
+    rw [hxdef]
+    linarith
+  have hxone : (1 : ℝ) ≤ x := by
+    rw [hxdef]
+    linarith
+  have htpos : 0 < t := by
+    rw [htdef]
+    exact inv_pos.mpr hxpos
+  have htne : t ≠ 0 := ne_of_gt htpos
+  have h1z : (1 : ℂ) - radialSeq n = (t : ℂ) := by
+    rw [htdef, hxdef, radialSeq_one_sub n]; push_cast; ring
+  have hnorm1z : ‖(1 : ℂ) - radialSeq n‖ = t := by
+    rw [h1z, Complex.norm_real, Real.norm_of_nonneg htpos.le]
+  have hrpow : ‖(1 : ℂ) - radialSeq n‖ ^ (2 : ℝ) = t ^ 2 := by
+    rw [hnorm1z, show (2 : ℝ) = ((2 : ℕ) : ℝ) by norm_num, Real.rpow_natCast]
+  have hlogeq : -Complex.log (t : ℂ) = (Real.log x : ℂ) := by
+    have hlogt : Complex.log (t : ℂ) = (Real.log t : ℂ) := by
+      simpa using (Complex.ofReal_log htpos.le).symm
+    rw [hlogt, ← Complex.ofReal_neg]
+    congr 1
+    rw [htdef, Real.log_inv]
+    ring
+  have hlogx_nonneg : 0 ≤ Real.log x := Real.log_nonneg hxone
+  have hlognorm : ‖-Complex.log (t : ℂ)‖ = Real.log x := by
+    rw [hlogeq, Complex.norm_real, Real.norm_of_nonneg hlogx_nonneg]
+  have hpow_norm : ‖(t : ℂ) ^ (-(((2 : ℝ) : ℂ)))‖ = (t ^ 2)⁻¹ := by
+    rw [show ((2 : ℝ) : ℂ) = (2 : ℂ) by norm_num, Complex.cpow_neg,
+      show (2 : ℂ) = ((2 : ℕ) : ℂ) by norm_num, Complex.cpow_natCast, norm_inv, norm_pow,
+      Complex.norm_real, Real.norm_of_nonneg htpos.le]
+  calc
+    ‖logSingularityFun ((2 : ℝ) : ℂ) (radialSeq n)‖ *
+        ‖(1 : ℂ) - radialSeq n‖ ^ (2 : ℝ)
+        =
+      ((t ^ 2)⁻¹ * Real.log x) * t ^ 2 := by
+        rw [logSingularityFun, hrpow, h1z, norm_mul, hpow_norm, hlognorm]
+    _ = Real.log x := by
+        field_simp [htne]
+    _ = Real.log ((n : ℝ) + 2) := by rw [hxdef]
+
+private lemma logSqResidual_strongScale_radialSeq_eq (n : ℕ) :
+    ‖undirectedCycleLogSqPermPairFun (radialSeq n)
+        - (1 / 2 : ℂ) * logSqSingularityFun ((2 : ℝ) : ℂ) (radialSeq n)‖
+      * ‖(1 : ℂ) - radialSeq n‖ ^ (2 : ℝ)
+      =
+    ‖(1 / 2 : ℂ) * radialSeq n + (1 / 4 : ℂ) * (radialSeq n) ^ 2‖
+      * Real.log ((n : ℝ) + 2) := by
+  have hlog := radialSeq_logSingularity_norm_mul n
+  rw [undirectedCycleLogSqPermPairFun_residual (radialSeq n), norm_mul, norm_neg,
+    mul_assoc, hlog]
+
+theorem logSqResidual_strongScale_radialSeq_tendsto_atTop :
+    Tendsto
+      (fun n : ℕ =>
+        ‖undirectedCycleLogSqPermPairFun (radialSeq n)
+            - (1 / 2 : ℂ) * logSqSingularityFun ((2 : ℝ) : ℂ) (radialSeq n)‖
+          * ‖(1 : ℂ) - radialSeq n‖ ^ (2 : ℝ))
+      atTop atTop := by
+  have hpoly :
+      Tendsto
+        (fun n : ℕ =>
+          ‖(1 / 2 : ℂ) * radialSeq n + (1 / 4 : ℂ) * (radialSeq n) ^ 2‖)
+        atTop (𝓝 (3 / 4 : ℝ)) := by
+    have hcont :
+        Continuous fun z : ℂ => ‖(1 / 2 : ℂ) * z + (1 / 4 : ℂ) * z ^ 2‖ := by
+      fun_prop
+    have heq : (3 / 4 : ℝ)
+        = ‖(1 / 2 : ℂ) * (1 : ℂ) + (1 / 4 : ℂ) * (1 : ℂ) ^ 2‖ := by
+      rw [show (1 / 2 : ℂ) * (1 : ℂ) + (1 / 4 : ℂ) * (1 : ℂ) ^ 2 = ((3 / 4 : ℝ) : ℂ) by
+        push_cast; ring, Complex.norm_real, Real.norm_of_nonneg (by norm_num)]
+    rw [heq]
+    exact (hcont.tendsto (1 : ℂ)).comp radialSeq_tendsto_one
+  have hpoly_ge :
+      ∀ᶠ n : ℕ in atTop,
+        (1 / 2 : ℝ) ≤
+          ‖(1 / 2 : ℂ) * radialSeq n + (1 / 4 : ℂ) * (radialSeq n) ^ 2‖ := by
+    have hgt :
+        ∀ᶠ n : ℕ in atTop,
+          (1 / 2 : ℝ) <
+            ‖(1 / 2 : ℂ) * radialSeq n + (1 / 4 : ℂ) * (radialSeq n) ^ 2‖ :=
+      hpoly.eventually (Ioi_mem_nhds (by norm_num : (1 / 2 : ℝ) < 3 / 4))
+    exact hgt.mono fun _ hn => le_of_lt hn
+  have hlog :
+      Tendsto (fun n : ℕ => Real.log ((n : ℝ) + 2)) atTop atTop :=
+    Real.tendsto_log_atTop.comp natCast_add_two_tendsto_atTop
+  have hhalf_log :
+      Tendsto (fun n : ℕ => (1 / 2 : ℝ) * Real.log ((n : ℝ) + 2)) atTop atTop := by
+    refine tendsto_atTop.2 ?_
+    intro b
+    have hb :
+        ∀ᶠ n : ℕ in atTop, 2 * b ≤ Real.log ((n : ℝ) + 2) :=
+      hlog.eventually (eventually_ge_atTop (2 * b))
+    filter_upwards [hb] with n hn
+    nlinarith
+  have hprod :
+      Tendsto
+        (fun n : ℕ =>
+          ‖(1 / 2 : ℂ) * radialSeq n + (1 / 4 : ℂ) * (radialSeq n) ^ 2‖
+            * Real.log ((n : ℝ) + 2))
+        atTop atTop := by
+    refine tendsto_atTop.2 ?_
+    intro b
+    have hb :
+        ∀ᶠ n : ℕ in atTop, b ≤ (1 / 2 : ℝ) * Real.log ((n : ℝ) + 2) :=
+      hhalf_log.eventually (eventually_ge_atTop b)
+    filter_upwards [hb, hpoly_ge] with n hb hge
+    have hn0 : (0 : ℝ) ≤ (n : ℝ) := by positivity
+    have hlog_nonneg : 0 ≤ Real.log ((n : ℝ) + 2) := by
+      apply Real.log_nonneg
+      linarith
+    calc
+      b ≤ (1 / 2 : ℝ) * Real.log ((n : ℝ) + 2) := hb
+      _ ≤ ‖(1 / 2 : ℂ) * radialSeq n + (1 / 4 : ℂ) * (radialSeq n) ^ 2‖
+            * Real.log ((n : ℝ) + 2) :=
+          mul_le_mul_of_nonneg_right hge hlog_nonneg
+  refine hprod.congr' ?_
+  filter_upwards with n
+  exact (logSqResidual_strongScale_radialSeq_eq n).symm
+
+theorem logSqResidual_not_strong_remainder :
+    ¬ Tendsto
+      (fun z : ℂ =>
+        ‖undirectedCycleLogSqPermPairFun z
+            - (1 / 2 : ℂ) * logSqSingularityFun ((2 : ℝ) : ℂ) z‖
+          * ‖(1 : ℂ) - z‖ ^ (2 : ℝ))
+      (𝓝[DeltaDomainArg 2 (Real.pi / 4)] (1 : ℂ)) (𝓝 0) := by
+  intro hstrong
+  have hseq_zero :
+      Tendsto
+        (fun n : ℕ =>
+          ‖undirectedCycleLogSqPermPairFun (radialSeq n)
+              - (1 / 2 : ℂ) * logSqSingularityFun ((2 : ℝ) : ℂ) (radialSeq n)‖
+            * ‖(1 : ℂ) - radialSeq n‖ ^ (2 : ℝ))
+        atTop (𝓝 0) :=
+    hstrong.comp radialSeq_tendsto_delta
+  have hseq_atTop := logSqResidual_strongScale_radialSeq_tendsto_atTop
+  have hsmall :
+      ∀ᶠ n : ℕ in atTop,
+        ‖undirectedCycleLogSqPermPairFun (radialSeq n)
+            - (1 / 2 : ℂ) * logSqSingularityFun ((2 : ℝ) : ℂ) (radialSeq n)‖
+          * ‖(1 : ℂ) - radialSeq n‖ ^ (2 : ℝ) < 1 :=
+    hseq_zero.eventually (Iio_mem_nhds (by norm_num : (0 : ℝ) < 1))
+  have hlarge :
+      ∀ᶠ n : ℕ in atTop,
+        1 ≤
+        ‖undirectedCycleLogSqPermPairFun (radialSeq n)
+            - (1 / 2 : ℂ) * logSqSingularityFun ((2 : ℝ) : ℂ) (radialSeq n)‖
+          * ‖(1 : ℂ) - radialSeq n‖ ^ (2 : ℝ) :=
+    hseq_atTop.eventually (eventually_ge_atTop (1 : ℝ))
+  obtain ⟨n, hs, hl⟩ := (hsmall.and hlarge).exists
+  linarith
+
 end AnalyticCombinatorics
