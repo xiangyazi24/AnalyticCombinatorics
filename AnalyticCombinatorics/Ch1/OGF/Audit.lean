@@ -237,6 +237,7 @@ import AnalyticCombinatorics.Ch4.Analytic.OneSubCpowMul
 import AnalyticCombinatorics.Ch4.Analytic.LogSqTransfer
 import AnalyticCombinatorics.Ch4.Analytic.LogKCoeff
 import AnalyticCombinatorics.Ch4.Analytic.LogKFaithful
+import AnalyticCombinatorics.Ch4.Analytic.LogKAsymp
 import AnalyticCombinatorics.Ch4.Analytic.LogSqTransferNatural
 import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermPairBoth
 import AnalyticCombinatorics.Ch7.SingularityApp.Schroeder
@@ -1027,6 +1028,11 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.logKGF_hasSum
 #print axioms AnalyticCombinatorics.logKSingularityFun_hasFPowerSeriesAt
 #print axioms AnalyticCombinatorics.analyticOnNhd_logKSingularityFun_deltaDomain
+-- log^k asymptotic scale: Newton identity (k+1)e_{k+1}=∑(-1)^r p_{r+1} e_{k-r}, k!·e_k ~ (log n)^k,
+-- and the full scale logKSingularityScale α k n ~ n^{α-1}/Γ(α)·(log n)^k.
+#print axioms AnalyticCombinatorics.shiftedElemSymm_newton
+#print axioms AnalyticCombinatorics.logKBracket_isEquivalent_log_pow
+#print axioms AnalyticCombinatorics.logKSingularityScale_isEquivalent
 #print axioms logSqSingularityScale_isEquivalent
 #print axioms AnalyticCombinatorics.logSq_transfer_theorem_strong_remainder_unconditional
 
