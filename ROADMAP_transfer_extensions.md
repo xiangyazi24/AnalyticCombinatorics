@@ -7,7 +7,9 @@ Each item = one NEW file, one writer (codex agent). Master (me) wires imports +
 gets build-green + 0 sorry/admit/native + axioms ⊆ {propext, Classical.choice, Quot.sound}.
 
 ## A. Hankel contour → explicit constants (deepening Ch4/VI) — serial chain
-- ☐ **A1. Hankel model expansion**: `[zⁿ](1-z)^{-α} = n^{α-1}/Γ(α)·(1 + a₁/n + a₂/n² + …)`
+- ☑ **A1. Explicit model-coeff constant** [655ff14, via Γ-ratio+Bohr-Mollerup, NOT Hankel]
+- (old A1 Hankel-full-expansion superseded by the Γ-ratio route)
+- ~~Hankel model expansion~~: `[zⁿ](1-z)^{-α} = n^{α-1}/Γ(α)·(1 + a₁/n + a₂/n² + …)`
   with explicit `aₖ`. Build the keyhole/Hankel contour + the `∫e^{-u}u^{-α}du = Γ` step.
   (Design via ChatGPT first; then codex builds.) FOUNDATIONAL, LARGE. Blocks A2/A3.
 - ☐ **A2. O-transfer**: residual `O(|1-z|^{-β})` ⟹ `[zⁿ]f = O(n^{β-1})` (big-O companion to
@@ -19,7 +21,8 @@ gets build-green + 0 sorry/admit/native + axioms ⊆ {propext, Classical.choice,
   principal-part decomposition from supercritical data (`F·(1−C)=1`, `C(ρ)=1`, `C'(ρ)≠0`,
   next singularity past R). Explicitly flagged "future work" in `SupercriticalSeq.lean`.
   SELF-CONTAINED.
-- ☐ **B5. More H-admissible saddle-point structures** `Ch8/SaddlePoint/`: framework + Bell,
+- ☑ **B5. Fragmented permutations finite-radius saddle** [655ff14, first finite-radius H-admissible instance]
+- ☐ **B5+. More H-admissible saddle-point structures** `Ch8/SaddlePoint/`: framework + Bell,
   Exp, Involution, Blocks3 done; add new GF classes (e.g. fragmented permutations
   `e^{z/(1-z)}`, set-of-cycles). MEDIUM each.
 - ☐ **B6. More singularity-analysis limit laws** `Ch9/LimitLaws/`: apply the committed

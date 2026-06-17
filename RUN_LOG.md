@@ -742,3 +742,10 @@
 - CAMPAIGN STATE: extended queue complete. Session delivered 6248737 (α=1 boundary),
   8e16305 (general-k natural logᵏ⁺¹ app + Ch2 CYC count), 674f83a (general-k not-strong cert).
   Transfer infra now spans all regimes (α>1, α=1, 0<α<1, logᵏ hierarchy), 0 real sorry/axiom.
+
+- A1 (explicit O(1/n) constant) + B5 (fragmented-perm finite-radius saddle): CLOSED — commit 655ff14,
+  pushed. A1 via exact Γ-ratio + Bohr–Mollerup log-convexity (no Hankel); B5 = first finite-radius
+  H-admissible instance, full Hayman local+tail. 3 new theorems clean-3, Audit green (8526 jobs).
+  ChatGPT-design→codex-build loop closed both (ChatGPT corrected B5 tail shape; reframed A1 off Hankel).
+  Roadmap tally: 2 newly-proven (A1,B5) + 3 verified-already-done (B4,B7,α<1). Remaining: A2/A3
+  (O-transfer/2nd-order, now unblocked by A1), B6 (verified-open limit law), B8 (Mathlib-blocked).
