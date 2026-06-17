@@ -719,3 +719,9 @@
   H_n coeff identity + scale + strong-remainder transfer at α=1 +
   cycleMarkedPermClass ~ log n application. 3 public theorems clean-3, Audit
   green (8522 jobs). Next: avenue (2) higher-k natural-needing app via Codex.
+
+- avenue (2) general-k natural logᵏ⁺¹ app + avenue (3) Ch2 CYC count: CLOSED —
+  commit 8e16305, pushed. undirectedCycleLogKPermLpow ~ ½·n^{k-1}/(k-1)!·(log n)^{k+1}
+  (codex-built, audited sound) + atom_lcyc_counts_eq_factorial (n-1)!. 3 new theorems
+  clean-3, Audit green (8524 jobs). Next: dispatch codex on the not-strong cert
+  (logKResidual_not_strong_remainder) for log² parity.
