@@ -54,3 +54,19 @@ gets build-green + 0 sorry/admit/native + axioms ⊆ {propext, Classical.choice,
   possible Mathlib gap.
 - ⇒ Genuine LIVE frontier: A1 (Hankel explicit constants — no contour yet) + B5 (fragmented-perm
   finite-radius saddle — no companion found). B6/B7 need deep companion-grep before dispatch.
+
+## Post-A1/B5 verification (continuing the grep-first discipline)
+- A2 (big-O transfer): ALREADY DONE — `coeff_norm_isBigO_atTop_of_delta_bound` (CoeffDescent.lean)
+  + `coeff_norm_isBigO_atTop_of_delta_bound_beta_gt_one` (OTransfer.lean). Struck off.
+- B6 (limit laws): engine + many apps ALREADY DONE — quasi-powers→Gaussian, RCycles Poisson,
+  CompositionParts/BinaryWord/PermutationCycles Gaussian. No obvious clean gap without a new
+  specific parameter target. Effectively complete.
+- A3 (second-order / explicit subdominant expansion): GENUINELY OPEN — no second-order transfer
+  exists; now enabled by A1's explicit O(1/n) constant. The one substantial remaining frontier.
+
+## FINAL TALLY (today's roadmap)
+- Newly proven + committed: A1 (655ff14), B5 (655ff14) = 2.
+- Verified already-done: B4, B7, α<1, A2, (B6 engine) = ~5.
+- Genuinely open: A3 (second-order, substantial). Blocked: B8 (Mathlib GenFun TODO).
+- Conclusion: the transfer + limit-law infrastructure spans all regimes and is essentially complete;
+  A3 (quantitative subdominant expansion) is the sole remaining substantial extension.
