@@ -725,3 +725,9 @@
   (codex-built, audited sound) + atom_lcyc_counts_eq_factorial (n-1)!. 3 new theorems
   clean-3, Audit green (8524 jobs). Next: dispatch codex on the not-strong cert
   (logKResidual_not_strong_remainder) for log² parity.
+
+- not-strong cert (avenue-2 parity): CLOSED — commit 674f83a, pushed.
+  logKResidual_not_strong_remainder (general-k, radialSeqK; renamed to avoid log² collision).
+  clean-3, Audit green (8524 jobs). Avenue-2 now full log² parity.
+- NEXT: α<1 regime via ChatGPT-verified DERIVATIVE ROUTE (working_notes/alpha-lt-1-derivative-route.md):
+  differentiate residual → β=α+1>1 → committed transfer → index-shift. 2 new lemmas, reuses infra.
