@@ -714,3 +714,8 @@
   kernel chunk done (WIP), chunk 3 transfer drafted, chunk 2 bridge generating on ac.
 - end: <in progress>
 - final result: <in progress>
+
+- avenue (4) α=1 boundary: CLOSED — commit 6248737, pushed. β=1 kernel +
+  H_n coeff identity + scale + strong-remainder transfer at α=1 +
+  cycleMarkedPermClass ~ log n application. 3 public theorems clean-3, Audit
+  green (8522 jobs). Next: avenue (2) higher-k natural-needing app via Codex.
