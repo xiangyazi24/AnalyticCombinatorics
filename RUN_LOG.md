@@ -731,3 +731,14 @@
   clean-3, Audit green (8524 jobs). Avenue-2 now full log² parity.
 - NEXT: α<1 regime via ChatGPT-verified DERIVATIVE ROUTE (working_notes/alpha-lt-1-derivative-route.md):
   differentiate residual → β=α+1>1 → committed transfer → index-shift. 2 new lemmas, reuses infra.
+
+- α<1 avenue: NO GENUINE GAP (verified, terminal verdict). The 0<α<1 regime is ALREADY
+  COMPLETE in committed code: (i) little-o residual transfer = coeff_norm_isLittleO_atTop_of_delta_littleO
+  (LittleODescent.lean fb4cd27, ALL real β via k-fold derivative descent), (ii) equivalent
+  transfer ~C·n^{α-1}/Γα = transfer_theorem (TransferGeneral.lean, all α∉{0,-1,...}).
+  Both clean-3, wired in Audit. Codex's derivative-route file was a k=1 re-wrapper of (i) —
+  discarded (no new math, per no-banking-re-wrappers). Scoping miss: only the named β>1/β=1
+  entry points were checked initially; the general theorems already subsumed α<1.
+- CAMPAIGN STATE: extended queue complete. Session delivered 6248737 (α=1 boundary),
+  8e16305 (general-k natural logᵏ⁺¹ app + Ch2 CYC count), 674f83a (general-k not-strong cert).
+  Transfer infra now spans all regimes (α>1, α=1, 0<α<1, logᵏ hierarchy), 0 real sorry/axiom.
