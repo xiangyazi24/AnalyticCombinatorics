@@ -205,6 +205,7 @@ import AnalyticCombinatorics.Ch4.Analytic.LogKCoeff
 import AnalyticCombinatorics.Ch4.Analytic.LogKFaithful
 import AnalyticCombinatorics.Ch4.Analytic.LogKAsymp
 import AnalyticCombinatorics.Ch4.Analytic.LogKTransferNatural
+import AnalyticCombinatorics.Ch4.Analytic.LogAlphaOneTransfer
 import AnalyticCombinatorics.Ch4.Analytic.LogSqTransfer
 import AnalyticCombinatorics.Ch4.Analytic.LogSqTransferNatural
 import AnalyticCombinatorics.Ch4.Analytic.SingularityGeneral
@@ -268,6 +269,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermPairBoth
 import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleMarkedPermTuple
 import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleLogSqPermPair
 import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermLpow
+import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermHarmonic
 import AnalyticCombinatorics.Ch7.SingularityApp.Schroeder
 import AnalyticCombinatorics.Ch7.SingularityApp.Riordan
 import AnalyticCombinatorics.Ch7.SingularityApp.TreeFunction

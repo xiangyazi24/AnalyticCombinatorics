@@ -1225,6 +1225,516 @@ private lemma transferCircleBoundLogSq_isLittleO
     _ = η * ((n : ℝ) ^ (β - 1) * (Real.log n) ^ 2) := by ring
     _ = η * ‖(n : ℝ) ^ (β - 1) * (Real.log n) ^ 2‖ := by rw [Real.norm_of_nonneg hscale_nonneg]
 
+/-! ### β = 1 circle kernel (boundary case): ∫‖1-r·exp‖^{-1} = O(log n). -/
+
+private lemma circleKernel_integral_bound_nat_beta_eq_one :
+    ∃ C : ℝ, 0 ≤ C ∧ ∀ n : ℕ, 2 ≤ n →
+      (∫ θ in (-Real.pi)..Real.pi,
+        ‖(1 : ℂ) - ((((1 : ℝ) - (1 : ℝ) / n : ℝ) : ℂ) *
+          Complex.exp (θ * Complex.I))‖ ^ (-(1 : ℝ)))
+      ≤ C * (1 + Real.log n) := by
+  classical
+  let K₁ : ℝ := ((2 : ℝ) / Real.pi ^ 2) ^ (-(1 : ℝ) / 2)
+  let C : ℝ := 2 * K₁ * (2 + Real.log Real.pi)
+  have hK₁0 : 0 ≤ K₁ := by
+    dsimp [K₁]
+    positivity
+  have hlogπ0 : 0 ≤ Real.log Real.pi := by
+    exact Real.log_nonneg (by linarith [Real.two_le_pi])
+  have hC0 : 0 ≤ C := by
+    dsimp [C]
+    positivity
+  have hmodel_bound :
+      ∀ {ρ : ℝ}, 0 < ρ → ρ ≤ 1 →
+        (∫ θ in (-Real.pi)..Real.pi,
+          (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2))
+        ≤ 2 * (1 + Real.log (Real.pi / ρ)) := by
+    intro ρ hρ hρle
+    have hρπ : ρ ≤ Real.pi := by
+      have h1π : (1 : ℝ) ≤ Real.pi := by linarith [Real.two_le_pi]
+      exact hρle.trans h1π
+    have hsqr_inv : ∀ {x : ℝ}, 0 < x → (x ^ 2) ^ (-(1 : ℝ) / 2) = x⁻¹ := by
+      intro x hx
+      rw [← Real.rpow_natCast x 2, ← Real.rpow_mul hx.le,
+        show ((2 : ℕ) : ℝ) * (-(1 : ℝ) / 2) = -1 by norm_num,
+        Real.rpow_neg hx.le, Real.rpow_one]
+    have hmodel_cont :
+        Continuous fun θ : ℝ => (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2) :=
+      (continuous_const.add (continuous_id.pow 2)).rpow_const
+        (fun θ => Or.inl (by positivity : (0 : ℝ) < ρ ^ 2 + θ ^ 2).ne')
+    have hmodel_int :
+        ∀ a b : ℝ,
+          IntervalIntegrable
+            (fun θ : ℝ => (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2))
+            volume a b := fun a b => hmodel_cont.intervalIntegrable a b
+    have hzero_le :
+        (∫ θ in (0 : ℝ)..ρ, (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2)) ≤ 1 := by
+      have hbd : ∀ θ ∈ Set.Icc (0 : ℝ) ρ, (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2) ≤ ρ⁻¹ := by
+        intro θ _
+        have hle : ρ ^ 2 ≤ ρ ^ 2 + θ ^ 2 := by nlinarith [sq_nonneg θ]
+        have hpow := Real.rpow_le_rpow_of_nonpos (sq_pos_of_pos hρ) hle
+          (by norm_num : (-(1 : ℝ) / 2) ≤ 0)
+        rwa [hsqr_inv hρ] at hpow
+      calc
+        (∫ θ in (0 : ℝ)..ρ, (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2))
+            ≤ ∫ _θ in (0 : ℝ)..ρ, ρ⁻¹ :=
+              intervalIntegral.integral_mono_on hρ.le (hmodel_int 0 ρ)
+                intervalIntegrable_const hbd
+        _ = 1 := by
+            rw [intervalIntegral.integral_const, sub_zero, smul_eq_mul,
+              mul_inv_cancel₀ hρ.ne']
+    have hinv_int :
+        IntervalIntegrable (fun θ : ℝ => θ⁻¹) volume ρ Real.pi := by
+      refine intervalIntegral.intervalIntegrable_inv
+        (f := fun θ : ℝ => θ) ?_ continuousOn_id
+      intro θ hθ
+      have hI : θ ∈ Set.Icc ρ Real.pi := by
+        rw [Set.uIcc_of_le hρπ] at hθ
+        exact hθ
+      exact (lt_of_lt_of_le hρ hI.1).ne'
+    have htail_le :
+        (∫ θ in ρ..Real.pi, (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2))
+          ≤ ∫ θ in ρ..Real.pi, θ⁻¹ := by
+      refine intervalIntegral.integral_mono_on (a := ρ) (b := Real.pi)
+        hρπ (hmodel_int ρ Real.pi) hinv_int ?_
+      intro θ hθ
+      have hθpos : 0 < θ := by
+        exact lt_of_lt_of_le hρ hθ.1
+      have hbase_pos : 0 < θ ^ 2 := sq_pos_of_pos hθpos
+      have hle : θ ^ 2 ≤ ρ ^ 2 + θ ^ 2 := by nlinarith [sq_nonneg ρ]
+      have hpow :=
+        Real.rpow_le_rpow_of_nonpos hbase_pos hle
+          (by norm_num : (-(1 : ℝ) / 2) ≤ 0)
+      rwa [hsqr_inv hθpos] at hpow
+    have htail_log :
+        (∫ θ in ρ..Real.pi, (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2))
+          ≤ Real.log (Real.pi / ρ) := by
+      calc
+        (∫ θ in ρ..Real.pi, (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2))
+            ≤ ∫ θ in ρ..Real.pi, θ⁻¹ := htail_le
+        _ = Real.log (Real.pi / ρ) := by
+            rw [integral_inv_of_pos hρ Real.pi_pos]
+    have hsplit_pos :=
+      intervalIntegral.integral_add_adjacent_intervals
+        (hmodel_int 0 ρ) (hmodel_int ρ Real.pi)
+    have hzero_pi :
+        (∫ θ in (0 : ℝ)..Real.pi, (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2))
+          ≤ 1 + Real.log (Real.pi / ρ) := by
+      calc
+        (∫ θ in (0 : ℝ)..Real.pi, (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2))
+            =
+          (∫ θ in (0 : ℝ)..ρ, (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2)) +
+          (∫ θ in ρ..Real.pi, (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2)) :=
+            hsplit_pos.symm
+        _ ≤ 1 + Real.log (Real.pi / ρ) :=
+            add_le_add hzero_le htail_log
+    have hneg_eq :
+        (∫ θ in (-Real.pi)..(0 : ℝ), (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2))
+          =
+        ∫ θ in (0 : ℝ)..Real.pi, (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2) := by
+      calc
+        (∫ θ in (-Real.pi)..(0 : ℝ), (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2))
+            =
+          ∫ θ in (-Real.pi)..(0 : ℝ), (ρ ^ 2 + (-θ) ^ 2) ^ (-(1 : ℝ) / 2) := by
+            apply intervalIntegral.integral_congr
+            intro θ _
+            simp only [neg_sq]
+        _ = ∫ θ in (0 : ℝ)..Real.pi, (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2) := by
+            simpa only [neg_zero, neg_neg] using
+              (intervalIntegral.integral_comp_neg
+                (f := fun θ : ℝ => (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2))
+                (a := -Real.pi) (b := (0 : ℝ)))
+    have hsplit_all :=
+      intervalIntegral.integral_add_adjacent_intervals
+        (hmodel_int (-Real.pi) 0) (hmodel_int 0 Real.pi)
+    calc
+      (∫ θ in (-Real.pi)..Real.pi, (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2))
+          =
+        (∫ θ in (-Real.pi)..(0 : ℝ), (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2)) +
+        (∫ θ in (0 : ℝ)..Real.pi, (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2)) :=
+          hsplit_all.symm
+      _ = 2 * (∫ θ in (0 : ℝ)..Real.pi, (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2)) := by
+          rw [hneg_eq]
+          ring
+      _ ≤ 2 * (1 + Real.log (Real.pi / ρ)) :=
+          mul_le_mul_of_nonneg_left hzero_pi (by norm_num)
+  refine ⟨C, hC0, ?_⟩
+  intro n hn
+  have hnpos_nat : 0 < n := Nat.lt_of_lt_of_le (by norm_num) hn
+  have hnpos : 0 < (n : ℝ) := by exact_mod_cast hnpos_nat
+  have hn1 : (1 : ℕ) ≤ n := le_trans (by norm_num : (1 : ℕ) ≤ 2) hn
+  have hn1R : (1 : ℝ) ≤ n := by exact_mod_cast hn1
+  let ρ : ℝ := (1 : ℝ) / n
+  let r : ℝ := 1 - ρ
+  have hρpos : 0 < ρ := by
+    dsimp [ρ]
+    exact div_pos zero_lt_one hnpos
+  have hρle : ρ ≤ 1 := by
+    dsimp [ρ]
+    rw [div_le_one hnpos]
+    exact hn1R
+  have hr_half : (1 : ℝ) / 2 ≤ r := by
+    dsimp [r, ρ]
+    have htwo_le_n : (2 : ℝ) ≤ n := by exact_mod_cast hn
+    have hdiv_le : (1 : ℝ) / n ≤ 1 / 2 := by
+      rw [one_div_le_one_div hnpos (by norm_num : (0 : ℝ) < 2)]
+      exact htwo_le_n
+    linarith
+  have hr0 : 0 ≤ r := by linarith
+  have hr1 : r < 1 := by
+    dsimp [r]
+    linarith
+  have h1r : 0 < 1 - r := by
+    dsimp only [r]; linarith [hρpos]
+  have hmodel_int :
+      IntervalIntegrable
+        (fun θ : ℝ => K₁ * ((ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2)))
+        volume (-Real.pi) Real.pi := by
+    have hcont :
+        Continuous fun θ : ℝ => (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2) :=
+      (continuous_const.add (continuous_id.pow 2)).rpow_const
+        (fun θ => Or.inl (by positivity : (0 : ℝ) < ρ ^ 2 + θ ^ 2).ne')
+    exact (hcont.intervalIntegrable _ _).const_mul K₁
+  have hmono := intervalIntegral.integral_mono_on (a := -Real.pi) (b := Real.pi)
+    (by linarith [Real.pi_pos])
+    (circleKernel_intervalIntegrable (β := (1 : ℝ)) (r := r) hr0 hr1)
+    hmodel_int
+    (fun θ hθ => by
+      have hθabs : |θ| ≤ Real.pi := by
+        rw [abs_le]
+        exact ⟨hθ.1, hθ.2⟩
+      have hle := circleKernel_rpow_le_model r θ (1 : ℝ) hθabs hr_half h1r
+        (by norm_num : (0 : ℝ) ≤ 1)
+      simpa [K₁, r, ρ] using hle)
+  have hlog_div : Real.log (Real.pi / ρ) = Real.log Real.pi + Real.log n := by
+    have hπρ : Real.pi / ρ = Real.pi * n := by
+      dsimp [ρ]
+      field_simp [hnpos.ne']
+    rw [hπρ, Real.log_mul Real.pi_pos.ne' hnpos.ne']
+  have hlogn0 : 0 ≤ Real.log n := Real.log_nonneg hn1R
+  have hfac :
+      1 + Real.log Real.pi + Real.log n ≤
+        (2 + Real.log Real.pi) * (1 + Real.log n) := by
+    have hprod : 0 ≤ Real.log Real.pi * Real.log n :=
+      mul_nonneg hlogπ0 hlogn0
+    nlinarith
+  have hfinal :
+      2 * K₁ * (1 + Real.log Real.pi + Real.log n)
+        ≤ C * (1 + Real.log n) := by
+    calc
+      2 * K₁ * (1 + Real.log Real.pi + Real.log n)
+          ≤ 2 * K₁ * ((2 + Real.log Real.pi) * (1 + Real.log n)) :=
+            mul_le_mul_of_nonneg_left hfac (by positivity)
+      _ = C * (1 + Real.log n) := by
+            dsimp [C]
+            ring
+  calc
+    (∫ θ in (-Real.pi)..Real.pi,
+        ‖(1 : ℂ) - ((((1 : ℝ) - (1 : ℝ) / n : ℝ) : ℂ) *
+          Complex.exp (θ * Complex.I))‖ ^ (-(1 : ℝ)))
+        =
+      ∫ θ in (-Real.pi)..Real.pi,
+        ‖(1 : ℂ) - (r : ℂ) * Complex.exp (θ * Complex.I)‖ ^ (-(1 : ℝ)) := by
+          apply intervalIntegral.integral_congr
+          intro θ _
+          simp [r, ρ]
+    _ ≤ ∫ θ in (-Real.pi)..Real.pi,
+        K₁ * ((ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2)) :=
+          hmono
+    _ = K₁ *
+        (∫ θ in (-Real.pi)..Real.pi,
+          (ρ ^ 2 + θ ^ 2) ^ (-(1 : ℝ) / 2)) := by
+          rw [intervalIntegral.integral_const_mul]
+    _ ≤ K₁ * (2 * (1 + Real.log (Real.pi / ρ))) :=
+          mul_le_mul_of_nonneg_left (hmodel_bound hρpos hρle) hK₁0
+    _ = 2 * K₁ * (1 + Real.log Real.pi + Real.log n) := by
+          rw [hlog_div]
+          ring
+    _ ≤ C * (1 + Real.log n) := hfinal
+
+
+/-! ### β = 1 bridge: kernel → coefficient little-o (boundary case). -/
+
+private lemma exists_delta_littleO_kernel_bound_beta_eq_one
+    {R φ ε : ℝ} {f : ℂ → ℂ}
+    (hf_o : Tendsto (fun z : ℂ => ‖f z‖ * ‖(1 : ℂ) - z‖)
+      (𝓝[DeltaDomainArg R φ] (1 : ℂ)) (𝓝 0))
+    (hε : 0 < ε) :
+    ∃ δ > 0, ∀ z ∈ DeltaDomainArg R φ, ‖(1 : ℂ) - z‖ < δ →
+      ‖f z‖ ≤ ε * ‖(1 : ℂ) - z‖ ^ (-(1 : ℝ)) := by
+  have hf_o' : Tendsto
+      (fun z : ℂ => ‖f z‖ * ‖(1 : ℂ) - z‖ ^ (1 : ℝ))
+      (𝓝[DeltaDomainArg R φ] (1 : ℂ)) (𝓝 0) := by
+    simpa [Real.rpow_one] using hf_o
+  exact exists_delta_littleO_kernel_bound
+    (R := R) (φ := φ) (β := (1 : ℝ)) (f := f) hf_o' hε
+
+private lemma transferCircleBound_isLittleO_atTop_of_delta_littleO_beta_eq_one
+    {R φ : ℝ} {f : ℂ → ℂ}
+    (hR : 1 < R) (hφ0 : 0 < φ) (hφ2 : φ < Real.pi / 2)
+    (han : AnalyticOnNhd ℂ f (DeltaDomainArg R φ))
+    (hf_o : Tendsto (fun z : ℂ => ‖f z‖ * ‖(1 : ℂ) - z‖)
+      (𝓝[DeltaDomainArg R φ] (1 : ℂ)) (𝓝 0)) :
+    transferCircleBound f =o[atTop] fun n : ℕ => Real.log n := by
+  obtain ⟨C, hC0, hC⟩ := circleKernel_integral_bound_nat_beta_eq_one
+  let A : ℝ := (2 * Real.pi)⁻¹ * 8 * C
+  have hA0 : 0 ≤ A := by
+    dsimp [A]
+    positivity
+  refine IsLittleO.of_bound ?_
+  intro η hη
+  let ε : ℝ := η / (2 * (A + 1))
+  have hA1pos : 0 < A + 1 := by linarith
+  have hdenpos : 0 < 2 * (A + 1) := by positivity
+  have hεpos : 0 < ε := by
+    dsimp [ε]
+    positivity
+  have hhalfpos : 0 < η / 2 := by positivity
+  have hnear_coeff : A * ε ≤ η / 2 := by
+    dsimp [ε]
+    field_simp [hdenpos.ne']
+    nlinarith [hA0, hη]
+  obtain ⟨δ, hδpos, hnear⟩ :=
+    exists_delta_littleO_kernel_bound_beta_eq_one
+      (R := R) (φ := φ) (f := f) hf_o hεpos
+  obtain ⟨M, hM0, hM⟩ :=
+    exists_bound_on_closedUnitAway (R := R) (φ := φ) (δ := δ) (f := f)
+      hR hφ0 hφ2 hδpos han
+  let B : ℝ := (2 * Real.pi)⁻¹ * 4 * (M * (2 * Real.pi))
+  have hscale_atTop :
+      Tendsto (fun n : ℕ => Real.log n) atTop atTop :=
+    Real.tendsto_log_atTop.comp tendsto_natCast_atTop_atTop
+  have hscale_eventually :
+      ∀ᶠ n : ℕ in atTop, B / (η / 2) ≤ Real.log n :=
+    hscale_atTop.eventually (eventually_ge_atTop (B / (η / 2)))
+  have haway_eventually :
+      ∀ᶠ n : ℕ in atTop, B ≤ (η / 2) * Real.log n := by
+    filter_upwards [hscale_eventually] with n hn
+    calc
+      B = (η / 2) * (B / (η / 2)) := by
+        field_simp [hhalfpos.ne']
+      _ ≤ (η / 2) * Real.log n :=
+        mul_le_mul_of_nonneg_left hn hhalfpos.le
+  have hlog_ge_one_eventually :
+      ∀ᶠ n : ℕ in atTop, (1 : ℝ) ≤ Real.log n :=
+    hscale_atTop.eventually (eventually_ge_atTop (1 : ℝ))
+  filter_upwards
+    [eventually_atTop.mpr ⟨2, fun n hn => hn⟩, haway_eventually, hlog_ge_one_eventually]
+    with n hn haway_n hlog_ge_one
+  have hn1 : 1 ≤ n := le_trans (by norm_num : (1 : ℕ) ≤ 2) hn
+  have hnpos_nat : 0 < n := Nat.lt_of_lt_of_le (by norm_num) hn
+  have hnpos : 0 < (n : ℝ) := by exact_mod_cast hnpos_nat
+  let r : ℝ := 1 - (1 : ℝ) / n
+  have hr0 : 0 ≤ r := by
+    dsimp [r]
+    have hdiv : (1 : ℝ) / n ≤ 1 := by
+      rw [div_le_one hnpos]
+      exact_mod_cast hn1
+    linarith
+  have hrpos : 0 < r := by
+    dsimp [r]
+    have htwo_le : (2 : ℝ) ≤ n := by exact_mod_cast hn
+    have hdiv_lt : (1 : ℝ) / n < 1 := by
+      rw [div_lt_one hnpos]
+      linarith
+    linarith
+  have hr1 : r < 1 := by
+    dsimp [r]
+    have hdiv_pos : 0 < (1 : ℝ) / n := div_pos zero_lt_one hnpos
+    linarith
+  have hrR : r < R := lt_trans hr1 hR
+  have hlog_nonneg : 0 ≤ Real.log n := by linarith
+  have hleft_int := circleFunction_intervalIntegrable (f := f) hr0 hr1 hrR hφ0 hφ2 han
+  have hkernel_int :=
+    circleKernel_intervalIntegrable (β := (1 : ℝ)) (r := r) hr0 hr1
+  have hright_int :
+      IntervalIntegrable
+        (fun θ : ℝ =>
+          ε * ‖(1 : ℂ) - (r : ℂ) * Complex.exp (θ * Complex.I)‖ ^ (-(1 : ℝ)) + M)
+        volume (-Real.pi) Real.pi :=
+    (hkernel_int.const_mul ε).add intervalIntegrable_const
+  have hInt_le :
+      (∫ θ in (-Real.pi)..Real.pi, ‖f ((r : ℂ) * Complex.exp (θ * Complex.I))‖) ≤
+        ∫ θ in (-Real.pi)..Real.pi,
+          ε * ‖(1 : ℂ) - (r : ℂ) * Complex.exp (θ * Complex.I)‖ ^ (-(1 : ℝ)) + M := by
+    refine intervalIntegral.integral_mono_on (by linarith [Real.pi_pos])
+      hleft_int hright_int ?_
+    intro θ _hθ
+    let z : ℂ := (r : ℂ) * Complex.exp (θ * Complex.I)
+    have hz_delta : z ∈ DeltaDomainArg R φ :=
+      circlePoint_mem_delta hr0 hr1 hrR hφ0 hφ2 θ
+    by_cases hz_near : ‖(1 : ℂ) - z‖ < δ
+    · have hlocal : ‖f z‖ ≤ ε * ‖(1 : ℂ) - z‖ ^ (-(1 : ℝ)) :=
+        hnear z hz_delta hz_near
+      have hMadd :
+          ε * ‖(1 : ℂ) - z‖ ^ (-(1 : ℝ)) ≤
+            ε * ‖(1 : ℂ) - z‖ ^ (-(1 : ℝ)) + M := by
+        linarith
+      exact hlocal.trans hMadd
+    · have hz_away : δ ≤ ‖(1 : ℂ) - z‖ := le_of_not_gt hz_near
+      have hz_norm_le : ‖z‖ ≤ 1 := by
+        calc
+          ‖z‖ = r := by
+            simp [z, Complex.norm_exp_ofReal_mul_I, abs_of_nonneg hr0]
+          _ ≤ 1 := hr1.le
+      have hbound : ‖f z‖ ≤ M := hM z hz_norm_le hz_away
+      have hkernel_nonneg :
+          0 ≤ ε * ‖(1 : ℂ) - z‖ ^ (-(1 : ℝ)) := by positivity
+      calc
+        ‖f z‖ ≤ M := hbound
+        _ ≤ ε * ‖(1 : ℂ) - z‖ ^ (-(1 : ℝ)) + M := by linarith
+  have hInt_bound :
+      (∫ θ in (-Real.pi)..Real.pi, ‖f ((r : ℂ) * Complex.exp (θ * Complex.I))‖) ≤
+        ε * (∫ θ in (-Real.pi)..Real.pi,
+          ‖(1 : ℂ) - (r : ℂ) * Complex.exp (θ * Complex.I)‖ ^ (-(1 : ℝ))) +
+          M * (2 * Real.pi) := by
+    calc
+      (∫ θ in (-Real.pi)..Real.pi, ‖f ((r : ℂ) * Complex.exp (θ * Complex.I))‖)
+          ≤ ∫ θ in (-Real.pi)..Real.pi,
+              ε * ‖(1 : ℂ) - (r : ℂ) * Complex.exp (θ * Complex.I)‖ ^ (-(1 : ℝ)) + M :=
+            hInt_le
+      _ = ε * (∫ θ in (-Real.pi)..Real.pi,
+              ‖(1 : ℂ) - (r : ℂ) * Complex.exp (θ * Complex.I)‖ ^ (-(1 : ℝ))) +
+            M * (2 * Real.pi) := by
+          rw [intervalIntegral.integral_add (hkernel_int.const_mul ε) intervalIntegrable_const]
+          rw [intervalIntegral.integral_const_mul, intervalIntegral.integral_const]
+          simp [mul_comm]
+          left
+          ring
+  have hkernel_nonneg_int :
+      0 ≤ ∫ θ in (-Real.pi)..Real.pi,
+        ‖(1 : ℂ) - (r : ℂ) * Complex.exp (θ * Complex.I)‖ ^ (-(1 : ℝ)) := by
+    refine intervalIntegral.integral_nonneg (by linarith [Real.pi_pos]) ?_
+    intro θ _hθ
+    positivity
+  have hbracket_nonneg :
+      0 ≤ ε * (∫ θ in (-Real.pi)..Real.pi,
+        ‖(1 : ℂ) - (r : ℂ) * Complex.exp (θ * Complex.I)‖ ^ (-(1 : ℝ))) +
+        M * (2 * Real.pi) := by positivity
+  have hpow4 : r⁻¹ ^ n ≤ 4 := by
+    dsimp [r]
+    exact one_sub_inv_pow_nat_le_four hn
+  have hkernel_bound :
+      (∫ θ in (-Real.pi)..Real.pi,
+        ‖(1 : ℂ) - (r : ℂ) * Complex.exp (θ * Complex.I)‖ ^ (-(1 : ℝ))) ≤
+        C * (1 + Real.log n) := by
+    dsimp [r]
+    have h := hC n hn
+    simpa using h
+  have hkernel_bound_log :
+      (∫ θ in (-Real.pi)..Real.pi,
+        ‖(1 : ℂ) - (r : ℂ) * Complex.exp (θ * Complex.I)‖ ^ (-(1 : ℝ))) ≤
+        2 * C * Real.log n := by
+    calc
+      (∫ θ in (-Real.pi)..Real.pi,
+        ‖(1 : ℂ) - (r : ℂ) * Complex.exp (θ * Complex.I)‖ ^ (-(1 : ℝ)))
+          ≤ C * (1 + Real.log n) := hkernel_bound
+      _ ≤ C * (2 * Real.log n) := by
+          refine mul_le_mul_of_nonneg_left ?_ hC0
+          linarith
+      _ = 2 * C * Real.log n := by ring
+  have htransfer_le :
+      transferCircleBound f n ≤ A * ε * Real.log n + B := by
+    calc
+      transferCircleBound f n =
+          (2 * Real.pi)⁻¹ * r⁻¹ ^ n *
+            ∫ θ in (-Real.pi)..Real.pi,
+              ‖f ((r : ℂ) * Complex.exp (θ * Complex.I))‖ := by
+            simp [transferCircleBound, r]
+      _ ≤ (2 * Real.pi)⁻¹ * r⁻¹ ^ n *
+            (ε * (∫ θ in (-Real.pi)..Real.pi,
+              ‖(1 : ℂ) - (r : ℂ) * Complex.exp (θ * Complex.I)‖ ^ (-(1 : ℝ))) +
+              M * (2 * Real.pi)) := by
+            exact mul_le_mul_of_nonneg_left hInt_bound
+              (mul_nonneg (by positivity) (pow_nonneg (inv_nonneg.mpr hr0) n))
+      _ ≤ (2 * Real.pi)⁻¹ * 4 *
+            (ε * (∫ θ in (-Real.pi)..Real.pi,
+              ‖(1 : ℂ) - (r : ℂ) * Complex.exp (θ * Complex.I)‖ ^ (-(1 : ℝ))) +
+              M * (2 * Real.pi)) := by
+            calc
+              (2 * Real.pi)⁻¹ * r⁻¹ ^ n *
+                    (ε * (∫ θ in (-Real.pi)..Real.pi,
+                      ‖(1 : ℂ) - (r : ℂ) * Complex.exp (θ * Complex.I)‖ ^ (-(1 : ℝ))) +
+                      M * (2 * Real.pi))
+                  = (2 * Real.pi)⁻¹ *
+                    (r⁻¹ ^ n * (ε * (∫ θ in (-Real.pi)..Real.pi,
+                      ‖(1 : ℂ) - (r : ℂ) * Complex.exp (θ * Complex.I)‖ ^ (-(1 : ℝ))) +
+                      M * (2 * Real.pi))) := by
+                    ring
+              _ ≤ (2 * Real.pi)⁻¹ *
+                    (4 * (ε * (∫ θ in (-Real.pi)..Real.pi,
+                      ‖(1 : ℂ) - (r : ℂ) * Complex.exp (θ * Complex.I)‖ ^ (-(1 : ℝ))) +
+                      M * (2 * Real.pi))) := by
+                    exact mul_le_mul_of_nonneg_left
+                      (mul_le_mul_of_nonneg_right hpow4 hbracket_nonneg)
+                      (by positivity)
+              _ = (2 * Real.pi)⁻¹ * 4 *
+                    (ε * (∫ θ in (-Real.pi)..Real.pi,
+                      ‖(1 : ℂ) - (r : ℂ) * Complex.exp (θ * Complex.I)‖ ^ (-(1 : ℝ))) +
+                      M * (2 * Real.pi)) := by
+                    ring
+      _ ≤ (2 * Real.pi)⁻¹ * 4 *
+            (ε * (2 * C * Real.log n) + M * (2 * Real.pi)) := by
+            refine mul_le_mul_of_nonneg_left ?_ (by positivity)
+            exact add_le_add
+              (mul_le_mul_of_nonneg_left hkernel_bound_log hεpos.le) le_rfl
+      _ = A * ε * Real.log n + B := by
+            dsimp [A, B]
+            ring
+  have hnear_n :
+      A * ε * Real.log n ≤ (η / 2) * Real.log n :=
+    mul_le_mul_of_nonneg_right hnear_coeff hlog_nonneg
+  have htransfer_nonneg : 0 ≤ transferCircleBound f n := by
+    have hI_nonneg :
+        0 ≤ ∫ θ in (-Real.pi)..Real.pi,
+          ‖f ((r : ℂ) * Complex.exp (θ * Complex.I))‖ := by
+      refine intervalIntegral.integral_nonneg (by linarith [Real.pi_pos]) ?_
+      intro θ _hθ
+      positivity
+    rw [transferCircleBound]
+    exact mul_nonneg
+      (mul_nonneg (by positivity) (pow_nonneg (inv_nonneg.mpr hr0) n)) hI_nonneg
+  calc
+    ‖transferCircleBound f n‖ = transferCircleBound f n :=
+      Real.norm_of_nonneg htransfer_nonneg
+    _ ≤ A * ε * Real.log n + B := htransfer_le
+    _ ≤ (η / 2) * Real.log n + (η / 2) * Real.log n :=
+      add_le_add hnear_n haway_n
+    _ = η * Real.log n := by ring
+    _ = η * ‖Real.log n‖ := by
+      rw [Real.norm_of_nonneg hlog_nonneg]
+
+
+/-! ### β = 1 coefficient little-o (boundary). -/
+
+/-- Boundary (`β = 1`) coefficient-level little-o transfer:
+`‖f z‖·‖1-z‖ → 0` on a Δ-domain implies `‖[zⁿ]f‖ = o(log n)`. -/
+theorem coeff_norm_isLittleO_atTop_of_delta_littleO_beta_eq_one
+    {R φ : ℝ} {f : ℂ → ℂ} {p : FormalMultilinearSeries ℂ ℂ ℂ}
+    (hR : 1 < R) (hφ0 : 0 < φ) (hφ2 : φ < Real.pi / 2)
+    (hp : HasFPowerSeriesAt f p (0 : ℂ))
+    (han : AnalyticOnNhd ℂ f (DeltaDomainArg R φ))
+    (hf_o : Tendsto (fun z : ℂ => ‖f z‖ * ‖(1 : ℂ) - z‖)
+      (𝓝[DeltaDomainArg R φ] (1 : ℂ)) (𝓝 0)) :
+    (fun n : ℕ => ‖p.coeff n‖) =o[atTop] (fun n : ℕ => Real.log n) := by
+  have hcircle :=
+    transferCircleBound_isLittleO_atTop_of_delta_littleO_beta_eq_one
+      (R := R) (φ := φ) (f := f) hR hφ0 hφ2 han hf_o
+  have hcoeff :=
+    coeff_norm_le_transferCircleBound (R := R) (φ := φ) (f := f) (p := p)
+      hR hφ0 hφ2 hp han
+  refine IsLittleO.of_bound ?_
+  intro c hc
+  filter_upwards [hcoeff, hcircle.bound hc] with n hncoeff hnbound
+  have hcircle_nonneg : 0 ≤ transferCircleBound f n :=
+    (norm_nonneg (p.coeff n)).trans hncoeff
+  calc
+    ‖(‖p.coeff n‖ : ℝ)‖ = ‖p.coeff n‖ := norm_norm _
+    _ ≤ transferCircleBound f n := hncoeff
+    _ = ‖transferCircleBound f n‖ := (Real.norm_of_nonneg hcircle_nonneg).symm
+    _ ≤ c * ‖Real.log n‖ := hnbound
+
+
 /-! ### Log^k-weighted circle kernel (k ≥ 1), reducing to the banked log¹ kernel. -/
 
 private lemma one_add_pow_le_pred_mul_one_add_of_le {a b : ℝ}

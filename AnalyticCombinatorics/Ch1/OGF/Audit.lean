@@ -239,6 +239,8 @@ import AnalyticCombinatorics.Ch4.Analytic.LogKCoeff
 import AnalyticCombinatorics.Ch4.Analytic.LogKFaithful
 import AnalyticCombinatorics.Ch4.Analytic.LogKAsymp
 import AnalyticCombinatorics.Ch4.Analytic.LogKTransferNatural
+import AnalyticCombinatorics.Ch4.Analytic.LogAlphaOneTransfer
+import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermHarmonic
 import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermLpow
 import AnalyticCombinatorics.Ch4.Analytic.LogSqTransferNatural
 import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermPairBoth
@@ -1039,6 +1041,10 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms coeff_norm_isLittleO_atTop_of_delta_littleO_logK_beta_gt_one
 #print axioms AnalyticCombinatorics.logK_transfer_theorem_natural_remainder
 #print axioms AnalyticCombinatorics.logK_transfer_theorem_strong_remainder
+-- BOUNDARY α=1: β=1 circle kernel (∫‖1-r·exp‖^{-1} ~ log n) ⟹ log transfer at α=1; first α≤1 result.
+#print axioms coeff_norm_isLittleO_atTop_of_delta_littleO_beta_eq_one
+#print axioms AnalyticCombinatorics.log_transfer_alpha_eq_one_strong_remainder
+#print axioms AnalyticCombinatorics.cycleMarkedPermClass_counts_div_factorial_isEquivalent
 #print axioms AnalyticCombinatorics.cycleMarkedPermLpowClass_counts_div_factorial_isEquivalent
 #print axioms logSqSingularityScale_isEquivalent
 #print axioms AnalyticCombinatorics.logSq_transfer_theorem_strong_remainder_unconditional
