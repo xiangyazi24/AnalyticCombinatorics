@@ -1072,6 +1072,9 @@ namespace AnalyticCombinatorics.Ch1
 -- o(|1-z|^{-k}) ⇒ natural logᵏ⁺¹ transfer ⇒ aₙ/n! ~ ½·n^{k-1}/(k-1)!·(log n)^{k+1} (general k≥2).
 #print axioms AnalyticCombinatorics.mapℂ_undirectedCycleLogKPermLpowClass_egf
 #print axioms AnalyticCombinatorics.undirectedCycleLogKPermLpowClass_counts_div_factorial_isEquivalent
+-- and the certificate that this general-k class genuinely NEEDS the natural (not strong) transfer:
+-- along z=1-1/(n+2), ‖R‖·‖1-z‖^k = ‖z/2+z²/4‖·(log(n+2))^k → ∞, so R is not o(|1-z|^{-k}).
+#print axioms AnalyticCombinatorics.logKResidual_not_strong_remainder
 
 -- Ch2 CYC combinatorial closed form: the labelled-cycle count is (n-1)! (the integer shadow of the
 -- CYC logarithm log(1/(1-z)), [zⁿ] = 1/n, via [zⁿ]EGF = counts n / n!).
