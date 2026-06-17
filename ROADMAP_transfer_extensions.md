@@ -39,3 +39,15 @@ gets build-green + 0 sorry/admit/native + axioms ⊆ {propext, Classical.choice,
 - codex agents (parallel, one file each): B4, B7(2-regular), then B5/B6 as slots free.
 - A1 build dispatched once ChatGPT design returns + verified.
 (note: B7 2-regular already done at TwoRegularClass.twoRegularClass_counts_div_factorial_isEquivalent — pick a verified-open target)
+
+## Verification log (repo is MORE complete than docstrings suggest — grep companions first!)
+- B7 2-regular: ALREADY DONE — `TwoRegularClass.twoRegularClass_counts_div_factorial_isEquivalent`.
+- α<1 transfer: ALREADY DONE — `coeff_norm_isLittleO_atTop_of_delta_littleO` (all real β) +
+  `TransferGeneral.transfer_theorem` (all α∉{0,-1,…}).
+- B4 supercritical V.2: ALREADY DONE — `SupercriticalSeqGenuine.{supercriticalSeq_decomposition,
+  supercriticalSeq_isEquivalent}_from_supercritical_data` (commit d5b0241, clean, in Audit).
+  `SupercriticalSeq.lean`'s "future work" docstring is STALE. Only an OPTIONAL formal-inverse
+  bridge (`F=(1-C)⁻¹` from raw formal `C`, HasFPowerSeriesAt.inv-style) remains — marginal,
+  possible Mathlib gap.
+- ⇒ Genuine LIVE frontier: A1 (Hankel explicit constants — no contour yet) + B5 (fragmented-perm
+  finite-radius saddle — no companion found). B6/B7 need deep companion-grep before dispatch.
