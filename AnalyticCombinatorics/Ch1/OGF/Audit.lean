@@ -1038,6 +1038,7 @@ namespace AnalyticCombinatorics.Ch1
 -- CAPSTONE: general logᵏ natural-remainder transfer + first end-to-end application.
 #print axioms coeff_norm_isLittleO_atTop_of_delta_littleO_logK_beta_gt_one
 #print axioms AnalyticCombinatorics.logK_transfer_theorem_natural_remainder
+#print axioms AnalyticCombinatorics.logK_transfer_theorem_strong_remainder
 #print axioms AnalyticCombinatorics.cycleMarkedPermLpowClass_counts_div_factorial_isEquivalent
 #print axioms logSqSingularityScale_isEquivalent
 #print axioms AnalyticCombinatorics.logSq_transfer_theorem_strong_remainder_unconditional
