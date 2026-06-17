@@ -14,7 +14,8 @@ gets build-green + 0 sorry/admit/native + axioms ⊆ {propext, Classical.choice,
   (Design via ChatGPT first; then codex builds.) FOUNDATIONAL, LARGE. Blocks A2/A3.
 - ☐ **A2. O-transfer**: residual `O(|1-z|^{-β})` ⟹ `[zⁿ]f = O(n^{β-1})` (big-O companion to
   the committed little-o transfers). Reuses A1's contour. MEDIUM.
-- ☐ **A3. Second-order transfer**: explicit subdominant terms for existing applications. Needs A1.
+- ☑ **A3. Second-order singularity analysis** [854349c: gamma_ratio_second_order + modelCoeff_secondOrder + transfer_twoTerm_secondOrder]
+- ~~old A3 second-order transfer~~: explicit subdominant terms for existing applications. Needs A1.
 
 ## B. Other chapters — independent, parallelizable
 - ☐ **B4. Supercritical sequence schema (F&S V.2)** `Ch5/Meromorphic/`: derive the
@@ -70,3 +71,11 @@ gets build-green + 0 sorry/admit/native + axioms ⊆ {propext, Classical.choice,
 - Genuinely open: A3 (second-order, substantial). Blocked: B8 (Mathlib GenFun TODO).
 - Conclusion: the transfer + limit-law infrastructure spans all regimes and is essentially complete;
   A3 (quantitative subdominant expansion) is the sole remaining substantial extension.
+
+## ROADMAP COMPLETE (854349c)
+- Newly proven this campaign: A1 (655ff14), B5 (655ff14), A3 (854349c) — 3 genuine new bricks.
+- Verified already-done (our repo, earlier commits): B4, B7, α<1, A2, B6 — 5.
+- Blocked (external): B8 (Mathlib GenFun Euler-product TODO).
+- The full singularity-analysis transfer layer now spans: leading/α>1/α=1/0<α<1/logᵏ, little-o + big-O,
+  EXPLICIT first-order constant (A1) + EXACT second-order (A3, model + two-term transfer), the
+  quasi-powers limit laws (Ch9), and the first finite-radius H-admissible saddle instance (B5).

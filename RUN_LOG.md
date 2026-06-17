@@ -749,3 +749,8 @@
   ChatGPT-design→codex-build loop closed both (ChatGPT corrected B5 tail shape; reframed A1 off Hankel).
   Roadmap tally: 2 newly-proven (A1,B5) + 3 verified-already-done (B4,B7,α<1). Remaining: A2/A3
   (O-transfer/2nd-order, now unblocked by A1), B6 (verified-open limit law), B8 (Mathlib-blocked).
+
+- A3 (second-order singularity analysis): CLOSED — commit 854349c, pushed. modelCoeff/gamma_ratio
+  second order via recurrence-bootstrap (no new Gamma theory) + two-term transfer (C₀ contributes to
+  n^{α-2}). 3 theorems clean-3, Audit green (8528 jobs). ROADMAP COMPLETE: A1+B5+A3 newly proven,
+  B4/B7/α<1/A2/B6 already-done, B8 Mathlib-blocked.
