@@ -232,6 +232,8 @@ import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleMarkedPermPairs
 import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermTuple
 import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleMarkedPermTuple
 import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleLogSqPermPair
+import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleLogKPermLpow
+import AnalyticCombinatorics.Ch5.Meromorphic.LabelledCycleCount
 import AnalyticCombinatorics.Ch4.Analytic.LogTransferNatural
 import AnalyticCombinatorics.Ch4.Analytic.OneSubCpowMul
 import AnalyticCombinatorics.Ch4.Analytic.LogSqTransfer
@@ -1064,6 +1066,16 @@ namespace AnalyticCombinatorics.Ch1
 -- and the certificate that this class genuinely NEEDS the natural (not strong) log² transfer:
 -- along z=1-1/(n+2), ‖R‖·‖1-z‖² = ‖z/2+z²/4‖·log(n+2) → ∞, so R is not o(|1-z|^{-2}).
 #print axioms AnalyticCombinatorics.logSqResidual_not_strong_remainder
+
+-- GENERAL-k natural logᵏ⁺¹ application: undirectedCycle ⋆ (k-tuple of marked-cycle perms), EGF
+-- (½L-z/2-z²/4)·(1-z)^{-k}·Lᵏ; residual -(z/2+z²/4)·(1-z)^{-k}·Lᵏ is o(|1-z|^{-k}logᵏ⁺¹) but not
+-- o(|1-z|^{-k}) ⇒ natural logᵏ⁺¹ transfer ⇒ aₙ/n! ~ ½·n^{k-1}/(k-1)!·(log n)^{k+1} (general k≥2).
+#print axioms AnalyticCombinatorics.mapℂ_undirectedCycleLogKPermLpowClass_egf
+#print axioms AnalyticCombinatorics.undirectedCycleLogKPermLpowClass_counts_div_factorial_isEquivalent
+
+-- Ch2 CYC combinatorial closed form: the labelled-cycle count is (n-1)! (the integer shadow of the
+-- CYC logarithm log(1/(1-z)), [zⁿ] = 1/n, via [zⁿ]EGF = counts n / n!).
+#print axioms AnalyticCombinatorics.atom_lcyc_counts_eq_factorial
 
 -- Ch5 GENUINE supercritical-sequence schema (F&S V.2): the principal+remainder decomposition is now
 -- DERIVED from the supercritical data (C(ρ)=1, analytic, C'(ρ)≠0, ρ dominant), not assumed —

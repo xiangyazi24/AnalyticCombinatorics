@@ -270,6 +270,8 @@ import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleMarkedPermTuple
 import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleLogSqPermPair
 import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermLpow
 import AnalyticCombinatorics.Ch7.SingularityApp.CycleMarkedPermHarmonic
+import AnalyticCombinatorics.Ch7.SingularityApp.UndirectedCycleLogKPermLpow
+import AnalyticCombinatorics.Ch5.Meromorphic.LabelledCycleCount
 import AnalyticCombinatorics.Ch7.SingularityApp.Schroeder
 import AnalyticCombinatorics.Ch7.SingularityApp.Riordan
 import AnalyticCombinatorics.Ch7.SingularityApp.TreeFunction
