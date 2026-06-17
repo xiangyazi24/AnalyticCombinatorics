@@ -705,3 +705,12 @@
 - (d) STATE: brick2 head 100% (2π extracted+assembled); brick2 tail ~90% (foundation+cells+set
   machinery green; summation theorem WIP w/ 2 documented issues). REMAINING: close TailSum HasSum
   (B bridge + .sub) → final tail theorem → head+tail → partLaplace_second_order → bricks 3-5.
+
+## Run 2026-06-16 (logK transfer capstone, automode)
+- doctrine: DOCTRINE_logK.md
+- trigger: explicit /automode after repeated 继续 (active session)
+- starting avenue: (a) generalize log² transfer machinery 2→k
+- state at start: 5 commits done (flagship+cert+LogKCoeff+LogKFaithful+LogKAsymp);
+  kernel chunk done (WIP), chunk 3 transfer drafted, chunk 2 bridge generating on ac.
+- end: <in progress>
+- final result: <in progress>
