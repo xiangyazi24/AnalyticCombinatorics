@@ -197,6 +197,8 @@ import AnalyticCombinatorics.Ch4.Analytic.TransferTheorem
 import AnalyticCombinatorics.Ch4.Analytic.DerivEstimate
 import AnalyticCombinatorics.Ch4.Analytic.CoeffDescent
 import AnalyticCombinatorics.Ch4.Analytic.LittleODescent
+import AnalyticCombinatorics.Ch4.Analytic.ModelCoeffExplicit
+import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermHAdmissible
 import AnalyticCombinatorics.Ch4.Analytic.TransferGeneral
 import AnalyticCombinatorics.Ch4.Analytic.SubstComp
 import AnalyticCombinatorics.Ch4.Analytic.LogSingularity
@@ -396,6 +398,17 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms _root_.exists_iteratedDeriv_norm_le_deltaDomain
 #print axioms _root_.coeff_norm_isBigO_atTop_of_delta_bound
 #print axioms _root_.coeff_norm_isLittleO_atTop_of_delta_littleO
+
+-- EXPLICIT model-coefficient constant (1+O(1/n)) for [zⁿ](1-z)^{-α} via the exact Γ-ratio
+-- [zⁿ](1-z)^{-α} = Γ(n+α)/(Γ(α)Γ(n+1)) + a Bohr–Mollerup log-convexity first-order Γ-ratio estimate
+-- (no Hankel contour). Foundation for quantitative/second-order singularity analysis.
+#print axioms _root_.gamma_ratio_first_order
+#print axioms _root_.modelCoeff_explicit
+
+-- FIRST FINITE-RADIUS H-admissible saddle-point instance: fragmented permutations exp(z/(1-z)),
+-- ρ=1, saddle r→1⁻. Full Hayman local+tail estimates (finite-radius regime) ⇒ aₙ/n! saddle asymptotic.
+#print axioms FragmentedPermHAdmissible.fragPerm_coeff_isEquivalent_saddle_from_HAdmissible
+
 #print axioms CombClass.ogf_cyc
 #print axioms counts_necklaces_k
 #print axioms card_fixedBy_rotation
