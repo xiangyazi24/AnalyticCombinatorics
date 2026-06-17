@@ -198,6 +198,8 @@ import AnalyticCombinatorics.Ch4.Analytic.DerivEstimate
 import AnalyticCombinatorics.Ch4.Analytic.CoeffDescent
 import AnalyticCombinatorics.Ch4.Analytic.LittleODescent
 import AnalyticCombinatorics.Ch4.Analytic.ModelCoeffExplicit
+import AnalyticCombinatorics.Ch4.Analytic.ModelCoeffSecondOrder
+import AnalyticCombinatorics.Ch4.Analytic.TransferSecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermHAdmissible
 import AnalyticCombinatorics.Ch4.Analytic.TransferGeneral
 import AnalyticCombinatorics.Ch4.Analytic.SubstComp
@@ -404,6 +406,13 @@ namespace AnalyticCombinatorics.Ch1
 -- (no Hankel contour). Foundation for quantitative/second-order singularity analysis.
 #print axioms _root_.gamma_ratio_first_order
 #print axioms _root_.modelCoeff_explicit
+
+-- A3 SECOND-ORDER (explicit subdominant term, c₁ = α(α-1)/2): the exact second-order Γ-ratio
+-- Γ(n+α)/Γ(n+1) = n^{α-1}(1 + α(α-1)/(2n) + O(1/n²)) via recurrence-bootstrap from A1 (no Stirling),
+-- and the two-term singularity transfer (the leading C₀ term itself contributes to the n^{α-2} coeff).
+#print axioms _root_.gamma_ratio_second_order
+#print axioms _root_.modelCoeff_secondOrder
+#print axioms _root_.transfer_twoTerm_secondOrder
 
 -- FIRST FINITE-RADIUS H-admissible saddle-point instance: fragmented permutations exp(z/(1-z)),
 -- ρ=1, saddle r→1⁻. Full Hayman local+tail estimates (finite-radius regime) ⇒ aₙ/n! saddle asymptotic.
