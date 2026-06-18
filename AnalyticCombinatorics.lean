@@ -243,6 +243,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.SchroederSecondOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.RiordanSecondOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTreeSecondOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.CayleySecondOrder
+import AnalyticCombinatorics.Ch7.SingularityApp.CatalanThirdOrder
 import AnalyticCombinatorics.Ch4.Analytic.ModelCoeffThirdOrder
 import AnalyticCombinatorics.Ch4.Analytic.SqrtSingularitySecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermHAdmissible

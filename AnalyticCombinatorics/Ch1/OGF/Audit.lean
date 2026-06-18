@@ -209,6 +209,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.SchroederSecondOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.RiordanSecondOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTreeSecondOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.CayleySecondOrder
+import AnalyticCombinatorics.Ch7.SingularityApp.CatalanThirdOrder
 import AnalyticCombinatorics.Ch4.Analytic.ModelCoeffThirdOrder
 import AnalyticCombinatorics.Ch4.Analytic.SqrtSingularitySecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermHAdmissible
@@ -450,6 +451,8 @@ namespace AnalyticCombinatorics.Ch1
 -- F = A(z)+B(z)√(1-z/ρ), gets [zⁿ]F two-term) + Cayley/tree second order (nₙ/n! relative corr c=-1/12, Stirling route).
 #print axioms _root_.sqrt_singularity_secondOrder_original_of_rescaled_singularity
 #print axioms AnalyticCombinatorics.Ch7.SingularityApp.TreeFunctionNS.cayleyRootedTree_over_factorial_relative_secondOrder
+-- Catalan THIRD order (three-term): Cₙ = 4ⁿ/(√π n^{3/2})(1 - 9/(8n) + c₃/n²).
+#print axioms _root_.catalan_complex_thirdOrder
 
 -- FIRST FINITE-RADIUS H-admissible saddle-point instance: fragmented permutations exp(z/(1-z)),
 -- ρ=1, saddle r→1⁻. Full Hayman local+tail estimates (finite-radius regime) ⇒ aₙ/n! saddle asymptotic.
