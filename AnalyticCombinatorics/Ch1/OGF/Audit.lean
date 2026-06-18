@@ -200,6 +200,8 @@ import AnalyticCombinatorics.Ch4.Analytic.LittleODescent
 import AnalyticCombinatorics.Ch4.Analytic.ModelCoeffExplicit
 import AnalyticCombinatorics.Ch4.Analytic.ModelCoeffSecondOrder
 import AnalyticCombinatorics.Ch4.Analytic.TransferSecondOrder
+import AnalyticCombinatorics.Ch4.Analytic.TransferSecondOrderAlphaLt1
+import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularSecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermHAdmissible
 import AnalyticCombinatorics.Ch4.Analytic.TransferGeneral
 import AnalyticCombinatorics.Ch4.Analytic.SubstComp
@@ -413,6 +415,11 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms _root_.gamma_ratio_second_order
 #print axioms _root_.modelCoeff_secondOrder
 #print axioms _root_.transfer_twoTerm_secondOrder
+
+-- α<1 second-order transfer (derivative-descent reusing the α>1 transfer at β=α+1) + its capstone
+-- application: the 2-regular labelled graph count to second order, aₙ/n! ~ e^{-3/4}/√(πn)·(1 - 5/(8n)).
+#print axioms _root_.transfer_twoTerm_secondOrder_alpha_lt_one
+#print axioms TwoRegularClass.twoRegularClass_counts_div_factorial_secondOrder
 
 -- FIRST FINITE-RADIUS H-admissible saddle-point instance: fragmented permutations exp(z/(1-z)),
 -- ρ=1, saddle r→1⁻. Full Hayman local+tail estimates (finite-radius regime) ⇒ aₙ/n! saddle asymptotic.

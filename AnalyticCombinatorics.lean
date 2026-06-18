@@ -234,6 +234,8 @@ import AnalyticCombinatorics.Ch4.Analytic.LogSingularity
 import AnalyticCombinatorics.Ch4.Analytic.ModelCoeffExplicit
 import AnalyticCombinatorics.Ch4.Analytic.ModelCoeffSecondOrder
 import AnalyticCombinatorics.Ch4.Analytic.TransferSecondOrder
+import AnalyticCombinatorics.Ch4.Analytic.TransferSecondOrderAlphaLt1
+import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularSecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.Bound
 import AnalyticCombinatorics.Ch8.SaddlePoint.Assembly
