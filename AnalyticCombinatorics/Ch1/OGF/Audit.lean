@@ -208,7 +208,9 @@ import AnalyticCombinatorics.Ch7.SingularityApp.CatalanSecondOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.SchroederSecondOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.RiordanSecondOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTreeSecondOrder
+import AnalyticCombinatorics.Ch7.SingularityApp.CayleySecondOrder
 import AnalyticCombinatorics.Ch4.Analytic.ModelCoeffThirdOrder
+import AnalyticCombinatorics.Ch4.Analytic.SqrtSingularitySecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermHAdmissible
 import AnalyticCombinatorics.Ch4.Analytic.TransferGeneral
 import AnalyticCombinatorics.Ch4.Analytic.SubstComp
@@ -443,6 +445,11 @@ namespace AnalyticCombinatorics.Ch1
 -- Third-order model expansion (c₂ = α(α-1)(α-2)(3α-1)/24) via recurrence-bootstrap from the second order.
 #print axioms _root_.modelCoeff_thirdOrder
 #print axioms _root_.gamma_ratio_third_order
+
+-- General √-singularity second-order META-APPLICATOR (consolidates the algebraic √-family: caller supplies
+-- F = A(z)+B(z)√(1-z/ρ), gets [zⁿ]F two-term) + Cayley/tree second order (nₙ/n! relative corr c=-1/12, Stirling route).
+#print axioms _root_.sqrt_singularity_secondOrder_original_of_rescaled_singularity
+#print axioms AnalyticCombinatorics.Ch7.SingularityApp.TreeFunctionNS.cayleyRootedTree_over_factorial_relative_secondOrder
 
 -- FIRST FINITE-RADIUS H-admissible saddle-point instance: fragmented permutations exp(z/(1-z)),
 -- ρ=1, saddle r→1⁻. Full Hayman local+tail estimates (finite-radius regime) ⇒ aₙ/n! saddle asymptotic.
