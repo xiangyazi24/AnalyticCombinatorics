@@ -239,6 +239,10 @@ import AnalyticCombinatorics.Ch4.Analytic.TransferSecondOrderGeneral
 import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularSecondOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.MotzkinSecondOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.CatalanSecondOrder
+import AnalyticCombinatorics.Ch7.SingularityApp.SchroederSecondOrder
+import AnalyticCombinatorics.Ch7.SingularityApp.RiordanSecondOrder
+import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTreeSecondOrder
+import AnalyticCombinatorics.Ch4.Analytic.ModelCoeffThirdOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.Bound
 import AnalyticCombinatorics.Ch8.SaddlePoint.Assembly

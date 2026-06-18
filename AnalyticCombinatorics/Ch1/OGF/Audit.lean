@@ -205,6 +205,10 @@ import AnalyticCombinatorics.Ch4.Analytic.TransferSecondOrderGeneral
 import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularSecondOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.MotzkinSecondOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.CatalanSecondOrder
+import AnalyticCombinatorics.Ch7.SingularityApp.SchroederSecondOrder
+import AnalyticCombinatorics.Ch7.SingularityApp.RiordanSecondOrder
+import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTreeSecondOrder
+import AnalyticCombinatorics.Ch4.Analytic.ModelCoeffThirdOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermHAdmissible
 import AnalyticCombinatorics.Ch4.Analytic.TransferGeneral
 import AnalyticCombinatorics.Ch4.Analytic.SubstComp
@@ -432,6 +436,13 @@ namespace AnalyticCombinatorics.Ch1
 -- Motzkin Mₙ ~ 3ⁿ·3√3/(2√π)·n^{-3/2}(1 - 39/(16n)); Catalan Cₙ ~ 4ⁿ/(√π n^{3/2})(1 - 9/(8n)).
 #print axioms _root_.motzkin_secondOrder
 #print axioms _root_.catalan_complex_secondOrder
+#print axioms _root_.schroeder_secondOrder
+#print axioms _root_.riordan_secondOrder
+#print axioms _root_.ternaryTreeCount_normalized_secondOrder
+
+-- Third-order model expansion (c₂ = α(α-1)(α-2)(3α-1)/24) via recurrence-bootstrap from the second order.
+#print axioms _root_.modelCoeff_thirdOrder
+#print axioms _root_.gamma_ratio_third_order
 
 -- FIRST FINITE-RADIUS H-admissible saddle-point instance: fragmented permutations exp(z/(1-z)),
 -- ρ=1, saddle r→1⁻. Full Hayman local+tail estimates (finite-radius regime) ⇒ aₙ/n! saddle asymptotic.
