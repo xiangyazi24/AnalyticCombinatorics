@@ -237,6 +237,8 @@ import AnalyticCombinatorics.Ch4.Analytic.TransferSecondOrder
 import AnalyticCombinatorics.Ch4.Analytic.TransferSecondOrderAlphaLt1
 import AnalyticCombinatorics.Ch4.Analytic.TransferSecondOrderGeneral
 import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularSecondOrder
+import AnalyticCombinatorics.Ch7.SingularityApp.MotzkinSecondOrder
+import AnalyticCombinatorics.Ch7.SingularityApp.CatalanSecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.Bound
 import AnalyticCombinatorics.Ch8.SaddlePoint.Assembly

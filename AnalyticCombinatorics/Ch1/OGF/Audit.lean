@@ -203,6 +203,8 @@ import AnalyticCombinatorics.Ch4.Analytic.TransferSecondOrder
 import AnalyticCombinatorics.Ch4.Analytic.TransferSecondOrderAlphaLt1
 import AnalyticCombinatorics.Ch4.Analytic.TransferSecondOrderGeneral
 import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularSecondOrder
+import AnalyticCombinatorics.Ch7.SingularityApp.MotzkinSecondOrder
+import AnalyticCombinatorics.Ch7.SingularityApp.CatalanSecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermHAdmissible
 import AnalyticCombinatorics.Ch4.Analytic.TransferGeneral
 import AnalyticCombinatorics.Ch4.Analytic.SubstComp
@@ -425,6 +427,11 @@ namespace AnalyticCombinatorics.Ch1
 -- GENERAL-α second-order two-term transfer (all real α avoiding 1-ℕ poles), by k-fold derivative
 -- descent — subsumes the α>1 and 0<α<1 versions and extends to α<0 (e.g. Motzkin/Catalan α=-1/2).
 #print axioms _root_.transfer_twoTerm_secondOrder_general
+
+-- Second-order counts for classical √-algebraic classes (α=-1/2) via the general-α transfer:
+-- Motzkin Mₙ ~ 3ⁿ·3√3/(2√π)·n^{-3/2}(1 - 39/(16n)); Catalan Cₙ ~ 4ⁿ/(√π n^{3/2})(1 - 9/(8n)).
+#print axioms _root_.motzkin_secondOrder
+#print axioms _root_.catalan_complex_secondOrder
 
 -- FIRST FINITE-RADIUS H-admissible saddle-point instance: fragmented permutations exp(z/(1-z)),
 -- ρ=1, saddle r→1⁻. Full Hayman local+tail estimates (finite-radius regime) ⇒ aₙ/n! saddle asymptotic.
