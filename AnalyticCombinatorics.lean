@@ -246,6 +246,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.CayleySecondOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.CatalanThirdOrder
 import AnalyticCombinatorics.Ch4.Analytic.ModelCoeffThirdOrder
 import AnalyticCombinatorics.Ch4.Analytic.SqrtSingularitySecondOrder
+import AnalyticCombinatorics.Ch4.Analytic.SqrtSingularityThirdOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.Bound
 import AnalyticCombinatorics.Ch8.SaddlePoint.Assembly
