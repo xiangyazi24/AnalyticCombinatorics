@@ -754,3 +754,9 @@
   second order via recurrence-bootstrap (no new Gamma theory) + two-term transfer (C₀ contributes to
   n^{α-2}). 3 theorems clean-3, Audit green (8528 jobs). ROADMAP COMPLETE: A1+B5+A3 newly proven,
   B4/B7/α<1/A2/B6 already-done, B8 Mathlib-blocked.
+
+- POST-ROADMAP capstone: α<1 second-order transfer + 2-regular second-order count — commit 2269ef2,
+  pushed. transfer_twoTerm_secondOrder_alpha_lt_one (derivative-descent reusing the α>1 second-order
+  transfer) + twoRegularClass_counts_div_factorial_secondOrder (aₙ/n! ~ e^{-3/4}/√(πn)·(1-5/(8n))).
+  2 theorems clean-3, Audit green (8530 jobs). First end-to-end second-order enumeration of a classical
+  class. Today's substantive commits: 6248737, 8e16305, 674f83a, 655ff14, 854349c, 2269ef2.
