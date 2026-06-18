@@ -201,6 +201,7 @@ import AnalyticCombinatorics.Ch4.Analytic.ModelCoeffExplicit
 import AnalyticCombinatorics.Ch4.Analytic.ModelCoeffSecondOrder
 import AnalyticCombinatorics.Ch4.Analytic.TransferSecondOrder
 import AnalyticCombinatorics.Ch4.Analytic.TransferSecondOrderAlphaLt1
+import AnalyticCombinatorics.Ch4.Analytic.TransferSecondOrderGeneral
 import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularSecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermHAdmissible
 import AnalyticCombinatorics.Ch4.Analytic.TransferGeneral
@@ -420,6 +421,10 @@ namespace AnalyticCombinatorics.Ch1
 -- application: the 2-regular labelled graph count to second order, aₙ/n! ~ e^{-3/4}/√(πn)·(1 - 5/(8n)).
 #print axioms _root_.transfer_twoTerm_secondOrder_alpha_lt_one
 #print axioms TwoRegularClass.twoRegularClass_counts_div_factorial_secondOrder
+
+-- GENERAL-α second-order two-term transfer (all real α avoiding 1-ℕ poles), by k-fold derivative
+-- descent — subsumes the α>1 and 0<α<1 versions and extends to α<0 (e.g. Motzkin/Catalan α=-1/2).
+#print axioms _root_.transfer_twoTerm_secondOrder_general
 
 -- FIRST FINITE-RADIUS H-admissible saddle-point instance: fragmented permutations exp(z/(1-z)),
 -- ρ=1, saddle r→1⁻. Full Hayman local+tail estimates (finite-radius regime) ⇒ aₙ/n! saddle asymptotic.
