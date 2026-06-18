@@ -217,6 +217,9 @@ import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTreeThirdOrder
 import AnalyticCombinatorics.Ch4.Analytic.ModelCoeffThirdOrder
 import AnalyticCombinatorics.Ch4.Analytic.SqrtSingularitySecondOrder
 import AnalyticCombinatorics.Ch4.Analytic.SqrtSingularityThirdOrder
+import AnalyticCombinatorics.Ch8.SaddlePoint.GaussianMoments
+import AnalyticCombinatorics.Ch8.SaddlePoint.SecondOrderCore
+import AnalyticCombinatorics.Ch8.SaddlePoint.SecondOrderHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermHAdmissible
 import AnalyticCombinatorics.Ch4.Analytic.TransferGeneral
 import AnalyticCombinatorics.Ch4.Analytic.SubstComp
@@ -465,6 +468,9 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms _root_.ternaryTreeCount_normalized_thirdOrder
 -- Third-order √-singularity meta-applicator (all √-classes get a 3-term count by plug-in).
 #print axioms _root_.sqrt_singularity_thirdOrder_original_of_rescaled_singularity
+-- First ABSTRACT second-order saddle-point theorem: ratio = 1 + (b₄/8b² - 5b₃²/24b³) + o, proven from the
+-- H-admissible-2nd-order contract (local L1 + tail) via Hermite-moment integration of the central integral.
+#print axioms _root_.coeff_secondOrder_saddle
 
 -- FIRST FINITE-RADIUS H-admissible saddle-point instance: fragmented permutations exp(z/(1-z)),
 -- ρ=1, saddle r→1⁻. Full Hayman local+tail estimates (finite-radius regime) ⇒ aₙ/n! saddle asymptotic.
