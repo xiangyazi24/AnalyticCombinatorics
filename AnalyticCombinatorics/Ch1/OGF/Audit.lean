@@ -210,6 +210,10 @@ import AnalyticCombinatorics.Ch7.SingularityApp.RiordanSecondOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTreeSecondOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.CayleySecondOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.CatalanThirdOrder
+import AnalyticCombinatorics.Ch7.SingularityApp.MotzkinThirdOrder
+import AnalyticCombinatorics.Ch7.SingularityApp.SchroederThirdOrder
+import AnalyticCombinatorics.Ch7.SingularityApp.RiordanThirdOrder
+import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTreeThirdOrder
 import AnalyticCombinatorics.Ch4.Analytic.ModelCoeffThirdOrder
 import AnalyticCombinatorics.Ch4.Analytic.SqrtSingularitySecondOrder
 import AnalyticCombinatorics.Ch4.Analytic.SqrtSingularityThirdOrder
@@ -454,6 +458,11 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch7.SingularityApp.TreeFunctionNS.cayleyRootedTree_over_factorial_relative_secondOrder
 -- Catalan THIRD order (three-term): Cₙ = 4ⁿ/(√π n^{3/2})(1 - 9/(8n) + c₃/n²).
 #print axioms _root_.catalan_complex_thirdOrder
+-- Third-order √-family (via the third-order meta plug-in): Motzkin/Schröder/Riordan/ternary.
+#print axioms _root_.motzkin_thirdOrder
+#print axioms _root_.schroeder_complex_thirdOrder
+#print axioms _root_.riordan_thirdOrder
+#print axioms _root_.ternaryTreeCount_normalized_thirdOrder
 -- Third-order √-singularity meta-applicator (all √-classes get a 3-term count by plug-in).
 #print axioms _root_.sqrt_singularity_thirdOrder_original_of_rescaled_singularity
 
