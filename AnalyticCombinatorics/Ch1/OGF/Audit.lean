@@ -210,6 +210,7 @@ import AnalyticCombinatorics.Ch7.SingularityApp.RiordanSecondOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.TernaryTreeSecondOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.CayleySecondOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.CayleyThirdOrder
+import AnalyticCombinatorics.Ch7.SingularityApp.FussCatalanGeneralThirdOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.CatalanThirdOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.MotzkinThirdOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.SchroederThirdOrder
@@ -466,6 +467,8 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch7.SingularityApp.TreeFunctionNS.cayleyRootedTree_over_factorial_relative_secondOrder
 -- Cayley THIRD order (T1): nₙ/n! = e^n/(√(2πn))·(1 - 1/(12n) + c₃/n²).
 #print axioms AnalyticCombinatorics.Ch7.SingularityApp.TreeFunctionNS.cayleyRootedTree_over_factorial_relative_thirdOrder
+-- Fuss-Catalan GENERAL-p third order (T3): Raney closed form + Stirling squeeze (bypasses Puiseux gap); c₂ vs Catalan 145/128.
+#print axioms AnalyticCombinatorics.Ch7.SingularityApp.FussCatalanNS.fussCatalanGeneral_relative_thirdOrder
 -- Catalan THIRD order (three-term): Cₙ = 4ⁿ/(√π n^{3/2})(1 - 9/(8n) + c₃/n²).
 #print axioms _root_.catalan_complex_thirdOrder
 -- Third-order √-family (via the third-order meta plug-in): Motzkin/Schröder/Riordan/ternary.
