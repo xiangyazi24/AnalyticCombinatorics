@@ -256,6 +256,7 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.SecondOrderCore
 import AnalyticCombinatorics.Ch8.SaddlePoint.SecondOrderHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.InvolutionSecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.BellSecondOrder
+import AnalyticCombinatorics.Ch8.SaddlePoint.Blocks3SecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.Bound
 import AnalyticCombinatorics.Ch8.SaddlePoint.Assembly
