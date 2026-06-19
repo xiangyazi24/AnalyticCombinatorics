@@ -12,9 +12,9 @@ general-α 2nd-order transfer; √-family 2nd-order (Motzkin/Catalan/Schröder/R
 - [x] T1. Cayley THIRD-order count. DONE. (Cayley has 2nd-order via Stirling; extend to 3rd.) FEASIBLE.
 - [x] T2. Fragmented-perm finite-radius SECOND-order. WIP: 1 sorry = the finite-radius 2nd-order tail
        estimate (ρ=1, saddle r→1⁻). HARD (the design flagged finite-radius as the hardest regime).
-- [ ] T3. Fuss-Catalan-general UNCONDITIONAL. Discharge the two-term Puiseux of B=1+zB^p at the branch
+- [x] T3. Fuss-Catalan-general UNCONDITIONAL. Discharge the two-term Puiseux of B=1+zB^p at the branch
        point — needs a ramified/Puiseux analytic-inverse theorem, currently ABSENT from Mathlib. HARD/gap.
-- [ ] T4. THIRD-order saddle-point layer. Extend the abstract 2nd-order saddle theorem to 3rd order
+- [x] T4. THIRD-order saddle-point layer. Extend the abstract 2nd-order saddle theorem to 3rd order
        (next Hermite-moment term), + one instance. SUBSTANTIAL (optional).
 - [⊘] Exp 2nd-order: SKIP — [zⁿ]e^z = 1/n! exact, no asymptotic content.
 
