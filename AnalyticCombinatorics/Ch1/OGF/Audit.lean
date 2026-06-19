@@ -225,6 +225,7 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.InvolutionSecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.BellSecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.Blocks3SecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermHAdmissible
+import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermSecondOrder
 import AnalyticCombinatorics.Ch4.Analytic.TransferGeneral
 import AnalyticCombinatorics.Ch4.Analytic.SubstComp
 import AnalyticCombinatorics.Ch4.Analytic.LogSingularity
@@ -483,6 +484,8 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms _root_.bell_number_over_factorial_secondOrder_saddle
 -- Third concrete saddle count: set-partitions-into-triples (Blocks3) second order.
 #print axioms Blocks3HAdmissible.blocks3_number_over_factorial_secondOrder_saddle
+-- Fragmented-permutation finite-radius SECOND order (T2): coeff_secondOrder_saddle from local-L1 + tail.
+#print axioms FragmentedPermHAdmissible.fragPerm_coeff_secondOrder_saddle_from_HAdmissible
 
 -- FIRST FINITE-RADIUS H-admissible saddle-point instance: fragmented permutations exp(z/(1-z)),
 -- ρ=1, saddle r→1⁻. Full Hayman local+tail estimates (finite-radius regime) ⇒ aₙ/n! saddle asymptotic.
