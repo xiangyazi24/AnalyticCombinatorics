@@ -256,6 +256,8 @@ import AnalyticCombinatorics.Ch4.Analytic.SqrtSingularityThirdOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.GaussianMoments
 import AnalyticCombinatorics.Ch8.SaddlePoint.SecondOrderCore
 import AnalyticCombinatorics.Ch8.SaddlePoint.SecondOrderHAdmissible
+import AnalyticCombinatorics.Ch8.SaddlePoint.ThirdOrderCore
+import AnalyticCombinatorics.Ch8.SaddlePoint.ThirdOrderHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.InvolutionSecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.BellSecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.Blocks3SecondOrder

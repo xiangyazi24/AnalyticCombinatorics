@@ -222,6 +222,8 @@ import AnalyticCombinatorics.Ch4.Analytic.SqrtSingularityThirdOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.GaussianMoments
 import AnalyticCombinatorics.Ch8.SaddlePoint.SecondOrderCore
 import AnalyticCombinatorics.Ch8.SaddlePoint.SecondOrderHAdmissible
+import AnalyticCombinatorics.Ch8.SaddlePoint.ThirdOrderCore
+import AnalyticCombinatorics.Ch8.SaddlePoint.ThirdOrderHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.InvolutionSecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.BellSecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.Blocks3SecondOrder
@@ -489,6 +491,8 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms Blocks3HAdmissible.blocks3_number_over_factorial_secondOrder_saddle
 -- Fragmented-permutation finite-radius SECOND order (T2): coeff_secondOrder_saddle from local-L1 + tail.
 #print axioms FragmentedPermHAdmissible.fragPerm_coeff_secondOrder_saddle_from_HAdmissible
+-- THIRD-order saddle layer (T4): abstract coeff_thirdOrder_saddle, δ₂=-b₆/48b³+7b₃b₅/48b⁴+35b₄²/384b⁴-35b₃²b₄/64b⁵+385b₃⁴/1152b⁶ (verified Poisson 1/288, involutions). Hypotheses-only structure, no banked conclusion.
+#print axioms _root_.coeff_thirdOrder_saddle
 
 -- FIRST FINITE-RADIUS H-admissible saddle-point instance: fragmented permutations exp(z/(1-z)),
 -- ρ=1, saddle r→1⁻. Full Hayman local+tail estimates (finite-radius regime) ⇒ aₙ/n! saddle asymptotic.
