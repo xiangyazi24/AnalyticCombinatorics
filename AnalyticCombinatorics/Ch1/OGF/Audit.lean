@@ -302,6 +302,8 @@ import AnalyticCombinatorics.Ch9.LimitLaws.MultivariateCyclePoisson
 import AnalyticCombinatorics.Ch9.LimitLaws.ExpectedCycles
 import AnalyticCombinatorics.Ch9.LimitLaws.CycleVariance
 import AnalyticCombinatorics.Ch9.LimitLaws.CompositionParts
+import AnalyticCombinatorics.Ch8.Partitions.CeilingEscapeClose
+import AnalyticCombinatorics.Ch8.Partitions.ErdosHRConstant
 
 /-!
 # Axiom audit for the Ch1 OGF transfer layer
@@ -1253,8 +1255,10 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch5.Meromorphic.CompositionsGeneral.Close.compS_isEquivalent
 
 -- Ch4/VI log-singularity coefficient scale (leading order, β=1): genuine [z^n](1-z)^{-α}log(1/(1-z))
--- = Ring.choose(α+n-1,n)·Σ_{j<n}(α+j)⁻¹ ~ (n^{α-1}/Γα)·log n (α>1). Full Δ-domain log-transfer + general β
--- reported-open (honestly, not faked). α=2 instance ~ n log n.
+-- = Ring.choose(α+n-1,n)·Σ_{j<n}(α+j)⁻¹ ~ (n^{α-1}/Γα)·log n (α>1). α=2 instance ~ n log n.
+-- UPDATE (2026-06-20): general β NOW CLOSED — see LogKTransferNatural.logK_transfer_theorem_natural_remainder
+-- (full Δ-domain log^k transfer, any k≥1, clean-3, wired below) + LogSq* (β=2). This comment's "general β
+-- reported-open" was stale.
 #print axioms _root_.logSingularityCoeff_isEquivalent
 #print axioms _root_.doublePoleLogCoeff_isEquivalent
 
@@ -1546,9 +1550,14 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.tendsto_of_renewal_alignment
 -- HR mass-rate campaign, brick 74 (§8 R7 HARDY–RAMANUJAN REDUCTION, correct form):
 -- erdos_partition_limit_exists_of_alignment — if the renewal-alignment (m-step terminal-law overlap
--- ≥ 1−(1−δ)^m−ε for high-rank starts) holds cofinitely, then u → a > 0. The SATISFIABLE reduction;
--- the lone remaining analytic wall is ErdosAlignment (comparable-rank overlap + descent coupling).
+-- ≥ 1−(1−δ)^m−ε for high-rank starts) holds cofinitely, then u → a > 0. The SATISFIABLE reduction.
+-- UPDATE (2026-06-20): the wall is CLOSED — not via ErdosAlignment (false for far ranks) but via the
+-- first-entrance rank-band route + the elementary R9 additive escape (CeilingEscapeClose). The result is
+-- now UNCONDITIONAL: Erdos.erdos_partition_limit_exists, and the SHARP constant
+-- erdos_partition_limit_constant : u → 1/(4√3)  ⇔  p(n) ~ exp(π√(2n/3))/(4n√3)  [both clean-3].
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.erdos_partition_limit_exists_of_alignment
+#print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.erdos_partition_limit_exists
+#print axioms AnalyticCombinatorics.Ch8.Partitions.erdos_partition_limit_constant
 -- HR mass-rate campaign, brick 75 (§8 R7 scalar recursion solver): scalar_rec_solve — closed form for
 -- u(t+1) ≤ q·u t + δ·e t, the engine of the windowed-coupling unmatched-mass recursion.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.scalar_rec_solve
