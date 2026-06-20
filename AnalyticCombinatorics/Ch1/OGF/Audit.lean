@@ -203,6 +203,7 @@ import AnalyticCombinatorics.Ch4.Analytic.TransferSecondOrder
 import AnalyticCombinatorics.Ch4.Analytic.TransferSecondOrderAlphaLt1
 import AnalyticCombinatorics.Ch4.Analytic.TransferSecondOrderGeneral
 import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularSecondOrder
+import AnalyticCombinatorics.Ch7.SingularityApp.TwoRegularThirdOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.MotzkinSecondOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.CatalanSecondOrder
 import AnalyticCombinatorics.Ch7.SingularityApp.SchroederSecondOrder
@@ -1744,5 +1745,7 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms bell_number_over_factorial_thirdOrder
 -- Blocks3 (size≤3 set-partitions) THIRD order: bₖ=r+2^{k-1}r²+(3^{k-1}/2)r³ via coeff_thirdOrder_saddle.
 #print axioms Blocks3HAdmissible.blocks3_number_over_factorial_thirdOrder_saddle
+-- 2-regular labelled graphs THIRD order (√-singularity (1-z)^{-1/2} route): n^{-1/2}(a₀+a₁/n+a₂/n²), a₀=e^{-3/4}/√π.
+#print axioms twoRegularGraphCount_div_factorial_thirdOrder
 
 end AnalyticCombinatorics.Ch1
