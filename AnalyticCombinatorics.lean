@@ -267,6 +267,7 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.Blocks3SecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.Blocks3ThirdOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermSecondOrder
+import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermThirdOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.Bound
 import AnalyticCombinatorics.Ch8.SaddlePoint.Assembly
 import AnalyticCombinatorics.Ch8.SaddlePoint.GaussianCore

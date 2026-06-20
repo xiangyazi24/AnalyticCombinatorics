@@ -233,6 +233,7 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.Blocks3SecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.Blocks3ThirdOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermSecondOrder
+import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermThirdOrder
 import AnalyticCombinatorics.Ch4.Analytic.TransferGeneral
 import AnalyticCombinatorics.Ch4.Analytic.SubstComp
 import AnalyticCombinatorics.Ch4.Analytic.LogSingularity
@@ -1747,5 +1748,7 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms Blocks3HAdmissible.blocks3_number_over_factorial_thirdOrder_saddle
 -- 2-regular labelled graphs THIRD order (√-singularity (1-z)^{-1/2} route): n^{-1/2}(a₀+a₁/n+a₂/n²), a₀=e^{-3/4}/√π.
 #print axioms twoRegularGraphCount_div_factorial_thirdOrder
+-- FragmentedPerm FINITE-RADIUS THIRD order: narrow-window (s^{29/20}) ThirdOrderHAdmissible + sliver-tail; δ₂~-15/512n.
+#print axioms FragmentedPermHAdmissible.fragPerm_count_over_factorial_thirdOrder
 
 end AnalyticCombinatorics.Ch1
