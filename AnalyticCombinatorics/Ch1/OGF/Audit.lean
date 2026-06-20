@@ -227,7 +227,9 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.ThirdOrderHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.InvolutionSecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.InvolutionThirdOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.BellSecondOrder
+import AnalyticCombinatorics.Ch8.SaddlePoint.BellThirdOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.Blocks3SecondOrder
+import AnalyticCombinatorics.Ch8.SaddlePoint.Blocks3ThirdOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermSecondOrder
 import AnalyticCombinatorics.Ch4.Analytic.TransferGeneral
@@ -1738,5 +1740,9 @@ namespace AnalyticCombinatorics.Ch1
 -- |f x − f y| ≤ K'/x = O(1/r²). The bridge from the smooth-rank mean-decrement two-term expansion to the
 -- approximate-martingale bound η~1/r². (Drafted during the no-build window, verified on server recovery.)
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.two_term_local_lip
+-- Bell-number THIRD order (saddle instance): Bₙ/n! relative 3rd order via coeff_thirdOrder_saddle (bₖ=e^r T_k(r)).
+#print axioms bell_number_over_factorial_thirdOrder
+-- Blocks3 (size≤3 set-partitions) THIRD order: bₖ=r+2^{k-1}r²+(3^{k-1}/2)r³ via coeff_thirdOrder_saddle.
+#print axioms Blocks3HAdmissible.blocks3_number_over_factorial_thirdOrder_saddle
 
 end AnalyticCombinatorics.Ch1

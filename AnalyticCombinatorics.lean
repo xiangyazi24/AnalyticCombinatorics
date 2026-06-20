@@ -261,7 +261,9 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.ThirdOrderHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.InvolutionSecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.InvolutionThirdOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.BellSecondOrder
+import AnalyticCombinatorics.Ch8.SaddlePoint.BellThirdOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.Blocks3SecondOrder
+import AnalyticCombinatorics.Ch8.SaddlePoint.Blocks3ThirdOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermSecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.Bound
