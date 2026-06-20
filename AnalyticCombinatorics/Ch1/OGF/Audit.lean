@@ -225,6 +225,7 @@ import AnalyticCombinatorics.Ch8.SaddlePoint.SecondOrderHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.ThirdOrderCore
 import AnalyticCombinatorics.Ch8.SaddlePoint.ThirdOrderHAdmissible
 import AnalyticCombinatorics.Ch8.SaddlePoint.InvolutionSecondOrder
+import AnalyticCombinatorics.Ch8.SaddlePoint.InvolutionThirdOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.BellSecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.Blocks3SecondOrder
 import AnalyticCombinatorics.Ch8.SaddlePoint.FragmentedPermHAdmissible
@@ -485,6 +486,8 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms _root_.coeff_secondOrder_saddle
 -- First CONCRETE saddle-point second-order count: involutions Iₙ/n! = saddleScale·(1 - 1/(6n) + o(1/n)).
 #print axioms InvolutionHAdmissible.involution_count_over_factorial_secondOrder_one_over_n
+-- Involution THIRD order (saddle instance of coeff_thirdOrder_saddle): nₙ/n! relative δ₂=1/72n².
+#print axioms InvolutionHAdmissible.involution_count_over_factorial_thirdOrder
 -- Second concrete saddle count: Bell numbers Bₙ/n! second order via coeff_secondOrder_saddle.
 #print axioms _root_.bell_number_over_factorial_secondOrder_saddle
 -- Third concrete saddle count: set-partitions-into-triples (Blocks3) second order.
