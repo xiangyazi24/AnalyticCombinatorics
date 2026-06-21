@@ -1,46 +1,59 @@
 # AnalyticCombinatorics
 
 A Lean 4 formalization of Flajolet & Sedgewick's *Analytic Combinatorics*,
-**rebuilt from scratch starting 2026-05-30**.
+**rebuilt from scratch starting 2026-05-30** — clean, honest, and machine-checked.
 
-## Status — early rebuild, in progress
+## Status
 
-An earlier auto-generated version of this repository (1,283 files, ~264k lines,
-self-described as a "full-book formalization with 0 sorry") was audited and found
-to be an **integrity failure**: it passed mechanical checks (it compiled, no
-`sorry`) but did not faithfully state, let alone prove, the book's theorems.
-Every file was built on a fabricated `Window/budget/certificate/slack/Ready`
-template, with ~17k `native_decide` calls (which inject compiler-trust axioms)
-and theorems that merely projected a conjunct out of their own hypotheses.
+Flagship coverage across **all nine chapters (I–IX)** of the book, every headline theorem verified
+clean-3: `#print axioms` shows only `{propext, Classical.choice, Quot.sound}`, with **no `sorry`,
+no `axiom`, no `native_decide`** (419 `.lean` files; 622 audited theorems). See
+[`PRE_RELEASE_AUDIT.md`](PRE_RELEASE_AUDIT.md) and [`COVERAGE_AND_OPEN_FRONTIERS.md`](COVERAGE_AND_OPEN_FRONTIERS.md).
 
-That tree has been removed. It is preserved for provenance at branch
-`archive/impostor-2026-05` / tag `archive-impostor-2026-05-30`. The current `main`
-is a clean, honest rebuild that grows only as theorems are actually proved.
+### Provenance (read this)
 
-### What is actually formalized so far
+An earlier auto-generated version (the retracted **v1.0.0**, 1,283 files, self-described as a
+"full-book formalization with 0 sorry") was an **integrity failure**: it compiled and had no `sorry`,
+but did not faithfully state the book's theorems — it was built on a fabricated
+`Window/budget/certificate/slack` template, used ~17k `native_decide` (injecting compiler-trust
+axioms), and "proved" theorems by projecting a conjunct out of their own hypotheses. That tree is
+removed from `main`, preserved only for provenance at `archive/impostor-2026-05` /
+tag `archive-impostor-2026-05-30`. **The current `main` is an unrelated, from-scratch rebuild** that
+grows only as theorems are actually proved and adversarially audited.
 
-Part A, Chapter I (symbolic method, ordinary generating functions):
+## What is formalized
 
-- `Ch1.OGF.Defs` — the OGF of a counting sequence; `CombClass` (a combinatorial
-  class as a graded family of finite types); the primitive classes `∅`, `ε`, `Z`
-  with `ε(z) = 1`, `Z(z) = z`.
-- `Ch1.OGF.Sum` — the combinatorial sum: `(B + C)(z) = B(z) + C(z)`.
-- `Ch1.OGF.Product` — the Cartesian product: `(B × C)(z) = B(z) · C(z)`.
+Per-chapter highlights (full map in [`COVERAGE_AND_OPEN_FRONTIERS.md`](COVERAGE_AND_OPEN_FRONTIERS.md);
+independent per-chapter audit verdicts in [`HANDOFF/AUDIT-WHOLEBOOK.md`](HANDOFF/AUDIT-WHOLEBOOK.md)):
 
-Each result is anchored on a genuine `Fintype.card` identity, and `Ch1.OGF.Audit`
-verifies via `#print axioms` that every headline theorem depends only on
-`{propext, Classical.choice, Quot.sound}`.
+- **I — OGF / symbolic method** (Ch1): Pólya enumeration & the cycle-index theorem, necklaces,
+  bracelets (dihedral PET), Lagrange inversion.
+- **II — EGF / labelled** (Ch2): Bell numbers as genuine partition counts, random-mapping statistics
+  (connected / cyclic points / components, all sharp), Cayley's formula & forests, Ramanujan Q.
+- **III — MGF / parameters** (Ch3): bivariate GFs, moments, variance, marked constructions.
+- **IV + VI — complex & singularity analysis** (Ch4): Δ-domain transfer for `(1−z)^{−α}` to **third
+  order**, the √-singularity meta-applicators (2nd & 3rd order), and the general `log^k` transfer (all `k`).
+- **V — rational & meromorphic** (Ch5): meromorphic coefficient transfer, surjections, general
+  compositions, the Flajolet continued-fraction theorem.
+- **VII — singularity-analysis applications** (Ch7): Catalan, Motzkin, Schröder, Riordan, ternary and
+  general Fuss-Catalan tree counts, all to **third order**.
+- **VIII — saddle point** (Ch8): Hayman H-admissibility (1st/2nd/**3rd** order) with concrete instances
+  (involutions, Bell, blocks-≤3, fragmented permutations); and the **Hardy–Ramanujan partition
+  asymptotic** — both the elementary `log p(n) ~ π√(2n/3)` and the **sharp**
+  `p(n) ~ exp(π√(2n/3)) / (4n√3)`, the latter proved unconditionally *without the circle method*.
+- **IX — random structures / limit laws** (Ch9): quasi-powers / Gaussian limit law, fixed-points and
+  r-cycles → Poisson, and the multivariate Goncharov–Kolchin theorem.
 
-Still to do in Chapter I alone: the sequence (`SEQ`), multiset (`MSET`),
-powerset (`PSET`), and cycle (`CYC`) constructions, and the applications
-(compositions, partitions, words, trees). The rest of the book is untouched.
+Remaining work is optional depth/breadth only (4th-order coefficient asymptotics; further Ch IX limit-law
+instances; non-integer log powers) — no major named theorem of the book is left open.
 
 ## Discipline
 
-- No `axiom`, no `native_decide`, no `def : Prop` to evade `sorry` counting, no
-  smuggling a theorem's conclusion into its hypotheses.
+- No `axiom`, no `native_decide`, no `def : Prop` to evade `sorry` counting, no smuggling a theorem's
+  conclusion into its hypotheses.
 - Every theorem is checked for *statement fidelity* against the book.
-- `#print axioms` must show only the three core axioms.
+- `#print axioms` must show only `{propext, Classical.choice, Quot.sound}` — verified centrally in
+  `Ch1.OGF.Audit` and re-swept before release.
 
 ## Build
 
