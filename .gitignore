@@ -1,1 +1,12 @@
 /.lake
+
+# internal campaign scratch (not part of the public release)
+/DESIGN_*.md
+/DOCTRINE*.md
+/RUN_LOG*.md
+/ROADMAP_*.md
+/CAMPAIGN_*.md
+/AUDIT_STATUS.md
+/UNDERSTANDING.md
+/working_notes/
+/HANDOFF/
