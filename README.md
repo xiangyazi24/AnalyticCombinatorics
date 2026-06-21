@@ -7,8 +7,18 @@ A Lean 4 formalization of Flajolet & Sedgewick's *Analytic Combinatorics*,
 
 Flagship coverage across **all nine chapters (I–IX)** of the book, every headline theorem verified
 clean-3: `#print axioms` shows only `{propext, Classical.choice, Quot.sound}`, with **no `sorry`,
-no `axiom`, no `native_decide`** (419 `.lean` files; 622 audited theorems). See
+no `axiom`, no `native_decide`** (419 Lean files, ~129,000 lines; 622 audited theorems). See
 [`PRE_RELEASE_AUDIT.md`](PRE_RELEASE_AUDIT.md) and [`COVERAGE_AND_OPEN_FRONTIERS.md`](COVERAGE_AND_OPEN_FRONTIERS.md).
+
+**Highlights:**
+
+- The **sharp Hardy–Ramanujan partition asymptotic** `p(n) ~ exp(π√(2n/3)) / (4n√3)` — proved
+  *unconditionally, without the circle method or modular forms* (an elementary first-entrance renewal
+  route); alongside the elementary `log p(n) ~ π√(2n/3)`.
+- The **singularity-analysis and saddle-point** coefficient machinery carried to **third order**, with
+  concrete instances across the standard tree and permutation families.
+- **Lagrange inversion**, **Pólya enumeration / the cycle-index theorem**, the **Flajolet
+  continued-fraction theorem**, and the **multivariate Goncharov–Kolchin** limit law.
 
 ### Provenance (read this)
 
