@@ -39,7 +39,7 @@ Highlights:
 - **622** audited theorems; distinct axioms across all of them = exactly
   `{propext, Classical.choice, Quot.sound}`; zero integrity-escape tokens.
 - See [`PRE_RELEASE_AUDIT.md`](PRE_RELEASE_AUDIT.md), [`COVERAGE_AND_OPEN_FRONTIERS.md`](COVERAGE_AND_OPEN_FRONTIERS.md),
-  and the per-chapter adversarial audit [`HANDOFF/AUDIT-WHOLEBOOK.md`](HANDOFF/AUDIT-WHOLEBOOK.md).
+  and the per-chapter adversarial audit [`AUDIT-WHOLEBOOK.md`](AUDIT-WHOLEBOOK.md).
 
 ## Build
 

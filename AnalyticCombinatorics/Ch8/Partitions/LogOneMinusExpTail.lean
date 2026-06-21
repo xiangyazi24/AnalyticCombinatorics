@@ -7,7 +7,7 @@ import AnalyticCombinatorics.Ch8.Partitions.LogHeadAssembly
 Self-contained foundation for the exponential-tail trapezoid (ChatGPT R8):
 derivative/second-derivative exp-decay bounds, geometric sum, tail integrability,
 sample summability, and the `O(t)` geometric error. The infinite-cell trapezoid
-summation + final tail theorem build on these (see `HANDOFF/HR-tail-R8.md`).
+summation + final tail theorem build on these.
 -/
 
 namespace AnalyticCombinatorics.Ch8.Partitions

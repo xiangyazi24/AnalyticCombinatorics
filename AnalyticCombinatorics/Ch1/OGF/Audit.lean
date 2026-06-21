@@ -706,7 +706,7 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch2.Mappings.MappingComponentsNS.Sharp.expected_components_isEquivalent
 
 -- Ch1 Lagrange-inversion campaign, layer 1 (framework infra; full inversion is the documented frontier —
--- blocked precisely on formal residue infrastructure, LAG2 dispatched): the IMPLICIT SERIES T = X·φ(T) —
+-- blocked precisely on formal residue infrastructure): the IMPLICIT SERIES T = X·φ(T) —
 -- existence (coefficient recursion), uniqueness, constant term 0, the derivative identity — over any
 -- CommRing; sanity φ=1+X ⟹ T = X/(1-X) with all positive coefficients 1.
 #print axioms AnalyticCombinatorics.Ch1.Lagrange.ImplicitSeries.implicitSeries_spec
@@ -780,7 +780,7 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch5.ContinuedFractions.PathSum.WpathSum_eq_Wcoeff
 #print axioms AnalyticCombinatorics.Ch5.ContinuedFractions.PathSum.coeff_JFraction_eq_pathSum
 
--- Ch8 PARTITION CAMPAIGN Milestone A (route: HANDOFF/partition-campaign-route-R1.md): the sharp elementary
+-- Ch8 PARTITION CAMPAIGN Milestone A: the sharp elementary
 -- upper bound p(n) ≤ e^{π√(2n/3)} for the GENUINE part n = card (Nat.Partition n) — GF inequality
 -- p(n)xⁿ ≤ ∏(1-x^k)⁻¹, log-bound A·x/(1-x) via 1-x^k ≥ (1-x)kx^{k-1} + Basel, optimal x. Toward the
 -- log-asymptotic log p(n) ~ π√(2n/3) (Milestones B–D: Laplace asymptotic, log-Tauberian, transfer).
@@ -789,7 +789,7 @@ namespace AnalyticCombinatorics.Ch1
 
 -- Ch8 partition Milestone B, PARTIAL (honest): PartLaplace summability + the ANALYTIC half — the Euler
 -- log-series Laplace limit t·Σ_j 1/(j(e^{tj}−1)) → π²/6 (termwise + domination + Basel over ℕ+).
--- BLOCKED (precise, PARTB2 dispatched): the real Euler product bridge PartLaplace = ∏'(1−e^{−tk})⁻¹
+-- BLOCKED (precise): the real Euler product bridge PartLaplace = ∏'(1−e^{−tk})⁻¹
 -- (K-sandwich route). The PartLaplace limit itself is NOT yet claimed.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.partLaplace_summable
 #print axioms AnalyticCombinatorics.Ch8.Partitions.partition_laplace_series_asymptotic
@@ -797,7 +797,7 @@ namespace AnalyticCombinatorics.Ch1
 -- Ch8 partition EULER PRODUCT bridge (PARTB2): genuine bounded-partition ↔ multiplicity equivalence;
 -- finite Euler product ∏_{k≤K}(1−x^k)⁻¹ = Σ' partsLE K n·xⁿ (ENNReal nonneg regrouping); and the
 -- K-SANDWICH: finite products → PartLaplace (tendsto). Remaining for Milestone B: log + tsum_comm
--- regrouping (PARTB3 dispatched).
+-- regrouping.
 #print axioms AnalyticCombinatorics.Ch8.Partitions.finite_euler_prod_eq
 #print axioms AnalyticCombinatorics.Ch8.Partitions.partLaplace_eq_finprod_tendsto
 
@@ -856,7 +856,7 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Glaisher.glaisher_log_asymptotic
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Glaisher.rpart_two_eq_opart
 
--- Ch8 HR-CONSTANT campaign Stage I.1 (route: HANDOFF/partition-HR-constant-route-R2.md): the classical
+-- Ch8 HR-CONSTANT campaign Stage I.1: the classical
 -- σ-RECURRENCE n·p(n) = Σ_{m≤n} σ₁(m)·p(n−m) — part-occurrence double count via the add-k-copies bijection,
 -- genuine Mathlib ArithmeticFunction.sigma. Foundation of the Erdős route to p(n) ~ e^{π√(2n/3)}/(4n√3).
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Sigma.partition_sigma_recurrence
@@ -951,7 +951,7 @@ namespace AnalyticCombinatorics.Ch1
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.u_local_lower_from_monotone
 
 -- Ch8 HR Stage I.5 (Opus): BARRIER-PACKAGE FOUNDATIONS (R6 route lemmas 2,3,7; route audited,
--- renewal lemma 20 refuted by sin(sqrt j) counterexample -- see HANDOFF/partition-stage-I56-route-R6).
+-- renewal lemma 20 refuted by sin(sqrt j) counterexample).
 -- kernelMass/kernelWindow/upperBarrier/lowerBarrier/barrierSlack defs; positive fixed window
 -- (window (1,2] mass >= I/2 > 0 eventually); barrier range bounds; boundary <= delta*slack eventually
 -- (via n^5 e^{-C sqrt n} -> 0).
@@ -968,7 +968,7 @@ namespace AnalyticCombinatorics.Ch1
 
 -- Ch8 HR Stage I.5 (Opus): SUPER/SUBHARMONIC BARRIERS, CONDITIONAL on the o(slack) mass rate
 -- (hypothesis-parameterized, NO axioms: the rate enters as an explicit hypothesis; it is the one
--- remaining analytic brick -- second-order cancellation, see HANDOFF/partition-stage-I5-design.md).
+-- remaining analytic brick -- second-order cancellation).
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.upperBarrier_kernel_superharmonic_of_rate
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.lowerBarrier_kernel_subharmonic_of_rate
 #print axioms AnalyticCombinatorics.Ch8.Partitions.Erdos.upperBarrier_mono

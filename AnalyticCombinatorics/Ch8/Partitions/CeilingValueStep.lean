@@ -20,7 +20,7 @@ nonnegative mass.)  Consequently
 so a value-level overlap of the *one-step* predecessor laws on the slice transfers to the
 first-entrance laws.  This file proves these two reductions; the residual analytic content of L4 is
 the positive one-step value overlap `∑_{z ∈ slice} min (Pker x z) (Pker y z) ≥ β`, a two-start
-value-window estimate (see `HANDOFF/TASK-T2-ceiling.md`).
+value-window estimate.
 
 NEW file; imports the banked entrance kernel and ceiling-hit cores, does not modify them.
 Opus-authored.

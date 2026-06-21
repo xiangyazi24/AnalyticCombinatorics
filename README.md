@@ -34,7 +34,7 @@ grows only as theorems are actually proved and adversarially audited.
 ## What is formalized
 
 Per-chapter highlights (full map in [`COVERAGE_AND_OPEN_FRONTIERS.md`](COVERAGE_AND_OPEN_FRONTIERS.md);
-independent per-chapter audit verdicts in [`HANDOFF/AUDIT-WHOLEBOOK.md`](HANDOFF/AUDIT-WHOLEBOOK.md)):
+independent per-chapter audit verdicts in [`AUDIT-WHOLEBOOK.md`](AUDIT-WHOLEBOOK.md)):
 
 - **I — OGF / symbolic method** (Ch1): Pólya enumeration & the cycle-index theorem, necklaces,
   bracelets (dihedral PET), Lagrange inversion.

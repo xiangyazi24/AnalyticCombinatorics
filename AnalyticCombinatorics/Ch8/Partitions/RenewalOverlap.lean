@@ -20,8 +20,7 @@ This file:
 3. proves the **descent-step overlap minorization**: from delays one renewal apart, the laws
    share mass `≥ p 1` on the slice `{0}` (the increment-`1` minorization), giving `δ`;
 4. states the **homogeneous renewal overlap/escape** consequence the engine needs, reducing the
-   *uniform-in-delay* overlap to the renewal coalescence fact (documented as the irreducible
-   analytic input in `HANDOFF/TASK-T2-gap.md`).
+   *uniform-in-delay* overlap to the renewal coalescence fact (the irreducible analytic input).
 
 Opus-authored.
 -/
@@ -289,7 +288,7 @@ theorem homogeneousRenewal_uniform_overshoot_overlap
 
 The variable rank-band engine consumes the overlap as
 `δ ≤ ∑_{z ∈ slice} min (κ n z) (κ n' z)` where `κ = enterBandKer Pker (ceilBand …)` and `slice` is
-the in-band top slice.  The genuine analytic input (see `HANDOFF/TASK-T2-gap.md`) is a uniform
+the in-band top slice.  The genuine analytic input is a uniform
 *single-state minorization* `κ n z ≥ η` for the two starts on a fixed nonempty subset `S` of the
 slice (a Doeblin minorization at the common ceiling).  Once that minorization exists, the overlap is
 purely combinatorial: `min (κ n z) (κ n' z) ≥ η` on `S`, so the overlap is `≥ η · |S|`.

@@ -21,7 +21,7 @@ The remaining analytic input — turning the banked rank-drop tail majorant
 (`Pker_rankDrop_tail_majorant`) into the *conditional* deep-crossing bound `a(v) ≤ M · c(v)` — is the
 ratio `P(drop > A R | drop ≥ 1)`, which needs the embedded rank-change exit chain (brick 2.2) and the
 per-drop minorization `rankDropKer v 1, v 2 ≥ η` (banked `Pker_rankDrop_minorization`) to lower-bound
-`c(v) ≥ 2η`.  See `HANDOFF/TASK-T2-gap.md`.
+`c(v) ≥ 2η`.
 
 NEW file; imports the banked engine bricks and the banked tail majorant, does not modify them.
 Opus-authored.

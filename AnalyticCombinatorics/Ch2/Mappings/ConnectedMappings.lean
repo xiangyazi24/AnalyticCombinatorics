@@ -9,7 +9,7 @@ import AnalyticCombinatorics.Ch2.Mappings.RamanujanQSharp
 
 This file banks the iteration-level periodic-core facts used in the standard
 cyclic-core decomposition of connected mappings.  The exact enumeration is not
-completed here; see `HANDOFF/outbox/mapconn-reply.md`.
+completed here.
 -/
 
 open Filter Asymptotics

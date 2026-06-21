@@ -28,8 +28,7 @@ bijection `Perm (Option α) ≃ Option α × Perm α`, which is the inductive en
 the rising-factorial identity.  The "none-fixed" half of the recursion is proved
 here in full (clean-3).  The remaining "splice/merge" half — and the assembly
 into the generating identity, the char-function computation, and the
-`IdentDistrib` transport of the Gaussian CLT — is documented as the open content
-in `HANDOFF/AUDIT-FIX-ch9.md`.
+`IdentDistrib` transport of the Gaussian CLT — is documented as the open content.
 
 `numC σ` is the genuine number of orbits (cycles, including fixed points) of `σ`:
 `numC σ = (#α - #support σ) + (#nontrivial cycles of σ)`

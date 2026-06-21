@@ -20,7 +20,7 @@ The full per-drop window minorant `rankDropKer v d ≥ η_d` (for each `d`, via 
 by four windows whose `t`-bands scale with `d`, applied through `rankDropKer_ge_const_of_tband`) still
 requires making that lemma's eventual-in-`v` threshold EXPLICIT in `(a,b,d)`, so that for a fixed
 large `v` all drops `d ≲ √v` are simultaneously minorized (needed for the tail lower bound
-`tail(g) ≥ c e^{−γ' g}` at a single `v`).  See `HANDOFF/TASK-T2-ceiling.md` (L5-escape).
+`tail(g) ≥ c e^{−γ' g}` at a single `v`).
 
 NEW file; imports the banked minorization/window bricks, does not modify them.  Opus-authored.
 -/

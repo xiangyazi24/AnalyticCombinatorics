@@ -6,7 +6,7 @@ The first version of this map listed two "open frontiers" — general-β log tra
 partition constant. **Both were already done.** They were mis-flagged because I trusted the *prose*
 records (Audit.lean `--` comments at 1257/1552, and the HANDOFF gap docs), which **lag the actual
 .lean files**. The authoritative sources are: (a) the theorem files themselves, (b) `#print axioms`,
-(c) `HANDOFF/AUDIT-WHOLEBOOK.md` (the 2026-06-14 whole-book adversarial audit, per-chapter
+(c) `AUDIT-WHOLEBOOK.md` (the 2026-06-14 whole-book adversarial audit, per-chapter
 FAITHFUL/CLEAN). The stale HANDOFF gap/route scratch has been deleted (commit 4deac9b).
 
 ## Status: the book's flagship theorems are done, clean-3, across all nine F&S chapters (I–IX)
@@ -39,7 +39,7 @@ The earlier elementary log-asymptotic log p(n)~π√(2n/3) remains as the indepe
 - **Non-integer log powers** (1−z)^{−α}(log)^β for real β — only integer k done (the standard/useful case);
   real β is exotic and rarely a target.
 
-## Per-chapter coverage (one line each; see HANDOFF/AUDIT-WHOLEBOOK.md for the audit verdicts)
+## Per-chapter coverage (one line each; see AUDIT-WHOLEBOOK.md for the audit verdicts)
 - **Ch1 / I** (OGF): Pólya/cycle-index, necklaces, bracelets, Lagrange inversion (closed). FAITHFUL/CLEAN.
 - **Ch2 / II** (EGF): Bell, random mappings (connected/cyclic/components SHARP), Cayley/forests, Ramanujan Q. CLEAN.
 - **Ch3 / III** (MGF): BGF + moments + variance + marked + binary-word/composition instances. CLEAN.

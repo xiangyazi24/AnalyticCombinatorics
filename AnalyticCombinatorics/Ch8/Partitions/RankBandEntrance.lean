@@ -12,7 +12,7 @@ import AnalyticCombinatorics.Ch8.Partitions.ErdosRenewalConnect
 
 The fixed-step-count overlap reductions (`ErdosAlignment`, `DoeblinWalls`) are *false* for far-apart
 high ranks (rank drops by `O(1)` per step, so a rank-`1000R` chain and a rank-`1001R` chain have
-disjoint `L`-step laws for any fixed `L`; see `HANDOFF/TASK9-gap.md`).  This file builds the correct
+disjoint `L`-step laws for any fixed `L`).  This file builds the correct
 device: the **first-entrance kernel** `enterBandKer P B`, which runs the chain *until* it enters a
 finite rank band `B` — variable hitting time, not a fixed step count.  Two chains starting from very
 different heights both descend *through* the band, and their first-entrance laws overlap.
@@ -161,7 +161,7 @@ The *band* used by the engine is the **finite ceiling down-set** `ceilBand R A` 
 holds with the harmonic hypothesis discharged at every off-band point (rank `≥ R + A ≥ J`).  The
 landed point's rank is `< R + A`; the engine then splits the band into the in-band overlap part
 `[R, R+A)` and the **overshoot** part `[0, R)`, which carries an escape mass driving the residual
-oscillation.  See `HANDOFF/TASK11-gap.md` for why a *fixed* band width `A` leaves a non-vanishing
+oscillation.  A *fixed* band width `A` leaves a non-vanishing
 escape floor (the genuine obstruction). -/
 
 /-- The finite ceiling down-set `{k | rnk k < R + A}`, truncated to the enumeration window
@@ -216,8 +216,7 @@ contraction.
 
 The escape term `e R` is the genuine analytic content.  A *fixed* width `A` leaves a non-vanishing
 escape floor (overshoot below `R` from a first-entrance has uniformly positive probability for fixed
-`A`); driving `e R → 0` is the open renewal-overshoot equidistribution input.  See
-`HANDOFF/TASK11-gap.md`. -/
+`A`); driving `e R → 0` is the open renewal-overshoot equidistribution input. -/
 theorem hitVal_cauchy_of_ceilBand_overlap_escape
     {J A : ℕ} {φ : ℕ → ℝ} {δ Mφ : ℝ} {e : ℕ → ℝ}
     (hδ : 0 < δ) (hδ1 : δ ≤ 1)

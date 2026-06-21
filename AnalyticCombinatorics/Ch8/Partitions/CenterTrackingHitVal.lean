@@ -17,8 +17,7 @@ the remaining analytic content is exactly the explicit hypothesis `hdata`:
 The design audit (ChatGPT R1/R2, 2026-06-13) established that the coupling/FK route supplies the
 *tracking* bound at a polynomial (non-summable) rate, while the *summable center links* require a
 separate finite-boundary renewal / kernel-gradient estimate that is NOT derivable from the banked
-first-moment drift `muTilde_two_term`.  This interface isolates that single remaining input.  See
-`HANDOFF/TASK9-gap.md`.
+first-moment drift `muTilde_two_term`.  This interface isolates that single remaining input.
 -/
 
 noncomputable section

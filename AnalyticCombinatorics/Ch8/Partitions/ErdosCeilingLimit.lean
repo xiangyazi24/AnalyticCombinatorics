@@ -18,7 +18,7 @@ The engine's remaining input is the **escape** (overshoot below the band floor `
 
 `erdos_partition_limit_exists_of_escape` produces the unconditional limit **from** this escape pair;
 the escape itself is the single genuine remaining analytic input (a matching-constant geometric
-rank-drop tail two-sided bound, see `HANDOFF/TASK-T2-ceiling.md`).
+rank-drop tail two-sided bound).
 
 NEW file; imports the banked bricks, does not modify them.  Opus-authored.
 -/
@@ -64,8 +64,7 @@ lemma ceilA_pos_eventually : ∀ᶠ R in atTop, 1 ≤ ceilA R :=
 
 /-- **The ceiling-route escape hypothesis.**  The first-entrance overshoot below the band floor `R`
 into `B = ceilBand R (A R)` vanishes: there is `e R → 0` (nonneg) bounding the deep mass from any two
-high starts.  This is the single genuine remaining analytic input of the ceiling route (see
-`HANDOFF/TASK-T2-ceiling.md`, L5-escape). -/
+high starts.  This is the single genuine remaining analytic input of the ceiling route (L5-escape). -/
 def CeilingEscape : Prop :=
   ∃ e : ℕ → ℝ, (∀ R, 0 ≤ e R) ∧ Tendsto e atTop (𝓝 0) ∧
     ∀ᶠ R in atTop, ∀ n n', R + ceilA R ≤ rnk n → R + ceilA R ≤ rnk n' →

@@ -112,7 +112,7 @@ This is the cleared-denominator form of the hypergeometric term ratio
 It is the contiguous (two-term, polynomial-coefficient) recurrence that the
 generalized Fuss–Catalan / Raney rationals satisfy, and is the foundational
 building block for any creative-telescoping (WZ) proof of the Raney convolution
-additivity `convAdd` (see HANDOFF/AUDIT-FIX-ch7.md). -/
+additivity `convAdd`. -/
 lemma fc_choose_recurrence (s n : ℕ) :
     (n + 1) * (2 * n + s + 1) * (2 * n + s + 2) * Nat.choose (3 * n + 3 + s) (n + 1)
       = (3 * n + 3 + s) * (3 * n + s + 1) * (3 * n + s + 2) * Nat.choose (3 * n + s) n := by

@@ -30,7 +30,7 @@ present tree has none of that — every audited theorem reduces to the three sta
 - `coeff_thirdOrder_saddle` + instances (involution/Bell/Blocks3/FragmentedPerm) — saddle 3rd order.
 - `fussCatalanGeneral_relative_thirdOrder`, `cayleyRootedTree_..._thirdOrder` — singularity-app 3rd order.
 - Lagrange inversion, Pólya/cycle-index, Flajolet continued fractions, multivariate Goncharov–Kolchin
-  capstone — all clean-3 (per `HANDOFF/AUDIT-WHOLEBOOK.md`, the 2026-06-14 per-chapter adversarial audit).
+  capstone — all clean-3 (per `AUDIT-WHOLEBOOK.md`, the 2026-06-14 per-chapter adversarial audit).
 
 ### 4. Coverage at release
 All nine F&S chapters (I–IX) carry their flagship/named theorems clean-3. See

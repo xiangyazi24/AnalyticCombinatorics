@@ -22,8 +22,7 @@ the tail recurrence `incrTail p r' = p(r'+1) + incrTail p (r'+1)` and `statOffse
 
 This is the reference-measure half of `erdos_rankdiff_sector_input`; the remaining sector input is the
 quantitative crossing-variation (cut-flux) bound, which the sector route needs *instead* of a
-rank-drop local limit (the latter being the documented floor-rank `⌊3√n⌋` obstruction in
-`HANDOFF/TASK-T2-gap.md`).
+rank-drop local limit (the latter being the documented floor-rank `⌊3√n⌋` obstruction).
 -/
 
 noncomputable section

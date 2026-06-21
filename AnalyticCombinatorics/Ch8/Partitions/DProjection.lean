@@ -15,8 +15,7 @@ This file builds the projection **core** (generic over a state type `S` with obs
 the measures `πD`/`massD`/`KD`, the weighted identity `πD·KD = massD`, and the first fiber-regrouping
 lemma `sum_over_D_fibers`.  (The full projection equality `pairAK = aK πD KD` builds on these.)
 
-Reference: ChatGPT-Pro R18 chose this weak-projection route over a fresh pair-state reproof (Layer A of
-the roadmap in `HANDOFF/DOCTRINE-walls.md`).
+Reference: ChatGPT-Pro R18 chose this weak-projection route over a fresh pair-state reproof.
 -/
 
 noncomputable section

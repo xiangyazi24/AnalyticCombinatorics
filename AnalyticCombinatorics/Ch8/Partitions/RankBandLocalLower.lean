@@ -12,7 +12,7 @@ above a band lands inside it with positive mass).
 
 This does **not** by itself give the first-entrance *overlap between two different starts*, nor does it
 kill the overshoot escape at fixed band width — those are the renewal-overshoot equidistribution
-content documented in `HANDOFF/TASK11-gap.md`.  It is the strongest fragment of Step E derivable from
+content.  It is the strongest fragment of Step E derivable from
 the banked window mass, and is reusable for any renewal-coupling attempt.  Opus-authored.
 -/
 
@@ -64,8 +64,7 @@ lemma window_rank_drop_bounded {n m : ℕ} (hn : 1 ≤ n) (hmn : m < n)
 steps `m ∈ (√n, 2√n]` carry mass `≥ ν > 0` and strictly drop rank (`window_rank_drop`) by at most `7`
 (`window_rank_drop_bounded`).  After normalizing by `kernelMass n ≤ 2` the predecessor mass on the
 bounded-drop band is `≥ ν/2`.  This is the local-limit lower bound an entrance-overlap argument needs
-*at the ceiling*; it does not by itself give the cross-start overlap or kill the overshoot escape
-(see `HANDOFF/TASK11-gap.md`). -/
+*at the ceiling*; it does not by itself give the cross-start overlap or kill the overshoot escape. -/
 theorem Pker_bounded_drop_mass_pos :
     ∃ μ : ℝ, 0 < μ ∧ ∀ᶠ n : ℕ in atTop,
       μ ≤ ∑ k ∈ (Finset.range n).filter

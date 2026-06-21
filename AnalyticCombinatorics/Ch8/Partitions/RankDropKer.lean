@@ -5,8 +5,7 @@ import AnalyticCombinatorics.Ch8.Partitions.ErdosKernelClose
 # T2.1 (honest restatement): the rank-drop kernel and its exponential tail majorant
 
 The pointwise rank-drop *local limit* `rankDropKer v d → p d` is FALSE for the floor rank
-`rnk v = ⌊3√v⌋` (the drop-`d` set is a `y`-window whose edges oscillate with `frac(3√v)`; see
-`HANDOFF/TASK-T2-gap.md`).  The engine, however, does not consume that limit; it consumes a
+`rnk v = ⌊3√v⌋` (the drop-`d` set is a `y`-window whose edges oscillate with `frac(3√v)`).  The engine, however, does not consume that limit; it consumes a
 one-sided pair:
 
 * an **exponential tail majorant** of the rank-drop, uniform in `v` (this file, `Pker_rankDrop_tail_majorant`);

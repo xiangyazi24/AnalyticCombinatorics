@@ -12,7 +12,7 @@ regularization, and the central algebraic cancellation of the `n^{−1/2}` coeff
 
   `−1/(2λ) + 2Z/λ³ − (C/8)·6Z/λ⁴ = 0`  (`Z = λ²`, `C = 2λ`).
 
-Route: HANDOFF/partition-mass-rate-route-R8.md.  Opus-authored.
+Opus-authored.
 -/
 
 set_option maxHeartbeats 400000
