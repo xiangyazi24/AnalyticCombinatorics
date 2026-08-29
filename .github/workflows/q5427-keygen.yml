@@ -1,0 +1,41 @@
+name: Q5427 ephemeral transport key
+
+on:
+  push:
+    branches: [chatgpt-q5427-token-probe]
+    paths:
+      - '.github/workflows/q5427-keygen.yml'
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  keygen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate one-use RSA key
+        shell: bash
+        run: |
+          set -euo pipefail
+          openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072 \
+            -out q5427-private-key.pem
+          openssl pkey -in q5427-private-key.pem -pubout \
+            -out q5427-public-key.pem
+          printf '%s\n' "$GITHUB_RUN_ID" > q5427-keygen-run-id.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: q5427-private-key
+          path: q5427-private-key.pem
+          retention-days: 1
+      - name: Publish public key and run id
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add q5427-public-key.pem q5427-keygen-run-id.txt
+          git commit -m 'Record Q5427 ephemeral public key'
+          git push
