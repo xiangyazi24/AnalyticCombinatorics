@@ -1,0 +1,33 @@
+name: Q5427 private action simulation
+
+on:
+  push:
+    branches: [chatgpt-q5427-token-probe]
+    paths:
+      - '.github/workflows/q5427-private-action-run.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Execute exact private leader simulation
+        id: private-run
+        continue-on-error: true
+        uses: xiangyazi24/leader@chatgpt-q5427-local
+      - name: Preserve exact result
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f q5427-exact-exit.txt || printf 'private-action-unavailable\n' > q5427-exact-exit.txt
+          test -f q5427-exact-stdout.csv || : > q5427-exact-stdout.csv
+          test -f q5427-exact-stderr.log || printf 'private action did not start\n' > q5427-exact-stderr.log
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add q5427-exact-exit.txt q5427-exact-stdout.csv q5427-exact-stderr.log
+          git commit -m 'Record Q5427 private action result' || exit 0
+          git push
