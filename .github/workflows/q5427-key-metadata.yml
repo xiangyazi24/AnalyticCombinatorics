@@ -19,11 +19,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          openssl pkey -pubin -in q5427-public-key.pem -modulus -noout \
+          openssl rsa -pubin -in q5427-public-key.pem -modulus -noout \
             | sed 's/^Modulus=//' | tr 'A-F' 'a-f' > q5427-rsa-modulus.hex
-          openssl pkey -pubin -in q5427-public-key.pem -text -noout \
+          openssl rsa -pubin -in q5427-public-key.pem -text -noout \
             | sed -n 's/.*Exponent: \([0-9][0-9]*\).*/\1/p' \
             > q5427-rsa-exponent.txt
+          test -s q5427-rsa-modulus.hex
+          test -s q5427-rsa-exponent.txt
       - name: Commit metadata
         shell: bash
         run: |
