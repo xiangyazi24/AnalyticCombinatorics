@@ -1,5 +1,7 @@
 # AnalyticCombinatorics
 
+*Formalized by [Formally Correct](https://formallycorrect.com/work/analytic-combinatorics), which formalizes mathematics and theoretical computer science papers in Lean 4.*
+
 A Lean 4 formalization of Flajolet & Sedgewick's *Analytic Combinatorics*,
 **rebuilt from scratch starting 2026-05-30** — clean, honest, and machine-checked.
 
