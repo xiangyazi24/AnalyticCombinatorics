@@ -1,3 +1,8 @@
-report bytes 155625
-report lines 2230
-report sha256 deaf40099109d55cb0464ab858f704b930eb77b746ecc5149cd4d4914d6b5a99
+raw varint bytes 83908
+packed bytes 78188
+base64 chars 104252
+compact report bytes 142975
+compact report lines 2122
+compact report sha256 86a9adc6465683ec211a66d82af8739267715e6fbac53555dbf9a27d11a20bfc
+first ANSWER Q6154 9704ad7d
+last END Q6154 9704ad7d
