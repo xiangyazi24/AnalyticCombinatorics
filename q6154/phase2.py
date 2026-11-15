@@ -8,9 +8,9 @@ import math
 from pathlib import Path
 
 LO = -100
-HI = 520
-CHECK = 180
-OUT = 80
+HI = 260
+CHECK = 80
+OUT = 60
 
 
 class LS:
