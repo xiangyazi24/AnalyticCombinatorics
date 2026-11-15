@@ -1,0 +1,7 @@
+Q inverse = u*(u**7 - 2*u**5*v - 2*u**4*v**2 - u**4*v - u**3*v**3 - u**3*v**2 - u**3*v + u*v**2 + v**4)
+C inverse = -u**2*v*(u**2 + u + v)*(u**7 - 2*u**5*v - 2*u**4*v**2 - u**4*v - u**3*v**3 - u**3*v**2 - u**3*v + u*v**2 + v**4)
+PY-yB remainder= 0
+PY-yB quotients= [0, 1, -x]
+PW-wB remainder= 0
+PW-wB quotients= [0, 1, -x]
+R2= u**7 + u**4*v + u**3*v**3 + u**3*v**2 + u**3*v + u*v**2 + v**4

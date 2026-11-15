@@ -1,12 +1,31 @@
-Qsub= t**2 - t*u*v + 2*t*v - u**3*v - u**2*v + v**2
-Csub= -u*v*(t**2 - t*u**2 - t*u*v - t*u + t*v + u**4 - u**2*v)
-Crem= u*v*(t*u**2 + t*u + t*v - u**4 - u**3*v + v**2)
-solutions= [(u**4 + u**3*v - v**2)/(u**2 + u + v)]
-common= u**2 + u + v
-coords= [u*v*(u**2 + u + v), u*(u**2*v - u**2 + v), u**2*(u**2 + u + v), u**4 + u**3*v - v**2]
-Qcoords= u*(u**7 - 2*u**5*v - 2*u**4*v**2 - u**4*v - u**3*v**3 - u**3*v**2 - u**3*v + u*v**2 + v**4)
-Ccoords= -u**2*v*(u**2 + u + v)*(u**7 - 2*u**5*v - 2*u**4*v**2 - u**4*v - u**3*v**3 - u**3*v**2 - u**3*v + u*v**2 + v**4)
-Q/R= u
-C/R= -u**2*v*(u**2 + u + v)
-Ucomp num-u*den= 0
-Vcomp num-v*den= 0
+Q inverse = u*(u**7 - 2*u**5*v - 2*u**4*v**2 - u**4*v - u**3*v**3 - u**3*v**2 - u**3*v + u*v**2 + v**4)
+C inverse = -u**2*v*(u**2 + u + v)*(u**7 - 2*u**5*v - 2*u**4*v**2 - u**4*v - u**3*v**3 - u**3*v**2 - u**3*v + u*v**2 + v**4)
+PY-yB remainder= 0
+PY-yB quotients= [0, 1, -x]
+PW-wB remainder= 0
+PW-wB quotients= [0, 1, -x]
+R2= u**7 + u**4*v + u**3*v**3 + u**3*v**2 + u**3*v + u*v**2 + v**4
+Traceback (most recent call last):
+  File "/home/runner/work/AnalyticCombinatorics/AnalyticCombinatorics/q6154/symbolic_checks.py", line 29, in <module>
+    print('R2 factor=',sp.factor_list(R2.as_expr(), modulus=2))
+                       ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.14/site-packages/sympy/polys/polytools.py", line 6641, in factor_list
+    return _generic_factor_list(f, gens, args, method='factor')
+  File "/home/runner/.local/lib/python3.14/site-packages/sympy/polys/polytools.py", line 6379, in _generic_factor_list
+    cp, fp = _symbolic_factor_list(numer, opt, method)
+             ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.14/site-packages/sympy/polys/polytools.py", line 6318, in _symbolic_factor_list
+    _coeff, _factors = func()
+                       ~~~~^^
+  File "/home/runner/.local/lib/python3.14/site-packages/sympy/polys/polytools.py", line 3377, in factor_list
+    coeff, factors = f.rep.factor_list()
+                     ~~~~~~~~~~~~~~~~~^^
+  File "/home/runner/.local/lib/python3.14/site-packages/sympy/polys/polyclasses.py", line 1640, in factor_list
+    coeff, factors = dmp_factor_list(f._rep, f.lev, f.dom)
+                     ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.14/site-packages/sympy/polys/factortools.py", line 1545, in dmp_factor_list
+    coeff, factors = dmp_gf_factor(f, u, K0)
+                     ~~~~~~~~~~~~~^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.14/site-packages/sympy/polys/factortools.py", line 1456, in dmp_gf_factor
+    raise NotImplementedError('multivariate polynomials over finite fields')
+NotImplementedError: multivariate polynomials over finite fields
