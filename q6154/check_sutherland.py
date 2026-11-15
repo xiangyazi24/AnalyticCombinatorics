@@ -30,13 +30,17 @@ def report(label,b,c):
     print('plane',f.val(),f.lead())
     print('plane coefficients',[(i,f.coeff(i)) for i in range(max(-20,int(f.val()) if f.val()!=float('inf') else 0),21) if f.coeff(i)])
 
-x,y,a4,a6=tate_data()
-s,b,c=tate_normal_form(x,y,a4)
-report('P',b,c)
-# Negating P changes y to -x-y. Recompute the normal-form parameters.
-s2,b2,c2=tate_normal_form(x,-x-y,a4)
-report('-P',b2,c2)
-# Easy sign/convention probes.
-report('(-b,-c)',-b,-c)
-report('(b,-c)',b,-c)
-report('(-b,c)',-b,c)
+
+def main():
+    x,y,a4,a6=tate_data()
+    s,b,c=tate_normal_form(x,y,a4)
+    report('P',b,c)
+    s2,b2,c2=tate_normal_form(x,-x-y,a4)
+    report('-P',b2,c2)
+    report('(-b,-c)',-b,-c)
+    report('(b,-c)',b,-c)
+    report('(-b,c)',-b,c)
+
+
+if __name__ == '__main__':
+    main()
