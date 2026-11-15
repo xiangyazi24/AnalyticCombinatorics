@@ -1,31 +1,21 @@
-Q inverse = u*(u**7 - 2*u**5*v - 2*u**4*v**2 - u**4*v - u**3*v**3 - u**3*v**2 - u**3*v + u*v**2 + v**4)
-C inverse = -u**2*v*(u**2 + u + v)*(u**7 - 2*u**5*v - 2*u**4*v**2 - u**4*v - u**3*v**3 - u**3*v**2 - u**3*v + u*v**2 + v**4)
-PY-yB remainder= 0
-PY-yB quotients= [0, 1, -x]
-PW-wB remainder= 0
-PW-wB quotients= [0, 1, -x]
-R2= u**7 + u**4*v + u**3*v**3 + u**3*v**2 + u**3*v + u*v**2 + v**4
-Traceback (most recent call last):
-  File "/home/runner/work/AnalyticCombinatorics/AnalyticCombinatorics/q6154/symbolic_checks.py", line 29, in <module>
-    print('R2 factor=',sp.factor_list(R2.as_expr(), modulus=2))
-                       ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/.local/lib/python3.14/site-packages/sympy/polys/polytools.py", line 6641, in factor_list
-    return _generic_factor_list(f, gens, args, method='factor')
-  File "/home/runner/.local/lib/python3.14/site-packages/sympy/polys/polytools.py", line 6379, in _generic_factor_list
-    cp, fp = _symbolic_factor_list(numer, opt, method)
-             ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/.local/lib/python3.14/site-packages/sympy/polys/polytools.py", line 6318, in _symbolic_factor_list
-    _coeff, _factors = func()
-                       ~~~~^^
-  File "/home/runner/.local/lib/python3.14/site-packages/sympy/polys/polytools.py", line 3377, in factor_list
-    coeff, factors = f.rep.factor_list()
-                     ~~~~~~~~~~~~~~~~~^^
-  File "/home/runner/.local/lib/python3.14/site-packages/sympy/polys/polyclasses.py", line 1640, in factor_list
-    coeff, factors = dmp_factor_list(f._rep, f.lev, f.dom)
-                     ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/.local/lib/python3.14/site-packages/sympy/polys/factortools.py", line 1545, in dmp_factor_list
-    coeff, factors = dmp_gf_factor(f, u, K0)
-                     ~~~~~~~~~~~~~^^^^^^^^^^
-  File "/home/runner/.local/lib/python3.14/site-packages/sympy/polys/factortools.py", line 1456, in dmp_gf_factor
-    raise NotImplementedError('multivariate polynomials over finite fields')
-NotImplementedError: multivariate polynomials over finite fields
+I= w**2*z + w*x*y - w*y*z - w*z**2 + x**2*z - x*y**2 - 2*x*y*z
+solutions= [{a: -1, b: 0, c: 0, d: 0, e: -1}]
+identity remainder= 0
+
+Running kernel seems to be up-to-date.
+
+Restarting services...
+
+Service restarts being deferred:
+ systemctl restart hosted-compute-agent.service
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+[1]:
+   _[1]=1
+   _[2]=u7+u3v3+u4v+u3v2+u3v+v4+uv2
+[2]:
+   1,1
