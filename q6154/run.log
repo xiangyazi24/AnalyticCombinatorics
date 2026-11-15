@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/home/runner/work/AnalyticCombinatorics/AnalyticCombinatorics/q6154/phase2.py", line 307, in <module>
+    main()
+    ~~~~^^
+  File "/home/runner/work/AnalyticCombinatorics/AnalyticCombinatorics/q6154/phase2.py", line 254, in main
+    Q.assert_zero(0, CHECK, "canonical quadric")
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/AnalyticCombinatorics/AnalyticCombinatorics/q6154/phase2.py", line 122, in assert_zero
+    raise AssertionError(f"{label}: first nonzero {bad[0]}")
+AssertionError: canonical quadric: first nonzero (0, Fraction(-1, 1))
