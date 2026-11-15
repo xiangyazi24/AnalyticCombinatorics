@@ -1,10 +1,31 @@
-Traceback (most recent call last):
-  File "/home/runner/work/AnalyticCombinatorics/AnalyticCombinatorics/q6154/phase2.py", line 307, in <module>
-    main()
-    ~~~~^^
-  File "/home/runner/work/AnalyticCombinatorics/AnalyticCombinatorics/q6154/phase2.py", line 254, in main
-    Q.assert_zero(0, CHECK, "canonical quadric")
-    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/AnalyticCombinatorics/AnalyticCombinatorics/q6154/phase2.py", line 122, in assert_zero
-    raise AssertionError(f"{label}: first nonzero {bad[0]}")
-AssertionError: canonical quadric: first nonzero (0, Fraction(-1, 1))
+Q_RESIDUAL 0 -1
+C_RESIDUAL 1 1
+{
+  "work_precision": 220,
+  "checked_through": 60,
+  "tate_point_x_order": 1,
+  "tate_point_y_order": 2,
+  "slope_order": 1,
+  "b_order": 1,
+  "c_order": 1,
+  "sutherland_x_order": -1,
+  "sutherland_y_order": -1,
+  "raw_canonical_orders": [
+    -1,
+    -1,
+    -2,
+    0
+  ],
+  "projective_common_order": -2,
+  "projective_pivot": 2,
+  "projective_pivot_lead": "-1",
+  "canonical_constant_vector": [
+    "0",
+    "0",
+    "1",
+    "0"
+  ],
+  "canonical_cusp_index": 3
+}
+PASS Tate equation
+PASS canonical Q=C=0
