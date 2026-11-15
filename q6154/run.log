@@ -1,29 +1,249 @@
+U degree 1 nullity 1
 {
-  "work_precision": 260,
-  "checked_through": 100,
-  "tate_point_x_order": 1,
-  "tate_point_y_order": 2,
-  "slope_order": 1,
-  "b_order": 1,
-  "c_order": 1,
-  "sutherland_x_order": -1,
-  "sutherland_y_order": -1,
-  "raw_canonical_orders": [
-    -1,
-    -1,
-    -2,
-    0
+  "degree": 1,
+  "names": [
+    "x",
+    "y",
+    "z",
+    "w"
   ],
-  "projective_common_order": -2,
-  "projective_pivot": 2,
-  "projective_pivot_lead": "-1",
-  "canonical_constant_vector": [
-    "0",
-    "0",
-    "1",
-    "0"
-  ],
-  "canonical_cusp_index": 3
+  "nullity": 1,
+  "solutions": [
+    {
+      "raw": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        -1,
+        -1,
+        1
+      ],
+      "numerator": [
+        -1,
+        0,
+        0,
+        0
+      ],
+      "denominator": [
+        0,
+        -1,
+        -1,
+        1
+      ]
+    }
+  ]
 }
-PASS Tate equation
-PASS canonical Q=C=0
+V degree 1 nullity 0
+V degree 2 nullity 4
+{
+  "degree": 2,
+  "names": [
+    "x^2",
+    "xy",
+    "xz",
+    "xw",
+    "y^2",
+    "yz",
+    "yw",
+    "z^2",
+    "zw",
+    "w^2"
+  ],
+  "nullity": 4,
+  "solutions": [
+    {
+      "raw": [
+        0,
+        0,
+        -1,
+        -1,
+        1,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "numerator": [
+        0,
+        0,
+        1,
+        1,
+        -1,
+        -1,
+        0,
+        0,
+        -1,
+        0
+      ],
+      "denominator": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "raw": [
+        0,
+        0,
+        0,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        -1,
+        -2,
+        1,
+        0,
+        0,
+        0
+      ],
+      "numerator": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "denominator": [
+        0,
+        0,
+        1,
+        0,
+        -1,
+        -2,
+        1,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "raw": [
+        -1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        -1,
+        -1,
+        1,
+        2,
+        0,
+        1,
+        0,
+        0
+      ],
+      "numerator": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "denominator": [
+        0,
+        0,
+        -1,
+        -1,
+        1,
+        2,
+        0,
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "raw": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        -1,
+        -1,
+        1,
+        1,
+        0,
+        0,
+        1,
+        0
+      ],
+      "numerator": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "denominator": [
+        0,
+        0,
+        -1,
+        -1,
+        1,
+        1,
+        0,
+        0,
+        1,
+        0
+      ]
+    }
+  ]
+}
