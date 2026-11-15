@@ -1,21 +1,5 @@
-I= w**2*z + w*x*y - w*y*z - w*z**2 + x**2*z - x*y**2 - 2*x*y*z
-solutions= [{a: -1, b: 0, c: 0, d: 0, e: -1}]
-identity remainder= 0
-
-Running kernel seems to be up-to-date.
-
-Restarting services...
-
-Service restarts being deferred:
- systemctl restart hosted-compute-agent.service
-
-No containers need to be restarted.
-
-No user sessions are running outdated binaries.
-
-No VM guests are running outdated hypervisor (qemu) binaries on this host.
-[1]:
-   _[1]=1
-   _[2]=u7+u3v3+u4v+u3v2+u3v+v4+uv2
-[2]:
-   1,1
+PASS (1) U,V through q^5000; rank 38->39 at q^38; primitive irreducible R; cleared through q^5029
+PASS (2) universal Tate -> Tate normal form -> Sutherland -> canonical; Q=C=0 through q^100
+PASS (3) both birational directions: exact polynomial identities and q-series through q^70
+PASS (4) cusp dictionary; q-infinity is p0 = [0:0:1:0] with (ord U,ord V)=(1,2)
+PASS (5) all coefficient denominators have v2=0; maps stay birational mod 2; ord_p0(U)=1
