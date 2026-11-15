@@ -1,4 +1,29 @@
-b 1 -1 c 1 -1
-xs -1 1 ys -1 1
-PLANE_RESIDUAL 87 542671800196790564730864
-PLANE_NONZERO []
+{
+  "work_precision": 260,
+  "checked_through": 100,
+  "tate_point_x_order": 1,
+  "tate_point_y_order": 2,
+  "slope_order": 1,
+  "b_order": 1,
+  "c_order": 1,
+  "sutherland_x_order": -1,
+  "sutherland_y_order": -1,
+  "raw_canonical_orders": [
+    -1,
+    -1,
+    -2,
+    0
+  ],
+  "projective_common_order": -2,
+  "projective_pivot": 2,
+  "projective_pivot_lead": "-1",
+  "canonical_constant_vector": [
+    "0",
+    "0",
+    "1",
+    "0"
+  ],
+  "canonical_cusp_index": 3
+}
+PASS Tate equation
+PASS canonical Q=C=0

@@ -8,9 +8,9 @@ import math
 from pathlib import Path
 
 LO = -100
-HI = 100
-CHECK = 30
-OUT = 30
+HI = 260
+CHECK = 100
+OUT = 100
 
 
 class LS:
@@ -248,9 +248,9 @@ def main():
     raw = canonical(xs, ys)
     cc, common_v, pivot, lead = normalize_projective(raw)
     x, y, z, w = cc
-    Q = x*w + y*z + y*w - z**2 - z*w
-    C = (x**2*y - x**2*z - x*y**2 - x*y*z + x*z**2 -
-         y**2*w + y*w**2 - z**2*w)
+    Q = -x*z - x*w + y**2 + y*z + z*w
+    C = (x**2*w + x*y*z - x*y*w - x*z*w +
+         y*z*w + z**2*w - z*w**2)
     Q.assert_zero(0, CHECK, "canonical quadric")
     C.assert_zero(0, CHECK, "canonical cubic")
 
