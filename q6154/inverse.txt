@@ -1,0 +1,12 @@
+Qsub= t**2 - t*u*v + 2*t*v - u**3*v - u**2*v + v**2
+Csub= -u*v*(t**2 - t*u**2 - t*u*v - t*u + t*v + u**4 - u**2*v)
+Crem= u*v*(t*u**2 + t*u + t*v - u**4 - u**3*v + v**2)
+solutions= [(u**4 + u**3*v - v**2)/(u**2 + u + v)]
+common= u**2 + u + v
+coords= [u*v*(u**2 + u + v), u*(u**2*v - u**2 + v), u**2*(u**2 + u + v), u**4 + u**3*v - v**2]
+Qcoords= u*(u**7 - 2*u**5*v - 2*u**4*v**2 - u**4*v - u**3*v**3 - u**3*v**2 - u**3*v + u*v**2 + v**4)
+Ccoords= -u**2*v*(u**2 + u + v)*(u**7 - 2*u**5*v - 2*u**4*v**2 - u**4*v - u**3*v**3 - u**3*v**2 - u**3*v + u*v**2 + v**4)
+Q/R= u
+C/R= -u**2*v*(u**2 + u + v)
+Ucomp num-u*den= 0
+Vcomp num-v*den= 0
